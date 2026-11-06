@@ -31,6 +31,8 @@ interface Spec {
   shelf: ShelfLife;
   /** Notvorrat days, if it differs from the pantry value. */
   reserve?: number;
+  /** Days the food keeps after opening. */
+  opened?: number;
   /** Price of a typical pack in Rappen; weight of a typical pack in grams. */
   price: number;
   grams?: number;
@@ -55,6 +57,7 @@ function def(spec: Spec): Category {
       pantry,
       ...(spec.reserve === undefined ? {} : { reserve: spec.reserve }),
     },
+    ...(spec.opened === undefined ? {} : { afterOpeningDays: spec.opened }),
     avgPriceRappen: rappen(spec.price),
     ...(spec.grams === undefined ? {} : { avgWeightGrams: spec.grams }),
     defaultOwner: spec.owner,
@@ -69,6 +72,7 @@ export const CATEGORIES: readonly Category[] = [
   // Dairy
   def({
     id: 'dairy-milk',
+    opened: 3,
     de: 'Milch',
     emoji: '🥛',
     group: 'dairy',
@@ -87,6 +91,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'dairy-uht-milk',
+    opened: 3,
     de: 'H-Milch',
     emoji: '🥛',
     group: 'dairy',
@@ -101,6 +106,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'dairy-cream',
+    opened: 3,
     de: 'Rahm',
     emoji: '🥛',
     group: 'dairy',
@@ -118,6 +124,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'dairy-yoghurt',
+    opened: 3,
     de: 'Joghurt',
     emoji: '🥛',
     group: 'dairy',
@@ -135,6 +142,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'dairy-butter',
+    opened: 30,
     de: 'Butter',
     emoji: '🧈',
     group: 'dairy',
@@ -152,6 +160,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'dairy-cheese-hard',
+    opened: 21,
     de: 'Hartkäse',
     emoji: '🧀',
     group: 'dairy',
@@ -178,6 +187,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'dairy-cheese-soft',
+    opened: 3,
     de: 'Quark & Frischkäse',
     emoji: '🧀',
     group: 'dairy',
@@ -289,6 +299,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'meat-coldcuts',
+    opened: 3,
     de: 'Aufschnitt',
     emoji: '🥓',
     group: 'meat',
@@ -315,6 +326,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'meat-sausage',
+    opened: 3,
     de: 'Würste',
     emoji: '🌭',
     group: 'meat',
@@ -367,6 +379,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'fish-smoked-salmon',
+    opened: 2,
     de: 'Rauchlachs',
     emoji: '🍣',
     group: 'fish',
@@ -813,6 +826,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'pantry-canned',
+    opened: 3,
     de: 'Konserven',
     emoji: '🥫',
     group: 'pantry',
@@ -839,6 +853,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'pantry-cereal',
+    opened: 90,
     de: 'Müesli & Cerealien',
     emoji: '🥣',
     group: 'pantry',
@@ -865,6 +880,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'pantry-oil',
+    opened: 180,
     de: 'Öl & Essig',
     emoji: '🫒',
     group: 'pantry',
@@ -908,6 +924,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'pantry-coffee-tea',
+    opened: 60,
     de: 'Kaffee & Tee',
     emoji: '☕',
     group: 'pantry',
@@ -1012,6 +1029,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'frozen-icecream',
+    opened: 30,
     de: 'Glace',
     emoji: '🍦',
     group: 'frozen',
@@ -1030,6 +1048,7 @@ export const CATEGORIES: readonly Category[] = [
   // Drinks
   def({
     id: 'drinks-juice',
+    opened: 5,
     de: 'Saft',
     emoji: '🧃',
     group: 'drinks',
@@ -1056,6 +1075,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'drinks-soft',
+    opened: 3,
     de: 'Getränke & Wasser',
     emoji: '🥤',
     group: 'drinks',
@@ -1082,6 +1102,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'drinks-alcohol',
+    opened: 5,
     de: 'Bier & Wein',
     emoji: '🍷',
     group: 'drinks',
@@ -1135,6 +1156,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'prepared-tofu',
+    opened: 3,
     de: 'Tofu & Fleischersatz',
     emoji: '🍲',
     group: 'prepared',
@@ -1154,6 +1176,7 @@ export const CATEGORIES: readonly Category[] = [
   // food for about one week and 9 litres of water per person, used up and replaced regularly)
   def({
     id: 'reserve-freeze-dried',
+    opened: 1,
     de: 'Gefriergetrocknete Mahlzeiten',
     emoji: '🏕️',
     group: 'reserve',
@@ -1203,6 +1226,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'reserve-water',
+    opened: 2,
     de: 'Trinkwasser-Vorrat',
     emoji: '💧',
     group: 'reserve',

@@ -3,12 +3,14 @@ import { IdSchema } from '../ids';
 import { RappenSchema } from '../money';
 import {
   CategoryIdSchema,
+  ContainerSchema,
   DateKindSchema,
   ExpirySourceSchema,
   GtinSchema,
   IsoDateTimeSchema,
   LocalDateSchema,
   OwnerSchema,
+  PackageSizeSchema,
   QuantitySchema,
   RetailerSchema,
   StorageLocationSchema,
@@ -68,6 +70,9 @@ export const InventoryItemSchema = z.object({
   location: StorageLocationSchema,
   quantity: QuantitySchema,
   unit: UnitSchema,
+  /** For pieces: how they are packed and what one contains («2 Becher à 180 g»). */
+  container: ContainerSchema.optional(),
+  packageSize: PackageSizeSchema.optional(),
   purchasedAt: IsoDateTimeSchema,
   /** Calendar day of expiry (Europe/Zurich), not an instant. */
   expiresOn: LocalDateSchema,
@@ -77,6 +82,12 @@ export const InventoryItemSchema = z.object({
   expirySource: ExpirySourceSchema,
   /** Day the item went into the freezer, if it is frozen. */
   frozenOn: LocalDateSchema.optional(),
+  /** Day the pack was opened; with it the «after opening» rule applies (ADR-0011). */
+  openedOn: LocalDateSchema.optional(),
+  /** «Nach dem Öffnen innert N Tagen» from the label; overrides the category value. */
+  afterOpeningDays: z.int().min(0).max(3650).optional(),
+  /** The date before opening shortened it, to restore it on undo. */
+  sealedExpiresOn: LocalDateSchema.optional(),
   priceRappen: RappenSchema.min(0).optional(),
   owner: OwnerSchema,
   status: ItemStatusSchema,
@@ -88,23 +99,53 @@ export type InventoryItem = z.infer<typeof InventoryItemSchema>;
 export const OutcomeSchema = z.enum(['eaten', 'shared_out', 'wasted']);
 export type Outcome = z.infer<typeof OutcomeSchema>;
 
+/** Why food was thrown away – for honest statistics and tips (A-01, A-03). */
+export const WasteReasonSchema = z.enum([
+  'expired',
+  'spoiled',
+  'too_much',
+  'forgotten',
+  'did_not_like',
+  'other',
+]);
+export type WasteReason = z.infer<typeof WasteReasonSchema>;
+
+/** Who received food that was given away – counts as saved (A-02). */
+export const ShareRecipientSchema = z.enum([
+  'household',
+  'neighbor',
+  'friends_family',
+  'donation',
+  'public_fridge',
+]);
+export type ShareRecipient = z.infer<typeof ShareRecipientSchema>;
+
 /**
  * What happened to (part of) an item. Called WasteEvent in the brief; it also records eaten and
  * shared items, which feed the «gerettet» counter. Undo = soft delete.
  */
-export const OutcomeEventSchema = z.object({
-  ...syncFields,
-  itemId: IdSchema,
-  outcome: OutcomeSchema,
-  quantity: QuantitySchema,
-  valueRappen: RappenSchema.min(0),
-  valueEstimated: z.boolean(),
-  grams: z.int().min(0).optional(),
-  /** Owner of the item at that moment (snapshot for per-person statistics). */
-  owner: OwnerSchema,
-  at: IsoDateTimeSchema,
-  by: IdSchema,
-});
+export const OutcomeEventSchema = z
+  .object({
+    ...syncFields,
+    itemId: IdSchema,
+    outcome: OutcomeSchema,
+    wasteReason: WasteReasonSchema.optional(),
+    sharedWith: ShareRecipientSchema.optional(),
+    quantity: QuantitySchema,
+    valueRappen: RappenSchema.min(0),
+    valueEstimated: z.boolean(),
+    grams: z.int().min(0).optional(),
+    /** Owner of the item at that moment (snapshot for per-person statistics). */
+    owner: OwnerSchema,
+    at: IsoDateTimeSchema,
+    by: IdSchema,
+  })
+  .refine((event) => event.wasteReason === undefined || event.outcome === 'wasted', {
+    message: 'A waste reason only fits wasted food',
+  })
+  .refine((event) => event.sharedWith === undefined || event.outcome === 'shared_out', {
+    message: 'A recipient only fits shared food',
+  });
 export type OutcomeEvent = z.infer<typeof OutcomeEventSchema>;
 
 /** An item offered to the other household members before it expires (Rette-Kreis). */
