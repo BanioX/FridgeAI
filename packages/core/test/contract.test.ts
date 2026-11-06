@@ -28,6 +28,7 @@ describe('contract v1', () => {
       'shopping.check',
       'shopping.remove',
       'recipes.suggest',
+      'recipes.get',
       'stats.waste',
       'rescue.offer',
       'household.export',

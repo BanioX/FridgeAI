@@ -451,6 +451,36 @@ export const CONTRACT_V1 = {
       ),
     }),
   }),
+  'recipes.get': query({
+    name: 'recipes.get',
+    summary: {
+      de: 'Ein Rezept mit Zutaten und Schritten; pro Zutat, was davon schon zu Hause ist.',
+      en: 'One recipe with ingredients and steps; for each ingredient, what is already at home.',
+    },
+    scopes: ['recipes:read'],
+    input: z.object({ ...queryBase, recipeId: z.string().min(1).max(64) }),
+    output: z.object({
+      recipe: z
+        .object({
+          id: z.string(),
+          title: z.string(),
+          minutes: z.int().positive(),
+          servings: z.int().positive(),
+          tags: z.array(z.string()),
+          ingredients: z.array(
+            z.object({
+              text: z.string(),
+              staple: z.boolean(),
+              optional: z.boolean(),
+              /** Names of food at home that counts as this ingredient. */
+              atHome: z.array(z.string()),
+            }),
+          ),
+          steps: z.array(z.string()),
+        })
+        .nullable(),
+    }),
+  }),
   'stats.waste': query({
     name: 'stats.waste',
     summary: {
