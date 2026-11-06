@@ -1,6 +1,7 @@
 import { CONTRACT_VERSION } from '@fridgeai/core';
 import { createBrowserRouter, type RouteObject } from 'react-router';
 import { PlaceholderPage } from '../features/placeholder/PlaceholderPage';
+import { AiImportPage } from '../features/import/AiImportPage';
 import { AddItemPage } from '../features/inventory/AddItemPage';
 import { InventoryPage } from '../features/inventory/InventoryPage';
 import { ItemDetailPage } from '../features/inventory/ItemDetailPage';
@@ -27,7 +28,7 @@ export const routes: RouteObject[] = [
       { path: 'inventory', element: <InventoryPage /> },
       { path: 'inventory/new', element: <AddItemPage /> },
       { path: 'inventory/:itemId', element: <ItemDetailPage /> },
-      { path: 'scan', element: <PlaceholderPage title={messages.pages.scan} /> },
+      { path: 'scan', element: <AiImportPage /> },
       { path: 'shopping', element: <PlaceholderPage title={messages.pages.shopping} /> },
       { path: 'household', element: <HouseholdPage /> },
       // Demo data and design-system reference: dev and demo builds only (dead code in production).

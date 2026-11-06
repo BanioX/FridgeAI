@@ -165,6 +165,38 @@ export const messages = {
     donation: 'Spende',
     public_fridge: 'öffentlicher Kühlschrank',
   },
+  aiImport: {
+    intro:
+      'Mach ein Foto vom Kühlschrank, Einkauf oder Kassenbon mit deiner eigenen KI (ChatGPT, Claude, Gemini …) und übernimm die Liste hier.',
+    step1: '1. Auftrag kopieren',
+    copy: 'Auftrag kopieren',
+    copied: 'Kopiert. Jetzt in deine KI einfügen.',
+    copyFailed: 'Kopieren ging nicht. Markier den Auftrag unten und kopier ihn von Hand.',
+    showPrompt: 'Auftrag anzeigen',
+    step2: '2. In deiner KI: Foto machen und Auftrag einfügen',
+    step3: '3. Antwort hier einfügen',
+    answer: 'Antwort der KI',
+    answerHint: 'Den ganzen Code-Block kopieren, auch wenn Text drumherum steht.',
+    check: 'Prüfen',
+    privacy:
+      'Das Foto geht nur an die KI, die du selbst wählst. FridgeAI bekommt nur die Liste und speichert erst, wenn du übernimmst.',
+    unreadable:
+      'In dieser Antwort hat FridgeAI keine Artikel gefunden. Kopier den ganzen Code-Block.',
+    reviewTitle: (count: number) =>
+      count === 1 ? '1 Artikel erkannt' : `${String(count)} Artikel erkannt`,
+    skipped: (count: number) =>
+      count === 1
+        ? '1 Eintrag konnte FridgeAI nicht lesen:'
+        : `${String(count)} Einträge konnte FridgeAI nicht lesen:`,
+    take: (name: string) => `${name} übernehmen`,
+    location: (name: string) => `Lagerort für ${name}`,
+    estimated: 'Datum wird geschätzt',
+    until: (date: string) => `bis ${date}`,
+    save: (count: number) =>
+      count === 1 ? '1 Artikel übernehmen' : `${String(count)} Artikel übernehmen`,
+    failed: 'Übernehmen hat nicht geklappt. Bitte versuch es nochmals.',
+    manual: 'Lieber von Hand erfassen',
+  },
   notFound: {
     title: 'Seite nicht gefunden',
     text: 'Diese Seite gibt es nicht.',
