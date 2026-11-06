@@ -222,7 +222,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 
 #### Schritt 10 – Barcode & Händler-Import (US-02, US-03)
 - 10a: Barcode-Adapter (nativer `BarcodeDetector`, sonst `@zxing/browser`), EAN-13/EAN-8, nutzt den Kamera-Adapter aus 5a
-- 10b: `ProductCatalog`-Adapter für Open Food Facts mit lokalem Cache, manuelle Erfassung bei keinem Treffer, «Schon im Vorrat: 2 Stk.», Quellenangabe gemäss OFF-Lizenz (ODbL)
+- 10b: `ProductCatalog`-Adapter für Open Food Facts mit lokalem Cache, manuelle Erfassung bei keinem Treffer, «Schon im Vorrat: 2 Stk.», Quellenangabe gemäss OFF-Lizenz (ODbL); optional Open Food Repo (EPFL) als zweite Quelle für Schweizer Produkte, falls API und Bedingungen bestätigt sind (siehe [`data-sources.md`](./data-sources.md))
 - 10c: Migros-CSV-Parser (papaparse) + Fixtures
 - 10d: Coop-PDF-Textextraktion (pdfjs-dist, selbst gehostet) + Parser + Fixtures
 - 10e: Import-UI, Duplikaterkennung über Bon-/Zeilen-Hash, Default «letzte 14 Tage angehakt», danach dieselbe Review wie beim Foto
@@ -258,6 +258,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 - Native Apps mit Capacitor (lokale Benachrichtigungen ohne Server, App-Store-Präsenz)
 - Bezahl-Abo, Haushalts-Challenges, «Darf ich?»-Anfrage, Allergene-Filter, Französisch
 - Optional serverseitiges OCR/LLM (Opt-in)
+- Nährwerte pro Kategorie aus der Schweizer Nährwertdatenbank (BLV, offen, lokal mitgeliefert); YAZIO nur über eine Partnerschaft (siehe [`data-sources.md`](./data-sources.md))
 
 ---
 
