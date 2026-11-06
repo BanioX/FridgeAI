@@ -2,6 +2,7 @@
  * Renders small phone-sized previews of app routes so every visible UI change can be reviewed.
  *
  * Usage:  pnpm preview:shots [route ...]      (default routes: / and /styleguide)
+ *         A route prefixed with `!` is visited but not captured, e.g. `!/dev/seed` for demo data.
  * Output: apps/web/.previews/<timestamp>/sheet.png (all routes side by side) plus one PNG per route.
  *
  * Runs the Vite dev server (so development-only routes like /styleguide work) and Playwright.
@@ -12,7 +13,7 @@ import { join, resolve } from 'node:path';
 import { chromium, devices } from '@playwright/test';
 import { createServer } from 'vite';
 
-const requested = process.argv.slice(2).filter((arg) => arg.startsWith('/'));
+const requested = process.argv.slice(2).filter((arg) => /^!?\//.test(arg));
 const routes = requested.length > 0 ? requested : ['/', '/styleguide'];
 
 const appRoot = resolve(import.meta.dirname, '..');
@@ -38,11 +39,19 @@ try {
   const page = await phone.newPage();
   const shots: { route: string; png: Buffer }[] = [];
 
-  for (const route of routes) {
+  for (const entry of routes) {
+    const visitOnly = entry.startsWith('!');
+    const route = visitOnly ? entry.slice(1) : entry;
     await page.goto(new URL(route, baseUrl).href, { waitUntil: 'networkidle' });
+    if (visitOnly) {
+      await page
+        .waitForURL((url) => url.pathname !== route, { timeout: 15_000 })
+        .catch(() => undefined);
+      continue;
+    }
     await page.evaluate(() => document.fonts.ready);
     const png = await page.screenshot();
-    const fileName = `${route === '/' ? 'home' : route.replace(/^\/|\/$/g, '').replace(/\//g, '-')}.png`;
+    const fileName = `${route === '/' ? 'home' : route.replace(/^\/|\/$/g, '').replace(/[/?=&]/g, '-')}.png`;
     await writeFile(join(outDir, fileName), png);
     shots.push({ route, png });
   }

@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router';
+import { AppDataProvider } from './app/AppData';
 import { createAppRouter } from './app/routes';
 import '@fontsource-variable/figtree';
 import '@fontsource-variable/fraunces/opsz.css';
@@ -13,6 +14,8 @@ if (!container) {
 
 createRoot(container).render(
   <StrictMode>
-    <RouterProvider router={createAppRouter()} />
+    <AppDataProvider>
+      <RouterProvider router={createAppRouter()} />
+    </AppDataProvider>
   </StrictMode>,
 );

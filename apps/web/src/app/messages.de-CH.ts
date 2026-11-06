@@ -9,14 +9,29 @@ export const messages = {
     household: 'Haushalt',
   },
   pages: {
-    today: 'Heute',
+    today: 'Heute retten',
     inventory: 'Vorrat',
     scan: 'Scannen',
     shopping: 'Liste',
     household: 'Haushalt',
+    addItem: 'Artikel erfassen',
   },
   placeholder: 'Kommt bald.',
   contractVersion: 'Datenvertrag',
+  loading: 'FridgeAI wird geladen …',
+  errors: {
+    storage:
+      'Der lokale Speicher ist nicht verfügbar. Ist der private Modus aktiv? FridgeAI braucht ihn, um deinen Vorrat zu speichern.',
+  },
+  defaults: { householdName: 'Mein Haushalt', memberName: 'Ich' },
+  expiry: {
+    doNotEat: 'Nicht mehr essen',
+    pastBestBefore: (days: number) => (days === 1 ? 'seit gestern' : `seit ${String(days)} Tagen`),
+    today: 'heute',
+    tomorrow: 'morgen',
+    inDays: (days: number) => `in ${String(days)} Tagen`,
+    until: (when: string) => `bis ${when}`,
+  },
   dateField: {
     placeholder: 'TT.MM.JJJJ',
     estimated: 'geschätzt',
@@ -41,6 +56,33 @@ export const messages = {
       future: (amount: string) => `in ${amount}`,
       past: (amount: string) => `vor ${amount}`,
     },
+  },
+  units: { pcs: 'Stk.', g: 'g', ml: 'ml' },
+  locations: {
+    fridge: 'Kühlschrank',
+    freezer: 'Tiefkühler',
+    pantry: 'Vorrat',
+    reserve: 'Notvorrat',
+  },
+  today: {
+    valueLabel: 'liegen gerade in eurem Kühlschrank',
+    estimated: 'teilweise geschätzt',
+    expiringTitle: 'Läuft bald ab',
+    expiringEmpty: 'Nichts läuft in den nächsten 3 Tagen ab. Gut gemacht!',
+    locationsTitle: 'Lagerorte',
+    itemCount: (count: number) =>
+      count === 0 ? 'leer' : count === 1 ? '1 Artikel' : `${String(count)} Artikel`,
+    welcomeTitle: 'Willkommen bei FridgeAI',
+    welcomeText:
+      'Erfasse, was ihr zu Hause habt, und FridgeAI sagt dir, was du heute retten solltest.',
+    firstItem: 'Ersten Artikel erfassen',
+  },
+  inventory: {
+    tabsLabel: 'Lagerorte',
+    empty: 'Hier liegt noch nichts.',
+    reserveTip:
+      'Der Bund empfiehlt einen Notvorrat für rund eine Woche und 9 Liter Wasser pro Person.',
+    add: 'Hinzufügen',
   },
   notFound: {
     title: 'Seite nicht gefunden',
