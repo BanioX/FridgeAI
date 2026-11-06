@@ -25,7 +25,8 @@ Kurzfassung der Regeln. Vollständiger Brief: [`docs/brief.md`](docs/brief.md) �
 - Contract-first: Die UI ruft nur Commands/Queries des Vertrags (Zod-Schemas) auf, Änderungen erzeugen Domain Events. So bleiben REST-API und MCP-Server später ohne Umbau möglich (Plan, Abschnitt 2).
 - Partner- oder KI-Zugriff auf Haushaltsdaten nur mit ausdrücklicher, widerrufbarer Einwilligung pro Haushalt. Kein Verkauf von Einzeldaten.
 - Bon-Bilder werden nach der Auswertung nicht gespeichert (ausser expliziter Opt-in). Assets (OCR-Modelle, Worker) selbst hosten, kein CDN.
-- TypeScript `strict`, kein `any`. Neue Dependencies nur kostenlos und Open Source, gut gepflegt und schlank; im PR begründen.
+- TypeScript `strict`, kein `any`. Neue Dependencies nur kostenlos, gut gepflegt und schlank, im PR begründen; im ausgelieferten Code nur permissive Lizenzen (MIT, Apache-2.0, ISC, BSD, OFL), nirgends GPL/AGPL (`pnpm licenses:check`, ADR-0015).
+- Lizenz: proprietär, alle Rechte bei Alban (`LICENSE`). Keine fremden Code-Schnipsel mit unklarer Lizenz übernehmen.
 - Kamera nur nach Nutzeraktion, alle Berechtigungszustände und Fallbacks (Foto-Upload, manuell) behandeln.
 
 ## Befehle
