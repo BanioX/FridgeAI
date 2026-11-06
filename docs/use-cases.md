@@ -128,6 +128,47 @@ Person ─ Haushalt ─ Haus ─ Quartier ─ Gemeinde ─ Kollektiv/Organisatio
 - **Vertrauen wächst mit der Nähe:** Im Haushalt alles sichtbar; im Haus nur Freigegebenes; im Quartier nur Angebote ohne Namen und mit grobem Ort.
 - **Monetarisierung ohne Datenverkauf:** Gemeinden und Arbeitgeber bezahlen Programme mit aggregierter Wirkung; Händler bezahlen für Nachkauf-Vorschläge und Bon-Sync mit Einwilligung; Pro-Abo für Haushalte.
 
+## 2d. Büro-Kühlschrank: beschriften statt anschreiben (Idee Alban, 6.11.2026)
+
+**Problem:** Im Büro-Kühlschrank weiss niemand, wem was gehört. Man schreibt Namen auf Becher, Sachen werden vergessen, jemand wird krank oder geht in die Ferien, und am Putztag fliegt alles raus, oft ohne Rückfrage. Das ist schlecht für Hygiene, Stimmung und Food Waste.
+
+**Idee:** Der Büro-Kühlschrank wird ein eigener **Kreis** wie ein Haushalt. Wer etwas hineinlegt, erfasst es kurz in der App und ist sichtbar die Besitzer:in. Die App erinnert, fragt nach und regelt das Entsorgen fair.
+
+| # | Use Case | Nutzen | Phase |
+| --- | --- | --- | --- |
+| B-01 | **Büro-Kreis beitreten** per QR-Code an der Kühlschranktür; mehrere Kühlschränke pro Firma möglich | Kein Setup, alle sind drin | Vision |
+| B-02 | **Digital beschriften**: beim Hineinlegen Name + Besitzer:in (automatisch du) + Datum; ohne Foto, ohne Filzstift | Alle sehen, wem was gehört | Vision |
+| B-03 | **Etikett verknüpfen** (optional): nummerierte QR-Sticker auf der Rolle; Sticker scannen verbindet Becher und Eintrag | Auch im Kühlschrank eindeutig | Vision |
+| B-04 | **«Wem gehört das?»**: Sticker scannen oder in der Liste suchen → Besitzer:in, seit wann, bis wann haltbar; kurze Nachricht in der App («Dein Joghurt läuft heute ab») | Kein Rundmail, kein Zettel | Vision |
+| B-05 | **Erinnern und Freigeben**: vor Ablauf Push an die Besitzer:in mit drei Antworten: «Hole ich», «Darf weg», «Darf jemand essen» | Weniger Waste, klare Ansage | Vision |
+| B-06 | **Abwesend**: «Bin bis Montag weg: meine Sachen dürfen geteilt / entsorgt werden»; ohne Antwort gilt nach einer Frist die Büro-Regel | Kranke und Ferien sind kein Problem mehr | Vision |
+| B-07 | **Putztag und Hygiene**: fester Termin (z. B. Freitag 15 Uhr), vorher Push an alle mit Sachen, die raus müssen; danach Protokoll «entsorgt von, warum»; Kühlschrank-Ämtli im Wechsel | Sauberer Kühlschrank, nachvollziehbar und fair | Vision |
+| B-08 | **Geteiltes fürs Team**: Milch, Kaffeerahm, Butter als «gehört allen»; «Milch fast leer» → Einkaufsliste der Office-Verantwortlichen; Kosten aus Teamkasse oder aufgeteilt | Kein «Wer hat die Milch leer gemacht?» | Vision |
+| B-09 | **Wirkung fürs Team**: «Euer Büro hat diesen Monat 4 kg gerettet» (anonym, nur Summen); passt zu Nachhaltigkeitsberichten | Motivation, Argument für die Firma | Vision |
+
+**Was die Architektur schon kann:**
+- Haushalt = Kreis mit Mitgliedern; **`owner` pro Artikel** gibt es bereits (Person oder «geteilt»).
+- Entsorgen mit **Grund** und **wer** steht in jedem Abschluss (`wasteReason`, `by`, Schritt 6).
+- Benachrichtigungen, Rechte (`Grant`) und Einwilligungen sind vorgesehen.
+- Später neu: Kreis-Art (`home` | `office`), Regeln pro Kreis (Putztag, Frist), Rolle «Kühlschrank-Verantwortliche:r», optionaler `labelCode` am Artikel.
+
+**Leitplanken (wichtig im Arbeitsumfeld):**
+- Keine Überwachung: Die App zeigt Besitz und Entsorgung, aber nicht, wer was isst oder wann jemand am Kühlschrank war.
+- Die Firma sieht nur Summen (kg, CHF, Anzahl Putzaktionen), nie Personen oder Einzeldaten.
+- Kein Prangern: Erinnerungen gehen nur an die Besitzer:in, nicht an alle.
+- Keine Fotos als Standard (Fotos könnten Personen oder Büros zeigen).
+
+**Monetarisierung (nur Ideen, Entscheid später):**
+
+| Modell | Gratis | Bezahlt |
+| --- | --- | --- |
+| A) Team-Stufe | ein Kühlschrank, bis ca. 10 Personen, Beschriften, «Wem gehört das?», Erinnerungen | mehr Personen und Kühlschränke |
+| B) Pro für Büros (pro Person/Monat) | wie A | Putztag-Regeln und Protokolle, Abwesenheits-Regel, Rollen, Berichte, mehrere Standorte, später SSO |
+| C) Lizenz für Facility Management, Coworking-Spaces, Kantinen-Betreiber | – | Pauschale pro Standort, Sticker-Rollen als Zubehör |
+| D) Büro als Einstieg (B2B2C) | Büro-Grundfunktionen gratis | Kolleg:innen lernen FridgeAI kennen und nutzen es zu Hause; Umsatz über Haushalts-Pro |
+
+**Phase:** nach dem Teilen im Haushalt (Schritt 7, Konto und Sync), frühestens v1. Bis dahin sorgt das Datenmodell dafür, dass nichts umgebaut werden muss.
+
 ## 3. Kochen & Verwerten: Rezepte
 
 | # | Use Case | Nutzen | Phase |
