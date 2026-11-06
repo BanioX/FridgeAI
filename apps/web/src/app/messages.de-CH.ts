@@ -114,6 +114,31 @@ export const messages = {
     toToday: 'Zu «Heute retten»',
     failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
   },
+  recipes: {
+    ideasTitle: 'Rezeptideen',
+    rescues: (food: string, minutes: number, missing: number) =>
+      `Rettet ${food} · ${String(minutes)} Min.${missing === 0 ? ' · alles da' : ` · ${String(missing)} fehlt`}`,
+    back: 'Zurück zu «Heute retten»',
+    notFound: 'Dieses Rezept gibt es nicht (mehr).',
+    minutes: (minutes: number) => `${String(minutes)} Min.`,
+    servings: (servings: number) =>
+      servings === 1 ? '1 Portion' : `${String(servings)} Portionen`,
+    ingredients: 'Zutaten',
+    atHome: (food: string) => `Da: ${food}`,
+    staple: 'Grundvorrat',
+    optional: 'Wenn du es hast',
+    missing: 'Fehlt',
+    toList: (count: number) =>
+      count === 1
+        ? 'Fehlende Zutat auf die Liste'
+        : `${String(count)} fehlende Zutaten auf die Liste`,
+    onList: (count: number) =>
+      count === 1
+        ? '1 Zutat ist auf der Einkaufsliste.'
+        : `${String(count)} Zutaten sind auf der Einkaufsliste.`,
+    steps: 'So geht’s',
+    failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
+  },
   inventory: {
     tabsLabel: 'Lagerorte',
     empty: 'Hier liegt noch nichts.',
