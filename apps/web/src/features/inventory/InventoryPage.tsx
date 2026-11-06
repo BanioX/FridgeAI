@@ -60,7 +60,7 @@ export function InventoryPage() {
   const t = messages.inventory;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 pb-20">
       <h1 className="font-display text-3xl font-semibold tracking-tight">
         {messages.pages.inventory}
       </h1>

@@ -31,6 +31,12 @@ export const routes: RouteObject[] = [
       ...(import.meta.env.DEV
         ? [
             {
+              path: 'dev/seed',
+              lazy: async () => ({
+                Component: (await import('../features/dev/DemoSeedPage')).DemoSeedPage,
+              }),
+            },
+            {
               path: 'styleguide',
               lazy: async () => ({
                 Component: (await import('../features/styleguide/StyleguidePage')).StyleguidePage,

@@ -63,10 +63,12 @@ export function TodayPage() {
         </Card>
       ) : null}
 
-      <Card>
-        <BigNumber value={formatChf(total)} label={t.valueLabel} />
-        {estimated ? <p className="mt-1 text-sm text-ink-muted">{t.estimated}</p> : null}
-      </Card>
+      {all.length > 0 ? (
+        <Card>
+          <BigNumber value={formatChf(total)} label={t.valueLabel} />
+          {estimated ? <p className="mt-1 text-sm text-ink-muted">{t.estimated}</p> : null}
+        </Card>
+      ) : null}
 
       <section aria-labelledby="expiring-title" className="space-y-3">
         <h2 id="expiring-title" className="font-display text-xl font-semibold">
