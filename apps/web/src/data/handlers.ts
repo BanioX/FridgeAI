@@ -592,6 +592,7 @@ export function createInventoryHandlers(ctx: HandlerContext) {
           categoryId: own.categoryId,
           source: 'household',
           ...factsOf(own),
+          ...(own.source === 'off' ? { factsFrom: 'off' as const } : {}),
         },
       };
     }

@@ -99,6 +99,8 @@ export const ProductLookupSchema = z.object({
   allergens: z.array(z.string()).optional(),
   /** `household`: known from an earlier item; `off`: Open Food Facts (ODbL, attribution). */
   source: z.enum(['household', 'off', 'openfoodrepo', 'partner']),
+  /** Where brand and nutrition originally came from, also for household products (ODbL). */
+  factsFrom: z.enum(['off']).optional(),
 });
 export type ProductLookup = z.infer<typeof ProductLookupSchema>;
 

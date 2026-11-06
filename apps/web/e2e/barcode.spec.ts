@@ -155,10 +155,11 @@ test('fills in the product from Open Food Facts and knows it offline next time',
   await page.getByRole('button', { name: 'Speichern und nächsten erfassen' }).click();
   await expect(page.getByText('Vollmilch ist gespeichert.')).toBeVisible();
 
-  // Second scan: the household knows the product, no request and no attribution needed.
+  // Second scan: the household knows the product with its facts, no request; the facts still
+  // come from Open Food Facts, so the attribution stays (ODbL).
   await scan();
-  await expect(page.getByText('Gefunden: Vollmilch.')).toBeVisible();
-  await expect(page.getByRole('link', { name: /Open Food Facts/ })).toHaveCount(0);
+  await expect(page.getByText('Gefunden: Vollmilch (Alpenhof, 1 l).')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Daten: Open Food Facts (ODbL)' })).toBeVisible();
   expect(requests).toBe(1);
 });
 

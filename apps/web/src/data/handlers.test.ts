@@ -551,6 +551,7 @@ describe('products.lookup', () => {
     const again = await withCatalog['products.lookup']({ householdId, gtin });
     expect(again.product).toMatchObject({
       source: 'household',
+      factsFrom: 'off',
       brand: 'Alpenhof',
       nutriScore: 'b',
     });
