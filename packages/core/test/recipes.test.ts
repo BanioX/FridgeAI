@@ -2,7 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { CATEGORIES } from '../src/catalog/categories';
 import { localDate } from '../src/dates';
 import type { DateKind } from '../src/model/primitives';
-import { RecipeSchema, suggestRecipes, type FoodAtHome, type Recipe } from '../src/recipes/recipe';
+import {
+  ingredientsAtHome,
+  RecipeSchema,
+  suggestRecipes,
+  type FoodAtHome,
+  type Recipe,
+} from '../src/recipes/recipe';
 import { RECIPES } from '../src/recipes/recipes.de-CH';
 
 const today = localDate('2026-11-06');
@@ -114,5 +120,20 @@ describe('suggestRecipes', () => {
     ];
     const ids = suggestRecipes(RECIPES, atHome, today, 3).map((entry) => entry.id);
     expect(ids[0]).toBe('bananen-pancakes');
+  });
+});
+
+describe('ingredientsAtHome', () => {
+  it('names the food that counts, skips staples and food past use-by', () => {
+    const atHome = [
+      food('Eier', 'dairy-eggs', '2026-11-10'),
+      food('Spinat', 'produce-salad', '2026-11-03', 'use_by'),
+    ];
+    expect(ingredientsAtHome(omelette, atHome, today)).toEqual([
+      { text: 'Eier', staple: false, optional: false, atHome: ['Eier'] },
+      { text: 'Spinat', staple: false, optional: false, atHome: [] },
+      { text: 'Käse', staple: false, optional: true, atHome: [] },
+      { text: 'Salz', staple: true, optional: false, atHome: [] },
+    ]);
   });
 });
