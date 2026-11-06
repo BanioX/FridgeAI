@@ -1,6 +1,5 @@
+import type { StorageLocation } from '@fridgeai/core';
 import { Package, Refrigerator, Snowflake, type LucideIcon } from 'lucide-react';
-
-export type StorageLocation = 'fridge' | 'freezer' | 'pantry';
 
 const locationStyle: Record<StorageLocation, { icon: LucideIcon; classes: string }> = {
   fridge: { icon: Refrigerator, classes: 'bg-basil-50 text-basil-700' },
