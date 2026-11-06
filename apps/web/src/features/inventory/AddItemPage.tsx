@@ -37,6 +37,7 @@ import {
   suggestedExpiry,
 } from './add-item';
 import { locationOrder } from './item-meta';
+import { QuickAdd } from './QuickAdd';
 
 const t = messages.addItem;
 const sortedCategories = [...CATEGORIES].sort((a, b) => a.name.de.localeCompare(b.name.de, 'de'));
@@ -253,6 +254,8 @@ export function AddItemPage() {
           </p>
         ) : null}
       </div>
+
+      <QuickAdd />
 
       <form
         noValidate

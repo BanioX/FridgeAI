@@ -34,11 +34,15 @@ export function ItemRow({ emoji, image, name, meta, status, chevron = false }: I
           className="size-10 shrink-0 rounded-lg bg-surface-muted object-contain"
         />
       )}
-      <div className="min-w-0 flex-1">
-        <p className="truncate font-semibold">{name}</p>
-        <p className="truncate text-sm text-ink-muted">{meta}</p>
+      {/* Below 360 px (small phones, large text) the chip goes under the name, so the name stays
+          readable instead of «Rauc…». */}
+      <div className="flex min-w-0 flex-1 items-center gap-3 max-[359px]:flex-col max-[359px]:items-start max-[359px]:gap-1">
+        <div className="min-w-0 flex-1 max-[359px]:w-full">
+          <p className="truncate font-semibold">{name}</p>
+          <p className="truncate text-sm text-ink-muted">{meta}</p>
+        </div>
+        <StatusChip tone={status.tone}>{status.label}</StatusChip>
       </div>
-      <StatusChip tone={status.tone}>{status.label}</StatusChip>
       {chevron ? (
         <ChevronRight size={18} aria-hidden="true" className="-ml-1 shrink-0 text-ink-muted/60" />
       ) : null}
