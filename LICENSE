@@ -1,0 +1,21 @@
+FridgeAI – Proprietary Software License
+
+Copyright (c) 2026 Alban Hyseni. All rights reserved.
+
+This repository, including its source code, documentation, designs, texts and data
+("the Software"), is proprietary and confidential.
+
+No licence or other right is granted to any person to use, copy, modify, merge, publish,
+distribute, sublicense, sell or create derivative works of the Software, in whole or in part,
+except with the prior written permission of the copyright holder.
+
+Third-party components keep their own licences (see the README, section «Lizenz», and the
+licence files of each dependency). Product data from Open Food Facts, where used, is available
+under the Open Database License (ODbL) and is attributed in the app.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED.
+
+---
+
+Deutsch (zur Information): Alle Rechte vorbehalten. Nutzung, Vervielfältigung, Veränderung oder
+Weitergabe sind ohne vorherige schriftliche Zustimmung des Rechteinhabers nicht erlaubt.
