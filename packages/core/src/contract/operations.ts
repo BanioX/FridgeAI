@@ -112,6 +112,21 @@ export const ProductLookupSchema = z.object({
 });
 export type ProductLookup = z.infer<typeof ProductLookupSchema>;
 
+/** A product the household adds often, with what went in the last time («Schnell erfassen»). */
+export const FrequentProductSchema = z.object({
+  name: z.string(),
+  emoji: z.string().optional(),
+  categoryId: CategoryIdSchema,
+  gtin: GtinSchema.optional(),
+  timesAdded: z.int().min(1),
+  location: StorageLocationSchema,
+  quantity: QuantitySchema,
+  unit: UnitSchema,
+  container: ContainerSchema.optional(),
+  packageSize: PackageSizeSchema.optional(),
+});
+export type FrequentProduct = z.infer<typeof FrequentProductSchema>;
+
 export const ExpiryStatusSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('fresh'), daysLeft: z.int() }),
   z.object({ kind: z.literal('soon'), daysLeft: z.int() }),
@@ -325,6 +340,16 @@ export const CONTRACT_V1 = {
     scopes: ['inventory:read'],
     input: z.object({ ...queryBase, gtin: GtinSchema }),
     output: z.object({ product: ProductLookupSchema.nullable() }),
+  }),
+  'products.frequent': query({
+    name: 'products.frequent',
+    summary: {
+      de: 'Die Produkte, die der Haushalt am häufigsten erfasst, mit der zuletzt erfassten Menge (UC-07).',
+      en: 'The products the household adds most often, with the amount added last time (UC-07).',
+    },
+    scopes: ['inventory:read'],
+    input: z.object({ ...queryBase, limit: z.int().min(1).max(20).default(8) }),
+    output: z.object({ products: z.array(FrequentProductSchema) }),
   }),
   'products.image': query({
     name: 'products.image',
