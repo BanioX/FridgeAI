@@ -1,8 +1,17 @@
+import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { localDate } from '../src/dates';
 import { expiryAfterOpening } from '../src/expiry';
 import { OutcomeEventSchema } from '../src/model';
-import { displayQuantity, knownGrams, portionChoices, toBaseQuantity } from '../src/quantity';
+import type { Unit } from '../src/model/primitives';
+import {
+  displayQuantity,
+  fractionsFor,
+  knownGrams,
+  portionChoices,
+  toBaseQuantity,
+  type PortionChoice,
+} from '../src/quantity';
 import { CATEGORIES } from '../src/catalog/categories';
 import { uuidV7 } from '../src/ids';
 
@@ -38,39 +47,107 @@ describe('quantities', () => {
   });
 });
 
+describe('fractionsFor', () => {
+  const show = (splits: number[]) =>
+    fractionsFor(splits).map((f) => `${String(f.numerator)}/${String(f.denominator)}`);
+
+  it('merges denominators into distinct fractions in lowest terms, ascending', () => {
+    expect(show([3, 4])).toEqual(['1/4', '1/3', '1/2', '2/3', '3/4']);
+    expect(show([2, 4])).toEqual(['1/4', '1/2', '3/4']);
+  });
+
+  it('adds only the unit fraction for large denominators', () => {
+    expect(show([8, 4])).toEqual(['1/8', '1/4', '1/2', '3/4']);
+    expect(show([8])).toEqual(['1/8']);
+  });
+
+  it('offers nothing without splits (eggs)', () => {
+    expect(show([])).toEqual([]);
+  });
+});
+
 describe('portionChoices', () => {
-  it('offers «1 of 4» for several pieces', () => {
-    expect(portionChoices(4, 'pcs').map((c) => [c.kind, c.quantity])).toEqual([
-      ['pieces', 1],
-      ['pieces', 2],
-      ['pieces', 3],
-      ['all', 4],
+  const show = (choices: PortionChoice[]) =>
+    choices.map((c) =>
+      c.kind === 'fraction'
+        ? `${String(c.numerator)}/${String(c.denominator)}=${String(c.quantity)}`
+        : `${c.kind}=${String(c.quantity)}`,
+    );
+
+  it('offers «1 · 2 · 3 Stück» while several pieces are left', () => {
+    expect(show(portionChoices(4, 'pcs'))).toEqual(['pieces=1', 'pieces=2', 'pieces=3', 'all=4']);
+    // Ten eggs: at most five quick choices, the rest via free input.
+    expect(show(portionChoices(10, 'pcs', []))).toEqual([
+      'pieces=1',
+      'pieces=2',
+      'pieces=3',
+      'pieces=4',
+      'pieces=5',
+      'all=10',
     ]);
   });
 
-  it('offers quarters for grams and a single piece', () => {
-    expect(portionChoices(100, 'g').map((c) => [c.kind, c.quantity])).toEqual([
-      ['quarter', 25],
-      ['half', 50],
-      ['three_quarters', 75],
-      ['all', 100],
+  it('offers fractions of one piece while less than two are left', () => {
+    expect(show(portionChoices(1, 'pcs'))).toEqual(['1/4=0.25', '1/2=0.5', '3/4=0.75', 'all=1']);
+    // The rest of a cake (¾ left), cut in eighths and quarters.
+    expect(show(portionChoices(0.75, 'pcs', [8, 4]))).toEqual([
+      '1/8=0.125',
+      '1/4=0.25',
+      '1/2=0.5',
+      'all=0.75',
     ]);
-    expect(portionChoices(1, 'pcs').map((c) => [c.kind, c.quantity])).toEqual([
-      ['quarter', 0.25],
-      ['half', 0.5],
-      ['three_quarters', 0.75],
-      ['all', 1],
+    // One and a half loaves of bread.
+    expect(show(portionChoices(1.5, 'pcs', [2, 4]))).toEqual([
+      '1/4=0.25',
+      '1/2=0.5',
+      '3/4=0.75',
+      'pieces=1',
+      'all=1.5',
     ]);
   });
 
-  it('offers only «all» for tiny amounts', () => {
-    expect(portionChoices(10, 'g').map((c) => c.kind)).toEqual(['all']);
-    expect(portionChoices(30, 'ml').map((c) => [c.kind, c.quantity])).toEqual([
-      ['quarter', 8],
-      ['half', 15],
-      ['three_quarters', 23],
-      ['all', 30],
+  it('offers only «alles» for a single piece that is not split (one egg)', () => {
+    expect(show(portionChoices(1, 'pcs', []))).toEqual(['all=1']);
+  });
+
+  it('splits grams and millilitres into fractions of what is left', () => {
+    expect(show(portionChoices(100, 'g'))).toEqual(['1/4=25', '1/2=50', '3/4=75', 'all=100']);
+    // Grana Padano, 300 g, in thirds and quarters.
+    expect(show(portionChoices(300, 'g', [3, 4]))).toEqual([
+      '1/4=75',
+      '1/3=100',
+      '1/2=150',
+      '2/3=200',
+      '3/4=225',
+      'all=300',
     ]);
+    expect(show(portionChoices(30, 'ml'))).toEqual(['1/4=8', '1/2=15', '3/4=23', 'all=30']);
+  });
+
+  it('offers only «alles» for tiny amounts', () => {
+    expect(show(portionChoices(10, 'g'))).toEqual(['all=10']);
+  });
+
+  it('always ends with «alles» and stays between nothing and everything', () => {
+    fc.assert(
+      fc.property(
+        fc.double({ min: 0.01, max: 5000, noNaN: true }),
+        fc.constantFrom<Unit>('g', 'ml', 'pcs'),
+        fc.subarray([2, 3, 4, 8, 12]),
+        (quantity, unit, splits) => {
+          const choices = portionChoices(quantity, unit, splits);
+          expect(choices.at(-1)).toEqual({ kind: 'all', quantity });
+          const amounts = choices.map((choice) => choice.quantity);
+          for (const [index, amount] of amounts.entries()) {
+            expect(amount).toBeGreaterThan(0);
+            expect(amount).toBeLessThanOrEqual(quantity);
+            if (index > 0) {
+              expect(amount).toBeGreaterThan(amounts[index - 1] ?? 0);
+            }
+          }
+        },
+      ),
+    );
   });
 });
 

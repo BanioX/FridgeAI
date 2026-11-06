@@ -2,8 +2,10 @@ import { z } from 'zod';
 import { RappenSchema } from '../money';
 import {
   CategoryIdSchema,
+  ContainerSchema,
   DateKindSchema,
   StorageLocationSchema,
+  UnitSchema,
   type StorageLocation,
 } from '../model/primitives';
 
@@ -54,6 +56,26 @@ export function shelfLifeAt(
     : null;
 }
 
+/**
+ * How people measure and split a food (ADR-0011): the unit and container the add form preselects,
+ * usual pack sizes in pieces (eggs: 6 and 10) and the fractions offered when only part is eaten,
+ * as denominators (8 → ⅛ of a cake, 3 → ⅓ of a cheese). No splits: whole pieces only (eggs).
+ */
+export const PortioningSchema = z
+  .object({
+    unit: UnitSchema,
+    container: ContainerSchema.optional(),
+    packs: z.array(z.int().min(2).max(100)).min(1).max(4).optional(),
+    splits: z.array(z.int().min(2).max(12)).max(3),
+  })
+  .refine((portioning) => portioning.packs === undefined || portioning.unit === 'pcs', {
+    message: 'Pack sizes count pieces',
+  });
+export type Portioning = z.infer<typeof PortioningSchema>;
+
+/** Categories without their own rule: counted in pieces, one piece splits into quarters. */
+export const DEFAULT_PORTIONING: Portioning = { unit: 'pcs', splits: [4] };
+
 /** Built-in category: drives expiry estimation, emoji, cost-split default and receipt matching. */
 export const CategorySchema = z
   .object({
@@ -71,6 +93,8 @@ export const CategorySchema = z
     avgPriceRappen: RappenSchema.min(0).optional(),
     /** Typical weight of one pack in grams, for the kg counter. */
     avgWeightGrams: z.int().positive().optional(),
+    /** Units, packs and fractions that make sense; `portioningOf` falls back to a default. */
+    portioning: PortioningSchema.optional(),
     /** Whether receipt lines of this category default to «geteilt» (e.g. salt, toilet paper). */
     defaultOwner: z.enum(['shared', 'buyer']),
     /** Lower-case words that identify the category on receipts (matching, step 4d). */
@@ -85,6 +109,10 @@ export const CategorySchema = z
     message: 'Non-food categories belong to the non_food group',
   });
 export type Category = z.infer<typeof CategorySchema>;
+
+export function portioningOf(category: Pick<Category, 'portioning'>): Portioning {
+  return category.portioning ?? DEFAULT_PORTIONING;
+}
 
 export function isFreezable(category: Category): boolean {
   return category.shelfLifeDays.freezer !== null;
