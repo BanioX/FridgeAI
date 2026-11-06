@@ -181,13 +181,13 @@ export const CATEGORIES: readonly Category[] = [
     owner: 'buyer',
     keywords: [
       'käse',
-      'hartkäse',
       'gruyère',
       'emmentaler',
       'appenzeller',
       'parmesan',
+      'grana',
+      'sbrinz',
       'raclette',
-      'bergkäse',
     ],
     tips: [
       'Käse-Reste reiben und einfrieren: perfekt für Gratin und Älplermagronen.',

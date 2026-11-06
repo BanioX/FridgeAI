@@ -2,14 +2,16 @@ import { z } from 'zod';
 import { IdSchema } from '../ids';
 import { RappenSchema } from '../money';
 import type { Scope } from '../model/household';
-import { OutcomeSchema } from '../model/inventory';
+import { OutcomeSchema, ShareRecipientSchema, WasteReasonSchema } from '../model/inventory';
 import {
   CategoryIdSchema,
+  ContainerSchema,
   DateKindSchema,
   ExpirySourceSchema,
   GtinSchema,
   LocalDateSchema,
   OwnerSchema,
+  PackageSizeSchema,
   QuantitySchema,
   StorageLocationSchema,
   UnitSchema,
@@ -30,6 +32,9 @@ export interface Operation<TInput extends z.ZodType, TOutput extends z.ZodType> 
   input: TInput;
   output: TOutput;
 }
+
+/** «Nach dem Öffnen innert N Tagen» from the label; overrides the category value. */
+const AfterOpeningDaysSchema = z.int().min(0).max(3650);
 
 /** Every command carries a client-generated id: offline outbox and API calls are idempotent. */
 const commandBase = { commandId: IdSchema, householdId: IdSchema };
@@ -61,6 +66,10 @@ export const InventoryItemViewSchema = z.object({
   expirySource: ExpirySourceSchema,
   owner: OwnerSchema,
   priceRappen: RappenSchema.min(0).optional(),
+  container: ContainerSchema.optional(),
+  packageSize: PackageSizeSchema.optional(),
+  /** Set once the pack is open; the expiry date then follows the opening rule. */
+  openedOn: LocalDateSchema.optional(),
 });
 export type InventoryItemView = z.infer<typeof InventoryItemViewSchema>;
 
@@ -114,11 +123,17 @@ export const CONTRACT_V1 = {
       location: StorageLocationSchema,
       quantity: QuantitySchema.default(1),
       unit: UnitSchema.default('pcs'),
+      /** For pieces: «2 Becher à 180 g». */
+      container: ContainerSchema.optional(),
+      packageSize: PackageSizeSchema.optional(),
       expiresOn: LocalDateSchema.optional(),
       expiryKind: DateKindSchema.optional(),
       expirySource: ExpirySourceSchema.optional(),
       priceRappen: RappenSchema.min(0).optional(),
       owner: OwnerSchema.default('shared'),
+      afterOpeningDays: AfterOpeningDaysSchema.optional(),
+      /** For packs that are already open when added (the opening rule applies from that day). */
+      openedOn: LocalDateSchema.optional(),
     }),
     output: z.object({ itemId: IdSchema, expiresOn: LocalDateSchema }),
   }),
@@ -129,13 +144,38 @@ export const CONTRACT_V1 = {
       en: 'Mark an item as eaten, shared or wasted, fully or partly.',
     },
     scopes: ['inventory:write'],
+    input: z
+      .object({
+        ...commandBase,
+        itemId: IdSchema,
+        outcome: OutcomeSchema,
+        quantity: QuantitySchema.optional(),
+        /** Why it was thrown away (only with `wasted`). */
+        wasteReason: WasteReasonSchema.optional(),
+        /** Who got it (only with `shared_out`). */
+        sharedWith: ShareRecipientSchema.optional(),
+      })
+      .refine((input) => input.wasteReason === undefined || input.outcome === 'wasted', {
+        message: 'A waste reason only fits wasted food',
+      })
+      .refine((input) => input.sharedWith === undefined || input.outcome === 'shared_out', {
+        message: 'A recipient only fits shared food',
+      }),
+    output: z.object({ eventId: IdSchema, remainingQuantity: z.number().min(0) }),
+  }),
+  'inventory.open': command({
+    name: 'inventory.open',
+    summary: {
+      de: 'Packung als geöffnet markieren; das Ablaufdatum folgt ab jetzt der Öffnungsregel.',
+      en: 'Mark a pack as opened; from now on the expiry date follows the after-opening rule.',
+    },
+    scopes: ['inventory:write'],
     input: z.object({
       ...commandBase,
       itemId: IdSchema,
-      outcome: OutcomeSchema,
-      quantity: QuantitySchema.optional(),
+      afterOpeningDays: AfterOpeningDaysSchema.optional(),
     }),
-    output: z.object({ eventId: IdSchema, remainingQuantity: z.number().min(0) }),
+    output: z.object({ expiresOn: LocalDateSchema, shortened: z.boolean() }),
   }),
   'inventory.move': command({
     name: 'inventory.move',

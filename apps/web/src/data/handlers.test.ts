@@ -213,6 +213,109 @@ describe('inventory.recordOutcome', () => {
   });
 });
 
+describe('packaging, opening and reasons', () => {
+  it('stores how pieces are packed and shows it in the list', async () => {
+    const { itemId } = await add({
+      name: 'Joghurt',
+      quantity: 2,
+      container: 'cup',
+      packageSize: { amount: 180, unit: 'g' },
+    });
+    const { items } = await handlers['inventory.list']({ householdId });
+    expect(items.find((view) => view.id === itemId)).toMatchObject({
+      quantity: 2,
+      container: 'cup',
+      packageSize: { amount: 180, unit: 'g' },
+    });
+  });
+
+  it('applies the opening rule to a pack that is already open when added', async () => {
+    const { itemId, expiresOn } = await add({
+      name: 'Rahm',
+      expiresOn: '2026-11-20',
+      openedOn: '2026-11-05',
+    });
+    expect(expiresOn).toBe('2026-11-08');
+    expect(await db.items.get(itemId)).toMatchObject({
+      openedOn: '2026-11-05',
+      sealedExpiresOn: '2026-11-20',
+      expirySource: 'after_opening',
+    });
+  });
+
+  it('opens a pack: Grana Padano until March keeps 21 days from today', async () => {
+    const { itemId } = await add({ name: 'Grana Padano', expiresOn: '2027-03-15' });
+    const commandId = ids.next();
+    const open = () => handlers['inventory.open']({ commandId, householdId, itemId });
+    expect(await open()).toEqual({ expiresOn: '2026-11-27', shortened: true });
+    // Same command again (offline retry): same answer, nothing changes twice.
+    expect(await open()).toEqual({ expiresOn: '2026-11-27', shortened: true });
+    expect(await db.items.get(itemId)).toMatchObject({
+      openedOn: '2026-11-06',
+      sealedExpiresOn: '2027-03-15',
+      expiresOn: '2026-11-27',
+      expirySource: 'after_opening',
+    });
+    expect(await db.events.where('type').equals('item.opened').count()).toBe(1);
+    const { items } = await handlers['inventory.list']({ householdId });
+    expect(items.find((view) => view.id === itemId)?.openedOn).toBe('2026-11-06');
+    await expect(
+      handlers['inventory.open']({ commandId: ids.next(), householdId, itemId }),
+    ).rejects.toMatchObject({ code: 'already_open' });
+  });
+
+  it('lets the label override the category rule, and never extends the date', async () => {
+    const { itemId } = await add({ name: 'Grana Padano', expiresOn: '2027-03-15' });
+    const result = await handlers['inventory.open']({
+      commandId: ids.next(),
+      householdId,
+      itemId,
+      afterOpeningDays: 3,
+    });
+    expect(result.expiresOn).toBe('2026-11-09');
+    const { itemId: soon } = await add({ name: 'Grana Padano', expiresOn: '2026-11-08' });
+    expect(
+      await handlers['inventory.open']({ commandId: ids.next(), householdId, itemId: soon }),
+    ).toEqual({ expiresOn: '2026-11-08', shortened: false });
+  });
+
+  it('records why food was thrown away and who got shared food', async () => {
+    const { itemId } = await add({ name: 'Joghurt', quantity: 4 });
+    const wasted = await handlers['inventory.recordOutcome']({
+      commandId: ids.next(),
+      householdId,
+      itemId,
+      outcome: 'wasted',
+      quantity: 1,
+      wasteReason: 'forgotten',
+    });
+    expect(await db.outcomes.get(wasted.eventId)).toMatchObject({ wasteReason: 'forgotten' });
+    const shared = await handlers['inventory.recordOutcome']({
+      commandId: ids.next(),
+      householdId,
+      itemId,
+      outcome: 'shared_out',
+      quantity: 1,
+      sharedWith: 'neighbor',
+    });
+    expect(await db.outcomes.get(shared.eventId)).toMatchObject({ sharedWith: 'neighbor' });
+    const consumed = await db.events.where('type').equals('item.consumed').toArray();
+    expect(consumed.map((e) => e.type === 'item.consumed' && e.payload)).toMatchObject([
+      { wasteReason: 'forgotten' },
+      { sharedWith: 'neighbor' },
+    ]);
+    await expect(
+      handlers['inventory.recordOutcome']({
+        commandId: ids.next(),
+        householdId,
+        itemId,
+        outcome: 'eaten',
+        wasteReason: 'expired',
+      }),
+    ).rejects.toThrow(/waste reason/);
+  });
+});
+
 describe('inventory.move', () => {
   it('freezes and thaws with new estimated dates', async () => {
     const { itemId } = await add({

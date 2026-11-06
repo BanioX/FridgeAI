@@ -7,6 +7,7 @@ import {
   DomainEventSchema,
   estimateExpiry,
   expiryAfterMove,
+  expiryAfterOpening,
   expiryStatus,
   fallbackCategory,
   InventoryItemSchema,
@@ -44,7 +45,7 @@ type Handler<TName extends OperationName> = (
 ) => Promise<OperationOutput<TName>>;
 
 export type CommandErrorCode =
-  'not_found' | 'not_active' | 'invalid_quantity' | 'unsuitable_location';
+  'not_found' | 'not_active' | 'invalid_quantity' | 'unsuitable_location' | 'already_open';
 
 export class CommandError extends Error {
   readonly code: CommandErrorCode;
@@ -77,6 +78,9 @@ function toView(item: InventoryItem, product: Product | undefined): InventoryIte
     expirySource: item.expirySource,
     owner: item.owner,
     ...(item.priceRappen === undefined ? {} : { priceRappen: item.priceRappen }),
+    ...(item.container === undefined ? {} : { container: item.container }),
+    ...(item.packageSize === undefined ? {} : { packageSize: item.packageSize }),
+    ...(item.openedOn === undefined ? {} : { openedOn: item.openedOn }),
   };
 }
 
@@ -222,11 +226,31 @@ export function createInventoryHandlers(ctx: HandlerContext) {
       }
 
       const productCategory = categoryOf(product);
-      const expiresOn =
+      const sealedExpiresOn =
         input.expiresOn ??
         estimateExpiry(productCategory, input.location, today) ??
         estimateExpiry(productCategory, productCategory.defaultLocation, today) ??
         addDays(today, 7);
+      // A pack that is already open follows the opening rule from the day it was opened.
+      const opened =
+        input.openedOn === undefined
+          ? undefined
+          : expiryAfterOpening({
+              expiresOn: sealedExpiresOn,
+              today: input.openedOn,
+              ...(input.afterOpeningDays === undefined
+                ? {}
+                : { itemAfterOpeningDays: input.afterOpeningDays }),
+              ...(productCategory.afterOpeningDays === undefined
+                ? {}
+                : { categoryAfterOpeningDays: productCategory.afterOpeningDays }),
+            });
+      const expiresOn = opened?.expiresOn ?? sealedExpiresOn;
+      const expirySource = opened?.shortened
+        ? 'after_opening'
+        : input.expiresOn === undefined
+          ? 'category_estimate'
+          : (input.expirySource ?? 'manual');
       const item = InventoryItemSchema.parse({
         id: ids.next(),
         householdId: input.householdId,
@@ -235,12 +259,17 @@ export function createInventoryHandlers(ctx: HandlerContext) {
         location: input.location,
         quantity: input.quantity,
         unit: input.unit,
+        ...(input.container === undefined ? {} : { container: input.container }),
+        ...(input.packageSize === undefined ? {} : { packageSize: input.packageSize }),
         purchasedAt: now,
         expiresOn,
         expiryKind: input.expiryKind ?? productCategory.dateKind,
-        expirySource:
-          input.expiresOn === undefined ? 'category_estimate' : (input.expirySource ?? 'manual'),
+        expirySource,
         ...(input.location === 'freezer' ? { frozenOn: today } : {}),
+        ...(input.afterOpeningDays === undefined
+          ? {}
+          : { afterOpeningDays: input.afterOpeningDays }),
+        ...(input.openedOn === undefined ? {} : { openedOn: input.openedOn, sealedExpiresOn }),
         ...(input.priceRappen === undefined ? {} : { priceRappen: input.priceRappen }),
         owner: input.owner,
         status: 'active',
@@ -284,6 +313,8 @@ export function createInventoryHandlers(ctx: HandlerContext) {
         updatedAt: now,
         itemId: item.id,
         outcome: input.outcome,
+        ...(input.wasteReason === undefined ? {} : { wasteReason: input.wasteReason }),
+        ...(input.sharedWith === undefined ? {} : { sharedWith: input.sharedWith }),
         quantity,
         valueRappen,
         valueEstimated: item.priceRappen === undefined,
@@ -316,6 +347,8 @@ export function createInventoryHandlers(ctx: HandlerContext) {
           outcome: input.outcome,
           quantity,
           valueRappen,
+          ...(input.wasteReason === undefined ? {} : { wasteReason: input.wasteReason }),
+          ...(input.sharedWith === undefined ? {} : { sharedWith: input.sharedWith }),
         }),
       );
       if (closed) {
@@ -374,12 +407,54 @@ export function createInventoryHandlers(ctx: HandlerContext) {
     });
   };
 
+  const open: Handler<'inventory.open'> = async (raw) => {
+    const input = CONTRACT_V1['inventory.open'].input.parse(raw);
+    return runCommand('inventory.open', input.commandId, async () => {
+      const item = await activeItem(input.householdId, input.itemId);
+      if (item.openedOn !== undefined) {
+        throw new CommandError('already_open', `Item ${item.id} was opened on ${item.openedOn}`);
+      }
+      const category = categoryOf(await db.products.get(item.productId));
+      const today = clock.today();
+      const afterOpeningDays = input.afterOpeningDays ?? item.afterOpeningDays;
+      const result = expiryAfterOpening({
+        expiresOn: item.expiresOn,
+        today,
+        ...(afterOpeningDays === undefined ? {} : { itemAfterOpeningDays: afterOpeningDays }),
+        ...(category.afterOpeningDays === undefined
+          ? {}
+          : { categoryAfterOpeningDays: category.afterOpeningDays }),
+      });
+      await db.items.put(
+        InventoryItemSchema.parse({
+          ...item,
+          openedOn: today,
+          sealedExpiresOn: item.expiresOn,
+          expiresOn: result.expiresOn,
+          ...(result.shortened ? { expirySource: 'after_opening' } : {}),
+          ...(afterOpeningDays === undefined ? {} : { afterOpeningDays }),
+          updatedAt: clock.now(),
+        }),
+      );
+      await db.events.add(
+        event(input.householdId, 'item.opened', {
+          itemId: item.id,
+          openedOn: today,
+          expiresOn: result.expiresOn,
+          shortened: result.shortened,
+        }),
+      );
+      return result;
+    });
+  };
+
   return {
     'inventory.list': list,
     'inventory.listExpiring': listExpiring,
     'inventory.addItem': addItem,
     'inventory.recordOutcome': recordOutcome,
     'inventory.move': move,
+    'inventory.open': open,
   };
 }
 

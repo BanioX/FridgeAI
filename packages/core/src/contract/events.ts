@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { IdSchema } from '../ids';
 import { RappenSchema } from '../money';
-import { OutcomeSchema } from '../model/inventory';
+import { OutcomeSchema, ShareRecipientSchema, WasteReasonSchema } from '../model/inventory';
 import {
   DateKindSchema,
   GtinSchema,
@@ -68,6 +68,17 @@ export const DomainEventSchema = z.discriminatedUnion('type', [
       outcome: OutcomeSchema,
       quantity: QuantitySchema,
       valueRappen: RappenSchema.min(0),
+      wasteReason: WasteReasonSchema.optional(),
+      sharedWith: ShareRecipientSchema.optional(),
+    }),
+  ),
+  envelope(
+    'item.opened',
+    z.object({
+      itemId: IdSchema,
+      openedOn: LocalDateSchema,
+      expiresOn: LocalDateSchema,
+      shortened: z.boolean(),
     }),
   ),
   envelope(
