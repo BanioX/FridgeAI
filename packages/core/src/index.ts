@@ -21,3 +21,4 @@ export * from './ports/mocks';
 export * from './contract/events';
 export * from './contract/operations';
 export * from './scan/label';
+export * from './catalog/match';

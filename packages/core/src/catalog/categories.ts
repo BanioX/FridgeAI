@@ -1218,6 +1218,21 @@ export const CATEGORIES: readonly Category[] = [
       'Wasser vor dem Datum zum Kochen brauchen und den Vorrat ersetzen.',
     ],
   }),
+  // Fallback for food that matches no category (the person can change it later)
+  def({
+    id: 'pantry-other',
+    de: 'Sonstiges',
+    emoji: '🛒',
+    group: 'pantry',
+    dateKind: 'best_before',
+    location: 'pantry',
+    shelf: [7, 90, 30],
+    price: 300,
+    grams: 300,
+    owner: 'buyer',
+    keywords: ['sonstiges', 'diverses'],
+    tips: [LOOK],
+  }),
   // Non-food
   def({
     id: 'nonfood-toilet-paper',
