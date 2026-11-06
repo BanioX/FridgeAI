@@ -20,16 +20,14 @@ const navItems: readonly NavItem[] = [
 export function AppShell() {
   return (
     <div className="min-h-dvh">
-      <header className="sticky top-0 z-10 border-b border-line/70 bg-oat/90 pt-[env(safe-area-inset-top)] backdrop-blur">
-        <div className="mx-auto flex h-14 max-w-xl items-center gap-2.5 px-4">
-          <img src="/icon.svg" alt="" className="size-7" />
-          <span className="font-display text-xl font-semibold tracking-tight text-basil-800">
-            {messages.appName}
-          </span>
-        </div>
-      </header>
+      {/* No brand bar: as on iOS, the large title leads each page (ADR-0021). Content scrolls
+          under a frosted strip behind the status bar. */}
+      <div
+        aria-hidden="true"
+        className="sticky top-0 z-10 h-[env(safe-area-inset-top)] bg-oat/80 backdrop-blur"
+      />
 
-      <main className="mx-auto max-w-xl px-4 pt-6 pb-32">
+      <main className="mx-auto max-w-xl px-4 pt-5 pb-32">
         <Outlet />
       </main>
 

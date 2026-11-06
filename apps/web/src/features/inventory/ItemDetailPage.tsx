@@ -198,7 +198,7 @@ export function ItemDetailPage() {
           />
         )}
         <div className="min-w-0">
-          <h1 className="font-display text-3xl font-semibold tracking-tight">{item.name}</h1>
+          <h1 className="large-title">{item.name}</h1>
           {item.brand === undefined && item.packSize === undefined ? null : (
             <p className="text-sm text-ink-muted">
               {[item.brand, item.packSize].filter((part) => part !== undefined).join(' · ')}

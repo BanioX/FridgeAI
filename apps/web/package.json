@@ -14,8 +14,6 @@
     "preview:shots": "node scripts/preview.ts"
   },
   "dependencies": {
-    "@fontsource-variable/figtree": "^5.3.0",
-    "@fontsource-variable/fraunces": "^5.3.0",
     "@fridgeai/core": "workspace:*",
     "barcode-detector": "3.2.3",
     "dexie": "^4.4.7",

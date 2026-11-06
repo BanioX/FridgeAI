@@ -145,9 +145,7 @@ export function ShoppingPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-display text-3xl font-semibold tracking-tight">
-        {messages.pages.shopping}
-      </h1>
+      <h1 className="large-title">{messages.pages.shopping}</h1>
 
       <form
         className="space-y-2"
