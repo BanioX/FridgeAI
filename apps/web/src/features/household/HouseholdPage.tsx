@@ -73,9 +73,7 @@ export function HouseholdPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-display text-3xl font-semibold tracking-tight">
-        {messages.pages.household}
-      </h1>
+      <h1 className="large-title">{messages.pages.household}</h1>
 
       {isInstalled() ? null : (
         <Card variant="tip">
