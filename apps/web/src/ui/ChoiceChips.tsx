@@ -8,6 +8,8 @@ interface ChoiceChipsProps<TValue extends string> {
   onChange: (value: TValue) => void;
   /** Visually hide the legend when a heading above already says the same. */
   hideLegend?: boolean;
+  /** Equal-width segments in one row instead of wrapping chips (for 2–4 short options). */
+  segmented?: boolean;
 }
 
 /**
@@ -20,18 +22,21 @@ export function ChoiceChips<TValue extends string>({
   value,
   onChange,
   hideLegend = false,
+  segmented = false,
 }: ChoiceChipsProps<TValue>) {
   const name = useId();
   return (
     <fieldset className="space-y-2">
       <legend className={hideLegend ? 'sr-only' : 'mb-2 font-semibold'}>{legend}</legend>
-      <div className="flex flex-wrap gap-2">
+      <div
+        className={segmented ? 'grid auto-cols-fr grid-flow-col gap-1.5' : 'flex flex-wrap gap-2'}
+      >
         {options.map((option) => {
           const checked = option.value === value;
           return (
             <label
               key={option.value}
-              className={`flex min-h-11 cursor-pointer items-center rounded-full border px-4 text-sm font-semibold whitespace-nowrap transition-colors has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-basil-600 ${
+              className={`flex min-h-11 cursor-pointer items-center justify-center rounded-full border text-sm ${segmented ? 'px-2' : 'px-4'} font-semibold whitespace-nowrap transition-colors has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-basil-600 ${
                 checked
                   ? 'border-basil-700 bg-basil-700 text-white'
                   : 'border-line bg-surface text-ink hover:bg-surface-muted'

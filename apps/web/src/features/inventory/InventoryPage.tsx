@@ -119,22 +119,27 @@ export function InventoryPage() {
           <ul className="space-y-2">
             {visible.map((item) => (
               <li key={item.id}>
-                <ItemRow
-                  emoji={item.emoji ?? ''}
-                  name={item.name}
-                  meta={itemMeta(item)}
-                  status={expiryBadge(
-                    expiryStatus(
+                <Link
+                  to={`/inventory/${item.id}`}
+                  className="block rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2"
+                >
+                  <ItemRow
+                    emoji={item.emoji ?? ''}
+                    name={item.name}
+                    meta={itemMeta(item)}
+                    status={expiryBadge(
+                      expiryStatus(
+                        item.expiresOn,
+                        today,
+                        item.expiryKind,
+                        soonThresholdFor(item.location),
+                      ),
                       item.expiresOn,
                       today,
-                      item.expiryKind,
-                      soonThresholdFor(item.location),
-                    ),
-                    item.expiresOn,
-                    today,
-                    item.location,
-                  )}
-                />
+                      item.location,
+                    )}
+                  />
+                </Link>
               </li>
             ))}
           </ul>

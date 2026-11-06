@@ -3,6 +3,7 @@ import { createBrowserRouter, type RouteObject } from 'react-router';
 import { PlaceholderPage } from '../features/placeholder/PlaceholderPage';
 import { AddItemPage } from '../features/inventory/AddItemPage';
 import { InventoryPage } from '../features/inventory/InventoryPage';
+import { ItemDetailPage } from '../features/inventory/ItemDetailPage';
 import { TodayPage } from '../features/today/TodayPage';
 import { AppShell } from './AppShell';
 import { messages } from './messages.de-CH';
@@ -25,6 +26,7 @@ export const routes: RouteObject[] = [
       { index: true, element: <TodayPage /> },
       { path: 'inventory', element: <InventoryPage /> },
       { path: 'inventory/new', element: <AddItemPage /> },
+      { path: 'inventory/:itemId', element: <ItemDetailPage /> },
       { path: 'scan', element: <PlaceholderPage title={messages.pages.scan} /> },
       { path: 'shopping', element: <PlaceholderPage title={messages.pages.shopping} /> },
       { path: 'household', element: <HouseholdPage /> },
