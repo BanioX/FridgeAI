@@ -145,20 +145,23 @@ export function suggestRecipes(
     }));
 }
 
-export interface IngredientAtHome {
+export interface IngredientAtHome<TFood extends FoodAtHome = FoodAtHome> {
   text: string;
   staple: boolean;
   optional: boolean;
   /** Food at home that counts as this ingredient (never past its use-by date). */
-  atHome: string[];
+  atHome: TFood[];
 }
 
-/** For the recipe page: which ingredients are at home, with the same rules as the ranking. */
-export function ingredientsAtHome(
+/**
+ * For the recipe page: which ingredients are at home, with the same rules as the ranking. Generic,
+ * so callers get back their own entries (with item ids) for «nach dem Kochen abbuchen».
+ */
+export function ingredientsAtHome<TFood extends FoodAtHome>(
   recipe: Recipe,
-  food: readonly FoodAtHome[],
+  food: readonly TFood[],
   today: LocalDate,
-): IngredientAtHome[] {
+): IngredientAtHome<TFood>[] {
   const usable = food.filter(
     (entry) => expiryStatus(entry.expiresOn, today, entry.expiryKind).kind !== 'past_use_by',
   );
@@ -166,12 +169,6 @@ export function ingredientsAtHome(
     text: ingredient.text,
     staple: ingredient.staple,
     optional: ingredient.optional,
-    atHome: ingredient.staple
-      ? []
-      : [
-          ...new Set(
-            usable.filter((entry) => matches(ingredient, entry)).map((entry) => entry.name),
-          ),
-        ],
+    atHome: ingredient.staple ? [] : usable.filter((entry) => matches(ingredient, entry)),
   }));
 }

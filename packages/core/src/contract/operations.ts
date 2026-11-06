@@ -472,8 +472,17 @@ export const CONTRACT_V1 = {
               text: z.string(),
               staple: z.boolean(),
               optional: z.boolean(),
-              /** Names of food at home that counts as this ingredient. */
-              atHome: z.array(z.string()),
+              /** Food at home that counts as this ingredient, e.g. to book it after cooking. */
+              atHome: z.array(
+                z.object({
+                  itemId: IdSchema,
+                  name: z.string(),
+                  quantity: QuantitySchema,
+                  unit: UnitSchema,
+                  expiresOn: LocalDateSchema,
+                  expiryKind: DateKindSchema,
+                }),
+              ),
             }),
           ),
           steps: z.array(z.string()),
