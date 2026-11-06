@@ -22,6 +22,7 @@ import { GROUPED_ROW_LINK, GroupedList, GroupedListItem } from '../../ui/Grouped
 import { InventoryItemRow } from '../inventory/InventoryItemRow';
 import { locationOrder } from '../inventory/item-meta';
 import { checkDue, readLastCheck } from '../check/check-state';
+import { RecipeIdeas } from '../recipes/RecipeIdeas';
 import { ImpactCard } from './ImpactCard';
 
 export function TodayPage() {
@@ -128,6 +129,8 @@ export function TodayPage() {
           </GroupedList>
         )}
       </section>
+
+      <RecipeIdeas />
 
       <ImpactCard from={startOfMonth(today)} to={today} />
 
