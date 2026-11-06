@@ -19,7 +19,7 @@ Kurzfassung der Regeln. Vollständiger Brief: [`docs/brief.md`](docs/brief.md) �
 ## Pflege-Rhythmus (macht immer Claude, nie Alban – ADR-0017)
 - **Jeder PR:** Conventional-Commit-Titel; README und Plan-Status nachführen, wenn sich Sichtbares ändert.
 - **Wöchentlich:** Dependabot-PRs prüfen und bei grüner CI mergen.
-- **Alle 10 gemergten PRs** (`pnpm release --count`) oder am Meilenstein-Ende: Release mit `pnpm release` → Release-PR → Merge → Tag `vX.Y.Z` pushen → GitHub Release entsteht automatisch; Statusmeldung an Alban.
+- **Alle 10 gemergten PRs** (`pnpm release --count`) oder am Meilenstein-Ende: Release mit `pnpm release` → Release-PR → Merge → Tag und GitHub Release entstehen automatisch (`release.yml`); Statusmeldung an Alban.
 - **Alle 50 PRs:** Gesundheits-Check (Dependencies, Lizenzen, Bundle, tote Dateien, Doku, Tests, Sicherheits-Review).
 - **Alle 100 PRs:** grosses Review (Architektur, Plan, ADRs, Performance, Barrierefreiheit) mit Roadmap-Vorschlag.
 
