@@ -7,6 +7,7 @@ import type { Unit } from '../src/model/primitives';
 import {
   displayQuantity,
   fractionsFor,
+  halfOf,
   knownGrams,
   portionChoices,
   toBaseQuantity,
@@ -223,5 +224,28 @@ describe('outcome reasons', () => {
     expect(
       OutcomeEventSchema.safeParse({ ...base, outcome: 'wasted', sharedWith: 'donation' }).success,
     ).toBe(false);
+  });
+});
+
+describe('halfOf (fridge check «halb»)', () => {
+  it('halves grams and millilitres to whole units', () => {
+    expect(halfOf(500, 'g')).toBe(250);
+    expect(halfOf(333, 'ml')).toBe(167);
+    expect(halfOf(20, 'g')).toBe(10);
+  });
+
+  it('halves pieces to a quarter', () => {
+    expect(halfOf(4, 'pcs')).toBe(2);
+    expect(halfOf(3, 'pcs')).toBe(1.5);
+    expect(halfOf(1, 'pcs')).toBe(0.5);
+    expect(halfOf(0.75, 'pcs')).toBe(0.25);
+    expect(halfOf(0.5, 'pcs')).toBe(0.25);
+  });
+
+  it('gives up when there is too little to split', () => {
+    expect(halfOf(19, 'g')).toBeNull();
+    expect(halfOf(1, 'ml')).toBeNull();
+    expect(halfOf(0.25, 'pcs')).toBeNull();
+    expect(halfOf(0, 'pcs')).toBeNull();
   });
 });
