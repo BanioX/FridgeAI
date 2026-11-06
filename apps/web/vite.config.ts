@@ -5,6 +5,22 @@ import { VitePWA } from 'vite-plugin-pwa';
 import { staticHeaders } from './scripts/static-headers.ts';
 
 export default defineConfig({
+  build: {
+    rolldownOptions: {
+      output: {
+        // Libraries change rarely, the app often: separate chunks stay cached across releases.
+        codeSplitting: {
+          groups: [
+            {
+              name: 'react',
+              test: /node_modules[\\/](react|react-dom|react-router|scheduler|cookie-es|@remix-run)[\\/]/,
+            },
+            { name: 'data', test: /node_modules[\\/](dexie|dexie-react-hooks|zod)[\\/]/ },
+          ],
+        },
+      },
+    },
+  },
   plugins: [
     react(),
     tailwindcss(),
