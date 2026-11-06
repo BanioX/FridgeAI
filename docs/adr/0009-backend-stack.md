@@ -21,4 +21,4 @@ Ab Schritt 7 braucht FridgeAI einen Server: Haushalt teilen, Sync, Push, später
 - Gleicher Betrieb auf Laptop, CI und Server; Alban kennt ihn bereits.
 - Skalierung gemäss `docs/architecture.md`: zustandslose API-Container, verwaltetes Postgres, später Aufteilen nach `householdId`.
 - Die PWA und die Vorschau-Links laufen schon vorher auf Cloudflare (ADR-0013); der Server kommt mit Schritt 7 dazu.
-- Offen für Alban: eigene Domain (ca. CHF 10–15 pro Jahr). Ohne Domain geht der Pilot über Tailscale Funnel oder einen Cloudflare Quick Tunnel.
+- Domain: kauft Alban nach dem Pilot, wenn der Prototyp überzeugt (Wunsch: fridge.ch, fridge.com oder fridge.ai). Bis dahin laufen App und Pilot kostenlos über `workers.dev`, Tailscale Funnel oder einen Cloudflare Quick Tunnel.
