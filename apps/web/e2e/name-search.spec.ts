@@ -48,10 +48,14 @@ test('finds «Coop Gipfeli» by name and fills in the form like a scan', async (
   await page.getByRole('button', { name: 'Speichern und nächsten erfassen' }).click();
   await expect(page.getByText('Gipfeli ist gespeichert.')).toBeVisible();
 
-  // Next time the household knows it already.
-  await page.getByLabel('Was ist es?').fill('gipfeli');
-  await page.getByRole('button', { name: '«gipfeli» suchen' }).click();
-  await expect(page.getByRole('button', { name: /Gipfeli.*schon erfasst/ })).toBeVisible();
+  // Next time it shows up while typing under «Bereits verwendet», without asking the internet.
+  await page.getByLabel('Was ist es?').fill('gipf');
+  const used = page.getByRole('region', { name: 'Bereits verwendet' });
+  await expect(used.getByRole('button', { name: /Gipfeli/ })).toBeVisible();
+  expect(searches).toHaveLength(1);
+  await used.getByRole('button', { name: /Gipfeli/ }).click();
+  await expect(page.getByLabel('Was ist es?')).toHaveValue('Gipfeli');
+  await expect(page.getByRole('region', { name: 'Bereits verwendet' })).toHaveCount(0);
 });
 
 test('says so when the search is unavailable and keeps manual entry open', async ({ page }) => {

@@ -197,6 +197,7 @@ export const messages = {
     failed: 'Speichern hat nicht geklappt. Bitte versuch es nochmals.',
   },
   nameSearch: {
+    used: 'Bereits verwendet',
     search: (words: string) => `«${words}» suchen`,
     searching: 'Suche …',
     own: 'schon erfasst',

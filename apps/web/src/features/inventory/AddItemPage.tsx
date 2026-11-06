@@ -82,6 +82,8 @@ export function AddItemPage() {
   } | null>(null);
   const [scanStatus, setScanStatus] = useState('');
   const [fromOpenFoodFacts, setFromOpenFoodFacts] = useState(false);
+  // The name taken from the search: no suggestions for it until the person types again.
+  const [pickedName, setPickedName] = useState<string | null>(null);
 
   const category =
     (categoryChoice === null ? undefined : categoryById(categoryChoice)) ??
@@ -166,6 +168,7 @@ export function AddItemPage() {
 
   /** A name-search hit fills the form; with a barcode it goes the same way as a scan (ADR-0024). */
   function pickFound(product: FoundProduct) {
+    setPickedName(product.name);
     const picked = messages.nameSearch.picked(product.name);
     setName(product.name);
     setCategoryChoice(product.categoryId);
@@ -304,7 +307,10 @@ export function AddItemPage() {
             {shown(errors.name)}
           </p>
           {/* After a scan or a pick the product is known: no search button then. */}
-          <NameSearch query={scanned === null ? name : ''} onPick={pickFound} />
+          <NameSearch
+            query={scanned === null && name !== pickedName ? name : ''}
+            onPick={pickFound}
+          />
         </div>
 
         <div className="space-y-1.5">
