@@ -352,6 +352,8 @@ export const CONTRACT_V1 = {
       ...queryBase,
       query: z.string().trim().min(2).max(80),
       limit: z.int().min(1).max(20).default(8),
+      /** `household`: only products already used here, no network (live while typing). */
+      scope: z.enum(['household', 'all']).default('all'),
     }),
     output: z.object({
       products: z.array(

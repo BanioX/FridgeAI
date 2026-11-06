@@ -43,7 +43,7 @@ export function createProductSearchHandler({ db, search }: HandlerContext) {
         ...(product.brand === undefined ? {} : { brand: product.brand }),
         ...(product.packSize === undefined ? {} : { packSize: product.packSize }),
       }));
-    if (search === undefined) {
+    if (search === undefined || input.scope === 'household') {
       return { products: own, openDatabase: 'none' };
     }
     const hits = await search.searchByName(input.query, input.limit);

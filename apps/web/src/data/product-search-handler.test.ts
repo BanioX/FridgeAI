@@ -82,6 +82,28 @@ describe('products.search', () => {
     ).toBe('none');
   });
 
+  it('searches only the household while typing (scope household), without network', async () => {
+    const searchByName = vi.fn<ProductSearch['searchByName']>(() => Promise.resolve([]));
+    const inventory = handlers({ searchByName });
+    await inventory['inventory.addItem']({
+      commandId: ids.next(),
+      householdId,
+      name: 'Coop Gipfeli',
+      location: 'pantry',
+      quantity: 4,
+    });
+    const result = await inventory['products.search']({
+      householdId,
+      query: 'gipf',
+      scope: 'household',
+    });
+    expect(result).toEqual({
+      products: [expect.objectContaining({ name: 'Coop Gipfeli', source: 'household' })],
+      openDatabase: 'none',
+    });
+    expect(searchByName).not.toHaveBeenCalled();
+  });
+
   it('refuses one-letter searches', async () => {
     await expect(handlers()['products.search']({ householdId, query: 'g' })).rejects.toThrow();
   });
