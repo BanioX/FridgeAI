@@ -1,0 +1,250 @@
+import { z } from 'zod';
+import { IdSchema } from '../ids';
+import { RappenSchema } from '../money';
+import type { Scope } from '../model/household';
+import { OutcomeSchema } from '../model/inventory';
+import {
+  CategoryIdSchema,
+  DateKindSchema,
+  ExpirySourceSchema,
+  GtinSchema,
+  LocalDateSchema,
+  OwnerSchema,
+  QuantitySchema,
+  StorageLocationSchema,
+  UnitSchema,
+} from '../model/primitives';
+
+/**
+ * Contract v1 (ADR-0005): every action of FridgeAI as a named command or query with Zod schemas
+ * for input and output. The PWA calls exactly these. The same schemas later generate the REST
+ * API (OpenAPI) and the MCP tools for AI assistants, and define the scopes a partner needs.
+ */
+export interface Operation<TInput extends z.ZodType, TOutput extends z.ZodType> {
+  name: string;
+  kind: 'command' | 'query';
+  /** Short description; `en` doubles as MCP tool description. */
+  summary: { de: string; en: string };
+  /** Rights an external client needs (plan section 2, `Grant.scopes`). */
+  scopes: readonly Scope[];
+  input: TInput;
+  output: TOutput;
+}
+
+/** Every command carries a client-generated id: offline outbox and API calls are idempotent. */
+const commandBase = { commandId: IdSchema, householdId: IdSchema };
+const queryBase = { householdId: IdSchema };
+
+function command<TInput extends z.ZodType, TOutput extends z.ZodType>(
+  operation: Omit<Operation<TInput, TOutput>, 'kind'>,
+): Operation<TInput, TOutput> {
+  return { ...operation, kind: 'command' };
+}
+
+function query<TInput extends z.ZodType, TOutput extends z.ZodType>(
+  operation: Omit<Operation<TInput, TOutput>, 'kind'>,
+): Operation<TInput, TOutput> {
+  return { ...operation, kind: 'query' };
+}
+
+/** An inventory item as shown to people and external clients (denormalised, no sync fields). */
+export const InventoryItemViewSchema = z.object({
+  id: IdSchema,
+  name: z.string(),
+  emoji: z.string().optional(),
+  categoryId: CategoryIdSchema,
+  location: StorageLocationSchema,
+  quantity: QuantitySchema,
+  unit: UnitSchema,
+  expiresOn: LocalDateSchema,
+  expiryKind: DateKindSchema,
+  expirySource: ExpirySourceSchema,
+  owner: OwnerSchema,
+  priceRappen: RappenSchema.min(0).optional(),
+});
+export type InventoryItemView = z.infer<typeof InventoryItemViewSchema>;
+
+export const ExpiryStatusSchema = z.discriminatedUnion('kind', [
+  z.object({ kind: z.literal('fresh'), daysLeft: z.int() }),
+  z.object({ kind: z.literal('soon'), daysLeft: z.int() }),
+  z.object({ kind: z.literal('today') }),
+  z.object({ kind: z.literal('past_best_before'), daysOver: z.int() }),
+  z.object({ kind: z.literal('past_use_by'), daysOver: z.int() }),
+]);
+
+export const CONTRACT_V1 = {
+  'inventory.list': query({
+    name: 'inventory.list',
+    summary: {
+      de: 'Vorrat eines Haushalts auflisten, optional nach Lagerort.',
+      en: 'List the food a household has, optionally by storage location.',
+    },
+    scopes: ['inventory:read'],
+    input: z.object({ ...queryBase, location: StorageLocationSchema.optional() }),
+    output: z.object({ items: z.array(InventoryItemViewSchema) }),
+  }),
+  'inventory.listExpiring': query({
+    name: 'inventory.listExpiring',
+    summary: {
+      de: 'Was bald abläuft und zuerst gegessen werden sollte.',
+      en: 'Food that expires soon and should be eaten first.',
+    },
+    scopes: ['inventory:read'],
+    input: z.object({
+      ...queryBase,
+      withinDays: z.int().min(0).max(3650).default(3),
+      includeReserve: z.boolean().default(false),
+    }),
+    output: z.object({
+      items: z.array(InventoryItemViewSchema.extend({ status: ExpiryStatusSchema })),
+    }),
+  }),
+  'inventory.addItem': command({
+    name: 'inventory.addItem',
+    summary: {
+      de: 'Lebensmittel in den Vorrat legen.',
+      en: 'Add a food item to the inventory.',
+    },
+    scopes: ['inventory:write'],
+    input: z.object({
+      ...commandBase,
+      name: z.string().trim().min(1).max(120),
+      categoryId: CategoryIdSchema.optional(),
+      gtin: GtinSchema.optional(),
+      location: StorageLocationSchema,
+      quantity: QuantitySchema.default(1),
+      unit: UnitSchema.default('pcs'),
+      expiresOn: LocalDateSchema.optional(),
+      expiryKind: DateKindSchema.optional(),
+      expirySource: ExpirySourceSchema.optional(),
+      priceRappen: RappenSchema.min(0).optional(),
+      owner: OwnerSchema.default('shared'),
+    }),
+    output: z.object({ itemId: IdSchema, expiresOn: LocalDateSchema }),
+  }),
+  'inventory.recordOutcome': command({
+    name: 'inventory.recordOutcome',
+    summary: {
+      de: 'Artikel als gegessen, weitergegeben oder weggeworfen markieren (ganz oder teilweise).',
+      en: 'Mark an item as eaten, shared or wasted, fully or partly.',
+    },
+    scopes: ['inventory:write'],
+    input: z.object({
+      ...commandBase,
+      itemId: IdSchema,
+      outcome: OutcomeSchema,
+      quantity: QuantitySchema.optional(),
+    }),
+    output: z.object({ eventId: IdSchema, remainingQuantity: z.number().min(0) }),
+  }),
+  'inventory.move': command({
+    name: 'inventory.move',
+    summary: {
+      de: 'Artikel umlagern, z. B. einfrieren; das Ablaufdatum wird neu geschätzt.',
+      en: 'Move an item, e.g. freeze it; the expiry date is re-estimated.',
+    },
+    scopes: ['inventory:write'],
+    input: z.object({ ...commandBase, itemId: IdSchema, to: StorageLocationSchema }),
+    output: z.object({ expiresOn: LocalDateSchema }),
+  }),
+  'shopping.list': query({
+    name: 'shopping.list',
+    summary: { de: 'Einkaufsliste anzeigen.', en: 'Show the shopping list.' },
+    scopes: ['shopping_list:read'],
+    input: z.object({ ...queryBase, includeChecked: z.boolean().default(false) }),
+    output: z.object({
+      items: z.array(
+        z.object({
+          id: IdSchema,
+          name: z.string(),
+          quantity: QuantitySchema.optional(),
+          unit: UnitSchema.optional(),
+          checked: z.boolean(),
+        }),
+      ),
+    }),
+  }),
+  'shopping.addItem': command({
+    name: 'shopping.addItem',
+    summary: {
+      de: 'Etwas auf die Einkaufsliste setzen.',
+      en: 'Add something to the shopping list.',
+    },
+    scopes: ['shopping_list:write'],
+    input: z.object({
+      ...commandBase,
+      name: z.string().trim().min(1).max(80),
+      quantity: QuantitySchema.optional(),
+      unit: UnitSchema.optional(),
+    }),
+    output: z.object({ itemId: IdSchema, alreadyAtHome: z.boolean() }),
+  }),
+  'recipes.suggest': query({
+    name: 'recipes.suggest',
+    summary: {
+      de: 'Rezepte, die möglichst viele bald ablaufende Lebensmittel verwenden.',
+      en: 'Recipes that use as much soon-expiring food as possible.',
+    },
+    scopes: ['recipes:read'],
+    input: z.object({ ...queryBase, limit: z.int().min(1).max(10).default(3) }),
+    output: z.object({
+      recipes: z.array(
+        z.object({
+          id: z.string(),
+          title: z.string(),
+          minutes: z.int().positive(),
+          usesExpiring: z.array(z.string()),
+          missing: z.array(z.string()),
+        }),
+      ),
+    }),
+  }),
+  'stats.waste': query({
+    name: 'stats.waste',
+    summary: {
+      de: 'Gerettet und weggeworfen in CHF und kg für einen Zeitraum.',
+      en: 'Food saved and wasted in CHF and kg for a period.',
+    },
+    scopes: ['stats:read'],
+    input: z.object({ ...queryBase, from: LocalDateSchema, to: LocalDateSchema }),
+    output: z.object({
+      savedRappen: RappenSchema.min(0),
+      wastedRappen: RappenSchema.min(0),
+      savedGrams: z.int().min(0),
+      wastedGrams: z.int().min(0),
+      estimated: z.boolean(),
+    }),
+  }),
+  'rescue.offer': command({
+    name: 'rescue.offer',
+    summary: {
+      de: 'Artikel im Rette-Kreis den Mitbewohner:innen anbieten.',
+      en: 'Offer an item to the other household members before it expires.',
+    },
+    scopes: ['inventory:write'],
+    input: z.object({ ...commandBase, itemId: IdSchema }),
+    output: z.object({ offerId: IdSchema }),
+  }),
+} as const;
+
+export type ContractV1 = typeof CONTRACT_V1;
+export type OperationName = keyof ContractV1;
+export type OperationInput<TName extends OperationName> = z.input<ContractV1[TName]['input']>;
+export type OperationOutput<TName extends OperationName> = z.output<ContractV1[TName]['output']>;
+
+export const OPERATION_NAMES = Object.keys(CONTRACT_V1) as OperationName[];
+
+/** JSON Schema of every operation: what OpenAPI and MCP tool definitions are built from. */
+export function contractJsonSchemas() {
+  return OPERATION_NAMES.map((name) => {
+    const operation = CONTRACT_V1[name];
+    return {
+      name,
+      kind: operation.kind,
+      summary: operation.summary,
+      scopes: operation.scopes,
+      input: z.toJSONSchema(operation.input, { io: 'input' }),
+      output: z.toJSONSchema(operation.output),
+    };
+  });
+}
