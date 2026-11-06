@@ -196,6 +196,16 @@ export const messages = {
     saved: (name: string) => `${name} ist gespeichert.`,
     failed: 'Speichern hat nicht geklappt. Bitte versuch es nochmals.',
   },
+  nameSearch: {
+    search: (words: string) => `«${words}» suchen`,
+    searching: 'Suche …',
+    own: 'schon erfasst',
+    picked: (name: string) => `Übernommen: ${name}.`,
+    none: 'Nichts gefunden. Erfasse es einfach von Hand, beim nächsten Mal kennt FridgeAI es.',
+    unavailable:
+      'Die Produktsuche ist gerade nicht erreichbar (offline oder zu viele Suchen). Versuch es in einer Minute nochmals oder erfasse es von Hand.',
+    attribution: 'Gesucht in deinen Produkten und bei Open Food Facts (Schweiz).',
+  },
   quickAdd: {
     title: 'Schnell erfassen',
     hint: 'Ein Tipp speichert es wie beim letzten Mal, das Datum wird geschätzt.',
