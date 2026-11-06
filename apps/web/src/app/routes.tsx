@@ -53,7 +53,12 @@ export const routes: RouteObject[] = [
           Component: (await import('../features/import/AiImportPage')).AiImportPage,
         }),
       },
-      { path: 'shopping', element: <PlaceholderPage title={messages.pages.shopping} /> },
+      {
+        path: 'shopping',
+        lazy: async () => ({
+          Component: (await import('../features/shopping/ShoppingPage')).ShoppingPage,
+        }),
+      },
       { path: 'household', element: <HouseholdPage /> },
       // Demo data and design-system reference: dev and demo builds only (dead code in production).
       // Inline on purpose: the bundler drops the lazy chunks only for a literal condition here.

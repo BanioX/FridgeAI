@@ -58,7 +58,8 @@ export function AddItemPage() {
   const nameInput = useRef<HTMLInputElement>(null);
 
   // `null` means «use the suggestion», so suggestions follow the name until the person decides.
-  const [name, setName] = useState('');
+  // «In den Vorrat legen» from the shopping list brings the name along.
+  const [name, setName] = useState(() => params.get('name')?.trim().slice(0, 120) ?? '');
   const [categoryChoice, setCategoryChoice] = useState<string | null>(null);
   const [locationChoice, setLocationChoice] = useState<StorageLocation | null>(
     fromTab.success ? fromTab.data : null,
