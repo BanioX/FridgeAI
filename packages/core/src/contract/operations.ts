@@ -188,14 +188,19 @@ export const CONTRACT_V1 = {
   'inventory.updateItem': command({
     name: 'inventory.updateItem',
     summary: {
-      de: 'Datum, Datumsart, Menge oder Preis eines Artikels korrigieren.',
-      en: 'Correct the date, date kind, quantity or price of an item.',
+      de: 'Name, Kategorie, Lagerort, Datum, Datumsart, Menge oder Preis eines Artikels korrigieren.',
+      en: 'Correct the name, category, place, date, date kind, quantity or price of an item.',
     },
     scopes: ['inventory:write'],
     input: z
       .object({
         ...commandBase,
         itemId: IdSchema,
+        /** Typo or wrong product: re-links to a known product of that name, else corrects it. */
+        name: z.string().trim().min(1).max(120).optional(),
+        categoryId: CategoryIdSchema.optional(),
+        /** Where it really is; unlike `inventory.move`, the date stays (it was a mistake). */
+        location: StorageLocationSchema.optional(),
         /** A date set by hand counts as `manual`, whatever the source was before. */
         expiresOn: LocalDateSchema.optional(),
         expiryKind: DateKindSchema.optional(),
@@ -206,15 +211,50 @@ export const CONTRACT_V1 = {
       })
       .refine(
         (input) =>
-          input.expiresOn !== undefined ||
-          input.expiryKind !== undefined ||
-          input.quantity !== undefined ||
-          input.priceRappen !== undefined,
+          [
+            input.name,
+            input.categoryId,
+            input.location,
+            input.expiresOn,
+            input.expiryKind,
+            input.quantity,
+            input.priceRappen,
+          ].some((value) => value !== undefined),
         { message: 'Nothing to change' },
       ),
     output: z.object({
-      changed: z.array(z.enum(['expiresOn', 'expiryKind', 'quantity', 'priceRappen'])),
+      changed: z.array(
+        z.enum([
+          'name',
+          'categoryId',
+          'location',
+          'expiresOn',
+          'expiryKind',
+          'quantity',
+          'priceRappen',
+        ]),
+      ),
     }),
+  }),
+  'inventory.deleteItem': command({
+    name: 'inventory.deleteItem',
+    summary: {
+      de: 'Falsch erfassten Artikel löschen; zählt nicht als weggeworfen.',
+      en: 'Delete an item entered by mistake; it does not count as wasted.',
+    },
+    scopes: ['inventory:write'],
+    input: z.object({ ...commandBase, itemId: IdSchema }),
+    output: z.object({ itemId: IdSchema }),
+  }),
+  'inventory.restoreItem': command({
+    name: 'inventory.restoreItem',
+    summary: {
+      de: 'Gelöschten Artikel zurückholen (Rückgängig).',
+      en: 'Bring back a deleted item (undo).',
+    },
+    scopes: ['inventory:write'],
+    input: z.object({ ...commandBase, itemId: IdSchema }),
+    output: z.object({ itemId: IdSchema }),
   }),
   'inventory.recordOutcome': command({
     name: 'inventory.recordOutcome',

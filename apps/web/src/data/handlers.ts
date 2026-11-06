@@ -18,7 +18,9 @@ import {
   RESERVE_SOON_THRESHOLD_DAYS,
   soonThresholdFor,
   summarizeImpact,
+  toLocalDate,
   type Category,
+  type IsoDateTime,
   type Id,
   type InventoryItem,
   type InventoryItemView,
@@ -254,16 +256,112 @@ export function createInventoryHandlers(ctx: HandlerContext) {
    * Corrects what was entered wrong. Only fields that really change are written; a date set by
    * hand becomes `manual`. A wrong price can be removed (null): then category estimates apply.
    */
+  /**
+   * The product an item should point to after its name or category was corrected: a product of
+   * the household with that name (typo fixed, «Apfle» → «Apfel»), else this product corrected in
+   * place if no other active item uses it, else a new product just for this item (the other
+   * milk stays milk). Barcode and facts stay only where the product stays the same.
+   */
+  async function correctedProduct(
+    item: InventoryItem,
+    current: Product,
+    name: string,
+    categoryId: Category['id'],
+    now: IsoDateTime,
+  ): Promise<Product> {
+    const normalized = normalizeFoodText(name);
+    const known = await db.products
+      .where('householdId')
+      .equals(item.householdId)
+      .filter(
+        (product) =>
+          product.deletedAt === undefined &&
+          product.id !== current.id &&
+          normalizeFoodText(product.name) === normalized &&
+          product.categoryId === categoryId,
+      )
+      .first();
+    if (known !== undefined) {
+      return known;
+    }
+    const sharedWith = await db.items
+      .where('productId')
+      .equals(current.id)
+      .filter(
+        (other) =>
+          other.id !== item.id && other.deletedAt === undefined && other.status === 'active',
+      )
+      .count();
+    if (sharedWith === 0) {
+      const renamed = ProductSchema.parse({ ...current, name, categoryId, updatedAt: now });
+      await db.products.put(renamed);
+      return renamed;
+    }
+    const category = categoryById(categoryId) ?? fallbackCategory();
+    const created = ProductSchema.parse({
+      id: ids.next(),
+      householdId: item.householdId,
+      updatedAt: now,
+      name,
+      categoryId: category.id,
+      defaultLocation: category.defaultLocation,
+      source: 'manual',
+    });
+    await db.products.add(created);
+    return created;
+  }
+
+  /**
+   * Corrects what was entered wrong. Only fields that really change are written; a date set by
+   * hand becomes `manual`. A wrong price can be removed (null): then category estimates apply. A
+   * new category re-estimates an estimated date from the day of purchase.
+   */
   const updateItem: Handler<'inventory.updateItem'> = async (raw) => {
     const input = CONTRACT_V1['inventory.updateItem'].input.parse(raw);
     return runCommand('inventory.updateItem', input.commandId, async () => {
       const item = await activeItem(input.householdId, input.itemId);
       const changed: OperationOutput<'inventory.updateItem'>['changed'] = [];
       const next: InventoryItem = { ...item };
+      const now = clock.now();
+
+      if (input.categoryId !== undefined && categoryById(input.categoryId) === undefined) {
+        throw new CommandError('unknown_category', `Category ${input.categoryId} does not exist`);
+      }
+      const product = await db.products.get(item.productId);
+      const name = input.name ?? product?.name;
+      const categoryId = input.categoryId ?? product?.categoryId;
+      const nameChanged = name !== undefined && name !== product?.name;
+      const categoryChanged = categoryId !== undefined && categoryId !== product?.categoryId;
+      if (product !== undefined && name !== undefined && categoryId !== undefined) {
+        if (nameChanged || categoryChanged) {
+          next.productId = (await correctedProduct(item, product, name, categoryId, now)).id;
+        }
+        if (nameChanged) {
+          changed.push('name');
+        }
+        if (categoryChanged) {
+          changed.push('categoryId');
+        }
+      }
+      if (input.location !== undefined && input.location !== item.location) {
+        next.location = input.location;
+        changed.push('location');
+      }
       if (input.expiresOn !== undefined && input.expiresOn !== item.expiresOn) {
         next.expiresOn = input.expiresOn;
         next.expirySource = 'manual';
         changed.push('expiresOn');
+      } else if (
+        input.expiresOn === undefined &&
+        categoryChanged &&
+        item.expirySource === 'category_estimate'
+      ) {
+        const category = categoryById(categoryId) ?? fallbackCategory();
+        const estimated = estimateExpiry(category, next.location, toLocalDate(item.purchasedAt));
+        if (estimated !== null && estimated !== item.expiresOn) {
+          next.expiresOn = estimated;
+          changed.push('expiresOn');
+        }
       }
       if (input.expiryKind !== undefined && input.expiryKind !== item.expiryKind) {
         next.expiryKind = input.expiryKind;
@@ -287,11 +385,43 @@ export function createInventoryHandlers(ctx: HandlerContext) {
       if (changed.length === 0) {
         return { changed };
       }
-      await db.items.put(InventoryItemSchema.parse({ ...next, updatedAt: clock.now() }));
+      await db.items.put(InventoryItemSchema.parse({ ...next, updatedAt: now }));
       await db.events.add(
         event(input.householdId, 'item.updated', { itemId: item.id, fields: changed }),
       );
       return { changed };
+    });
+  };
+
+  /** A wrong or test entry goes away without counting as wasted; `restoreItem` brings it back. */
+  const deleteItem: Handler<'inventory.deleteItem'> = async (raw) => {
+    const input = CONTRACT_V1['inventory.deleteItem'].input.parse(raw);
+    return runCommand('inventory.deleteItem', input.commandId, async () => {
+      const item = await db.items.get(input.itemId);
+      if (item?.householdId !== input.householdId || item.deletedAt !== undefined) {
+        throw new CommandError('not_found', `Item ${input.itemId} not found`);
+      }
+      const now = clock.now();
+      await db.items.put(InventoryItemSchema.parse({ ...item, deletedAt: now, updatedAt: now }));
+      await db.events.add(event(input.householdId, 'item.deleted', { itemId: item.id }));
+      return { itemId: item.id };
+    });
+  };
+
+  const restoreItem: Handler<'inventory.restoreItem'> = async (raw) => {
+    const input = CONTRACT_V1['inventory.restoreItem'].input.parse(raw);
+    return runCommand('inventory.restoreItem', input.commandId, async () => {
+      const item = await db.items.get(input.itemId);
+      if (item?.householdId !== input.householdId) {
+        throw new CommandError('not_found', `Item ${input.itemId} not found`);
+      }
+      if (item.deletedAt !== undefined) {
+        const restored: InventoryItem = { ...item, updatedAt: clock.now() };
+        delete restored.deletedAt;
+        await db.items.put(InventoryItemSchema.parse(restored));
+        await db.events.add(event(input.householdId, 'item.restored', { itemId: item.id }));
+      }
+      return { itemId: item.id };
     });
   };
 
@@ -570,6 +700,8 @@ export function createInventoryHandlers(ctx: HandlerContext) {
     'inventory.listExpiring': listExpiring,
     'inventory.addItem': addItem,
     'inventory.updateItem': updateItem,
+    'inventory.deleteItem': deleteItem,
+    'inventory.restoreItem': restoreItem,
     'inventory.recordOutcome': recordOutcome,
     'inventory.undoOutcome': undoOutcome,
     'inventory.move': move,

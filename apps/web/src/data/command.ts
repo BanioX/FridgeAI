@@ -33,7 +33,8 @@ export type CommandErrorCode =
   | 'invalid_quantity'
   | 'unsuitable_location'
   | 'already_open'
-  | 'already_undone';
+  | 'already_undone'
+  | 'unknown_category';
 
 export class CommandError extends Error {
   readonly code: CommandErrorCode;

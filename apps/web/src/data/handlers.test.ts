@@ -189,6 +189,76 @@ describe('inventory.updateItem', () => {
   });
 });
 
+describe('corrections: name, category, place, delete', () => {
+  const update = (itemId: Id, fields: Record<string, unknown>) =>
+    handlers['inventory.updateItem']({ commandId: ids.next(), householdId, itemId, ...fields });
+  const view = async (itemId: Id) =>
+    (await handlers['inventory.list']({ householdId })).items.find((item) => item.id === itemId);
+
+  it('fixes a typo in place and re-estimates an estimated date for a new category', async () => {
+    const { itemId } = await add({ name: 'Apfle', categoryId: 'pantry-other', location: 'fridge' });
+    const before = await db.items.get(itemId);
+    await expect(update(itemId, { categoryId: 'no-such-category' })).rejects.toMatchObject({
+      code: 'unknown_category',
+    });
+    const result = await update(itemId, { name: 'Apfel', categoryId: 'produce-apples' });
+    expect(result.changed).toEqual(['name', 'categoryId', 'expiresOn']);
+    const item = await db.items.get(itemId);
+    expect(item?.productId).toBe(before?.productId);
+    expect(await view(itemId)).toMatchObject({ name: 'Apfel', categoryId: 'produce-apples' });
+    expect(item?.expiresOn).not.toBe(before?.expiresOn);
+  });
+
+  it('re-links to a known product, or splits off when another item shares the product', async () => {
+    const milk = await add({ name: 'Vollmilch' });
+    const second = await add({ name: 'Vollmilch' });
+    const yoghurt = await add({ name: 'Joghurt' });
+    // The second milk was really a yoghurt: it joins the yoghurt product.
+    await update(second.itemId, {
+      name: 'Joghurt',
+      categoryId: (await view(yoghurt.itemId))?.categoryId,
+    });
+    expect((await db.items.get(second.itemId))?.productId).toBe(
+      (await db.items.get(yoghurt.itemId))?.productId,
+    );
+    // The first milk is now alone with its product: renamed in place.
+    const third = await add({ name: 'Vollmilch' });
+    await update(third.itemId, { name: 'Hafermilch' });
+    expect((await view(milk.itemId))?.name).toBe('Vollmilch');
+    expect((await view(third.itemId))?.name).toBe('Hafermilch');
+    expect((await db.items.get(third.itemId))?.productId).not.toBe(
+      (await db.items.get(milk.itemId))?.productId,
+    );
+  });
+
+  it('moves to the right place without changing the date', async () => {
+    const { itemId, expiresOn } = await add({ name: 'Ruchbrot', location: 'fridge' });
+    expect((await update(itemId, { location: 'pantry' })).changed).toEqual(['location']);
+    expect(await db.items.get(itemId)).toMatchObject({ location: 'pantry', expiresOn });
+  });
+
+  it('deletes without counting as wasted and brings the item back', async () => {
+    const { itemId } = await add({ name: 'Joghurt', quantity: 4, priceRappen: 380 });
+    const del = () =>
+      handlers['inventory.deleteItem']({ commandId: ids.next(), householdId, itemId });
+    expect(await del()).toEqual({ itemId });
+    expect(await view(itemId)).toBeUndefined();
+    expect(await db.outcomes.count()).toBe(0);
+    const stats = await handlers['stats.waste']({
+      householdId,
+      from: localDate('2026-11-01'),
+      to: localDate('2026-11-30'),
+    });
+    expect(stats.wastedRappen).toBe(0);
+    await expect(del()).rejects.toMatchObject({ code: 'not_found' });
+
+    await handlers['inventory.restoreItem']({ commandId: ids.next(), householdId, itemId });
+    expect(await view(itemId)).toMatchObject({ name: 'Joghurt', quantity: 4 });
+    const types = (await db.events.toArray()).map((event) => event.type);
+    expect(types).toEqual(expect.arrayContaining(['item.deleted', 'item.restored']));
+  });
+});
+
 describe('inventory.recordOutcome', () => {
   it('records partial use with a proportional value and keeps the rest', async () => {
     const { itemId } = await add({ name: 'Joghurt', quantity: 4, priceRappen: 380 });
