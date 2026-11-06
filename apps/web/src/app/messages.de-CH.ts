@@ -17,6 +17,20 @@ export const messages = {
   },
   placeholder: 'Kommt bald.',
   contractVersion: 'Datenvertrag',
+  loading: 'FridgeAI wird geladen …',
+  errors: {
+    storage:
+      'Der lokale Speicher ist nicht verfügbar. Ist der private Modus aktiv? FridgeAI braucht ihn, um deinen Vorrat zu speichern.',
+  },
+  defaults: { householdName: 'Mein Haushalt', memberName: 'Ich' },
+  expiry: {
+    doNotEat: 'Nicht mehr essen',
+    pastBestBefore: (days: number) => (days === 1 ? 'seit gestern' : `seit ${String(days)} Tagen`),
+    today: 'heute',
+    tomorrow: 'morgen',
+    inDays: (days: number) => `in ${String(days)} Tagen`,
+    until: (when: string) => `bis ${when}`,
+  },
   dateField: {
     placeholder: 'TT.MM.JJJJ',
     estimated: 'geschätzt',
