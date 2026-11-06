@@ -234,7 +234,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 ### Meilenstein D – Basis komplett
 
 #### Schritt 10 – Barcode & Händler-Import (US-02, US-03)
-- 10a: Barcode-Adapter (nativer `BarcodeDetector`, sonst `@zxing/browser`) für EAN-13/EAN-8/UPC **und GS1 DataMatrix / QR (Digital Link)**; **Scan-Modi «Schnell» und «Gründlich»** (wählbar, Fortschritt «Barcode ✓ · Datum …», Haptik bei Treffern); enthält der Code ein Ablaufdatum, wird es automatisch übernommen (`expirySource: gs1_code`); nutzt den Kamera-Adapter aus 5a
+- 10a: Barcode-Adapter (`barcode-detector` mit ZXing als WebAssembly, selbst gehostet, ADR-0014; umgesetzt: Kamera, Foto, Eintippen, Datum aus GS1-Code) für EAN-13/EAN-8/UPC **und GS1 DataMatrix / QR (Digital Link)**; **Scan-Modi «Schnell» und «Gründlich»** (wählbar, Fortschritt «Barcode ✓ · Datum …», Haptik bei Treffern); enthält der Code ein Ablaufdatum, wird es automatisch übernommen (`expirySource: gs1_code`); nutzt den Kamera-Adapter aus 5a
 - 10b: `ProductCatalog`-Adapter für Open Food Facts mit lokalem Cache; übernimmt **Name, Marke, Packungsgrösse, Nährwerte, Kalorien, Nutri-Score und Allergene** und zeigt sie auf der Produktseite (kein Kalorien-Tagebuch); manuelle Erfassung bei keinem Treffer, «Schon im Vorrat: 2 Stk.», Quellenangabe gemäss OFF-Lizenz (ODbL); optional Open Food Repo (EPFL) als zweite Quelle für Schweizer Produkte, falls API und Bedingungen bestätigt sind (siehe [`data-sources.md`](./data-sources.md))
 - 10c: Migros-CSV-Parser (papaparse) + Fixtures
 - 10d: Coop-PDF-Textextraktion (pdfjs-dist, selbst gehostet) + Parser + Fixtures
@@ -325,7 +325,7 @@ Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ic
 4. **Serverseitiges OCR/LLM-Parsing** – **Beantwortet (6.11.2026):** keine KI auf FridgeAI-Kosten. Erkennung über die KI der Nutzer:innen: «KI-Import» per Kopieren/Einfügen im Prototyp, MCP-Connector in v1, eigene KI nur über ein Pro-Abo (ADR-0012).
 5. **Freemium im MVP** – *Empfehlung:* alles gratis, nur die Mechanik `free | pro` bauen, Preise nach dem Pilot. CHF 9/Monat liegt über ZWIMP (CHF 4.90) und Kühlbär (CHF 3); ein Haushalts-Abo, das auf alle Mitglieder verteilt wird, könnte das auffangen. Weitere Kandidaten für bezahlte Stufen: Büro-Kühlschrank für Teams ([`use-cases.md`](./use-cases.md), Abschnitt 2d), eigene KI (ADR-0012).
 6. **Dependency-Liste zur Freigabe** (alles Open Source, keine kostenpflichtigen Dienste):
-   - Laufzeit: `react`, `react-dom`, `react-router`, `zod` (v4), `dexie`, `dexie-react-hooks`, `tailwindcss`, einzelne `@radix-ui/*`-Komponenten, `tesseract.js`, `@zxing/browser`, `pdfjs-dist`, `papaparse`; ab Schritt 7 `@tanstack/react-query` und der Client des gewählten Backends; ab Schritt 8 eine Web-Push-Bibliothek im Backend
+   - Laufzeit: `react`, `react-dom`, `react-router`, `zod` (v4), `dexie`, `dexie-react-hooks`, `tailwindcss`, einzelne `@radix-ui/*`-Komponenten, `tesseract.js`, `barcode-detector` + `zxing-wasm` (statt `@zxing/browser`, ADR-0014), `pdfjs-dist`, `papaparse`; ab Schritt 7 `@tanstack/react-query` und der Client des gewählten Backends; ab Schritt 8 eine Web-Push-Bibliothek im Backend
    - Entwicklung: `typescript`, `vite`, `@vitejs/plugin-react`, `vite-plugin-pwa`, `vitest`, `@vitest/coverage-v8`, `fast-check`, `@testing-library/react`, `@testing-library/user-event`, `jsdom`, `fake-indexeddb`, `@playwright/test`, `@axe-core/playwright`, `eslint`, `typescript-eslint`, `eslint-plugin-react-hooks`, `prettier`
    - Design (ergänzt 6.11.2026, delegiert): `@fontsource-variable/fraunces`, `@fontsource-variable/figtree` (OFL, selbst gehostet), `lucide-react` (ISC)
    - Erst in v1: `@modelcontextprotocol/sdk` (MCP-Server)
@@ -377,7 +377,7 @@ Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ic
 - **Ein-Personen-Projekt:** Alban ist einziger Mensch im Projekt. Deshalb keine Team-Prozesse (CODEOWNERS, Einstiegsdoku für andere, Review-Pflicht durch Zweite). Sicherheitsnetz sind die CI (muss grün sein, Branch-Schutz auf `main`), mein Review jedes Diffs und bei Bedarf der `reviewer`-Subagent als zweite Meinung zu Sicherheit und Datenschutz.
 - Branch pro PR (`feat/<schritt>-<thema>`, z. B. `feat/02a-core-model`), PR mit «Was, Warum, Wie getestet» und DoD-Checkliste.
 - Subagent-Aufträge enthalten immer: Ziel, Dateien, Typen/Interfaces, Akzeptanzkriterien, was nicht angefasst wird, wie getestet wird.
-- Neue Dependencies nur aus der freigegebenen Liste (Frage 6), alles andere frage ich vorher.
+- Neue Dependencies: kostenlos und Open Source ist freigegeben (Alban, 6.11.2026); ich wähle sie sorgfältig und begründe sie im PR.
 - Nach jedem Meilenstein eine Statusmeldung: erledigt, offen, Entscheide nötig.
 - **Freigabe (Alban, 6.11.2026):** «Du darfst alles, solange es kostenlos ist.» Kostenlose Dienste, Gratis-Pläne, Open-Source-Dependencies und Tools entscheide ich selbst. Vorher frage ich nur bei Kosten, Preisgrenzen, neuen Wegen, auf denen Nutzerdaten das Gerät verlassen, und grösseren Produktänderungen.
 - **Ansprache:** Die App sagt immer «du» zu einer Person, nie «ihr» (Alban, 6.11.2026).

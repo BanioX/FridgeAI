@@ -7,6 +7,9 @@ updates:
       day: monday
     open-pull-requests-limit: 5
     groups:
+      # Always together: the self-hosted .wasm must match barcode-detector's zxing-wasm (ADR-0014).
+      barcode:
+        patterns: [barcode-detector, zxing-wasm]
       dev-tooling:
         dependency-type: development
         update-types: [minor, patch]

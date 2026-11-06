@@ -166,6 +166,7 @@ export const messages = {
     public_fridge: 'öffentlicher Kühlschrank',
   },
   aiImport: {
+    title: 'Mit deiner eigenen KI erfassen',
     intro:
       'Mach ein Foto vom Kühlschrank, Einkauf oder Kassenbon mit deiner eigenen KI (ChatGPT, Claude, Gemini …) und übernimm die Liste hier.',
     step1: '1. Auftrag kopieren',
@@ -196,6 +197,25 @@ export const messages = {
       count === 1 ? '1 Artikel übernehmen' : `${String(count)} Artikel übernehmen`,
     failed: 'Übernehmen hat nicht geklappt. Bitte versuch es nochmals.',
     manual: 'Lieber von Hand erfassen',
+  },
+  scanner: {
+    open: 'Barcode scannen',
+    start: 'Kamera starten',
+    stop: 'Kamera stoppen',
+    starting: 'Kamera startet …',
+    hint: 'Halte den Strich- oder QR-Code ruhig ins Bild.',
+    denied:
+      'Die Kamera ist blockiert. Erlaube sie in den Einstellungen deines Browsers, oder nimm ein Foto bzw. tipp die Nummer ein.',
+    unavailable:
+      'Auf diesem Gerät gibt es keine Kamera für die App. Nimm ein Foto oder tipp die Nummer ein.',
+    photo: 'Foto vom Code wählen',
+    noCode: 'Auf dem Foto hat FridgeAI keinen Code gefunden. Versuch es näher und schärfer.',
+    manual: 'Nummer unter dem Strichcode',
+    manualSubmit: 'Übernehmen',
+    unknownCode:
+      'Diesen Code kennt FridgeAI nicht. Bitte tipp die Nummer unter dem Strichcode ein.',
+    found: (code: string) => `Barcode ${code} erkannt.`,
+    foundWithDate: (code: string, date: string) => `Barcode ${code} erkannt, haltbar bis ${date}.`,
   },
   notFound: {
     title: 'Seite nicht gefunden',

@@ -11,7 +11,7 @@ import {
   type Id,
   type StorageLocation,
 } from '@fridgeai/core';
-import { Copy } from 'lucide-react';
+import { Copy, ScanBarcode } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useAppData } from '../../app/AppData';
@@ -116,6 +116,16 @@ export function AiImportPage() {
   return (
     <div className="space-y-6 pb-8">
       <h1 className="font-display text-3xl font-semibold tracking-tight">{messages.pages.scan}</h1>
+
+      <Link
+        to="/inventory/new?scan=1"
+        className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-basil-700 px-5 font-semibold text-white transition-colors hover:bg-basil-800 active:bg-basil-900"
+      >
+        <ScanBarcode size={20} aria-hidden="true" />
+        {messages.scanner.open}
+      </Link>
+
+      <h2 className="font-display text-xl font-semibold">{t.title}</h2>
       <p className="text-ink-muted">{t.intro}</p>
 
       <Card>

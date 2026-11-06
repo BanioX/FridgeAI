@@ -15,7 +15,9 @@ export default defineConfig({
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
-        ...(executablePath ? { launchOptions: { executablePath } } : {}),
+        // The full Chromium in new headless mode, locally and in CI: the stripped-down headless
+        // shell handles camera permissions differently from a real browser (barcode E2E).
+        ...(executablePath ? { launchOptions: { executablePath } } : { channel: 'chromium' }),
       },
     },
   ],
