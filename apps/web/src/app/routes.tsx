@@ -45,6 +45,12 @@ export const routes: RouteObject[] = [
         }),
       },
       {
+        path: 'check',
+        lazy: async () => ({
+          Component: (await import('../features/check/CheckPage')).CheckPage,
+        }),
+      },
+      {
         path: 'shopping',
         lazy: async () => ({
           Component: (await import('../features/shopping/ShoppingPage')).ShoppingPage,
