@@ -86,6 +86,8 @@ Der Brief (§4) ist der Startpunkt. Diese Änderungen landen in Schritt 2 in `pa
 | Bereich | Brief | Vorschlag | Warum |
 | --- | --- | --- | --- |
 | Ablauf | `expiresAt` (Zeitpunkt) | `expiresOn: LocalDate` (`YYYY-MM-DD`) | Kein Off-by-one durch Zeitzonen |
+| Herkunft des Datums | `expiryEstimated: boolean` | `expirySource` (`category_estimate`, `manual`, `gs1_code`, `label_ocr`, `partner`) und `expiryKind` (MHD/Verbrauchsdatum) pro Artikel | Vorausschauend für 2D-Codes, Etikett-Fotos, Partner (ADR-0006) |
+| Nährwerte | – | `Product.nutrition` pro 100 g/ml mit Quelle, Nutri-Score, Allergene | Scan übernimmt sie automatisch (Alban, 6.11.2026) |
 | Datumsart | – | `Category.dateKind: 'best_before' \| 'use_by'` | **Lebensmittelsicherheit:** «Schauen, Riechen, Probieren» gilt nur fürs MHD. Bei «zu verbrauchen bis» (Hackfleisch, Fisch, Geflügel) klare Warnung |
 | Einfrieren | – | `Category.freezable`, Haltbarkeit im Tiefkühler | Einfrier-Tipp (P-03) |
 | Reste-Tipps | – | `Category.tips` (Lagerung, Verwertung) | R-04 |
@@ -151,6 +153,8 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 - 2c: Europe/Zurich, «Tage bis Ablauf»; **Kategorien-Katalog** (rund 40 Schweizer Alltagskategorien mit Haltbarkeit pro Lagerort, `dateKind`, `freezable`, Reste-/Lagertipps, Emoji, Durchschnittspreis und -gewicht, Quellen dokumentiert); `estimateExpiry()`
 - 2d: Ports (`ReceiptOcrEngine`, `BarcodeScanner`, `ProductCatalog`, `RecipeProvider`, `RebuyProvider`, `DeliveryProvider`, `RetailerReceiptSource`, `SyncAdapter`, `NotificationService`, `Clock`, `IdGenerator`), Mocks für die Partner-Ports
 - 2e: **Vertrag v1**: Command-/Query-Registry mit Zod-Ein-/Ausgabe, Domain Events, `commandId`; Test, der aus dem Vertrag JSON Schema erzeugt (Beweis für spätere OpenAPI/MCP-Tauglichkeit); ADR-0005 (Contract-first, API/MCP)
+- 2f: **GS1-Codes lesen** (ADR-0006): EAN/UPC, GS1 DataMatrix und GS1 Digital Link (QR) mit Ablaufdatum (AI 17/15), Charge, Gewicht; vorausschauend für «GS1 Sunrise 2027»
+- 2g: Ablaufdatum aus Etikett-Text erkennen («zu verbrauchen bis», «mindestens haltbar bis», FR/IT) als Grundlage für «Datum fotografieren» (v1)
 - **Delegation:** O für Modell, Geld, Ports und Vertrag. S entwirft den Kategorien-Katalog, ich prüfe ihn (besonders Verbrauchsdatum-Kategorien). H für Tabellentests.
 - **Tests:** ≥ 95 % Abdeckung, Property-Tests für Rappen.
 
@@ -162,7 +166,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 - 3a: Dexie-Schema, Repositories hinter Interfaces, Event-Log und Outbox lokal, Migrations-Tests (`fake-indexeddb`), automatischer lokaler Haushalt
 - 3b: App-Shell (Navigation: Heute · Vorrat · Scannen · Liste · Haushalt), Vorrat mit drei Tabs, Sortierung nach Ablauf, Filter «Läuft bald ab»
 - 3c: **Startseite «Heute retten»** (UC-01): was heute/morgen abläuft, Wert im Kühlschrank in CHF (UC-03), Badge; Verbrauchsdatum-Warnungen
-- 3d: Manuelle Erfassung mit Autovervollständigung und Standardartikeln (UC-07), Bearbeiten, Verschieben mit Neuberechnung; Offline-Cache der App-Shell; E2E «Artikel erfassen» und «Offline neu laden»
+- 3d: Manuelle Erfassung mit Autovervollständigung und Standardartikeln (UC-07), Bearbeiten, Verschieben mit Neuberechnung; **Ablaufdatum-Feld mit Kalender oder Eingabe `dd.mm.yyyy`** (auch `6.11.26`, `061126`, `6.11.`), Schnellwahl «morgen / in 3 Tagen / in 1 Woche», Vorschlag aus der Kategorie; Offline-Cache der App-Shell; E2E «Artikel erfassen» und «Offline neu laden»
 - **Delegation:** O für 3a (sync-kritisch), S für 3b bis 3d nach meinen Komponenten-Schnittstellen.
 - **Parallel möglich mit Schritt 4.**
 
@@ -222,8 +226,8 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 ### Meilenstein D – Basis komplett
 
 #### Schritt 10 – Barcode & Händler-Import (US-02, US-03)
-- 10a: Barcode-Adapter (nativer `BarcodeDetector`, sonst `@zxing/browser`), EAN-13/EAN-8, nutzt den Kamera-Adapter aus 5a
-- 10b: `ProductCatalog`-Adapter für Open Food Facts mit lokalem Cache, manuelle Erfassung bei keinem Treffer, «Schon im Vorrat: 2 Stk.», Quellenangabe gemäss OFF-Lizenz (ODbL); optional Open Food Repo (EPFL) als zweite Quelle für Schweizer Produkte, falls API und Bedingungen bestätigt sind (siehe [`data-sources.md`](./data-sources.md))
+- 10a: Barcode-Adapter (nativer `BarcodeDetector`, sonst `@zxing/browser`) für EAN-13/EAN-8/UPC **und GS1 DataMatrix / QR (Digital Link)**; enthält der Code ein Ablaufdatum, wird es automatisch übernommen (`expirySource: gs1_code`); nutzt den Kamera-Adapter aus 5a
+- 10b: `ProductCatalog`-Adapter für Open Food Facts mit lokalem Cache; übernimmt **Name, Marke, Packungsgrösse, Nährwerte, Kalorien, Nutri-Score und Allergene** und zeigt sie auf der Produktseite (kein Kalorien-Tagebuch); manuelle Erfassung bei keinem Treffer, «Schon im Vorrat: 2 Stk.», Quellenangabe gemäss OFF-Lizenz (ODbL); optional Open Food Repo (EPFL) als zweite Quelle für Schweizer Produkte, falls API und Bedingungen bestätigt sind (siehe [`data-sources.md`](./data-sources.md))
 - 10c: Migros-CSV-Parser (papaparse) + Fixtures
 - 10d: Coop-PDF-Textextraktion (pdfjs-dist, selbst gehostet) + Parser + Fixtures
 - 10e: Import-UI, Duplikaterkennung über Bon-/Zeilen-Hash, Default «letzte 14 Tage angehakt», danach dieselbe Review wie beim Foto
@@ -259,6 +263,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 - Native Apps mit Capacitor (lokale Benachrichtigungen ohne Server, App-Store-Präsenz)
 - Bezahl-Abo, Haushalts-Challenges, «Darf ich?»-Anfrage, Allergene-Filter, Französisch
 - Optional serverseitiges OCR/LLM (Opt-in)
+- **«Datum fotografieren»:** OCR auf dem Gerät liest das Ablaufdatum vom Etikett (`expirySource: label_ocr`, Logik aus 2g)
 - Nährwerte pro Kategorie aus der Schweizer Nährwertdatenbank (BLV, offen, lokal mitgeliefert); YAZIO nur über eine Partnerschaft (siehe [`data-sources.md`](./data-sources.md))
 
 ---

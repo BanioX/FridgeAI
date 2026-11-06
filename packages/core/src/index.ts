@@ -15,3 +15,4 @@ export * from './expiry';
 export * from './ids';
 export * from './model';
 export * from './money';
+export * from './scan/gs1';

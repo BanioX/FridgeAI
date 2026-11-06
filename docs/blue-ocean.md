@@ -56,6 +56,6 @@ Konkurrenz selbst testen → 10–15 Interviews → Landingpage-Test mit zwei Bo
 | Thema | Businessplan/ATL | Brief/Analyse | Stand |
 | --- | --- | --- | --- |
 | Hardware | Kern des Geschäftsmodells | Vision, nicht MVP | Plan folgt Analyse |
-| Kalorien/Gesundheit | Zentrales Nutzenversprechen | Eliminiert | Plan folgt Analyse; Nährwerte später über Partner möglich |
+| Kalorien/Gesundheit | Zentrales Nutzenversprechen | Eliminiert | **Entscheid Alban (6.11.2026):** Nährwerte, Kalorien und Allergene werden beim Scan übernommen und angezeigt; kein Kalorien-Tagebuch (ADR-0006) |
 | Preis | CHF 9/Monat | über dem Markt | offen (Plan, Frage 5) |
 | «Datenbasierte Insights» als Umsatz | ja | «kein Verkauf von Daten» | offen (Plan, Frage 13) |
