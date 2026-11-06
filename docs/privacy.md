@@ -5,7 +5,7 @@
 ## Kurz gesagt
 
 - Dein Vorrat, deine Einkaufsliste und deine Statistik bleiben **auf deinem Gerät**. Es gibt kein Konto und keinen FridgeAI-Server mit deinen Daten.
-- Beim Scannen geht **nur die Barcode-Nummer** an Open Food Facts, damit Name, Nährwerte und Packungsbild kommen.
+- Beim Scannen geht **nur die Barcode-Nummer** an Open Food Facts, damit Name, Nährwerte und Packungsbild kommen. Suchst du ein Produkt nach Namen und tippst auf «Suchen», gehen **nur die getippten Wörter** dorthin.
 - Fotos von Codes werden auf dem Gerät gelesen und **nie gespeichert**.
 - **Kein Tracking, keine Werbung, keine Cookies.**
 - Du kannst jederzeit **alles exportieren** (JSON, CSV) und **alles löschen** («Haushalt»).
@@ -36,6 +36,7 @@ Zusätzlich merkt sich der Browser zwei Kleinigkeiten ohne Personenbezug:
 | Empfänger | Was | Wann |
 | --- | --- | --- |
 | **Open Food Facts** (offene Produktdatenbank, Frankreich) | Die Barcode-Nummer, dazu technisch deine IP-Adresse | Wenn du einen Barcode scannst oder eintippst, den FridgeAI noch nicht kennt |
+| **Open Food Facts, Suche** | Die getippten Wörter (z. B. «Coop Gipfeli»), dazu technisch deine IP-Adresse | Nur wenn du auf «Suchen» tippst, nie während des Tippens |
 | **Open Food Facts, Bildserver** | Abruf des Packungsbilds, dazu technisch deine IP-Adresse | Einmal pro Barcode, danach liegt das Bild auf dem Gerät |
 | **Cloudflare** (Hoster der App) | Abruf der App-Dateien, dazu technisch deine IP-Adresse und Browserdaten | Beim Öffnen und bei Updates; FridgeAI wertet das nicht aus |
 | **Deine eigene KI** (z. B. ChatGPT, Claude) | Nur was du selbst kopierst und einfügst | Beim KI-Import, auf deinen Wunsch; FridgeAI selbst sendet nichts |

@@ -37,6 +37,7 @@ import {
   suggestedExpiry,
 } from './add-item';
 import { locationOrder } from './item-meta';
+import { NameSearch, type FoundProduct } from './NameSearch';
 import { QuickAdd } from './QuickAdd';
 
 const t = messages.addItem;
@@ -81,6 +82,8 @@ export function AddItemPage() {
   } | null>(null);
   const [scanStatus, setScanStatus] = useState('');
   const [fromOpenFoodFacts, setFromOpenFoodFacts] = useState(false);
+  // The name taken from the search: no suggestions for it until the person types again.
+  const [pickedName, setPickedName] = useState<string | null>(null);
 
   const category =
     (categoryChoice === null ? undefined : categoryById(categoryChoice)) ??
@@ -161,6 +164,22 @@ export function AddItemPage() {
       `${found} ${messages.scanner.product(product.name, details === '' ? '' : ` (${details})`)}`,
     );
     setFromOpenFoodFacts(product.source === 'off' || product.factsFrom === 'off');
+  }
+
+  /** A name-search hit fills the form; with a barcode it goes the same way as a scan (ADR-0024). */
+  function pickFound(product: FoundProduct) {
+    setPickedName(product.name);
+    const picked = messages.nameSearch.picked(product.name);
+    setName(product.name);
+    setCategoryChoice(product.categoryId);
+    setFromOpenFoodFacts(false);
+    if (product.gtin === undefined) {
+      setScanStatus(picked);
+      return;
+    }
+    setScanned({ gtin: product.gtin });
+    setScanStatus(`${picked} ${messages.scanner.looking}`);
+    void lookUp(product.gtin, picked);
   }
 
   async function save(next: boolean) {
@@ -287,6 +306,11 @@ export function AddItemPage() {
           <p id={`${id}-name-error`} className="text-sm text-today">
             {shown(errors.name)}
           </p>
+          {/* After a scan or a pick the product is known: no search button then. */}
+          <NameSearch
+            query={scanned === null && name !== pickedName ? name : ''}
+            onPick={pickFound}
+          />
         </div>
 
         <div className="space-y-1.5">
