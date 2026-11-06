@@ -25,15 +25,15 @@ Tipp: Falls im Handy-Browser Menüpunkte fehlen, im Browser-Menü «Desktop-Webs
 
 Danach gibt es:
 
-- **`main`:** `https://fridgeai.<dein-name>.workers.dev`. Diese Adresse kannst du als App auf den Home-Bildschirm legen.
+- **`main`:** `https://fridgeai.<dein-name>.workers.dev`. Das ist die echte App für den Pilot, ohne Beispieldaten und Styleguide. Diese Adresse legst du als App auf den Home-Bildschirm ([`pilot.md`](./pilot.md)).
 - **Jeder PR:** ein Kommentar von Cloudflare mit dem Vorschau-Link, etwa `https://<branch>-fridgeai.<dein-name>.workers.dev`. Der Link bleibt pro Branch gleich und zeigt immer den neusten Stand.
 
 Schick mir nach dem ersten Build die `main`-Adresse, dann nenne ich die Links ab sofort in jeder Statusmeldung.
 
 ## So schaust du eine Vorschau an
 
-- Link öffnen. Ist der Vorrat leer, tippst du auf **«Beispieldaten laden»**: Dann siehst du einen typischen WG-Kühlschrank.
-- Den Styleguide mit allen Bausteinen findest du unter `/styleguide`.
+- Vorschau-Link eines PRs öffnen. Ist der Vorrat leer, tippst du auf **«Beispieldaten laden»**: Dann siehst du einen typischen WG-Kühlschrank. Das gibt es nur in den Vorschauen; `scripts/build-cf.mjs` baut `main` ohne.
+- Den Styleguide mit allen Bausteinen findest du in den Vorschauen unter `/styleguide`.
 - Alle Daten bleiben im Browser auf deinem Gerät. Nichts geht an einen Server. Jede Vorschau-Adresse hat ihren eigenen Speicher.
 - Siehst du nach einem Update noch die alte Version: App ganz schliessen und neu öffnen. Die neue Version lädt im Hintergrund.
 

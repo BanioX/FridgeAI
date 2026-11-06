@@ -57,12 +57,24 @@ jobs:
             exit 1
           fi
 
-      # The same command Cloudflare runs for main and the preview links (docs/previews.md).
-      - name: Build for Cloudflare (demo mode)
+      # The same command Cloudflare runs (docs/previews.md): demo for preview links, the real
+      # app for main.
+      - name: Build for Cloudflare (preview links in demo mode)
         run: |
           pnpm build:cf
           test -f apps/web/dist/_headers
           ls apps/web/dist/assets | grep -E '^StyleguidePage-'
+
+      - name: Build for Cloudflare (main without dev tools)
+        env:
+          WORKERS_CI_BRANCH: main
+        run: |
+          pnpm build:cf
+          test -f apps/web/dist/_headers
+          if ls apps/web/dist/assets | grep -E '^(DemoSeedPage|StyleguidePage)-'; then
+            echo "Dev tools found in the build for main" >&2
+            exit 1
+          fi
 
       - name: Upload coverage
         if: always()
