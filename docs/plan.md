@@ -146,10 +146,11 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 - **Fertig, wenn:** `pnpm lint | typecheck | test | build | e2e` lokal und in CI grün.
 
 #### Schritt 2 – Core-Domäne und Vertrag
-- 2a: `model.ts` und Zod-Schemas (inkl. Abschnitt 3), UUIDv7 (eigene ~30 Zeilen), Typ `Rappen` mit Parsen/Formatieren (`3.95`, `-.95`, `1'234.50`, `CHF 12.–`)
-- 2b: `LocalDate`, Europe/Zurich, «Tage bis Ablauf»; **Kategorien-Katalog** (rund 40 Schweizer Alltagskategorien mit Haltbarkeit pro Lagerort, `dateKind`, `freezable`, Reste-/Lagertipps, Durchschnittspreis und -gewicht, Quellen dokumentiert); `estimateExpiry()`
-- 2c: Ports (`ReceiptOcrEngine`, `BarcodeScanner`, `ProductCatalog`, `RecipeProvider`, `RebuyProvider`, `DeliveryProvider`, `RetailerReceiptSource`, `SyncAdapter`, `NotificationService`, `Clock`, `IdGenerator`), Mocks für die Partner-Ports; ADR-0003 (Local-first), ADR-0004 (Geld in Rappen)
-- 2d: **Vertrag v1**: Command-/Query-Registry mit Zod-Ein-/Ausgabe, Domain Events, `commandId`; Test, der aus dem Vertrag JSON Schema erzeugt (Beweis für spätere OpenAPI/MCP-Tauglichkeit); ADR-0005 (Contract-first, API/MCP)
+- 2a: **Geld und IDs**: Typ `Rappen` (Zod-Brand), `parseChf`/`formatChf` für alle Bon-Schreibweisen (`3.95`, `-.95`, `1'234.50`, `CHF 12.–`, `0.80-`), `allocate`/`splitEvenly` (Largest Remainder, rotierender Rest-Rappen), UUIDv7 ohne Dependency; Property-Tests; ADR-0003 (Local-first, IDs), ADR-0004 (Geld)
+- 2b: `model.ts` und Zod-Schemas für alle Entitäten (inkl. Abschnitt 3), `LocalDate`/`IsoDateTime`
+- 2c: Europe/Zurich, «Tage bis Ablauf»; **Kategorien-Katalog** (rund 40 Schweizer Alltagskategorien mit Haltbarkeit pro Lagerort, `dateKind`, `freezable`, Reste-/Lagertipps, Emoji, Durchschnittspreis und -gewicht, Quellen dokumentiert); `estimateExpiry()`
+- 2d: Ports (`ReceiptOcrEngine`, `BarcodeScanner`, `ProductCatalog`, `RecipeProvider`, `RebuyProvider`, `DeliveryProvider`, `RetailerReceiptSource`, `SyncAdapter`, `NotificationService`, `Clock`, `IdGenerator`), Mocks für die Partner-Ports
+- 2e: **Vertrag v1**: Command-/Query-Registry mit Zod-Ein-/Ausgabe, Domain Events, `commandId`; Test, der aus dem Vertrag JSON Schema erzeugt (Beweis für spätere OpenAPI/MCP-Tauglichkeit); ADR-0005 (Contract-first, API/MCP)
 - **Delegation:** O für Modell, Geld, Ports und Vertrag. S entwirft den Kategorien-Katalog, ich prüfe ihn (besonders Verbrauchsdatum-Kategorien). H für Tabellentests.
 - **Tests:** ≥ 95 % Abdeckung, Property-Tests für Rappen.
 
