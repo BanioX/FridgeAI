@@ -1,0 +1,54 @@
+import {
+  addDays,
+  displayQuantity,
+  estimateExpiry,
+  portioningOf,
+  type Category,
+  type InputUnit,
+  type LocalDate,
+  type StorageLocation,
+} from '@fridgeai/core';
+
+/** Units offered in the add form, in this order. */
+export const INPUT_UNITS: readonly InputUnit[] = ['pcs', 'g', 'kg', 'ml', 'dl', 'l'];
+
+/** «1,5», «1.5» or «.5» → the number; empty, zero or anything else → null. */
+export function parseAmount(text: string): number | null {
+  const normalized = text.trim().replace(',', '.');
+  if (!/^(\d+(\.\d*)?|\.\d+)$/.test(normalized)) {
+    return null;
+  }
+  const value = Number(normalized);
+  return value > 0 ? value : null;
+}
+
+/** «1.5» → «1,5» for the input field (Swiss decimal comma when typing). */
+export const formatAmount = (amount: number): string => String(amount).replace('.', ',');
+
+/**
+ * What the form pre-fills for a category: one piece for counted food, otherwise the typical pack
+ * in a natural unit, rounded to a number people see on packs (1030 g milk → 1 l, 300 g → 300 g).
+ */
+export function suggestedAmount(category: Category): { amount: number; unit: InputUnit } {
+  const { unit } = portioningOf(category);
+  if (unit === 'pcs') {
+    return { amount: 1, unit: 'pcs' };
+  }
+  const typical = category.avgWeightGrams ?? (unit === 'g' ? 500 : 1000);
+  const step = typical < 1000 ? 50 : 100;
+  const rounded = Math.max(step, Math.round(typical / step) * step);
+  return displayQuantity(rounded, unit);
+}
+
+/** The estimated expiry date the form proposes until the person picks one. */
+export function suggestedExpiry(
+  category: Category,
+  location: StorageLocation,
+  today: LocalDate,
+): LocalDate {
+  return (
+    estimateExpiry(category, location, today) ??
+    estimateExpiry(category, category.defaultLocation, today) ??
+    addDays(today, 7)
+  );
+}
