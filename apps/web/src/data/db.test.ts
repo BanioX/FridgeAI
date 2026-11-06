@@ -30,7 +30,8 @@ describe('FridgeDb migrations', () => {
     expect(await db.products.where('gtin').equals('7610000000004').count()).toBe(1);
     expect(await db.catalogCache.count()).toBe(0);
     expect(await db.shoppingItems.count()).toBe(0);
-    expect(db.verno).toBe(3);
+    expect(await db.productImages.count()).toBe(0);
+    expect(db.verno).toBe(4);
     db.close();
   });
 });
