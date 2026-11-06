@@ -3,7 +3,7 @@ import { fetchProductImage, MAX_IMAGE_BYTES } from './product-images';
 
 const url = 'https://images.openfoodfacts.org/images/products/761/front_de.3.200.jpg';
 
-function answer(body: Uint8Array, type: string, status = 200) {
+function answer(body: Uint8Array<ArrayBuffer>, type: string, status = 200) {
   const seen: RequestInit[] = [];
   const fetchImage = (_target: string, init: RequestInit) => {
     seen.push(init);
