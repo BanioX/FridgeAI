@@ -76,6 +76,10 @@ export const messages = {
     welcomeText:
       'Erfasse, was du zu Hause hast, und FridgeAI sagt dir, was du heute retten solltest.',
     firstItem: 'Ersten Artikel erfassen',
+    impactTitle: 'Deine Wirkung diesen Monat',
+    saved: 'Gerettet',
+    wasted: 'Weggeworfen',
+    savedShare: (percent: number) => `${String(percent)} % gerettet`,
     loadDemo: 'Beispieldaten laden',
   },
   inventory: {
@@ -101,7 +105,7 @@ export const messages = {
     location: 'Wo lagerst du es?',
     amount: 'Menge',
     unit: 'Einheit',
-    amountInvalid: 'Bitte eine Menge über 0 angeben, z. B. 1,5',
+    amountInvalid: 'Bitte eine Menge über 0 angeben, z. B. 1.5',
     packsLabel: 'Packungsgrösse',
     pack: (count: number) => `${String(count)}er`,
     container: 'Verpackung',

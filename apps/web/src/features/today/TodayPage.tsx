@@ -3,6 +3,7 @@ import {
   fallbackCategory,
   formatChf,
   itemValue,
+  startOfMonth,
   sumRappen,
   type StorageLocation,
 } from '@fridgeai/core';
@@ -17,6 +18,7 @@ import { ItemRow } from '../../ui/ItemRow';
 import { LocationTile } from '../../ui/LocationTile';
 import { expiryBadge } from '../../ui/expiry-badge';
 import { itemMeta, locationOrder } from '../inventory/item-meta';
+import { ImpactCard } from './ImpactCard';
 
 export function TodayPage() {
   const { householdId, inventory, today } = useAppData();
@@ -107,6 +109,8 @@ export function TodayPage() {
           </ul>
         )}
       </section>
+
+      <ImpactCard from={startOfMonth(today)} to={today} />
 
       <section aria-labelledby="locations-title" className="space-y-3">
         <h2 id="locations-title" className="font-display text-xl font-semibold">

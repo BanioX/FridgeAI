@@ -36,9 +36,10 @@ describe('AppShell', () => {
   it('navigates to Vorrat on click', async () => {
     await renderAt('/');
     await userEvent.click(screen.getByRole('link', { name: messages.nav.inventory }));
-    expect((await screen.findByRole('heading', { level: 1 })).textContent).toBe(
-      messages.pages.inventory,
-    );
+    // Vorrat is a lazy route (#45): until its chunk is loaded, the old heading is still there.
+    expect(
+      await screen.findByRole('heading', { level: 1, name: messages.pages.inventory }),
+    ).toBeDefined();
     expect(screen.getByRole('tablist')).toBeDefined();
   });
 

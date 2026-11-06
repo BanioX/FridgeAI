@@ -2,6 +2,7 @@ import {
   addDays,
   displayQuantity,
   estimateExpiry,
+  formatDecimal,
   portioningOf,
   type Category,
   type InputUnit,
@@ -22,8 +23,9 @@ export function parseAmount(text: string): number | null {
   return value > 0 ? value : null;
 }
 
-/** «1.5» → «1,5» for the input field (Swiss decimal comma when typing). */
-export const formatAmount = (amount: number): string => String(amount).replace('.', ',');
+/** 1.5 → «1.5» for the input field: Swiss decimal point, no thousands separator (ADR-0018). */
+export const formatAmount = (amount: number): string =>
+  formatDecimal(amount, { digits: 3, group: false });
 
 /**
  * What the form pre-fills for a category: one piece for counted food, otherwise the typical pack
@@ -53,7 +55,7 @@ export function suggestedExpiry(
   );
 }
 
-/** «1 l», «500 g», «2,5 dl» as printed on a pack → amount and unit; anything else → null. */
+/** «1 l», «500 g», «2,5 dl» or «2.5 dl» as printed on a pack → amount and unit; anything else → null. */
 export function parsePackSize(text: string): { amount: number; unit: InputUnit } | null {
   const match = /^(\d+(?:[.,]\d+)?)\s*(g|kg|ml|cl|dl|l)$/i.exec(text.trim());
   const unit = INPUT_UNITS.find((option) => option === match?.[2]?.toLowerCase());
