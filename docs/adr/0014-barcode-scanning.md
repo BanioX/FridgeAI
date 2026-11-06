@@ -17,6 +17,7 @@ Alban will Barcode, QR-Code und Kamera «asap» testen (Schritt 10a). Die App l�
 
 ## Konsequenzen
 
+- Beide Pakete sind **exakt gepinnt**: `barcode-detector` verlangt genau eine `zxing-wasm`-Version, und unsere selbst gehostete `.wasm`-Datei muss dazu passen. Ein Update betrifft immer beide zusammen.
 - Zwei kleine Laufzeit-Dependencies statt `@zxing/browser` (Plan, Frage 6 aktualisiert). Beide sind kostenlos und Open Source (Freigabe Alban, 6.11.2026).
 - E2E-Tests lesen einen echten EAN-13 aus einem gezeichneten Foto, prüfen die CSP und testen Kamera erlaubt und blockiert (Chromium mit Fake-Kamera).
 - Offen (Schritt 10b): Produktnamen zum Barcode. Lokal bekannte Produkte gehen ohne Rückfrage; die Suche bei Open Food Facts erst nach Albans Entscheid, weil dabei die Nummer das Gerät verlässt.
