@@ -3,7 +3,8 @@ import { RecipeSchema, type Recipe } from './recipe';
 /**
  * Curated recipes (plan 11b): Swiss everyday dishes, written for FridgeAI in plain words and
  * addressing one person with «du». Ingredients point to categories so the ranking finds the food
- * at home; staples (salt, oil, spices) are assumed. More recipes follow in their own PR.
+ * at home; staples (salt, oil, spices) are assumed. New recipes: written for FridgeAI, never
+ * copied, and checked by the test (schema, categories, «du»).
  */
 const RAW: unknown[] = [
   {
@@ -324,6 +325,254 @@ const RAW: unknown[] = [
       'Bei kleiner Hitze 5 Minuten köcheln, bis die Beeren weich sind.',
       'Kompott abkühlen lassen.',
       'Mit Joghurt servieren und nach Lust mit Zimt bestreuen.',
+    ],
+  },
+  {
+    id: 'apfel-crumble',
+    title: 'Apfel-Crumble',
+    minutes: 40,
+    servings: 4,
+    tags: ['vegetarisch'],
+    ingredients: [
+      { text: '4 Äpfel', categories: ['produce-apples'] },
+      { text: '100 g Haferflocken', categories: ['pantry-cereal'] },
+      { text: '80 g kalte Butter, 80 g Mehl', staple: true },
+      { text: '60 g Zucker, 1 TL Zimt', staple: true },
+    ],
+    steps: [
+      'Ofen auf 180 °C vorheizen, Äpfel schälen und in Schnitze schneiden.',
+      'Äpfel in eine Auflaufform geben und mit 1 EL Zucker und Zimt bestreuen.',
+      'Butter, Mehl, Haferflocken und restlichen Zucker zu Bröseln verreiben.',
+      'Brösel über die Äpfel streuen und 25 Minuten backen, bis die Oberfläche goldbraun ist.',
+    ],
+  },
+  {
+    id: 'bananen-glace',
+    title: 'Bananen-Glace',
+    minutes: 10,
+    servings: 2,
+    tags: ['vegan'],
+    ingredients: [
+      {
+        text: '3 sehr reife Bananen, am Vortag eingefroren',
+        categories: ['produce-bananas'],
+      },
+      {
+        text: '100 g Beeren zum Verfeinern',
+        categories: ['produce-berries'],
+        optional: true,
+      },
+      { text: '1 Prise Zimt', staple: true },
+    ],
+    steps: [
+      'Bananen am Vortag schälen, in Stücke schneiden und einfrieren.',
+      'Gefrorene Bananenstücke im Mixer cremig mixen.',
+      'Bei Bedarf kurz stoppen und die Masse wieder nach unten schieben.',
+      'Mit Beeren und Zimt servieren und sofort geniessen.',
+    ],
+  },
+  {
+    id: 'milchreis',
+    title: 'Milchreis mit Zimt',
+    minutes: 35,
+    servings: 3,
+    tags: ['vegetarisch'],
+    ingredients: [
+      { text: '1 l Milch', categories: ['dairy-milk', 'dairy-uht-milk'] },
+      { text: '120 g Rundkornreis', categories: ['pantry-rice'] },
+      { text: '50 g Zucker', staple: true },
+      { text: 'Zimt und 1 Prise Salz', staple: true },
+    ],
+    steps: [
+      'Milch mit Reis und Salz aufkochen.',
+      'Bei kleiner Hitze etwa 30 Minuten köcheln, dabei ab und zu umrühren.',
+      'Zucker dazugeben und weitere 5 Minuten ziehen lassen.',
+      'Mit Zimt bestreut warm servieren.',
+    ],
+  },
+  {
+    id: 'alplermagronen',
+    title: 'Älplermagronen',
+    minutes: 45,
+    servings: 4,
+    tags: ['vegetarisch'],
+    ingredients: [
+      { text: '300 g Hörnli', categories: ['pantry-pasta'] },
+      { text: '400 g Kartoffeln', categories: ['produce-potatoes'] },
+      { text: '200 g Bergkäse, gerieben', categories: ['dairy-cheese-hard'] },
+      { text: '2 dl Rahm', categories: ['dairy-cream'] },
+      { text: '2 Zwiebeln', categories: ['produce-onions'] },
+      {
+        text: 'Apfelmus zum Servieren',
+        categories: ['produce-apples'],
+        words: ['apfelmus'],
+        optional: true,
+      },
+      { text: 'Butter, Salz, Pfeffer', staple: true },
+    ],
+    steps: [
+      'Hörnli und in Scheiben geschnittene Kartoffeln zusammen in Salzwasser garen.',
+      'Zwiebeln in Ringe schneiden und in Butter goldbraun braten.',
+      'Hörnli und Kartoffeln abgiessen, mit Käse und Rahm mischen.',
+      'Mit den Zwiebeln, Salz und Pfeffer abschmecken und mit Apfelmus servieren.',
+    ],
+  },
+  {
+    id: 'roesti-spiegelei',
+    title: 'Rösti mit Spiegelei',
+    minutes: 25,
+    servings: 2,
+    tags: ['vegetarisch'],
+    ingredients: [
+      { text: '600 g Kartoffeln', categories: ['produce-potatoes'] },
+      { text: '2 Eier', categories: ['dairy-eggs'] },
+      { text: '1 Zwiebel, fein gehackt', categories: ['produce-onions'], optional: true },
+      { text: 'Butter, Salz, Pfeffer', staple: true },
+    ],
+    steps: [
+      'Kartoffeln schälen, reiben, mit Zwiebel mischen und salzen.',
+      'Rösti in Butter bei mittlerer Hitze knusprig braten, dann wenden.',
+      'Rösti warm halten und in derselben Pfanne zwei Spiegeleier braten.',
+      'Eier pfeffern und zusammen mit den Rösti servieren.',
+    ],
+  },
+  {
+    id: 'wurstkaesesalat',
+    title: 'Wurstkäsesalat',
+    minutes: 20,
+    servings: 2,
+    tags: [],
+    ingredients: [
+      {
+        text: '150 g Cervelat oder Lyoner, in Streifen',
+        categories: ['meat-sausage', 'meat-coldcuts'],
+      },
+      { text: '150 g Emmentaler, in Streifen', categories: ['dairy-cheese-hard'] },
+      { text: '1 Gurke', categories: ['produce-cucumber'], optional: true },
+      { text: '1 Zwiebel', categories: ['produce-onions'], optional: true },
+      { text: 'Essig, Öl, Senf, Salz, Pfeffer', staple: true },
+    ],
+    steps: [
+      'Wurst und Käse in feine Streifen schneiden.',
+      'Zwiebel fein würfeln, Gurke ebenfalls in Streifen schneiden.',
+      'Aus Essig, Öl, Senf, Salz und Pfeffer eine Sauce rühren.',
+      'Alles mischen und mindestens 10 Minuten durchziehen lassen.',
+    ],
+  },
+  {
+    id: 'birchermuesli',
+    title: 'Birchermüesli',
+    minutes: 10,
+    servings: 2,
+    tags: ['vegetarisch', 'schnell'],
+    ingredients: [
+      { text: '100 g Haferflocken', categories: ['pantry-cereal'] },
+      {
+        text: '2 dl Milch oder Joghurt',
+        categories: ['dairy-milk', 'dairy-uht-milk', 'dairy-yoghurt'],
+      },
+      { text: '1 Apfel, gerieben', categories: ['produce-apples'] },
+      {
+        text: '100 g Beeren oder Banane',
+        categories: ['produce-berries', 'produce-bananas'],
+        optional: true,
+      },
+      { text: '1 EL Zitronensaft, 1 EL Honig', staple: true },
+    ],
+    steps: [
+      'Haferflocken mit Milch oder Joghurt mischen und 5 Minuten quellen lassen.',
+      'Apfel reiben und mit Zitronensaft beträufeln, damit er nicht braun wird.',
+      'Apfel unter das Müesli rühren und mit Honig süssen.',
+      'Mit Beeren oder Banane garnieren und servieren.',
+    ],
+  },
+  {
+    id: 'fotzelschnitten',
+    title: 'Fotzelschnitten',
+    minutes: 30,
+    servings: 3,
+    tags: ['vegetarisch'],
+    ingredients: [
+      { text: '6 Scheiben altes Brot', categories: ['bakery-bread', 'bakery-toast'] },
+      { text: '2 dl Milch', categories: ['dairy-milk', 'dairy-uht-milk'] },
+      { text: '2 Eier', categories: ['dairy-eggs'] },
+      { text: '2 EL Mehl, 1 Prise Salz', staple: true },
+      { text: 'Zucker, Zimt, Butter zum Braten', staple: true },
+    ],
+    steps: [
+      'Milch mit Eiern, Mehl und Salz verquirlen.',
+      'Brotscheiben kurz in die Mischung legen, bis sie sich vollsaugen.',
+      'In Butter beidseitig goldbraun braten.',
+      'Mit Zucker und Zimt bestreuen und warm servieren.',
+    ],
+  },
+  {
+    id: 'gschwellti-kaese',
+    title: 'Gschwellti mit Käse',
+    minutes: 30,
+    servings: 2,
+    tags: ['vegetarisch'],
+    ingredients: [
+      {
+        text: '600 g festkochende Kartoffeln',
+        categories: ['produce-potatoes'],
+      },
+      {
+        text: '200 g Raclette- oder Bergkäse',
+        categories: ['dairy-cheese-hard'],
+      },
+      { text: '1 Zwiebel, in Ringen', categories: ['produce-onions'], optional: true },
+      { text: 'Kümmel, Salz', staple: true },
+    ],
+    steps: [
+      'Kartoffeln unter fliessendem Wasser gut bürsten.',
+      'In einem Topf mit Salzwasser und Kümmel 25 bis 30 Minuten weich kochen.',
+      'Käse in Scheiben schneiden oder in einer Pfanne schmelzen.',
+      'Kartoffeln mit Schale heiss servieren, mit Käse und Zwiebelringen belegen.',
+    ],
+  },
+  {
+    id: 'zucchetti-gratin',
+    title: 'Zucchetti-Gratin',
+    minutes: 40,
+    servings: 3,
+    tags: ['vegetarisch'],
+    ingredients: [
+      { text: '2 Zucchetti', words: ['zucchetti', 'zucchini'] },
+      { text: '2 Tomaten', categories: ['produce-tomatoes'], optional: true },
+      { text: '150 g Rahm', categories: ['dairy-cream'] },
+      { text: '100 g Reibkäse', categories: ['dairy-cheese-hard'] },
+      { text: 'Butter, Salz, Pfeffer, Muskat', staple: true },
+    ],
+    steps: [
+      'Ofen auf 200 °C vorheizen, Zucchetti und Tomaten in dünne Scheiben schneiden.',
+      'Gratinform buttern und die Scheiben dachziegelartig einschichten.',
+      'Rahm mit Salz, Pfeffer und Muskat würzen und darübergiessen.',
+      'Mit Reibkäse bestreuen und 25 Minuten gratinieren, bis die Oberfläche goldbraun ist.',
+    ],
+  },
+  {
+    id: 'pouletgeschnetzeltes',
+    title: 'Pouletgeschnetzeltes',
+    minutes: 25,
+    servings: 3,
+    tags: ['eiweissreich'],
+    ingredients: [
+      { text: '400 g Pouletbrust', categories: ['meat-poultry'] },
+      {
+        text: '200 g Champignons',
+        categories: ['produce-mushrooms'],
+        optional: true,
+      },
+      { text: '1 Zwiebel', categories: ['produce-onions'] },
+      { text: '2 dl Rahm', categories: ['dairy-cream'] },
+      { text: 'Öl, Bouillon, Mehl, Salz, Pfeffer', staple: true },
+    ],
+    steps: [
+      'Poulet in dünne Streifen schneiden und mit Salz und Pfeffer würzen.',
+      'Zwiebel fein hacken, Champignons in Scheiben schneiden.',
+      'Poulet portionsweise in heissem Öl anbraten und herausnehmen.',
+      'Zwiebel und Pilze andünsten, mit Mehl bestäuben, mit Bouillon und Rahm ablöschen und Poulet zurückgeben.',
     ],
   },
 ];
