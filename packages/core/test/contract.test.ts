@@ -16,6 +16,7 @@ describe('contract v1', () => {
       'inventory.recordOutcome',
       'inventory.open',
       'inventory.move',
+      'products.lookup',
       'shopping.list',
       'shopping.addItem',
       'recipes.suggest',

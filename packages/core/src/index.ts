@@ -25,3 +25,4 @@ export * from './catalog/match';
 export * from './value';
 export * from './quantity';
 export * from './import/ai-import';
+export * from './catalog/open-food-facts';
