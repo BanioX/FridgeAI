@@ -5,6 +5,7 @@ import { BigNumber } from '../../ui/BigNumber';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { DateField } from '../../ui/DateField';
+import { GroupedList, GroupedListItem } from '../../ui/GroupedList';
 import { ItemRow } from '../../ui/ItemRow';
 import { LocationTile } from '../../ui/LocationTile';
 import { StatusChip } from '../../ui/StatusChip';
@@ -102,18 +103,18 @@ export function StyleguidePage() {
 
       <section className="space-y-3">
         <h2 className="font-display text-xl font-semibold">Läuft bald ab</h2>
-        <ul className="space-y-2.5">
+        <GroupedList>
           {sampleItems.map((item) => (
-            <li key={item.name}>
+            <GroupedListItem key={item.name}>
               <ItemRow
                 emoji={item.emoji}
                 name={item.name}
                 meta={item.meta}
                 status={{ tone: item.tone, label: item.label }}
               />
-            </li>
+            </GroupedListItem>
           ))}
-        </ul>
+        </GroupedList>
       </section>
 
       <Card variant="tip" className="flex items-start gap-3">

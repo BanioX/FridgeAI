@@ -15,6 +15,7 @@ export const messages = {
     shopping: 'Einkaufsliste',
     household: 'Haushalt',
     addItem: 'Artikel erfassen',
+    check: 'Kühlschrank-Check',
   },
   placeholder: 'Kommt bald.',
   contractVersion: 'Datenvertrag',
@@ -87,6 +88,31 @@ export const messages = {
     wasted: 'Weggeworfen',
     savedShare: (percent: number) => `${String(percent)} % gerettet`,
     loadDemo: 'Beispieldaten laden',
+  },
+  check: {
+    cardText: 'Ist alles noch da? Einmal pro Woche, in etwa 30 Sekunden.',
+    cardStart: 'Check starten',
+    intro: 'Ein Tipp pro Artikel. Was weg ist, zählt FridgeAI mit.',
+    progress: (step: number, total: number) => `${String(step)} von ${String(total)}`,
+    question: 'Ist das noch da?',
+    still: 'Noch da',
+    half: 'Halb',
+    eaten: 'Gegessen',
+    wasted: 'Weggeworfen',
+    back: 'Zurück',
+    empty: 'Im Kühlschrank liegt nichts. Es gibt nichts zu prüfen.',
+    doneTitle: 'Fertig, dein Kühlschrank ist aktuell.',
+    summary: (counts: { still: number; half: number; eaten: number; wasted: number }) => {
+      const parts = [
+        counts.still > 0 ? `${String(counts.still)} noch da` : '',
+        counts.half > 0 ? `${String(counts.half)} halb` : '',
+        counts.eaten > 0 ? `${String(counts.eaten)} gegessen` : '',
+        counts.wasted > 0 ? `${String(counts.wasted)} weggeworfen` : '',
+      ].filter((part) => part !== '');
+      return parts.join(', ');
+    },
+    toToday: 'Zu «Heute retten»',
+    failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
   },
   inventory: {
     tabsLabel: 'Lagerorte',
