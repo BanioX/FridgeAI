@@ -7,7 +7,7 @@ import { messages } from './messages.de-CH';
 function HouseholdPage() {
   return (
     <PlaceholderPage title={messages.pages.household}>
-      <p className="mt-4 text-sm text-neutral-600">
+      <p className="mt-3 text-sm text-ink-muted">
         {messages.contractVersion} {CONTRACT_VERSION}
       </p>
     </PlaceholderPage>
