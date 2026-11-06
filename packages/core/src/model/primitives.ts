@@ -20,8 +20,30 @@ export const StorageLocationSchema = z.enum(['fridge', 'freezer', 'pantry', 'res
 export type StorageLocation = z.infer<typeof StorageLocationSchema>;
 export const STORAGE_LOCATIONS = StorageLocationSchema.options;
 
+/** Base units for all calculations; display units (kg, dl, l …) are derived (core/quantity.ts). */
 export const UnitSchema = z.enum(['pcs', 'g', 'ml']);
 export type Unit = z.infer<typeof UnitSchema>;
+
+/** How pieces are packed, as people say it: «2 Becher», «1 Flasche», «1 Bund». */
+export const ContainerSchema = z.enum([
+  'piece',
+  'cup',
+  'pack',
+  'bottle',
+  'can',
+  'jar',
+  'bunch',
+  'bag',
+  'box',
+]);
+export type Container = z.infer<typeof ContainerSchema>;
+
+/** Content of one piece, e.g. «Becher à 180 g». */
+export const PackageSizeSchema = z.object({
+  amount: z.number().positive(),
+  unit: z.enum(['g', 'ml']),
+});
+export type PackageSize = z.infer<typeof PackageSizeSchema>;
 
 /**
  * best_before = Mindesthaltbarkeitsdatum (MHD): often still good after the date.
@@ -41,6 +63,8 @@ export const ExpirySourceSchema = z.enum([
   'gs1_code',
   'label_ocr',
   'partner',
+  /** Shortened by the «after opening» rule (ADR-0011). */
+  'after_opening',
 ]);
 export type ExpirySource = z.infer<typeof ExpirySourceSchema>;
 

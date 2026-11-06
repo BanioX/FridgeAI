@@ -65,6 +65,8 @@ export const CategorySchema = z
     dateKind: DateKindSchema,
     defaultLocation: StorageLocationSchema,
     shelfLifeDays: ShelfLifeDaysSchema,
+    /** «Nach dem Öffnen innert N Tagen verbrauchen» – typical days after opening (ADR-0011). */
+    afterOpeningDays: z.int().min(0).max(3650).optional(),
     /** Typical price of one pack, used when a receipt price is missing (marked as estimate). */
     avgPriceRappen: RappenSchema.min(0).optional(),
     /** Typical weight of one pack in grams, for the kg counter. */
