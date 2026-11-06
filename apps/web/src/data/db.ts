@@ -1,10 +1,12 @@
 import type {
   DomainEvent,
+  Gtin,
   Household,
   InventoryItem,
   Member,
   OutcomeEvent,
   Product,
+  ProductInfo,
   ReminderPrefs,
 } from '@fridgeai/core';
 import Dexie, { type EntityTable } from 'dexie';
@@ -15,6 +17,16 @@ export interface ProcessedCommand {
   operation: string;
   result: unknown;
   at: string;
+}
+
+/**
+ * Product data an open database returned for a barcode (step 10b). Device-local, not household
+ * data: never synced, refreshed after a while, and only ever holds public product facts.
+ */
+export interface CatalogCacheEntry {
+  gtin: Gtin;
+  info: ProductInfo;
+  fetchedAt: string;
 }
 
 export interface MetaEntry {
@@ -37,6 +49,7 @@ export class FridgeDb extends Dexie {
   events!: EntityTable<DomainEvent, 'id'>;
   commands!: EntityTable<ProcessedCommand, 'commandId'>;
   meta!: EntityTable<MetaEntry, 'key'>;
+  catalogCache!: EntityTable<CatalogCacheEntry, 'gtin'>;
 
   constructor(name = 'fridgeai') {
     super(name);
@@ -51,5 +64,6 @@ export class FridgeDb extends Dexie {
       commands: 'commandId',
       meta: 'key',
     });
+    this.version(2).stores({ catalogCache: 'gtin, fetchedAt' });
   }
 }

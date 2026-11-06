@@ -158,7 +158,7 @@ export function AddItemPage() {
     setScanStatus(
       `${found} ${messages.scanner.product(product.name, details === '' ? '' : ` (${details})`)}`,
     );
-    setFromOpenFoodFacts(product.source === 'off');
+    setFromOpenFoodFacts(product.source === 'off' || product.factsFrom === 'off');
   }
 
   async function save(next: boolean) {
