@@ -45,7 +45,7 @@ describe('AppShell', () => {
 
   it('shows the contract version on the Haushalt page', async () => {
     await renderAt('/household');
-    expect(screen.getByText(`${messages.contractVersion} v1`)).toBeDefined();
+    expect(await screen.findByText(`${messages.contractVersion} v1`)).toBeDefined();
   });
 
   it('shows the not-found text for unknown paths', async () => {
