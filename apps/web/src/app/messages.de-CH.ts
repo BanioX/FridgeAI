@@ -93,7 +93,7 @@ export const messages = {
     location: 'Wo lagerst du es?',
     amount: 'Menge',
     unit: 'Einheit',
-    amountInvalid: 'Bitte eine Menge über 0 angeben, z. B. 1,5',
+    amountInvalid: 'Bitte eine Menge über 0 angeben, z. B. 1.5',
     packsLabel: 'Packungsgrösse',
     pack: (count: number) => `${String(count)}er`,
     container: 'Verpackung',
