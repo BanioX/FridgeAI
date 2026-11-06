@@ -14,13 +14,15 @@
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
-    "build": "pnpm -r --if-present run build"
+    "build": "pnpm -r --if-present run build",
+    "e2e": "pnpm --filter @fridgeai/web e2e"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@types/node": "^24.19.2",
     "@vitest/coverage-v8": "^5.1.0",
     "eslint": "^10.14.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^17.14.0",
     "prettier": "^3.9.10",
     "typescript": "~6.0.3",
