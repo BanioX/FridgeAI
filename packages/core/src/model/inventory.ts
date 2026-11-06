@@ -3,6 +3,8 @@ import { IdSchema } from '../ids';
 import { RappenSchema } from '../money';
 import {
   CategoryIdSchema,
+  DateKindSchema,
+  ExpirySourceSchema,
   GtinSchema,
   IsoDateTimeSchema,
   LocalDateSchema,
@@ -16,6 +18,24 @@ import {
 
 export const ProductSourceSchema = z.enum(['off', 'receipt', 'manual']);
 
+const GramsPer100 = z.number().min(0).max(100);
+
+/** Nutrition facts per 100 g or 100 ml, as printed on the pack (all optional). */
+export const NutritionSchema = z.object({
+  basis: z.enum(['100g', '100ml']),
+  energyKcal: z.number().min(0).max(900).optional(),
+  fat: GramsPer100.optional(),
+  saturatedFat: GramsPer100.optional(),
+  carbohydrates: GramsPer100.optional(),
+  sugars: GramsPer100.optional(),
+  fiber: GramsPer100.optional(),
+  protein: GramsPer100.optional(),
+  salt: GramsPer100.optional(),
+  /** Where the values come from: product databases, the BLV database (per category) or a partner. */
+  source: z.enum(['off', 'openfoodrepo', 'blv', 'manual', 'partner']),
+});
+export type Nutrition = z.infer<typeof NutritionSchema>;
+
 /** Master data of a product, shared within the household (cached from Open Food Facts or learned). */
 export const ProductSchema = z.object({
   ...syncFields,
@@ -27,6 +47,15 @@ export const ProductSchema = z.object({
   source: ProductSourceSchema,
   /** Retailer article numbers, for future rebuy partners (plan, section 2). */
   externalRefs: z.partialRecord(RetailerSchema, z.string().min(1).max(64)).optional(),
+  /** Pack size as printed, e.g. «1 l», «500 g». */
+  packSize: z.string().trim().max(30).optional(),
+  nutrition: NutritionSchema.optional(),
+  nutriScore: z.enum(['a', 'b', 'c', 'd', 'e']).optional(),
+  /** Normalised allergen tags, e.g. `milk`, `gluten`, `nuts`. */
+  allergens: z
+    .array(z.string().regex(/^[a-z][a-z0-9-]{1,40}$/))
+    .max(20)
+    .optional(),
 });
 export type Product = z.infer<typeof ProductSchema>;
 
@@ -42,7 +71,10 @@ export const InventoryItemSchema = z.object({
   purchasedAt: IsoDateTimeSchema,
   /** Calendar day of expiry (Europe/Zurich), not an instant. */
   expiresOn: LocalDateSchema,
-  expiryEstimated: z.boolean(),
+  /** MHD or use-by: from the category by default, from a GS1 code or the label when known. */
+  expiryKind: DateKindSchema,
+  /** How the date was obtained; anything but `category_estimate` is a real date. */
+  expirySource: ExpirySourceSchema,
   /** Day the item went into the freezer, if it is frozen. */
   frozenOn: LocalDateSchema.optional(),
   priceRappen: RappenSchema.min(0).optional(),

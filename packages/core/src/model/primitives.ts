@@ -19,6 +19,27 @@ export const STORAGE_LOCATIONS = StorageLocationSchema.options;
 export const UnitSchema = z.enum(['pcs', 'g', 'ml']);
 export type Unit = z.infer<typeof UnitSchema>;
 
+/**
+ * best_before = Mindesthaltbarkeitsdatum (MHD): often still good after the date.
+ * use_by = Verbrauchsdatum («zu verbrauchen bis»): do not eat after the date (food safety).
+ */
+export const DateKindSchema = z.enum(['best_before', 'use_by']);
+export type DateKind = z.infer<typeof DateKindSchema>;
+
+/**
+ * Where an expiry date came from. Built ahead of the industry (ADR-0006): today most dates are
+ * estimated or typed in; 2D codes (GS1 DataMatrix / Digital Link) and label photos can carry the
+ * real date, partners may deliver it with digital receipts.
+ */
+export const ExpirySourceSchema = z.enum([
+  'category_estimate',
+  'manual',
+  'gs1_code',
+  'label_ocr',
+  'partner',
+]);
+export type ExpirySource = z.infer<typeof ExpirySourceSchema>;
+
 export const RetailerSchema = z.enum(['migros', 'coop', 'other']);
 export type Retailer = z.infer<typeof RetailerSchema>;
 

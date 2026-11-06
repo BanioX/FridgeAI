@@ -109,7 +109,8 @@ describe('inventory', () => {
     unit: 'pcs',
     purchasedAt: now,
     expiresOn: '2026-11-09',
-    expiryEstimated: true,
+    expiryKind: 'best_before',
+    expirySource: 'category_estimate',
     priceRappen: 195,
     owner: 'shared',
     status: 'active',
@@ -119,6 +120,15 @@ describe('inventory', () => {
     expect(InventoryItemSchema.safeParse(item).success).toBe(true);
     expect(InventoryItemSchema.safeParse({ ...item, owner: alice }).success).toBe(true);
     expect(InventoryItemSchema.safeParse({ ...item, owner: 'everyone' }).success).toBe(false);
+  });
+
+  it('records where the expiry date came from and which kind it is', () => {
+    expect(
+      InventoryItemSchema.safeParse({ ...item, expiryKind: 'use_by', expirySource: 'gs1_code' })
+        .success,
+    ).toBe(true);
+    expect(InventoryItemSchema.safeParse({ ...item, expirySource: 'guess' }).success).toBe(false);
+    expect(InventoryItemSchema.safeParse({ ...item, expiryKind: 'sell_by' }).success).toBe(false);
   });
 
   it('rejects impossible quantities, prices and dates', () => {
@@ -141,6 +151,34 @@ describe('inventory', () => {
     expect(ProductSchema.safeParse({ ...product, gtin: '4006381333931' }).success).toBe(true);
     expect(ProductSchema.safeParse({ ...product, gtin: '4006381333932' }).success).toBe(false);
     expect(ProductSchema.safeParse({ ...product, categoryId: 'Milch' }).success).toBe(false);
+  });
+
+  it('stores nutrition facts, Nutri-Score and allergens from a scan', () => {
+    const product = {
+      ...sync(),
+      name: 'Vollmilch',
+      categoryId: 'dairy-milk',
+      defaultLocation: 'fridge',
+      source: 'off',
+      packSize: '1 l',
+      nutrition: {
+        basis: '100ml',
+        energyKcal: 64,
+        fat: 3.5,
+        protein: 3.3,
+        salt: 0.1,
+        source: 'off',
+      },
+      nutriScore: 'b',
+      allergens: ['milk'],
+    };
+    expect(ProductSchema.safeParse(product).success).toBe(true);
+    expect(
+      ProductSchema.safeParse({ ...product, nutrition: { ...product.nutrition, fat: 120 } })
+        .success,
+    ).toBe(false);
+    expect(ProductSchema.safeParse({ ...product, nutriScore: 'f' }).success).toBe(false);
+    expect(ProductSchema.safeParse({ ...product, allergens: ['Milch!'] }).success).toBe(false);
   });
 
   it('records outcomes with an owner snapshot', () => {
