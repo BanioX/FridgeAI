@@ -90,6 +90,8 @@ export const InventoryItemViewSchema = z.object({
   allergens: z.array(z.string()).optional(),
   /** Where the product facts come from, for the attribution. */
   productSource: ProductSourceSchema.optional(),
+  /** Barcode of the product, e.g. to ask for its picture (`products.image`). */
+  gtin: GtinSchema.optional(),
 });
 export type InventoryItemView = z.infer<typeof InventoryItemViewSchema>;
 
@@ -283,6 +285,24 @@ export const CONTRACT_V1 = {
     scopes: ['inventory:read'],
     input: z.object({ ...queryBase, gtin: GtinSchema }),
     output: z.object({ product: ProductLookupSchema.nullable() }),
+  }),
+  'products.image': query({
+    name: 'products.image',
+    summary: {
+      de: 'Packungsbild zu einem Barcode, falls auf dem Gerät vorhanden.',
+      en: 'Picture of the pack for a barcode, if the device has one.',
+    },
+    scopes: ['inventory:read'],
+    input: z.object({ ...queryBase, gtin: GtinSchema }),
+    output: z.object({
+      image: z
+        .object({
+          /** Small JPEG, PNG or WebP as data URL, so it travels in JSON (API, MCP). */
+          dataUrl: z.string().regex(/^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/),
+          source: z.enum(['off']),
+        })
+        .nullable(),
+    }),
   }),
   'shopping.list': query({
     name: 'shopping.list',

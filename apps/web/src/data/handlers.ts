@@ -68,6 +68,7 @@ function toView(item: InventoryItem, product: Product | undefined): InventoryIte
     ...(item.openedOn === undefined ? {} : { openedOn: item.openedOn }),
     ...factsOf(product),
     ...(product === undefined ? {} : { productSource: product.source }),
+    ...(product?.gtin === undefined ? {} : { gtin: product.gtin }),
   };
 }
 
@@ -547,6 +548,12 @@ export function createInventoryHandlers(ctx: HandlerContext) {
     };
   };
 
+  const productImage: Handler<'products.image'> = async (raw) => {
+    const input = CONTRACT_V1['products.image'].input.parse(raw);
+    const entry = await db.productImages.get(input.gtin);
+    return { image: entry === undefined ? null : { dataUrl: entry.dataUrl, source: entry.source } };
+  };
+
   const wasteStats: Handler<'stats.waste'> = async (raw) => {
     const input = CONTRACT_V1['stats.waste'].input.parse(raw);
     const outcomes = await db.outcomes.where('householdId').equals(input.householdId).toArray();
@@ -568,6 +575,7 @@ export function createInventoryHandlers(ctx: HandlerContext) {
     'inventory.move': move,
     'inventory.open': open,
     'products.lookup': lookupProduct,
+    'products.image': productImage,
     'stats.waste': wasteStats,
   };
 }
