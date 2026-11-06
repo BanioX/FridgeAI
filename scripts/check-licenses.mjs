@@ -17,6 +17,21 @@ const PERMISSIVE = new Set([
 ]);
 const STRONG_COPYLEFT = /\b(A?GPL|LGPL|SSPL|EUPL|OSL|CPAL)\b/i;
 
+/**
+ * SPDX expressions: «(MIT OR CC0-1.0)» lets us pick one, so one permissive choice is enough;
+ * «(MIT AND Zlib)» means all of them apply.
+ */
+function permissive(expression) {
+  const inner = expression.replace(/^\((.*)\)$/, '$1').trim();
+  if (inner.includes(' OR ')) {
+    return inner.split(' OR ').some((part) => permissive(part.trim()));
+  }
+  if (inner.includes(' AND ')) {
+    return inner.split(' AND ').every((part) => permissive(part.trim()));
+  }
+  return PERMISSIVE.has(inner);
+}
+
 /** `pnpm licenses list --json`: { "<licence>": [{ name, versions, … }] } */
 function licenses(production) {
   const output = execSync(`pnpm licenses list --json${production ? ' --prod' : ''}`, {
@@ -29,12 +44,12 @@ const names = (packages) => packages.map((item) => item.name).join(', ');
 const problems = [];
 
 for (const [licence, packages] of licenses(true)) {
-  if (!PERMISSIVE.has(licence)) {
+  if (!permissive(licence)) {
     problems.push(`runtime  ${licence}: ${names(packages)}`);
   }
 }
 for (const [licence, packages] of licenses(false)) {
-  if (STRONG_COPYLEFT.test(licence)) {
+  if (STRONG_COPYLEFT.test(licence) && !permissive(licence)) {
     problems.push(`tooling  ${licence}: ${names(packages)}`);
   }
 }
