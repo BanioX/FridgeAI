@@ -33,3 +33,22 @@ test('production build ships no developer tools', async ({ page }) => {
   await page.goto('/styleguide');
   await expect(page.getByRole('heading', { level: 1, name: 'Seite nicht gefunden' })).toBeVisible();
 });
+
+test('home screen icons for iPhone and Android are there', async ({ page, request }) => {
+  await page.goto('/');
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute(
+    'href',
+    '/apple-touch-icon.png',
+  );
+  const manifestUrl = await page.locator('link[rel="manifest"]').getAttribute('href');
+  const manifest = (await (await request.get(manifestUrl ?? '')).json()) as {
+    icons: { src: string; sizes: string; purpose: string }[];
+  };
+  expect(manifest.icons.map((icon) => `${icon.sizes} ${icon.purpose}`)).toEqual(
+    expect.arrayContaining(['192x192 any', '512x512 any', '512x512 maskable']),
+  );
+  for (const file of ['/apple-touch-icon.png', ...manifest.icons.map((icon) => `/${icon.src}`)]) {
+    const response = await request.get(file);
+    expect(response.ok(), file).toBe(true);
+  }
+});
