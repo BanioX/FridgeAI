@@ -4,6 +4,7 @@ import { browserClock, browserIds } from '../data/adapters';
 import { ensureLocalHousehold } from '../data/bootstrap';
 import { FridgeDb } from '../data/db';
 import { createInventoryHandlers, type InventoryHandlers } from '../data/handlers';
+import { createHouseholdHandlers, type HouseholdHandlers } from '../data/household-handlers';
 import { createShoppingHandlers, type ShoppingHandlers } from '../data/shopping-handlers';
 import { cachedCatalog } from '../data/catalog-cache';
 import { openFoodFactsCatalog } from '../data/open-food-facts';
@@ -18,6 +19,7 @@ export interface AppData {
   today: LocalDate;
   inventory: InventoryHandlers;
   shopping: ShoppingHandlers;
+  household: HouseholdHandlers;
 }
 
 const AppDataContext = createContext<AppData | null>(null);
@@ -58,6 +60,7 @@ export function AppDataProvider({ children, db }: { children: ReactNode; db?: Fr
           today: browserClock.today(),
           inventory: createInventoryHandlers(context),
           shopping: createShoppingHandlers(context),
+          household: createHouseholdHandlers(context),
         });
       })
       .catch(() => {

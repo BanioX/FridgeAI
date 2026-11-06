@@ -1,11 +1,16 @@
 import { z } from 'zod';
 import { IdSchema } from '../ids';
 import { RappenSchema } from '../money';
-import type { Scope } from '../model/household';
+import { DomainEventSchema } from './events';
+import { HouseholdSchema, MemberSchema, type Scope } from '../model/household';
 import {
+  InventoryItemSchema,
   NutritionSchema,
+  OutcomeEventSchema,
+  ProductSchema,
   ProductSourceSchema,
   OutcomeSchema,
+  ShoppingListItemSchema,
   ShareRecipientSchema,
   WasteReasonSchema,
 } from '../model/inventory';
@@ -15,6 +20,7 @@ import {
   DateKindSchema,
   ExpirySourceSchema,
   GtinSchema,
+  IsoDateTimeSchema,
   LocalDateSchema,
   OwnerSchema,
   PackageSizeSchema,
@@ -385,6 +391,38 @@ export const CONTRACT_V1 = {
     scopes: ['inventory:write'],
     input: z.object({ ...commandBase, itemId: IdSchema }),
     output: z.object({ offerId: IdSchema }),
+  }),
+  'household.export': query({
+    name: 'household.export',
+    summary: {
+      de: 'Alle Daten des Haushalts herausgeben (Datenportabilität, ADR-0020).',
+      en: 'Hand out all of the household data (data portability, ADR-0020).',
+    },
+    scopes: ['household:read'],
+    input: z.object({ ...queryBase }),
+    output: z.object({
+      format: z.literal('fridgeai-export'),
+      contractVersion: z.literal('v1'),
+      exportedAt: IsoDateTimeSchema,
+      household: HouseholdSchema,
+      members: z.array(MemberSchema),
+      products: z.array(ProductSchema),
+      items: z.array(InventoryItemSchema),
+      outcomes: z.array(OutcomeEventSchema),
+      shoppingItems: z.array(ShoppingListItemSchema),
+      events: z.array(DomainEventSchema),
+    }),
+  }),
+  'household.delete': command({
+    name: 'household.delete',
+    summary: {
+      de: 'Alle Daten des Haushalts endgültig löschen (ADR-0020).',
+      en: 'Delete all of the household data for good (ADR-0020).',
+    },
+    scopes: ['household:write'],
+    /** `confirm: true` on purpose: nothing deletes everything by accident. */
+    input: z.object({ ...commandBase, confirm: z.literal(true) }),
+    output: z.object({ deleted: z.literal(true) }),
   }),
 } as const;
 
