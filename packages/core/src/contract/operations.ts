@@ -182,6 +182,16 @@ export const CONTRACT_V1 = {
       }),
     output: z.object({ eventId: IdSchema, remainingQuantity: z.number().min(0) }),
   }),
+  'inventory.undoOutcome': command({
+    name: 'inventory.undoOutcome',
+    summary: {
+      de: 'Gegessen, Weitergegeben oder Weggeworfen rückgängig machen; die Menge kommt zurück.',
+      en: 'Undo eaten, shared or wasted; the quantity goes back to the item.',
+    },
+    scopes: ['inventory:write'],
+    input: z.object({ ...commandBase, eventId: IdSchema }),
+    output: z.object({ itemId: IdSchema, quantity: z.number().min(0) }),
+  }),
   'inventory.open': command({
     name: 'inventory.open',
     summary: {

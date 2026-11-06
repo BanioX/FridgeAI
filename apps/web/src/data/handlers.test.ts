@@ -213,6 +213,61 @@ describe('inventory.recordOutcome', () => {
   });
 });
 
+describe('inventory.undoOutcome', () => {
+  const record = (itemId: Id, outcome: 'eaten' | 'wasted', quantity?: number) =>
+    handlers['inventory.recordOutcome']({
+      commandId: ids.next(),
+      householdId,
+      itemId,
+      outcome,
+      ...(quantity === undefined ? {} : { quantity }),
+    });
+  const undo = (eventId: Id, commandId: Id = ids.next()) =>
+    handlers['inventory.undoOutcome']({ commandId, householdId, eventId });
+
+  it('gives a partial use back with its price and marks the outcome as undone', async () => {
+    const { itemId } = await add({ name: 'Joghurt', quantity: 4, priceRappen: 380 });
+    const { eventId } = await record(itemId, 'eaten', 1);
+    const commandId = ids.next();
+    expect(await undo(eventId, commandId)).toEqual({ itemId, quantity: 4 });
+    expect(await undo(eventId, commandId)).toEqual({ itemId, quantity: 4 });
+    expect(await db.items.get(itemId)).toMatchObject({
+      quantity: 4,
+      status: 'active',
+      priceRappen: 380,
+    });
+    expect((await db.outcomes.get(eventId))?.deletedAt).toBeDefined();
+    expect(await db.events.where('type').equals('outcome.undone').count()).toBe(1);
+    await expect(undo(eventId)).rejects.toMatchObject({ code: 'already_undone' });
+  });
+
+  it('reopens a closed item, also for an earlier outcome', async () => {
+    const { itemId } = await add({ name: 'Joghurt', quantity: 4, priceRappen: 380 });
+    const first = await record(itemId, 'eaten', 1);
+    const last = await record(itemId, 'wasted');
+    expect(await db.items.get(itemId)).toMatchObject({ status: 'wasted' });
+
+    expect(await undo(first.eventId)).toEqual({ itemId, quantity: 1 });
+    expect(await db.items.get(itemId)).toMatchObject({
+      status: 'active',
+      quantity: 1,
+      priceRappen: 95,
+    });
+    expect(await undo(last.eventId)).toEqual({ itemId, quantity: 4 });
+    expect(await db.items.get(itemId)).toMatchObject({ quantity: 4, priceRappen: 380 });
+  });
+
+  it('keeps estimated values off the item and rejects unknown outcomes', async () => {
+    const { itemId } = await add({ name: 'Vollmilch' });
+    const { eventId } = await record(itemId, 'wasted');
+    await undo(eventId);
+    const item = await db.items.get(itemId);
+    expect(item).toMatchObject({ status: 'active', quantity: 1 });
+    expect(item?.priceRappen).toBeUndefined();
+    await expect(undo(ids.next())).rejects.toMatchObject({ code: 'not_found' });
+  });
+});
+
 describe('packaging, opening and reasons', () => {
   it('stores how pieces are packed and shows it in the list', async () => {
     const { itemId } = await add({
