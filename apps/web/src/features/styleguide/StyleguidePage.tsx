@@ -30,6 +30,13 @@ const sampleItems: { emoji: string; name: string; meta: string; tone: Tone; labe
   },
   { emoji: '🍞', name: 'Ruchbrot', meta: '500 g · Vorrat', tone: 'fresh', label: 'in 5 Tagen' },
   { emoji: '🫛', name: 'Erbsen', meta: '750 g · Tiefkühler', tone: 'ice', label: 'bis März' },
+  {
+    emoji: '🏕️',
+    name: 'Risotto gefriergetrocknet',
+    meta: '120 g · Notvorrat',
+    tone: 'olive',
+    label: 'bis 2051',
+  },
 ];
 
 // Full class names so Tailwind can detect them (no string concatenation).
@@ -84,10 +91,11 @@ export function StyleguidePage() {
 
       <section className="space-y-3">
         <h2 className="font-display text-xl font-semibold">Lagerorte</h2>
-        <div className="grid grid-cols-3 gap-2.5">
+        <div className="grid grid-cols-2 gap-2.5">
           <LocationTile location="fridge" label="Kühlschrank" countLabel="12 Artikel" />
           <LocationTile location="freezer" label="Tiefkühler" countLabel="7 Artikel" />
           <LocationTile location="pantry" label="Vorrat" countLabel="23 Artikel" />
+          <LocationTile location="reserve" label="Notvorrat" countLabel="reicht 9 Tage" />
         </div>
       </section>
 
@@ -110,6 +118,7 @@ export function StyleguidePage() {
           <StatusChip tone="danger">Nicht mehr essen</StatusChip>
           <StatusChip tone="ice">eingefroren</StatusChip>
           <StatusChip tone="wheat">Vorrat</StatusChip>
+          <StatusChip tone="olive">Notvorrat</StatusChip>
           <StatusChip tone="neutral">geteilt</StatusChip>
         </div>
       </section>

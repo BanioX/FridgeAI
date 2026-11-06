@@ -9,7 +9,7 @@ describe('StyleguidePage', () => {
     render(<StyleguidePage />);
     expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Heute retten');
     expect(screen.getByText('CHF 42.80')).toBeDefined();
-    expect(screen.getAllByRole('listitem')).toHaveLength(6);
+    expect(screen.getAllByRole('listitem')).toHaveLength(7);
     expect(screen.getByRole('button', { name: 'Bon scannen' })).toBeDefined();
     expect(screen.getByRole('button', { name: 'Manuell erfassen' }).getAttribute('type')).toBe(
       'button',

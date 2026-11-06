@@ -59,6 +59,25 @@ export function daysBetween(from: LocalDate, to: LocalDate): number {
   return dayNumber(to) - dayNumber(from);
 }
 
+/** Adds calendar months; the day is clamped to the month's end (31.1. + 1 month = 28./29.2.). */
+export function addMonths(date: LocalDate, months: number): LocalDate {
+  if (!Number.isSafeInteger(months)) {
+    throw new RangeError(`months must be an integer, got ${String(months)}`);
+  }
+  const [year = 0, month = 1, day = 1] = date.split('-').map(Number);
+  const index = year * 12 + (month - 1) + months;
+  const targetYear = Math.floor(index / 12);
+  const targetMonth = (index % 12) + 1;
+  const lastDay = new Date(Date.UTC(targetYear, targetMonth, 0)).getUTCDate();
+  return localDate(
+    `${String(targetYear).padStart(4, '0')}-${String(targetMonth).padStart(2, '0')}-${String(Math.min(day, lastDay)).padStart(2, '0')}`,
+  );
+}
+
+export function addYears(date: LocalDate, years: number): LocalDate {
+  return addMonths(date, years * 12);
+}
+
 export function minLocalDate(a: LocalDate, b: LocalDate): LocalDate {
   return a <= b ? a : b;
 }

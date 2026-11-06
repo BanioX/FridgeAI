@@ -23,7 +23,7 @@ describe('design-system primitives', () => {
   });
 
   it('gives every tone a chip and an accent style', () => {
-    const tones: Tone[] = ['fresh', 'soon', 'today', 'danger', 'ice', 'wheat', 'neutral'];
+    const tones: Tone[] = ['fresh', 'soon', 'today', 'danger', 'ice', 'wheat', 'olive', 'neutral'];
     for (const tone of tones) {
       render(<StatusChip tone={tone}>{tone}</StatusChip>);
       expect(toneClasses[tone].chip).not.toBe('');
