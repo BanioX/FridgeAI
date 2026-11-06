@@ -34,6 +34,8 @@ Alle Text-/Hintergrund-Paare erfüllen WCAG AA (mindestens 4.5:1), geprüft beim
 
 ## Schrift
 
+> **Abgelöst durch ADR-0021 (6.11.2026):** künftig Systemschrift (SF Pro auf Apple-Geräten) nach Apples Human Interface Guidelines. Die Tabelle unten gilt, bis der Umbau gemergt ist.
+
 | Rolle | Schrift | Grösse/Gewicht |
 | --- | --- | --- |
 | Display (Seitentitel, grosse Zahlen) | **Fraunces** (Variable, OFL) | 28–34 px, 600 |
