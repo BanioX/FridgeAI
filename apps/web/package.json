@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsc -p tsconfig.json",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "preview:shots": "node scripts/preview.ts"
   },
   "dependencies": {
     "@fontsource-variable/figtree": "^5.3.0",

@@ -12,7 +12,8 @@ Kurzfassung der Regeln. Vollständiger Brief: [`docs/brief.md`](docs/brief.md) �
 1. Erst Plan, dann Code. Abweichungen vom Plan mit Alban klären.
 2. Ein PR = ein Thema, < 400 geänderte Zeilen (ohne Lockfile), mit Tests und grünem CI. PR-Beschreibung: Was, Warum, Wie getestet.
 3. Kleine Entscheide selbst treffen und als ADR in `docs/adr/NNNN-titel.md` festhalten.
-4. **Alban fragen vor:** Backend/Hosting, Auth, Framework-Wechsel, serverseitigem OCR/LLM, neuen grösseren Dependencies oder kostenpflichtigen Diensten, Preis-/Freemium-Grenzen, allem, was Daten das Gerät verlassen lässt, Abweichungen vom MVP-Umfang.
+4. **Previews für Alban:** Bei jeder sichtbaren UI-Änderung `pnpm preview:shots <route …>` ausführen und das kompakte `sheet.png` (aus `apps/web/.previews/…`) mit dem PR an Alban schicken, damit er das Design beurteilen kann. Feedback fliesst in einen Folge-PR.
+5. **Alban fragen vor:** Backend/Hosting, Auth, Framework-Wechsel, serverseitigem OCR/LLM, neuen grösseren Dependencies oder kostenpflichtigen Diensten, Preis-/Freemium-Grenzen, allem, was Daten das Gerät verlassen lässt, Abweichungen vom MVP-Umfang.
 
 ## Harte Regeln
 - Keine echten Partner-Integrationen (Migros, Coop, Lieferdienste): nur Interfaces mit Mocks.
