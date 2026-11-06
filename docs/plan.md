@@ -257,7 +257,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 - 12a: Export (JSON und CSV) und Löschen (lokal komplett; Konto und Server-Daten inkl. Regel für Haushalte mit weiteren Mitgliedern) (umgesetzt lokal: `household.export`, `household.delete`, CSV-Baustein mit Schutz gegen Formeln; Oberfläche folgt; vorgezogen für den Pilot)
 - 12b: Entitlements `free | pro` als reine Funktion plus Hook; Partner-Mocks in einer Entwickler-Ansicht
 - 12c: PWA-Feinschliff: Icons, Installationshinweis, Offline-Check, Content-Security-Policy, Lighthouse-Check im CI
-- 12d: `docs/privacy.md` (Entwurf in einfacher Sprache, von dir/Fachperson zu prüfen), a11y-Durchgang, Pilot-Checkliste, bekannte Einschränkungen
+- 12d: `docs/privacy.md` (Entwurf in einfacher Sprache, von dir/Fachperson zu prüfen), a11y-Durchgang, Pilot-Checkliste, bekannte Einschränkungen (umgesetzt: Entwurf `docs/privacy.md` nach dem tatsächlichen Verhalten der App, Pilot-Checkliste und Grenzen in `docs/pilot.md`)
 - **Delegation:** S für 12b und 12c, O für Löschlogik, CSP und Datenschutz-Doku, H für Icons und Texte.
 
 **→ MVP fertig, Pilot mit 3–5 WGs.**
