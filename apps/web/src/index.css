@@ -36,10 +36,8 @@
   /* Expiry status (always paired with text, never colour alone) */
   --color-soon: #8a4b0f;
   --color-soon-bg: #fff1df;
-  --color-soon-accent: #e39a3b;
   --color-today: #a63a22;
   --color-today-bg: #fdebe6;
-  --color-today-accent: #e0603f;
   --color-danger: #b3261e;
 
   /* Storage locations: fridge = basil, freezer = ice, pantry = wheat, reserve = olive */
