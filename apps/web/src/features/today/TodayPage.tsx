@@ -14,10 +14,10 @@ import { DEV_TOOLS } from '../../app/dev-tools';
 import { messages } from '../../app/messages.de-CH';
 import { BigNumber } from '../../ui/BigNumber';
 import { Card } from '../../ui/Card';
-import { ItemRow } from '../../ui/ItemRow';
 import { LocationTile } from '../../ui/LocationTile';
 import { expiryBadge } from '../../ui/expiry-badge';
-import { itemMeta, locationOrder } from '../inventory/item-meta';
+import { InventoryItemRow } from '../inventory/InventoryItemRow';
+import { locationOrder } from '../inventory/item-meta';
 import { ImpactCard } from './ImpactCard';
 
 export function TodayPage() {
@@ -97,10 +97,8 @@ export function TodayPage() {
                   to={`/inventory/${item.id}`}
                   className="block rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2"
                 >
-                  <ItemRow
-                    emoji={item.emoji ?? ''}
-                    name={item.name}
-                    meta={itemMeta(item)}
+                  <InventoryItemRow
+                    item={item}
                     status={expiryBadge(item.status, item.expiresOn, today, item.location)}
                   />
                 </Link>

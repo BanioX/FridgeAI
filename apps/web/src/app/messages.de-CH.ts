@@ -214,6 +214,7 @@ export const messages = {
       molluscs: 'Weichtiere',
     } as Record<string, string | undefined>,
     hint: 'Angaben aus einer offenen Datenbank, ohne Gewähr. Massgebend ist die Packung.',
+    imageCredit: 'Bild: Open Food Facts (CC BY-SA)',
   },
   shopping: {
     what: 'Was brauchst du?',

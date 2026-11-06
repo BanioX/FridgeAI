@@ -54,7 +54,7 @@ export function ProductFacts({ item }: { item: InventoryItemView }) {
         <span className="flex items-center gap-2">
           {nutriScore === undefined ? null : (
             <span
-              className={`rounded-full px-3 py-1 text-sm font-bold ${GRADE_CLASSES[nutriScore]}`}
+              className={`rounded-full px-3 py-1 text-sm font-bold whitespace-nowrap ${GRADE_CLASSES[nutriScore]}`}
             >
               {t.nutriScore(nutriScore.toUpperCase())}
             </span>
