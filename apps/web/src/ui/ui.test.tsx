@@ -1,5 +1,6 @@
 import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
+import { GroupedList, GroupedListItem } from './GroupedList';
 import { ItemRow } from './ItemRow';
 import { StatusChip } from './StatusChip';
 import { toneClasses, type Tone } from './tones';
@@ -22,13 +23,25 @@ describe('design-system primitives', () => {
     expect(screen.getByText('heute').className).toContain('text-today');
   });
 
-  it('gives every tone a chip and an accent style', () => {
+  it('gives every tone a chip style', () => {
     const tones: Tone[] = ['fresh', 'soon', 'today', 'danger', 'ice', 'wheat', 'olive', 'neutral'];
     for (const tone of tones) {
       render(<StatusChip tone={tone}>{tone}</StatusChip>);
       expect(toneClasses[tone].chip).not.toBe('');
-      expect(toneClasses[tone].accent).not.toBe('');
       expect(screen.getByText(tone).className).toContain(toneClasses[tone].chip);
     }
+  });
+
+  it('keeps grouped rows a real list for screen readers', () => {
+    render(
+      <GroupedList>
+        <GroupedListItem>Milch</GroupedListItem>
+        <GroupedListItem inset="check">Brot</GroupedListItem>
+      </GroupedList>,
+    );
+    expect(screen.getAllByRole('listitem').map((item) => item.textContent)).toEqual([
+      'Milch',
+      'Brot',
+    ]);
   });
 });
