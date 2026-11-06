@@ -1,6 +1,6 @@
 # CLAUDE.md – FridgeAI
 
-Kurzfassung der Regeln. Der vollständige Brief steht in [`docs/brief.md`](docs/brief.md), der freigegebene Plan in [`docs/plan.md`](docs/plan.md), Entscheide in [`docs/adr/`](docs/adr/).
+Kurzfassung der Regeln. Vollständiger Brief: [`docs/brief.md`](docs/brief.md) · Plan: [`docs/plan.md`](docs/plan.md) · Strategie: [`docs/blue-ocean.md`](docs/blue-ocean.md) · Use Cases: [`docs/use-cases.md`](docs/use-cases.md) · Entscheide: [`docs/adr/`](docs/adr/).
 
 **Produkt:** Local-first PWA für Schweizer Haushalte (WGs, Paare). «Scan deinen Bon – FridgeAI weiss, was ihr habt, wem es gehört, wer was schuldet und was ihr heute retten müsst.» Product Owner: Alban Hyseni.
 
@@ -20,6 +20,8 @@ Kurzfassung der Regeln. Der vollständige Brief steht in [`docs/brief.md`](docs/
 - Geld immer als Integer-Rappen, nie Float. Salden und Metriken werden berechnet, nicht gespeichert.
 - Ablaufdaten als Kalendertag (`YYYY-MM-DD`, Europe/Zurich), Zeitpunkte als ISO-UTC.
 - `packages/core` ist reines TypeScript ohne Browser-Abhängigkeit; Äusseres nur über Ports.
+- Contract-first: Die UI ruft nur Commands/Queries des Vertrags (Zod-Schemas) auf, Änderungen erzeugen Domain Events. So bleiben REST-API und MCP-Server später ohne Umbau möglich (Plan, Abschnitt 2).
+- Partner- oder KI-Zugriff auf Haushaltsdaten nur mit ausdrücklicher, widerrufbarer Einwilligung pro Haushalt. Kein Verkauf von Einzeldaten.
 - Bon-Bilder werden nach der Auswertung nicht gespeichert (ausser expliziter Opt-in). Assets (OCR-Modelle, Worker) selbst hosten, kein CDN.
 - TypeScript `strict`, kein `any`. Keine neue Dependency ohne Freigabe (Liste in `docs/plan.md`, Frage 6).
 - Kamera nur nach Nutzeraktion, alle Berechtigungszustände und Fallbacks (Foto-Upload, manuell) behandeln.
