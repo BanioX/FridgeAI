@@ -10,6 +10,11 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
+      workbox: {
+        // Precache fonts too, so the app looks the same offline. Skip unused subsets.
+        globPatterns: ['**/*.{js,css,html,svg,woff2,webmanifest}'],
+        globIgnores: ['**/*vietnamese*'],
+      },
       manifest: {
         name: 'FridgeAI',
         short_name: 'FridgeAI',
@@ -18,8 +23,8 @@ export default defineConfig({
         display: 'standalone',
         start_url: '/',
         scope: '/',
-        theme_color: '#15803d',
-        background_color: '#ffffff',
+        theme_color: '#f8f6f1',
+        background_color: '#f8f6f1',
         icons: [{ src: 'icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' }],
       },
     }),

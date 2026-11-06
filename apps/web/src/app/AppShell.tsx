@@ -1,42 +1,70 @@
+import { House, ListChecks, Refrigerator, ScanLine, Sun, type LucideIcon } from 'lucide-react';
 import { NavLink, Outlet } from 'react-router';
 import { messages } from './messages.de-CH';
 
-const navItems = [
-  { to: '/', label: messages.nav.today, end: true },
-  { to: '/inventory', label: messages.nav.inventory, end: false },
-  { to: '/scan', label: messages.nav.scan, end: false },
-  { to: '/shopping', label: messages.nav.shopping, end: false },
-  { to: '/household', label: messages.nav.household, end: false },
-] as const;
+interface NavItem {
+  to: string;
+  label: string;
+  icon: LucideIcon;
+  end: boolean;
+}
 
-const linkBase =
-  'flex min-h-11 flex-1 items-center justify-center px-2 text-sm font-medium focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-green-800';
+const navItems: readonly NavItem[] = [
+  { to: '/', label: messages.nav.today, icon: Sun, end: true },
+  { to: '/inventory', label: messages.nav.inventory, icon: Refrigerator, end: false },
+  { to: '/scan', label: messages.nav.scan, icon: ScanLine, end: false },
+  { to: '/shopping', label: messages.nav.shopping, icon: ListChecks, end: false },
+  { to: '/household', label: messages.nav.household, icon: House, end: false },
+];
 
 export function AppShell() {
   return (
-    <div className="flex min-h-screen flex-col bg-white text-neutral-900">
-      <header className="bg-green-800 px-4 py-3 text-lg font-semibold text-white">
-        {messages.appName}
+    <div className="min-h-dvh">
+      <header className="sticky top-0 z-10 border-b border-line/70 bg-oat/90 pt-[env(safe-area-inset-top)] backdrop-blur">
+        <div className="mx-auto flex h-14 max-w-xl items-center gap-2.5 px-4">
+          <img src="/icon.svg" alt="" className="size-7" />
+          <span className="font-display text-xl font-semibold tracking-tight text-basil-800">
+            {messages.appName}
+          </span>
+        </div>
       </header>
-      <main className="flex-1 px-4 py-6 pb-24">
+
+      <main className="mx-auto max-w-xl px-4 pt-6 pb-32">
         <Outlet />
       </main>
+
       <nav
         aria-label={messages.navLabel}
-        className="fixed inset-x-0 bottom-0 flex border-t border-neutral-300 bg-white"
+        className="fixed inset-x-0 bottom-0 z-10 border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur"
       >
-        {navItems.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            end={item.end}
-            className={({ isActive }) =>
-              `${linkBase} ${isActive ? 'bg-green-100 font-bold text-green-900' : 'text-neutral-800'}`
-            }
-          >
-            {item.label}
-          </NavLink>
-        ))}
+        <ul className="mx-auto flex max-w-xl">
+          {navItems.map(({ to, label, icon: Icon, end }) => (
+            <li key={to} className="flex-1">
+              <NavLink
+                to={to}
+                end={end}
+                className={({ isActive }) =>
+                  `flex min-h-16 flex-col items-center justify-center gap-1 rounded-xl text-xs transition-colors ${
+                    isActive ? 'font-semibold text-basil-800' : 'font-medium text-ink-muted'
+                  }`
+                }
+              >
+                {({ isActive }) => (
+                  <>
+                    <span
+                      className={`flex h-8 w-14 items-center justify-center rounded-full transition-colors ${
+                        isActive ? 'bg-basil-100' : ''
+                      }`}
+                    >
+                      <Icon size={22} strokeWidth={isActive ? 2 : 1.75} aria-hidden="true" />
+                    </span>
+                    {label}
+                  </>
+                )}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
       </nav>
     </div>
   );
