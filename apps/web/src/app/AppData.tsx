@@ -8,6 +8,7 @@ import { createHouseholdHandlers, type HouseholdHandlers } from '../data/househo
 import { createShoppingHandlers, type ShoppingHandlers } from '../data/shopping-handlers';
 import { cachedCatalog } from '../data/catalog-cache';
 import { openFoodFactsCatalog } from '../data/open-food-facts';
+import { requestPersistentStorage } from '../data/persistence';
 import { fetchProductImage } from '../data/product-images';
 import { messages } from './messages.de-CH';
 
@@ -43,6 +44,8 @@ export function AppDataProvider({ children, db }: { children: ReactNode; db?: Fr
       member: messages.defaults.memberName,
     })
       .then((profile) => {
+        // Local-first: ask the browser not to clear the data when space runs low.
+        void requestPersistentStorage('storage' in navigator ? navigator.storage : undefined);
         if (cancelled) {
           return;
         }
