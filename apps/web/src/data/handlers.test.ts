@@ -2,6 +2,7 @@ import 'fake-indexeddb/auto';
 import { GtinSchema, inMemoryCatalog, localDate, rappen, type Id } from '@fridgeai/core';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { ensureLocalHousehold } from './bootstrap';
+import { cachedCatalog } from './catalog-cache';
 import type { FridgeDb } from './db';
 import { CommandError, createInventoryHandlers, type InventoryHandlers } from './handlers';
 import { fixedClock, sequentialIds, testDb } from './test-helpers';
@@ -494,6 +495,65 @@ describe('products.lookup', () => {
       packSize: '1 l',
       categoryId: 'dairy-milk',
       source: 'off',
+    });
+  });
+
+  it('keeps the facts of a scanned product on the item, with the name the person chose', async () => {
+    const clock = fixedClock('2026-11-06T09:00:00.000Z', '2026-11-06');
+    const nutrition = {
+      basis: '100ml' as const,
+      energyKcal: 64,
+      fat: 3.5,
+      protein: 3.3,
+      source: 'off' as const,
+    };
+    const withCatalog = createInventoryHandlers({
+      db,
+      clock,
+      ids,
+      actor: ids.next(),
+      catalog: cachedCatalog(
+        db,
+        inMemoryCatalog([
+          {
+            gtin,
+            name: 'Vollmilch UHT',
+            brand: 'Alpenhof',
+            packSize: '1 l',
+            nutrition,
+            nutriScore: 'b',
+            allergens: ['milk'],
+            source: 'off',
+          },
+        ]),
+        clock,
+      ),
+    });
+    await withCatalog['products.lookup']({ householdId, gtin });
+    const { itemId } = await withCatalog['inventory.addItem']({
+      commandId: ids.next(),
+      householdId,
+      name: 'Milch',
+      gtin,
+      location: 'fridge',
+    });
+    const { items } = await withCatalog['inventory.list']({ householdId });
+    expect(items.find((item) => item.id === itemId)).toMatchObject({
+      name: 'Milch',
+      brand: 'Alpenhof',
+      packSize: '1 l',
+      nutrition,
+      nutriScore: 'b',
+      allergens: ['milk'],
+      productSource: 'off',
+    });
+    // Known now: the household's product answers the next scan, facts included.
+    const again = await withCatalog['products.lookup']({ householdId, gtin });
+    expect(again.product).toMatchObject({
+      source: 'household',
+      factsFrom: 'off',
+      brand: 'Alpenhof',
+      nutriScore: 'b',
     });
   });
 

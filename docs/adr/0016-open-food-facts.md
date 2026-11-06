@@ -16,6 +16,8 @@ Nach dem Scan (ADR-0014) soll die App Name, Kategorie, Packungsgrösse und Nähr
   - Nach 6 Sekunden oder offline gilt das Produkt als unbekannt. Das Erfassen geht immer weiter.
 - **Vertrag:** neue Abfrage `products.lookup` (Scope `inventory:read`). Später beantwortet der Server dieselbe Anfrage für API und MCP.
 - **Speichern:** Übernimmt die Person den Vorschlag, entsteht ein Produkt im Haushalt. Der nächste Scan desselben Barcodes braucht kein Netz mehr.
+- **Cache:** Antworten von Open Food Facts merkt sich das Gerät 30 Tage lang (Tabelle `catalogCache`, Dexie-Version 2). Die Tabelle enthält nur öffentliche Produktdaten, ist keine Haushaltsdaten und wird nie synchronisiert. Ein erneuter Scan funktioniert dadurch offline, und eine alte Antwort ist besser als keine. Unbekannte Barcodes werden nicht gemerkt.
+- **Beim Erfassen:** Das neue Produkt übernimmt Marke, Packungsgrösse, Nährwerte, Nutri-Score und Allergene aus dem Cache, mit `source: off`. Der Name bleibt der, den die Person gewählt hat.
 - **Untrusted:** Die Antwort wird mit Zod geprüft (`parseOffProduct`). Unplausible Nährwerte werden verworfen, Steuerzeichen entfernt, Längen begrenzt.
 - **Lizenz:** Die Daten stehen unter ODbL. Die App nennt «Daten: Open Food Facts» beim Vorschlag. Eigene Daten bleiben getrennt (ADR-0015).
 

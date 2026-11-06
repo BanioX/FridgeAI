@@ -4,6 +4,7 @@ import { RappenSchema } from '../money';
 import type { Scope } from '../model/household';
 import {
   NutritionSchema,
+  ProductSourceSchema,
   OutcomeSchema,
   ShareRecipientSchema,
   WasteReasonSchema,
@@ -75,6 +76,14 @@ export const InventoryItemViewSchema = z.object({
   packageSize: PackageSizeSchema.optional(),
   /** Set once the pack is open; the expiry date then follows the opening rule. */
   openedOn: LocalDateSchema.optional(),
+  /** Product facts, e.g. from Open Food Facts after a scan (step 10b, ODbL). */
+  brand: z.string().optional(),
+  packSize: z.string().optional(),
+  nutrition: NutritionSchema.optional(),
+  nutriScore: z.enum(['a', 'b', 'c', 'd', 'e']).optional(),
+  allergens: z.array(z.string()).optional(),
+  /** Where the product facts come from, for the attribution. */
+  productSource: ProductSourceSchema.optional(),
 });
 export type InventoryItemView = z.infer<typeof InventoryItemViewSchema>;
 
@@ -87,8 +96,11 @@ export const ProductLookupSchema = z.object({
   categoryId: CategoryIdSchema,
   nutrition: NutritionSchema.optional(),
   nutriScore: z.enum(['a', 'b', 'c', 'd', 'e']).optional(),
+  allergens: z.array(z.string()).optional(),
   /** `household`: known from an earlier item; `off`: Open Food Facts (ODbL, attribution). */
   source: z.enum(['household', 'off', 'openfoodrepo', 'partner']),
+  /** Where brand and nutrition originally came from, also for household products (ODbL). */
+  factsFrom: z.enum(['off']).optional(),
 });
 export type ProductLookup = z.infer<typeof ProductLookupSchema>;
 
