@@ -72,6 +72,19 @@ function categoryOf(product: Product | undefined): Category {
   return (product && categoryById(product.categoryId)) ?? fallbackCategory();
 }
 
+type ProductFacts = Pick<Product, 'brand' | 'packSize' | 'nutrition' | 'nutriScore' | 'allergens'>;
+
+/** Only the facts that are there (exactOptionalPropertyTypes: no `undefined` values). */
+function factsOf(source: ProductFacts | undefined): ProductFacts {
+  return {
+    ...(source?.brand === undefined ? {} : { brand: source.brand }),
+    ...(source?.packSize === undefined ? {} : { packSize: source.packSize }),
+    ...(source?.nutrition === undefined ? {} : { nutrition: source.nutrition }),
+    ...(source?.nutriScore === undefined ? {} : { nutriScore: source.nutriScore }),
+    ...(source?.allergens === undefined ? {} : { allergens: source.allergens }),
+  };
+}
+
 function toView(item: InventoryItem, product: Product | undefined): InventoryItemView {
   const category = categoryOf(product);
   return {
@@ -90,6 +103,8 @@ function toView(item: InventoryItem, product: Product | undefined): InventoryIte
     ...(item.container === undefined ? {} : { container: item.container }),
     ...(item.packageSize === undefined ? {} : { packageSize: item.packageSize }),
     ...(item.openedOn === undefined ? {} : { openedOn: item.openedOn }),
+    ...factsOf(product),
+    ...(product === undefined ? {} : { productSource: product.source }),
   };
 }
 
@@ -100,7 +115,7 @@ function toView(item: InventoryItem, product: Product | undefined): InventoryIte
  */
 export function createInventoryHandlers(ctx: HandlerContext) {
   const { db, clock, ids, actor, catalog } = ctx;
-  const allTables = [db.items, db.products, db.outcomes, db.events, db.commands];
+  const allTables = [db.items, db.products, db.outcomes, db.events, db.commands, db.catalogCache];
 
   function event<TType extends DomainEvent['type']>(
     householdId: Id,
@@ -221,6 +236,10 @@ export function createInventoryHandlers(ctx: HandlerContext) {
         )
         .first();
       if (product === undefined) {
+        // Facts an open database gave for this barcode (cached at lookup, never fetched here:
+        // a network call would end the transaction). The name stays the one the person chose.
+        const known =
+          input.gtin === undefined ? undefined : (await db.catalogCache.get(input.gtin))?.info;
         product = ProductSchema.parse({
           id: ids.next(),
           householdId: input.householdId,
@@ -228,8 +247,9 @@ export function createInventoryHandlers(ctx: HandlerContext) {
           name: input.name,
           categoryId: category.id,
           defaultLocation: category.defaultLocation,
-          source: 'manual',
+          source: known === undefined ? 'manual' : 'off',
           ...(input.gtin === undefined ? {} : { gtin: input.gtin }),
+          ...factsOf(known),
         });
         await db.products.add(product);
       }
@@ -571,10 +591,7 @@ export function createInventoryHandlers(ctx: HandlerContext) {
           name: own.name,
           categoryId: own.categoryId,
           source: 'household',
-          ...(own.brand === undefined ? {} : { brand: own.brand }),
-          ...(own.packSize === undefined ? {} : { packSize: own.packSize }),
-          ...(own.nutrition === undefined ? {} : { nutrition: own.nutrition }),
-          ...(own.nutriScore === undefined ? {} : { nutriScore: own.nutriScore }),
+          ...factsOf(own),
         },
       };
     }
@@ -591,10 +608,7 @@ export function createInventoryHandlers(ctx: HandlerContext) {
         name: found.name,
         categoryId: category.id,
         source: found.source,
-        ...(found.brand === undefined ? {} : { brand: found.brand }),
-        ...(found.packSize === undefined ? {} : { packSize: found.packSize }),
-        ...(found.nutrition === undefined ? {} : { nutrition: found.nutrition }),
-        ...(found.nutriScore === undefined ? {} : { nutriScore: found.nutriScore }),
+        ...factsOf(found),
       },
     };
   };
