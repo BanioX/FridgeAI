@@ -1,4 +1,5 @@
 import {
+  CATEGORIES,
   categoryById,
   DateKindSchema,
   fallbackCategory,
@@ -8,6 +9,7 @@ import {
   type DateKind,
   type InventoryItemView,
   type LocalDate,
+  type StorageLocation,
 } from '@fridgeai/core';
 import { ArrowLeft } from 'lucide-react';
 import { useId, useState } from 'react';
@@ -19,10 +21,13 @@ import { ChoiceChips } from '../../ui/ChoiceChips';
 import { DateField } from '../../ui/DateField';
 import { formatAmount, parseAmount } from './add-item';
 import { cameFromDetail } from './edit-state';
+import { locationOrder } from './item-meta';
 import { useInventoryItem } from './use-item';
 
 const t = messages.editItem;
 const kindOptions = DateKindSchema.options.map((value) => ({ value, label: t.dateKinds[value] }));
+const locationOptions = locationOrder.map((value) => ({ value, label: messages.locations[value] }));
+const sortedCategories = [...CATEGORIES].sort((a, b) => a.name.de.localeCompare(b.name.de, 'de'));
 const fieldClass = (invalid: boolean) =>
   `min-h-12 w-full rounded-xl border bg-surface px-4 text-lg tabular-nums outline-none focus:border-basil-600 ${
     invalid ? 'border-today' : 'border-line'
@@ -56,6 +61,9 @@ function EditItemForm({ item }: { item: InventoryItemView }) {
   const navigate = useNavigate();
   const location = useLocation();
   const id = useId();
+  const [name, setName] = useState(item.name);
+  const [categoryId, setCategoryId] = useState(item.categoryId);
+  const [place, setPlace] = useState<StorageLocation>(item.location);
   const [expiresOn, setExpiresOn] = useState<LocalDate | null>(item.expiresOn);
   const [kind, setKind] = useState<DateKind>(item.expiryKind);
   // Compared as text: ⅓ shows as «0.333», and saving it untouched must not change the quantity.
@@ -68,11 +76,12 @@ function EditItemForm({ item }: { item: InventoryItemView }) {
   const [status, setStatus] = useState('');
   const [saving, setSaving] = useState(false);
 
-  const category = categoryById(item.categoryId) ?? fallbackCategory();
+  const category = categoryById(categoryId) ?? fallbackCategory();
   const quantity = parseAmount(quantityText);
   const price = priceText.trim() === '' ? null : parseChf(priceText);
   const priceInvalid = priceText.trim() !== '' && (price === null || price < 0);
   const errors = {
+    name: name.trim() === '' ? t.nameMissing : null,
     date: expiresOn === null ? t.dateMissing : null,
     quantity: quantity === null ? t.quantityInvalid : null,
     price: priceInvalid ? t.priceInvalid : null,
@@ -82,11 +91,14 @@ function EditItemForm({ item }: { item: InventoryItemView }) {
 
   async function save() {
     setSubmitted(true);
-    if (saving || expiresOn === null || quantity === null || priceInvalid) {
+    if (saving || errors.name !== null || expiresOn === null || quantity === null || priceInvalid) {
       return;
     }
     // Only what was touched: the handler also skips equal values, but rounding must not leak in.
     const changes = {
+      ...(name.trim() === item.name ? {} : { name: name.trim() }),
+      ...(categoryId === item.categoryId ? {} : { categoryId }),
+      ...(place === item.location ? {} : { location: place }),
       ...(expiresOn === item.expiresOn ? {} : { expiresOn }),
       ...(kind === item.expiryKind ? {} : { expiryKind: kind }),
       ...(quantityText.trim() === initialQuantity ? {} : { quantity }),
@@ -143,13 +155,67 @@ function EditItemForm({ item }: { item: InventoryItemView }) {
         }}
       >
         <div className="space-y-1.5">
+          <label htmlFor={`${id}-name`} className="font-semibold">
+            {t.name}
+          </label>
+          <input
+            id={`${id}-name`}
+            value={name}
+            onChange={(event) => {
+              setName(event.target.value);
+            }}
+            maxLength={120}
+            autoComplete="off"
+            aria-invalid={shown(errors.name) !== null}
+            aria-describedby={`${id}-name-error`}
+            className={fieldClass(shown(errors.name) !== null)}
+          />
+          <p id={`${id}-name-error`} className="text-sm text-today">
+            {shown(errors.name)}
+          </p>
+        </div>
+
+        <div className="space-y-1.5">
+          <label htmlFor={`${id}-category`} className="font-semibold">
+            {t.category}
+          </label>
+          <div className="flex items-center gap-3">
+            <span aria-hidden="true" className="text-3xl">
+              {category.emoji}
+            </span>
+            <select
+              id={`${id}-category`}
+              value={category.id}
+              onChange={(event) => {
+                setCategoryId(event.target.value);
+              }}
+              className={fieldClass(false)}
+            >
+              {sortedCategories.map((option) => (
+                <option key={option.id} value={option.id}>
+                  {option.name.de}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <ChoiceChips
+          legend={t.location}
+          segmented
+          options={locationOptions}
+          value={place}
+          onChange={setPlace}
+        />
+
+        <div className="space-y-1.5">
           <DateField
             label={t.expiry}
             value={expiresOn}
             onChange={setExpiresOn}
             today={today}
-            location={item.location}
-            typicalShelfLifeDays={shelfLifeAt(category, item.location)}
+            location={place}
+            typicalShelfLifeDays={shelfLifeAt(category, place)}
             estimated={item.expirySource === 'category_estimate' && expiresOn === item.expiresOn}
           />
           <p className="text-sm text-today">{shown(errors.date)}</p>
