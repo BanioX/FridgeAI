@@ -154,6 +154,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 - 2d: Ports (`ReceiptOcrEngine`, `BarcodeScanner`, `ProductCatalog`, `RecipeProvider`, `RebuyProvider`, `DeliveryProvider`, `RetailerReceiptSource`, `SyncAdapter`, `NotificationService`, `Clock`, `IdGenerator`), Mocks für die Partner-Ports
 - 2e: **Vertrag v1**: Command-/Query-Registry mit Zod-Ein-/Ausgabe, Domain Events, `commandId`; Test, der aus dem Vertrag JSON Schema erzeugt (Beweis für spätere OpenAPI/MCP-Tauglichkeit); ADR-0005 (Contract-first, API/MCP)
 - 2f: **GS1-Codes lesen** (ADR-0006): EAN/UPC, GS1 DataMatrix und GS1 Digital Link (QR) mit Ablaufdatum (AI 17/15), Charge, Gewicht; vorausschauend für «GS1 Sunrise 2027»
+- 2h: **Notvorrat** als vierter Lagerort (ADR-0007): Haltbarkeit bis 100 Jahre, Warnung 90 Tage vorher, Schnellwahl passend zum Zeithorizont (`expiryPresets`), Monats-/Jahresrechnung, Kategorien für gefriergetrocknete Mahlzeiten, Notrationen und Trinkwasser
 - 2g: Ablaufdatum aus Etikett-Text erkennen («zu verbrauchen bis», «mindestens haltbar bis», FR/IT) als Grundlage für «Datum fotografieren» (v1)
 - **Delegation:** O für Modell, Geld, Ports und Vertrag. S entwirft den Kategorien-Katalog, ich prüfe ihn (besonders Verbrauchsdatum-Kategorien). H für Tabellentests.
 - **Tests:** ≥ 95 % Abdeckung, Property-Tests für Rappen.
@@ -164,9 +165,9 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 
 #### Schritt 3 – Lokaler Vorrat und Startseite (US-04, US-13, US-14, US-15)
 - 3a: Dexie-Schema, Repositories hinter Interfaces, Event-Log und Outbox lokal, Migrations-Tests (`fake-indexeddb`), automatischer lokaler Haushalt
-- 3b: App-Shell (Navigation: Heute · Vorrat · Scannen · Liste · Haushalt), Vorrat mit drei Tabs, Sortierung nach Ablauf, Filter «Läuft bald ab»
+- 3b: App-Shell (Navigation: Heute · Vorrat · Scannen · Liste · Haushalt), Vorrat mit **vier Tabs** (Kühlschrank, Tiefkühler, Vorrat, Notvorrat), Sortierung nach Ablauf, Filter «Läuft bald ab»
 - 3c: **Startseite «Heute retten»** (UC-01): was heute/morgen abläuft, Wert im Kühlschrank in CHF (UC-03), Badge; Verbrauchsdatum-Warnungen
-- 3d: Manuelle Erfassung mit Autovervollständigung und Standardartikeln (UC-07), Bearbeiten, Verschieben mit Neuberechnung; **Ablaufdatum-Feld mit Kalender oder Eingabe `dd.mm.yyyy`** (auch `6.11.26`, `061126`, `6.11.`), Schnellwahl «morgen / in 3 Tagen / in 1 Woche», Vorschlag aus der Kategorie; Offline-Cache der App-Shell; E2E «Artikel erfassen» und «Offline neu laden»
+- 3d: Manuelle Erfassung mit Autovervollständigung und Standardartikeln (UC-07), Bearbeiten, Verschieben mit Neuberechnung; **Datumsfeld gemäss [`design.md`](./design.md#datumsfeld-ablaufdatum)**: Vorschlag vorausgewählt, Schnellwahl passend zum Zeithorizont (Tage bis 50 Jahre), Tippen `dd.mm.yyyy` mit automatischen Punkten und Live-Vorschau, nativer Kalender; Offline-Cache der App-Shell; E2E «Artikel erfassen» und «Offline neu laden»
 - **Delegation:** O für 3a (sync-kritisch), S für 3b bis 3d nach meinen Komponenten-Schnittstellen.
 - **Parallel möglich mit Schritt 4.**
 
@@ -208,7 +209,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 - **Sicherheit:** RLS-Tests (Mitglied A sieht Haushalt B nicht), nicht erratbare Einladungscodes, Rate-Limit.
 
 #### Schritt 8 – Push & Erinnerungen (US-05, US-21)
-- 8a: `core/reminders`: wer bekommt wann was (Digest, Verbrauchsdatum, Einfrier-Tipp, Wochenrückblick), Ruhezeiten, Bündelung; rein und getestet
+- 8a: `core/reminders`: wer bekommt wann was (Digest, Verbrauchsdatum, Einfrier-Tipp, Wochenrückblick, **Notvorrat-Rotation 3 Monate vorher**), Ruhezeiten, Bündelung; rein und getestet
 - 8b: Web Push: Abo-Verwaltung, Versand serverseitig aus den Events (geplanter Job), VAPID-Schlüssel nur im Backend; Einstellungen pro Person
 - 8c: Ohne Konto oder ohne Push: Digest beim Öffnen und Badge; **Installationsanleitung für iPhone** (Web Push nur als installierte PWA); E2E für Einstellungen und In-App-Fallback
 - **Delegation:** O für 8a und 8b, S für 8c.

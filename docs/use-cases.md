@@ -67,6 +67,20 @@ Und er darf das Erfassen **nicht mühsamer** machen. Laut Blue-Ocean-Analyse ist
 
 **Technische Einschränkung, ehrlich:** Web Push für eine PWA braucht einen Server, der weiss, wann was abläuft (also ein Konto mit Sync). Auf dem iPhone funktioniert Web Push nur, wenn die App zum Home-Bildschirm hinzugefügt wurde. Ohne Konto zeigt die App den Digest beim Öffnen und ein Badge. Native Apps (Capacitor, v1) können Erinnerungen lokal auf dem Gerät planen, ganz ohne Server. Entscheid: Frage 11 im Plan.
 
+## 2a. Notvorrat: Langzeit-Lagerung (neu, Alban 6.11.2026)
+
+Der Bund empfiehlt jedem Haushalt einen Notvorrat (Kampagne «Kluger Rat – Notvorrat» des BWL): Lebensmittel für rund eine Woche und 9 Liter Trinkwasser pro Person, **regelmässig aufbrauchen und ersetzen, um Abfall zu vermeiden**. Dazu kommen Prepper und Organisationen (Armee, Zivilschutz, Gemeinden, Firmen) mit Lebensmitteln, die 25 bis 50 Jahre halten.
+
+| # | Use Case | Nutzen | Phase |
+| --- | --- | --- | --- |
+| N-01 | **Notvorrat als vierter Lagerort** mit eigenem Tab | Langzeit-Vorrat getrennt vom Alltag, kein Rauschen in «Heute retten» | MVP+ |
+| N-02 | **Daten bis 50+ Jahre** erfassen: Schnellwahl «1 · 5 · 10 · 25 · 50 J», Tippen `12.2076`, 2D-Codes | Auch Militär- und Prepper-Nahrung | MVP+ (Logik fertig) |
+| N-03 | **Rotation statt Wegwerfen:** Warnung 3 Monate vor Ablauf, «Zum Kochen brauchen und ersetzen», Ersatz mit 1 Tipp auf die Einkaufsliste | Genau das, was der Bund empfiehlt | MVP+ |
+| N-04 | **Reichweite:** «Euer Notvorrat reicht für 9 Tage für 2 Personen» aus Kalorien (Nährwerte) und Wasser (9 l/Person) | Sinn der Nährwerte im Notfall | v1 |
+| N-05 | Checkliste nach Empfehlung des Bundes (Wasser, Reis, Teigwaren, Öl, Salz …) mit Ampel | Vollständigkeit auf einen Blick | v1 |
+| N-06 | Jahres-Check: einmal im Jahr alles durchgehen | Vorrat bleibt aktuell | v1 |
+| N-07 | Organisationen (Zivilschutz, Gemeinden, Firmen, Armee) verwalten grosse Langzeit-Bestände | B2B, passt zu Option C | Vision |
+
 ## 3. Kochen & Verwerten: Rezepte
 
 | # | Use Case | Nutzen | Phase |
@@ -146,6 +160,8 @@ Die **MVP+**-Vorschläge sind alle klein und in [`plan.md`](./plan.md) den Schri
 | --- | --- |
 | UC-01 Startseite «Heute retten», UC-03 Wert im Kühlschrank, UC-07 Standardartikel | 3 |
 | UC-04 Kühlschrank-Check, D-03 CH-Benchmark | 6 |
+| N-01 Notvorrat-Tab, N-02 Langzeit-Daten | 3 (Logik: 2h) |
+| N-03 Rotation 3 Monate vorher | 8 |
 | P-01 Digest, P-02 Verbrauchsdatum, P-03 Einfrier-Tipp, P-06 Wochenrückblick | 8 |
 | W-04 Grundvorrat geteilt | 9 |
 | R-03 Nach dem Kochen abbuchen, R-04 Reste-Tipps, E-02 Doppelkauf-Warnung | 11 (R-04-Daten in 2) |
