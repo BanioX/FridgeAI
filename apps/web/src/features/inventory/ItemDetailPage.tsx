@@ -14,7 +14,6 @@ import {
   type ShareRecipient,
   type WasteReason,
 } from '@fridgeai/core';
-import { useLiveQuery } from 'dexie-react-hooks';
 import { ArrowLeft, PackageOpen, Pencil, Snowflake, Sun, Undo2 } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
@@ -33,6 +32,8 @@ import { itemMeta } from './item-meta';
 import { formatQuantity } from '../../ui/quantity-text';
 import { portionLabel } from './portion-labels';
 import { ProductFacts } from './ProductFacts';
+import { useInventoryItem } from './use-item';
+import { useProductImage } from './use-product-image';
 
 const t = messages.itemDetail;
 const outcomeOptions = OutcomeSchema.options.map((value) => ({ value, label: t.outcomes[value] }));
@@ -53,13 +54,8 @@ export function ItemDetailPage() {
   const { itemId } = useParams();
   const { householdId, ids, inventory, today } = useAppData();
   const navigate = useNavigate();
-  const item = useLiveQuery(
-    async () =>
-      (await inventory['inventory.list']({ householdId })).items.find(
-        (view) => view.id === itemId,
-      ) ?? null,
-    [householdId, itemId],
-  );
+  const item = useInventoryItem(itemId);
+  const image = useProductImage(item?.gtin);
   const [outcome, setOutcome] = useState<Outcome>('eaten');
   const [portion, setPortion] = useState<string | null>(null);
   const [otherText, setOtherText] = useState('');
@@ -190,9 +186,17 @@ export function ItemDetailPage() {
       {back}
 
       <div className="flex items-center gap-4">
-        <span aria-hidden="true" className="text-5xl leading-none">
-          {item.emoji}
-        </span>
+        {image === undefined ? (
+          <span aria-hidden="true" className="text-5xl leading-none">
+            {item.emoji}
+          </span>
+        ) : (
+          <img
+            src={image}
+            alt=""
+            className="size-20 shrink-0 rounded-xl border border-line bg-surface object-contain"
+          />
+        )}
         <div className="min-w-0">
           <h1 className="font-display text-3xl font-semibold tracking-tight">{item.name}</h1>
           {item.brand === undefined && item.packSize === undefined ? null : (
@@ -201,6 +205,16 @@ export function ItemDetailPage() {
             </p>
           )}
           <p className="text-ink-muted">{itemMeta(item)}</p>
+          {image === undefined ? null : (
+            <a
+              href="https://world.openfoodfacts.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-ink-muted underline underline-offset-2"
+            >
+              {messages.productFacts.imageCredit}
+            </a>
+          )}
         </div>
       </div>
 

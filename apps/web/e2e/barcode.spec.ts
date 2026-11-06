@@ -146,8 +146,22 @@ test('fills in the product from Open Food Facts and knows it offline next time',
           nutriments: { 'energy-kcal_100g': 64, fat_100g: 3.5, proteins_100g: 3.3 },
           nutriscore_grade: 'b',
           allergens_tags: ['en:milk'],
+          image_front_small_url:
+            'https://images.openfoodfacts.org/images/products/761/000/000/0004/front_de.3.200.png',
         },
       },
+    });
+  });
+  // A 1×1 PNG stands in for the pack picture.
+  let pictures = 0;
+  await page.route('https://images.openfoodfacts.org/**', (route) => {
+    pictures += 1;
+    return route.fulfill({
+      contentType: 'image/png',
+      body: Buffer.from(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+        'base64',
+      ),
     });
   });
   const scan = async () => {
@@ -174,10 +188,16 @@ test('fills in the product from Open Food Facts and knows it offline next time',
   await expect(page.getByRole('link', { name: 'Daten: Open Food Facts (ODbL)' })).toBeVisible();
   expect(requests).toBe(1);
 
-  // The detail page shows the product facts, folded away until asked for.
+  // The list and the detail page show the pack picture, downloaded once; the detail page also
+  // shows the product facts, folded away until asked for.
   await page.goto('/inventory');
+  await expect(
+    page.getByRole('link', { name: /Vollmilch/ }).locator('img[src^="data:image/png;base64,"]'),
+  ).toBeVisible();
   await page.getByRole('link', { name: /Vollmilch/ }).click();
   await expect(page.getByText('Alpenhof · 1 l')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Bild: Open Food Facts (CC BY-SA)' })).toBeVisible();
+  expect(pictures).toBe(1);
   await page.getByText('Nährwerte und Allergene').click();
   await expect(page.getByText('Nutri-Score B')).toBeVisible();
   await expect(page.getByRole('rowheader', { name: 'Eiweiss' })).toBeVisible();
