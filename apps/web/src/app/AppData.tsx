@@ -4,6 +4,7 @@ import { browserClock, browserIds } from '../data/adapters';
 import { ensureLocalHousehold } from '../data/bootstrap';
 import { FridgeDb } from '../data/db';
 import { createInventoryHandlers, type InventoryHandlers } from '../data/handlers';
+import { createShoppingHandlers, type ShoppingHandlers } from '../data/shopping-handlers';
 import { cachedCatalog } from '../data/catalog-cache';
 import { openFoodFactsCatalog } from '../data/open-food-facts';
 import { messages } from './messages.de-CH';
@@ -16,6 +17,7 @@ export interface AppData {
   /** Swiss calendar day when the app was opened; refreshed when the app becomes visible again. */
   today: LocalDate;
   inventory: InventoryHandlers;
+  shopping: ShoppingHandlers;
 }
 
 const AppDataContext = createContext<AppData | null>(null);
@@ -41,19 +43,21 @@ export function AppDataProvider({ children, db }: { children: ReactNode; db?: Fr
         if (cancelled) {
           return;
         }
+        const context = {
+          db: database,
+          clock: browserClock,
+          ids: browserIds,
+          actor: profile.member.id,
+          catalog: cachedCatalog(database, openFoodFactsCatalog(), browserClock),
+        };
         setData({
           db: database,
           householdId: profile.household.id,
           memberId: profile.member.id,
           ids: browserIds,
           today: browserClock.today(),
-          inventory: createInventoryHandlers({
-            db: database,
-            clock: browserClock,
-            ids: browserIds,
-            actor: profile.member.id,
-            catalog: cachedCatalog(database, openFoodFactsCatalog(), browserClock),
-          }),
+          inventory: createInventoryHandlers(context),
+          shopping: createShoppingHandlers(context),
         });
       })
       .catch(() => {

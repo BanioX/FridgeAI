@@ -112,6 +112,15 @@ export const ExpiryStatusSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('past_use_by'), daysOver: z.int() }),
 ]);
 
+/** The soonest-expiring food of the same kind at home, and how many such items there are. */
+export const AtHomeSchema = z.object({
+  name: z.string(),
+  quantity: QuantitySchema,
+  unit: UnitSchema,
+  expiresOn: LocalDateSchema,
+  count: z.int().min(1),
+});
+
 export const CONTRACT_V1 = {
   'inventory.list': query({
     name: 'inventory.list',
@@ -282,6 +291,10 @@ export const CONTRACT_V1 = {
           quantity: QuantitySchema.optional(),
           unit: UnitSchema.optional(),
           checked: z.boolean(),
+          categoryId: CategoryIdSchema.optional(),
+          emoji: z.string().optional(),
+          /** E-02: what of the same kind is still at home, so nothing is bought twice. */
+          atHome: AtHomeSchema.optional(),
         }),
       ),
     }),
@@ -299,7 +312,33 @@ export const CONTRACT_V1 = {
       quantity: QuantitySchema.optional(),
       unit: UnitSchema.optional(),
     }),
-    output: z.object({ itemId: IdSchema, alreadyAtHome: z.boolean() }),
+    output: z.object({
+      itemId: IdSchema,
+      alreadyAtHome: z.boolean(),
+      /** True if the same thing was already on the list (nothing new was added). */
+      alreadyOnList: z.boolean().default(false),
+      atHome: AtHomeSchema.optional(),
+    }),
+  }),
+  'shopping.check': command({
+    name: 'shopping.check',
+    summary: {
+      de: 'Eintrag auf der Einkaufsliste abhaken oder wieder öffnen.',
+      en: 'Check off a shopping list entry or open it again.',
+    },
+    scopes: ['shopping_list:write'],
+    input: z.object({ ...commandBase, itemId: IdSchema, checked: z.boolean() }),
+    output: z.object({ checked: z.boolean() }),
+  }),
+  'shopping.remove': command({
+    name: 'shopping.remove',
+    summary: {
+      de: 'Eintrag von der Einkaufsliste löschen.',
+      en: 'Remove an entry from the shopping list.',
+    },
+    scopes: ['shopping_list:write'],
+    input: z.object({ ...commandBase, itemId: IdSchema }),
+    output: z.object({ removed: z.boolean() }),
   }),
   'recipes.suggest': query({
     name: 'recipes.suggest',
