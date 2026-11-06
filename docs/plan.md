@@ -1,0 +1,358 @@
+# FridgeAI – MVP-Plan
+
+> **Status: freigegeben durch Alban am 6. November 2026** («Du machst das, du bist die volle Pipeline. Ich sage, was wir machen, ausführen tust du.»).
+> Grundlagen: [`brief.md`](./brief.md) (Build-Brief), [`blue-ocean.md`](./blue-ocean.md) (Strategie), [`use-cases.md`](./use-cases.md) (Brainstorming). Offene Fragen: Abschnitt 9.
+>
+> **Neu in v2:** Plattform-Fähigkeit für API und MCP (Abschnitt 2), Push-Benachrichtigungen früher (Schritt 8), Dashboards in den Schritten 3 und 6, kleine MVP+-Ergänzungen aus den Use Cases, neue Fragen 11 bis 14.
+
+---
+
+## 0. Kurzfassung
+
+- **Ziel des Produkts:** Jede:r im Haushalt sieht, was im Kühlschrank, Tiefkühler und Vorrat liegt. Die App sorgt dafür, dass nichts im Abfall landet. Partner (Händler, Lieferdienste, Gemeinden, KI-Assistenten) können später über API oder MCP andocken und so Einnahmen bringen.
+- **Ausgangslage:** Das Repo enthält ausser dieser Doku noch nichts. Wir bauen alles neu.
+- **12 Schritte in 5 Meilensteinen.** Ein Schritt ist ein Thema, kein einzelner PR. Bei höchstens 400 geänderten Zeilen pro PR braucht jeder Schritt 3 bis 5 PRs, insgesamt **rund 45 PRs** bis zum MVP.
+- **Reihenfolge nach Risiko:** Haushalt, Sync und Push kommen vor Kostenteilung, Barcode, Import, Einkaufsliste und Rezepten. Begründung:
+  1. Sync ist das grösste technische Risiko. Je früher er läuft, desto billiger sind Korrekturen am Datenmodell.
+  2. Push braucht einen Server und ist eines deiner Hauptziele.
+  3. Die Basis-Features sind Red Ocean. Pilot-WGs sollen früh das testen, womit FridgeAI gewinnen will.
+  4. Nach Schritt 9 ist ein **Pilot-Alpha** mit 1 bis 2 WGs möglich: Vorrat, Bon-Scan, Haushalt, Push, Kostenteilung, Rette-Kreis.
+  - *Bedingung:* Der Backend-Entscheid (Frage 1) fällt spätestens am Ende von Meilenstein B. Wenn nicht, ziehe ich Meilenstein D vor. Der Plan funktioniert in beiden Reihenfolgen.
+
+| Meilenstein | Schritte | Ergebnis |
+| --- | --- | --- |
+| **A – Fundament** | 1–2 | Monorepo, CI, Domänenmodell, Vertrag für API/MCP, Haltbarkeit |
+| **B – Lokaler Vorrat & Bon-Scan** | 3–6 | Offline-Vorrat ohne Konto mit Startseite «Heute retten», Bon-Foto → Review → Vorrat, Status und Wirkungs-Dashboard |
+| **C – Haushalt, Push & USP** | 7–9 | Konto, Haushalt, Sync, Push-Erinnerungen, Kostenteilung, Rette-Kreis → **Pilot-Alpha** |
+| **D – Basis komplett** | 10–11 | Barcode, Migros-CSV/Coop-PDF, Einkaufsliste, Rezepte |
+| **E – Release-Reife** | 12 | Export/Löschen, Datenschutz, Entitlements, PWA-Feinschliff → **Pilot mit 3–5 WGs** |
+
+---
+
+## 1. Leitplanken, die alle Schritte prägen
+
+Kleine bis mittlere Entscheide, die ich selbst treffe und als ADR festhalte. Wenn du bei einem Punkt anders denkst, sag es jetzt, später wird es teurer.
+
+1. **Local-first und sync-fähig ab Tag 1.** Jede Zeile hat eine clientseitig erzeugte **UUIDv7**, eine `householdId`, `updatedAt` und `deletedAt` (Soft-Delete). Beim ersten Start legt die App still einen lokalen Haushalt «Mein Haushalt» mit einem lokalen Mitglied an.
+2. **Konflikte: last-write-wins pro Feld mit Hybrid Logical Clock (HLC)** statt Gerätezeit, weil Handy-Uhren falsch gehen können. Details im Sync-ADR (Schritt 7).
+3. **Geld nur als Integer-Rappen** (Typ `Rappen`), nie als Float. Aufteilungen mit Largest-Remainder-Verfahren, deterministisch. Invariante: Summe aller Salden = 0, getestet mit Property-Tests.
+4. **Ablaufdatum ist ein Kalendertag**, gespeichert als `YYYY-MM-DD` (Europe/Zurich). Zeitpunkte wie `purchasedAt` bleiben ISO-UTC.
+5. **`packages/core` bleibt rein:** kein DOM, kein IndexedDB, kein `fetch`. Alles Äussere läuft über Ports mit Adaptern in `apps/web`.
+6. **Kein Bild verlässt das Gerät.** OCR-Modell (`deu`), Tesseract- und PDF-Worker werden selbst gehostet und vom Service Worker gecacht, nicht von einem CDN geladen.
+7. **UI-Texte in einem typisierten Katalog** (`messages.de-CH.ts`) ohne i18n-Bibliothek. Französisch kommt in v1 dazu.
+8. **Kein Error-Tracking und keine Analytics im MVP.** Eine lokale Diagnose-Ansicht, die Nutzer:innen bei Bedarf selbst teilen.
+9. **Routing:** React Router im SPA-Modus (Capacitor-tauglich).
+10. **pnpm und Node-LTS 24** (in Schritt 1 verifiziert; `.nvmrc` und CI identisch).
+
+---
+
+## 2. Plattform-Fähigkeit: API und MCP von Anfang an mitdenken
+
+**Ziel:** Partner und KI-Assistenten sollen später andocken können, ohne dass wir die App umbauen. Im MVP kostet das wenig, wenn wir den Code von Anfang an richtig schneiden. Nachträglich wäre es ein grosser Umbau.
+
+**Prinzip: ein Vertrag, viele Oberflächen.**
+
+```
+                         packages/core
+        ┌───────────────────────────────────────────────┐
+        │  Domäne: Modelle, Regeln, Geld, Haltbarkeit    │
+        │  Vertrag v1: Commands und Queries (Zod-Schemas)│
+        │  Domain Events: item.expiring_soon, …          │
+        └───────────────────────────────────────────────┘
+             ▲              ▲              ▲             ▲
+        PWA (MVP)     REST-API (v1)   MCP-Server (v1)  Webhooks (v1)
+        lokal/Sync    OpenAPI 3.1     Tools für KI     Events an Partner
+                                      (Claude u. a.)
+```
+
+1. **Use-Case-Schicht:** Jede Aktion ist ein benannter Command (`inventory.addItem`, `inventory.consume`, `shopping.addItem`, `rescue.offer`) oder eine Query (`inventory.listExpiring`, `recipes.suggest`, `stats.waste`, `balances.get`), mit Zod-Schema für Ein- und Ausgabe. Die PWA ruft genau diese auf, nie direkt die Datenbank.
+2. **Ein Schema, drei Formate:** Aus denselben Zod-Schemas entstehen später OpenAPI für die REST-API und die Tool-Definitionen für den MCP-Server (Zod 4 erzeugt JSON Schema direkt). Ein Test im MVP stellt sicher, dass das jederzeit funktioniert.
+3. **Domain Events:** Jede Änderung erzeugt ein Event (`item.added`, `item.expiring_soon`, `item.consumed`, `item.used_up`, `shopping_list.item_added`, `receipt.imported`, `rescue.offered`). Im MVP treiben sie Push und Dashboards. Später werden daraus Webhooks für Partner, z. B. `item.used_up` → Nachkauf-Angebot.
+4. **Idempotenz:** Jeder Command trägt eine `commandId`. Das braucht der Offline-Sync ohnehin, die API bekommt es dadurch gratis.
+5. **Partnertaugliche Daten:** GTIN/EAN normalisiert, `externalRefs` pro Händler (Artikelnummern), Einheiten g/ml/Stk., eigene Kategorien mit Zuordnung zu Open-Food-Facts-Kategorien.
+6. **Zugriff nur mit Einwilligung:** Partner und KI-Assistenten bekommen Zugriff nur über OAuth mit klaren Rechten (z. B. `inventory:read`, `shopping_list:write`), pro Haushalt erteilt, jederzeit widerrufbar, protokolliert. Kein Verkauf von Einzeldaten.
+7. **Versionierung:** Vertrag und Events tragen eine Version (`v1`). Breaking Changes nur mit neuer Version.
+
+**Beispiele für spätere MCP-Tools:** `list_expiring_items`, `get_inventory`, `suggest_recipes`, `add_to_shopping_list`, `mark_item_eaten`. Damit geht dann: «Hey Claude, was muss ich heute essen, bevor es abläuft?» Die Smart-Home-Idee aus ATL1 (Alexa, Google Home) und das spätere Hardware-Modul nutzen dieselbe API, sie sind einfach weitere Clients.
+
+**Was davon im MVP gebaut wird:** Punkte 1, 3, 4, 5 vollständig, Punkt 2 als Test, Punkt 6 als Datenmodell (Rechte, Einwilligungen) ohne öffentlichen Endpunkt. REST-API, MCP-Server und Webhooks laufen serverseitig auf den synchronisierten Daten und folgen in v1 (Frage 12).
+
+---
+
+## 3. Datenmodell: Verfeinerungen zum Brief
+
+Der Brief (§4) ist der Startpunkt. Diese Änderungen landen in Schritt 2 in `packages/core/src/model.ts`.
+
+| Bereich | Brief | Vorschlag | Warum |
+| --- | --- | --- | --- |
+| Ablauf | `expiresAt` (Zeitpunkt) | `expiresOn: LocalDate` (`YYYY-MM-DD`) | Kein Off-by-one durch Zeitzonen |
+| Datumsart | – | `Category.dateKind: 'best_before' \| 'use_by'` | **Lebensmittelsicherheit:** «Schauen, Riechen, Probieren» gilt nur fürs MHD. Bei «zu verbrauchen bis» (Hackfleisch, Fisch, Geflügel) klare Warnung |
+| Einfrieren | – | `Category.freezable`, Haltbarkeit im Tiefkühler | Einfrier-Tipp (P-03) |
+| Reste-Tipps | – | `Category.tips` (Lagerung, Verwertung) | R-04 |
+| Grundvorrat | – | `Category.defaultOwner: 'shared' \| 'buyer'` | W-04, weniger Zuordnen |
+| Bon-Zeilen | `isFood: boolean` | `kind: 'item' \| 'discount' \| 'deposit' \| 'bag' \| 'subtotal' \| 'total' \| 'payment' \| 'other'` plus `isFood` | Rabatt und Pfand gehören zu einer Position. Für die Kostenteilung zählt auch Non-Food |
+| Positionsdetails | `quantity`, `priceRappen` | plus `unitPriceRappen?`, `weightGrams?`, `discountRappen` | Gewichtsartikel, Aktionen |
+| Produkt | `barcode?` | `gtin?` (normalisiert), `externalRefs?: Record<retailer, string>` | Partner-Matching, Nachkauf |
+| Teilmengen | WasteEvent ohne Menge | `WasteEvent.quantity`; Artikel bleibt mit Restmenge aktiv | US-06 «ganz oder teilweise» |
+| Rette-Kreis | `sharedInRescueCircle: boolean` | Entität `RescueOffer { itemId, offeredBy, offeredAt, claimedBy?, claimedAt?, withdrawnAt? }` | Wer hat übernommen, keine Doppelzählung |
+| Mitglied | ohne Konto-Bezug | `Member.userId?`, `Member.leftAt?` | Lokales Profil ohne Konto; Austritt |
+| Geteilte Kosten | `assignedTo: 'shared'` | Snapshot `splitAmong: memberId[]` beim Speichern | Saldo ändert sich nicht rückwirkend |
+| Ausgleich | «setzt Salden zurück» | `Settlement` als Buchung; Saldo = Bon-Anteile − Ausgleiche | Nachvollziehbar |
+| Lernende Zuordnung | – | `ProductAlias { retailer, normalizedText, productId?, categoryId, hits }` | US-19 |
+| Erinnerungen | – | `ReminderPrefs { memberId, digestTime, daysBefore[], quietHours, channels }` | Digest, Ruhezeiten |
+| Events | – | `DomainEvent { id, type, version, householdId, actor, at, payload }` | Push, Dashboards, später Webhooks |
+| Einwilligungen | – | `Grant { householdId, client, scopes[], grantedBy, grantedAt, revokedAt? }` | API/MCP später ohne Umbau |
+| Sync | `updatedAt`, `deletedAt` | intern HLC pro Feld, lokale Outbox mit `commandId` | Robuste Konfliktauflösung, Idempotenz |
+
+Weiterhin gilt: **Salden und Food-Waste-Metriken werden berechnet, nicht gespeichert.**
+
+---
+
+## 4. Ergänzte User Stories (Vorschläge)
+
+- **US-13 Manuell erfassen:** Namen tippen, Autovervollständigung aus Kategorien, Verlauf und Standardartikeln; Lagerort und Ablauf vorgeschlagen; höchstens 3 Taps.
+- **US-14 Artikel verschieben:** Vom Kühlschrank in den Tiefkühler → Ablauf neu berechnet (als «geschätzt» markiert), auch umgekehrt.
+- **US-15 Start ohne Konto:** Direkt in die App ohne Registrierung. Beim Erstellen oder Beitreten eines Haushalts: «Bisherigen Vorrat mitnehmen?»
+- **US-16 MHD vs. Verbrauchsdatum:** MHD abgelaufen → «Oft noch gut: schauen, riechen, probieren». Verbrauchsdatum abgelaufen → «Nicht mehr essen».
+- **US-17 Haushalt verlassen:** Offene Salden werden vorher angezeigt, eigene Artikel werden «geteilt» oder gelöscht. Owner können Mitglieder entfernen und Einladungen widerrufen.
+- **US-18 Offline gleichzeitig ändern:** Pro Feld gewinnt die spätere Änderung, niemand verliert ganze Datensätze.
+- **US-19 Lernende Zuordnung:** Korrektur «M-BUDGET VOLLMILCH» → «Milch» wird beim nächsten Bon automatisch vorgeschlagen.
+- **US-20 Rückgängig:** Statuswechsel 10 Sekunden per Toast, danach im Verlauf rückgängig machbar.
+- **US-21 Retten-Digest:** Einmal täglich zur gewählten Zeit eine Zusammenfassung der bald ablaufenden Artikel mit einer Rezeptidee; dringende Fälle (Verbrauchsdatum heute) zusätzlich einzeln; Ruhezeiten werden respektiert.
+- **US-22 Kühlschrank-Check:** Einmal pro Woche schlägt die App einen 30-Sekunden-Check vor: Artikel als Karten, wischen «noch da / weg / halb».
+
+Weitere Use Cases (Push-Typen, Dashboards, Partner) stehen in [`use-cases.md`](./use-cases.md).
+
+---
+
+## 5. Die 12 Schritte
+
+Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`), **H** = Haiku-Subagent (`helper`). Ich reviewe jedes Ergebnis selbst (Diff, Tests, Typecheck, Akzeptanzkriterien).
+
+### Schritt 0 – Planung (dieser Branch)
+`docs/plan.md`, `docs/brief.md`, `docs/blue-ocean.md`, `docs/use-cases.md`, `CLAUDE.md`, `.claude/agents/*`, ADR-0001. Nur Doku.
+
+---
+
+### Meilenstein A – Fundament
+
+#### Schritt 1 – Monorepo, Tooling, CI
+- 1a: pnpm-Workspaces, `tsconfig.base.json` (`strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`), ESLint (flat config, typescript-eslint, kein `any`), Prettier, Vitest mit Coverage, `packages/core` mit Beispieltest, `.nvmrc`, `.env.example`
+- 1b: `apps/web` mit Vite, React, Tailwind, React Router, `vite-plugin-pwa` (Minimal-Manifest), Testing Library, Playwright-Smoke-Test inkl. axe-Check
+- 1c: `.github/workflows/ci.yml` (gemäss Brief §10), Dependabot (npm + Actions), PR-Template «Was, Warum, Wie getestet» mit DoD-Checkliste, ADR-0002 (Stack)
+- **Delegation:** H für Konfiguration, O für tsconfig/ESLint-Regeln und CI-Review.
+- **Fertig, wenn:** `pnpm lint | typecheck | test | build | e2e` lokal und in CI grün.
+
+#### Schritt 2 – Core-Domäne und Vertrag
+- 2a: `model.ts` und Zod-Schemas (inkl. Abschnitt 3), UUIDv7 (eigene ~30 Zeilen), Typ `Rappen` mit Parsen/Formatieren (`3.95`, `-.95`, `1'234.50`, `CHF 12.–`)
+- 2b: `LocalDate`, Europe/Zurich, «Tage bis Ablauf»; **Kategorien-Katalog** (rund 40 Schweizer Alltagskategorien mit Haltbarkeit pro Lagerort, `dateKind`, `freezable`, Reste-/Lagertipps, Durchschnittspreis und -gewicht, Quellen dokumentiert); `estimateExpiry()`
+- 2c: Ports (`ReceiptOcrEngine`, `BarcodeScanner`, `ProductCatalog`, `RecipeProvider`, `RebuyProvider`, `DeliveryProvider`, `RetailerReceiptSource`, `SyncAdapter`, `NotificationService`, `Clock`, `IdGenerator`), Mocks für die Partner-Ports; ADR-0003 (Local-first), ADR-0004 (Geld in Rappen)
+- 2d: **Vertrag v1**: Command-/Query-Registry mit Zod-Ein-/Ausgabe, Domain Events, `commandId`; Test, der aus dem Vertrag JSON Schema erzeugt (Beweis für spätere OpenAPI/MCP-Tauglichkeit); ADR-0005 (Contract-first, API/MCP)
+- **Delegation:** O für Modell, Geld, Ports und Vertrag. S entwirft den Kategorien-Katalog, ich prüfe ihn (besonders Verbrauchsdatum-Kategorien). H für Tabellentests.
+- **Tests:** ≥ 95 % Abdeckung, Property-Tests für Rappen.
+
+---
+
+### Meilenstein B – Lokaler Vorrat & Bon-Scan
+
+#### Schritt 3 – Lokaler Vorrat und Startseite (US-04, US-13, US-14, US-15)
+- 3a: Dexie-Schema, Repositories hinter Interfaces, Event-Log und Outbox lokal, Migrations-Tests (`fake-indexeddb`), automatischer lokaler Haushalt
+- 3b: App-Shell (Navigation: Heute · Vorrat · Scannen · Liste · Haushalt), Vorrat mit drei Tabs, Sortierung nach Ablauf, Filter «Läuft bald ab»
+- 3c: **Startseite «Heute retten»** (UC-01): was heute/morgen abläuft, Wert im Kühlschrank in CHF (UC-03), Badge; Verbrauchsdatum-Warnungen
+- 3d: Manuelle Erfassung mit Autovervollständigung und Standardartikeln (UC-07), Bearbeiten, Verschieben mit Neuberechnung; Offline-Cache der App-Shell; E2E «Artikel erfassen» und «Offline neu laden»
+- **Delegation:** O für 3a (sync-kritisch), S für 3b bis 3d nach meinen Komponenten-Schnittstellen.
+- **Parallel möglich mit Schritt 4.**
+
+#### Schritt 4 – Bon-Pipeline in `core` (US-01, Logik)
+- 4a: Normalisierung (Umlaute, Abkürzungen, OCR-Verwechslungen `0/O`, `1/l`, `,/.`), Händlererkennung, Zeilenklassifikation, Rabatt einer Position zuordnen, Plausibilität «Summe der Positionen = Total»
+- 4b: Migros-Parser + 5 Fixtures
+- 4c: Coop-Parser + 5 Fixtures, generischer Fallback-Parser
+- 4d: Produkt-/Kategorie-Matching (Synonymliste, Trigram-Fuzzy-Match ohne Dependency, `ProductAlias`-Lerntabelle)
+- **Fixtures:** synthetisch, OCR-Text statt Bilder, Randfälle Rabatt, Pfand, Gewichtsartikel, Mehrfachmenge, OCR-Fehler, Tragtasche. Keine echten Personendaten.
+- **Delegation:** O für Klassifikation und Matching, S für die Händler-Parser nach meinem Interface, H für Fixtures.
+
+#### Schritt 5 – Bon-Scan-UI mit OCR (US-01)
+- 5a: Kamera-Adapter mit allen Zuständen (`unsupported`, `insecure-context`, `prompt`, `granted`, `denied`, `no-device`, `error`), Erklär-Screen vor der Anfrage, `playsinline`, Stream stoppen beim Verlassen; Fallbacks Foto-Upload und manuelle Erfassung; Anleitung bei `denied`
+- 5b: OCR-Worker (tesseract.js, `deu`, selbst gehostet, lazy geladen), Vorverarbeitung im Worker, Fortschrittsanzeige
+- 5c: Review-Liste: Positionen an-/abwählen (Non-Food abgewählt), alles editierbar, Warnung bei Summen-Differenz
+- 5d: Übernahme in den Vorrat, Bild sofort verwerfen, Korrekturen in `ProductAlias`; E2E mit gemocktem OCR, Kamera-Fake-Device und verweigerter Berechtigung
+- **Delegation:** S für 5a und 5c, O für 5b und 5d.
+
+#### Schritt 6 – Abschliessen, Wirkungs-Dashboard, Kühlschrank-Check (US-06, US-20, US-22)
+- 6a: `core/metrics`: gerettet/weggeworfen in CHF und kg pro Person und Haushalt, Schätzwerte klar markiert
+- 6b: Aktionen gegessen/weitergegeben/weggeworfen, ganz oder teilweise, Rückgängig
+- 6c: **Wirkungs-Dashboard** (D-01, D-02): Woche/Monat, Trend, pro Person, Vergleich mit dem Schweizer Durchschnitt (D-03); **Kühlschrank-Check** (UC-04)
+- **Delegation:** O für 6a, S für 6b und 6c.
+
+**→ Statusmeldung an dich nach Meilenstein B.**
+
+---
+
+### Meilenstein C – Haushalt, Push & USP
+
+#### Schritt 7 – Konto, Haushalt & Sync (US-09, US-15, US-17, US-18)
+*Voraussetzung: Fragen 1 bis 3 beantwortet.*
+- 7a: ADR Sync (HLC, Feld-LWW, Outbox, Pull mit Cursor, Soft-Delete) und Implementierung in `core` mit Konflikt-Tests
+- 7b: Backend-Schema inkl. Event-Log und `Grant`-Tabelle, Row-Level-Security «nur eigener Haushalt», Auth (Frage 2); Infrastruktur als Code, keine Secrets
+- 7c: `SyncAdapter` im Web, Hintergrund-Sync, Offline-Warteschlange, «Zuletzt synchronisiert»
+- 7d: Haushalt erstellen, Einladung per Link/Code (kurz, ablaufend, widerrufbar), Beitritt mit «Vorrat mitnehmen?», Rollen, Verlassen
+- 7e: Besitz pro Artikel, Filter «Meins / Geteilt / Alle»; E2E mit zwei Browser-Kontexten
+- **Delegation:** O für 7a, 7b und Review, S für 7d und 7e.
+- **Sicherheit:** RLS-Tests (Mitglied A sieht Haushalt B nicht), nicht erratbare Einladungscodes, Rate-Limit.
+
+#### Schritt 8 – Push & Erinnerungen (US-05, US-21)
+- 8a: `core/reminders`: wer bekommt wann was (Digest, Verbrauchsdatum, Einfrier-Tipp, Wochenrückblick), Ruhezeiten, Bündelung; rein und getestet
+- 8b: Web Push: Abo-Verwaltung, Versand serverseitig aus den Events (geplanter Job), VAPID-Schlüssel nur im Backend; Einstellungen pro Person
+- 8c: Ohne Konto oder ohne Push: Digest beim Öffnen und Badge; **Installationsanleitung für iPhone** (Web Push nur als installierte PWA); E2E für Einstellungen und In-App-Fallback
+- **Delegation:** O für 8a und 8b, S für 8c.
+
+#### Schritt 9 – Kostenteilung & Rette-Kreis (US-10, US-11)
+- 9a: `core/balances`: Anteile pro Position, «geteilt» mit Largest-Remainder (der übrige Rappen rotiert fair), Bon-Rabatte proportional, Salden, Ausgleichsvorschlag mit minimaler Anzahl Zahlungen; Property-Tests
+- 9b: In der Bon-Review: «bezahlt von», Zuordnung pro Position, Grundvorrat automatisch geteilt (W-04); Saldo-Ansicht; «Ausgleich erfasst»; Push an Betroffene (P-05)
+- 9c: Rette-Kreis: freigeben, Push an Mitglieder (P-04), übernehmen, zurückziehen; Zählung gemäss Frage 8
+- **Delegation:** O für 9a vollständig (Geldlogik), S für 9b und 9c.
+
+**→ Pilot-Alpha mit 1–2 WGs möglich. Statusmeldung an dich.**
+
+---
+
+### Meilenstein D – Basis komplett
+
+#### Schritt 10 – Barcode & Händler-Import (US-02, US-03)
+- 10a: Barcode-Adapter (nativer `BarcodeDetector`, sonst `@zxing/browser`), EAN-13/EAN-8, nutzt den Kamera-Adapter aus 5a
+- 10b: `ProductCatalog`-Adapter für Open Food Facts mit lokalem Cache, manuelle Erfassung bei keinem Treffer, «Schon im Vorrat: 2 Stk.», Quellenangabe gemäss OFF-Lizenz (ODbL)
+- 10c: Migros-CSV-Parser (papaparse) + Fixtures
+- 10d: Coop-PDF-Textextraktion (pdfjs-dist, selbst gehostet) + Parser + Fixtures
+- 10e: Import-UI, Duplikaterkennung über Bon-/Zeilen-Hash, Default «letzte 14 Tage angehakt», danach dieselbe Review wie beim Foto
+- **Delegation:** S für Adapter und Parser, O für Hash-/Duplikatlogik und Datenschutz-Review (Frage 3a). *Hängt stark von echten Beispieldateien ab (Frage 7).*
+
+#### Schritt 11 – Einkaufsliste & Rezepte (US-07, US-08)
+- 11a: Geteilte Einkaufsliste; Abhaken → «In den Vorrat legen?»; **Doppelkauf-Warnung** (E-02)
+- 11b: `RecipeProvider` mit kuratierter JSON-Sammlung (rund 30 Schweizer Alltagsgerichte, selbst geschrieben), Ranking nach bald ablaufenden Zutaten; Rezeptidee im Digest
+- 11c: Rezept-Ansicht mit 3 Vorschlägen, fehlende Zutaten auf die Liste, **nach dem Kochen abbuchen** (R-03)
+- **Delegation:** S für 11a und 11c, O für das Ranking, H für Rezeptdaten nach Schema.
+
+**→ Statusmeldung an dich nach Meilenstein D.**
+
+---
+
+### Meilenstein E – Release-Reife
+
+#### Schritt 12 – Datenschutz, Entitlements, PWA (US-12)
+- 12a: Export (JSON und CSV) und Löschen (lokal komplett; Konto und Server-Daten inkl. Regel für Haushalte mit weiteren Mitgliedern)
+- 12b: Entitlements `free | pro` als reine Funktion plus Hook; Partner-Mocks in einer Entwickler-Ansicht
+- 12c: PWA-Feinschliff: Icons, Installationshinweis, Offline-Check, Content-Security-Policy, Lighthouse-Check im CI
+- 12d: `docs/privacy.md` (Entwurf in einfacher Sprache, von dir/Fachperson zu prüfen), a11y-Durchgang, Pilot-Checkliste, bekannte Einschränkungen
+- **Delegation:** S für 12b und 12c, O für Löschlogik, CSP und Datenschutz-Doku, H für Icons und Texte.
+
+**→ MVP fertig, Pilot mit 3–5 WGs.**
+
+---
+
+## 6. Ausblick v1 (nach dem Pilot, Reihenfolge offen)
+
+- **Öffentliche API (REST, OpenAPI 3.1), MCP-Server und Webhooks** auf Basis des Vertrags aus Schritt 2d, mit Einwilligungs-Ansicht pro Haushalt
+- **Programm für Gemeinden/Arbeitgeber (Option C):** Challenge-Modus, aggregiertes Wirkungs-Dashboard
+- Native Apps mit Capacitor (lokale Benachrichtigungen ohne Server, App-Store-Präsenz)
+- Bezahl-Abo, Haushalts-Challenges, «Darf ich?»-Anfrage, Allergene-Filter, Französisch
+- Optional serverseitiges OCR/LLM (Opt-in)
+
+---
+
+## 7. Abhängigkeiten zwischen den Schritten
+
+```
+1 → 2 → 3 ─┬─→ 5 → 6 → 7 → 8 → 9 ─┬─→ 10
+           │                       ├─→ 11
+      2 → 4┘                       └─→ 12
+```
+Schritt 3 und 4 laufen parallel. Schritte 10, 11 und 12 sind voneinander weitgehend unabhängig.
+
+---
+
+## 8. Risiken und Gegenmassnahmen
+
+| Risiko | Wirkung | Gegenmassnahme |
+| --- | --- | --- |
+| **Erfassungsmüdigkeit** (Risiko Nr. 1 der Analyse) | Vorrat veraltet, Erinnerungen werden wertlos, Nutzer:innen springen ab | Bon-Scan und Einkaufsliste als Hauptwege, Standardartikel mit 1 Tap, Kühlschrank-Check, «nach dem Kochen abbuchen» |
+| OCR auf Thermopapier ungenau | Bon-Scan enttäuscht | Vorverarbeitung, Händler-Parser, Summen-Plausibilität, gute Review, lernende Zuordnung, CSV/PDF-Import als zuverlässiger Weg |
+| Echte Exportformate weichen ab | Import scheitert im Pilot | Echte, anonymisierte Beispiele vor Schritt 4 und 10 (Frage 7) |
+| Sync-Fehler | Datenverlust, Vertrauensverlust | Sync-Logik rein in `core`, Konflikt-Tests, Soft-Delete, nie hartes Löschen beim Sync |
+| iOS: Web Push nur für installierte PWA | Erinnerungen kommen nicht an | Installationsanleitung, In-App-Digest, native App als Ausweg (Frage 11) |
+| Zu viele Pushes | Nutzer:innen schalten ab | Digest statt Einzel-Pushes, Ruhezeiten, Bündelung |
+| tesseract.js ist gross | Langsamer Start | Lazy Loading, Cache, Bundle-Budget im CI |
+| Kopierbarkeit durch ZWIMP/Kühlbär | Vorsprung schmilzt | Tempo, Community (WG-Einladungen), Partner über API/MCP |
+| MVP-Umfang gross | Pilot startet spät | Pilot-Alpha nach Schritt 9 |
+
+---
+
+## 9. Offene Fragen an dich
+
+**Delegation (6.11.2026):** Alban gibt die Richtung vor, Claude führt aus. Technische Entscheide treffe ich deshalb selbst nach den Empfehlungen unten und halte sie als ADR fest. Alban frage ich nur noch, wenn (a) er selbst handeln muss (Konten, Zugänge, Bon-Beispiele), (b) Kosten entstehen, (c) Daten das Gerät auf eine neue Art verlassen oder (d) sich das Produkt verändert. Das betrifft vor allem die Fragen 1, 3, 7, 11 und 13, die ich rechtzeitig vor Schritt 7 nochmals kurz vorlege.
+
+Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ich nur die Freigabe des Plans, Frage 6 und Frage 15.** Fragen 1 bis 3 und 11 brauche ich bis Ende Meilenstein B, Frage 7 vor Schritt 4.
+
+1. **Backend/Sync und Hosting** (für Haushalt, Kostenteilung, Rette-Kreis, Push)
+   - A) **Supabase, verwaltet, Region Zürich** (laut Supabase-Regionsliste `eu-central-2`; prüfe ich vor dem Setup). Postgres, Auth, Row-Level-Security und Realtime aus einer Hand. Haken: Supabase ist ein US-Unternehmen (Auftragsbearbeitungsvertrag, US CLOUD Act als Restrisiko).
+   - B) **Selbst betrieben bei einem Schweizer Anbieter** (Postgres plus kleine API). Volle Datenhoheit, aber Betrieb, Backups und Updates liegen bei uns.
+   - *Empfehlung:* A für MVP und Pilot. Alles läuft hinter dem `SyncAdapter`, ein späterer Wechsel zu B ist möglich. Die PWA selbst ebenfalls in der Schweiz hosten.
+2. **Auth-Methode** – *Empfehlung:* Magic Link per E-Mail im MVP. Passkeys in v1, Apple/Google-Login mit den nativen Apps. Für API/MCP später OAuth.
+3. **Daten, die das Gerät verlassen** (neben dem Sync selbst)
+   - a) **Open Food Facts:** Barcode-Nummer und IP-Adresse gehen an Open Food Facts (Frankreich). *Empfehlung:* erlaubt, mit Hinweis beim ersten Scan und Schalter in den Einstellungen.
+   - b) **Web Push:** Der Server muss wissen, wann was abläuft. *Empfehlung:* Push nur mit Konto (die Daten sind durch den Sync ohnehin dort). Ohne Konto: Digest beim Öffnen.
+4. **Serverseitiges OCR/LLM-Parsing** – *Empfehlung:* nicht im MVP, im Pilot die Qualität auf dem Gerät messen und in v1 entscheiden.
+5. **Freemium im MVP** – *Empfehlung:* alles gratis, nur die Mechanik `free | pro` bauen, Preise nach dem Pilot. CHF 9/Monat liegt über ZWIMP (CHF 4.90) und Kühlbär (CHF 3); ein Haushalts-Abo, das auf alle Mitglieder verteilt wird, könnte das auffangen.
+6. **Dependency-Liste zur Freigabe** (alles Open Source, keine kostenpflichtigen Dienste):
+   - Laufzeit: `react`, `react-dom`, `react-router`, `zod` (v4), `dexie`, `dexie-react-hooks`, `tailwindcss`, einzelne `@radix-ui/*`-Komponenten, `tesseract.js`, `@zxing/browser`, `pdfjs-dist`, `papaparse`; ab Schritt 7 `@tanstack/react-query` und der Client des gewählten Backends; ab Schritt 8 eine Web-Push-Bibliothek im Backend
+   - Entwicklung: `typescript`, `vite`, `@vitejs/plugin-react`, `vite-plugin-pwa`, `vitest`, `@vitest/coverage-v8`, `fast-check`, `@testing-library/react`, `@testing-library/user-event`, `jsdom`, `fake-indexeddb`, `@playwright/test`, `@axe-core/playwright`, `eslint`, `typescript-eslint`, `eslint-plugin-react-hooks`, `prettier`
+   - Erst in v1: `@modelcontextprotocol/sdk` (MCP-Server)
+   - Bewusst **ohne** Dependency selbst gebaut: UUIDv7, Fuzzy-Matching, Datumshilfen, Textkatalog.
+7. **Echte Bon-Beispiele** – 2 bis 3 Migros-CSV-Exporte, 2 bis 3 Coop-Supercard-PDFs und 5 bis 10 Fotos von Migros-/Coop-Bons. Ich leite synthetische Fixtures ab, **die Originale kommen nie ins Repo**. Bitte hier in der Session teilen.
+8. **Regeln für Kostenteilung und Rette-Kreis**
+   - a) «Geteilt» = gleichmässig auf alle Mitglieder zum Zeitpunkt des Einkaufs; andere Schlüssel erst in v1. *Empfehlung:* ja.
+   - b) Non-Food (WC-Papier, Putzmittel) kommt nicht in den Vorrat, zählt aber in der Kostenteilung. *Empfehlung:* ja.
+   - c) Rette-Kreis: Bei Übernahme wechselt der Besitz; als «gerettet» zählt der Artikel erst, wenn er gegessen wird (keine Doppelzählung). Weicht leicht von US-11 ab. *Empfehlung:* so umsetzen.
+9. **Reihenfolge und Umfang** – Einverstanden mit der Reihenfolge (Haushalt, Push, Kostenteilung vor Barcode, Import, Einkaufsliste, Rezepte), dem Pilot-Alpha nach Schritt 9 und den **MVP+**-Ergänzungen aus [`use-cases.md`](./use-cases.md)?
+10. ~~Repo öffentlich oder privat~~ – **beantwortet:** privat (6.11.2026).
+11. **Weg für Push-Benachrichtigungen** – PWA mit Web Push funktioniert auf Android gut. Auf dem iPhone nur, wenn die App zum Home-Bildschirm hinzugefügt wurde, und immer nur mit Konto und Server.
+    - A) **MVP mit PWA-Push** und guter Installationsanleitung, native Apps in v1.
+    - B) **Native App (Capacitor) schon im MVP**: Erinnerungen lokal auf dem Gerät, auch ohne Konto und Server. Kostet mehr Aufwand (2 bis 3 zusätzliche PRs plus Store-Prozess) und ein Apple-Entwicklerkonto (rund 100 Franken pro Jahr) für TestFlight.
+    - *Empfehlung:* A. Wir messen im Pilot-Alpha, wie viele iPhone-Nutzer:innen die PWA installieren. Ist das zu wenig, ziehen wir B vor.
+12. **API und MCP: wann?** – *Empfehlung:* Im MVP nur der Vertrag (Schritt 2d), die Events und das Einwilligungsmodell. REST-API und MCP-Server in v1, sobald es echte Partner-Gespräche gibt. Ausnahme: Wenn ihr für die Schule eine Demo «Claude fragt FridgeAI» wollt, kann ich einen schreibgeschützten MCP-Server als Zusatzschritt nach Schritt 9 einplanen (2 bis 3 PRs).
+13. **«Datenbasierte Insights (anonymisiert)» aus dem Businessplan vs. «kein Verkauf von Daten» aus dem Brief** – *Empfehlung:* Nie Einzeldaten verkaufen oder weitergeben. Erlaubt sind nur aggregierte Wirkungsberichte innerhalb eines Programms (Option C), bei dem Haushalte aktiv mitmachen (Opt-in), mit einer Mindestgruppengrösse, damit niemand erkennbar ist. Das passt zum Vertrauensversprechen und bleibt trotzdem monetarisierbar.
+14. **Rahmen**
+    - a) ~~Coden weitere Personen mit?~~ **Beantwortet:** Nein, persönliches Projekt von Alban, vorerst One-Man-Show (6.11.2026). Folgen siehe Abschnitt 10.
+    - b) Schultermin: Annahme *keiner*, da persönliches Projekt. Falls doch, bitte melden.
+    - c) Die Blue-Ocean-Analyse empfiehlt vor dem Code Interviews, Landingpage-Test und Concierge-MVP. Machst du die parallel? Die Schritte 1 bis 6 sind auch ohne diese Ergebnisse sinnvoll; ab Schritt 7 würde ich Erkenntnisse aus Gesprächen mit WGs gern einfliessen lassen.
+15. **Merge-Ablauf** (neu, weil One-Man-Show) – Bei rund 45 PRs wirst du sonst zum Flaschenhals.
+    - A) Du reviewst und mergst jeden PR selbst.
+    - B) Ich merge selbst, sobald CI grün ist und ich den PR reviewt habe. Du prüfst gesammelt bei der Statusmeldung nach jedem Meilenstein und kannst jederzeit eingreifen. PRs, die einen Entscheid aus Abschnitt 9 umsetzen, Geldlogik, Sync, Auth oder Datenschutz betreffen, lege ich dir trotzdem einzeln vor.
+    - *Empfehlung:* B.
+
+| Nr. | Thema | Antwort |
+| --- | --- | --- |
+| 1 | Backend/Sync & Hosting | offen |
+| 2 | Auth-Methode | offen |
+| 3 | Daten, die das Gerät verlassen | offen |
+| 4 | Serverseitiges OCR/LLM | offen |
+| 5 | Freemium im MVP | offen |
+| 6 | Dependency-Liste | **freigegeben** (delegiert) |
+| 7 | Echte Bon-Beispiele | offen |
+| 8 | Kostenteilung & Rette-Kreis | offen |
+| 9 | Reihenfolge & Umfang | **freigegeben** (delegiert) |
+| 10 | Repo öffentlich oder privat | **privat** |
+| 11 | Push-Weg (PWA oder nativ) | offen |
+| 12 | API und MCP: wann | offen |
+| 13 | Anonymisierte Insights | offen |
+| 14 | Team, Termine, Validierung | a) **One-Man-Show**, b) Annahme: kein Schultermin, c) offen |
+| 15 | Merge-Ablauf | **B: Claude merged** nach grüner CI und eigenem Review |
+
+---
+
+## 10. Arbeitsweise
+
+- **Ein-Personen-Projekt:** Alban ist einziger Mensch im Projekt. Deshalb keine Team-Prozesse (CODEOWNERS, Einstiegsdoku für andere, Review-Pflicht durch Zweite). Sicherheitsnetz sind die CI (muss grün sein, Branch-Schutz auf `main`), mein Review jedes Diffs und bei Bedarf der `reviewer`-Subagent als zweite Meinung zu Sicherheit und Datenschutz.
+- Branch pro PR (`feat/<schritt>-<thema>`, z. B. `feat/02a-core-model`), PR mit «Was, Warum, Wie getestet» und DoD-Checkliste.
+- Subagent-Aufträge enthalten immer: Ziel, Dateien, Typen/Interfaces, Akzeptanzkriterien, was nicht angefasst wird, wie getestet wird.
+- Neue Dependencies nur aus der freigegebenen Liste (Frage 6), alles andere frage ich vorher.
+- Nach jedem Meilenstein eine Statusmeldung: erledigt, offen, Entscheide nötig.
