@@ -1,13 +1,11 @@
 import { z } from 'zod';
 import { RappenSchema } from '../money';
-import { CategoryIdSchema, StorageLocationSchema, type StorageLocation } from '../model/primitives';
-
-/**
- * best_before = Mindesthaltbarkeitsdatum (MHD): often still good after the date.
- * use_by = Verbrauchsdatum («zu verbrauchen bis»): do not eat after the date (food safety).
- */
-export const DateKindSchema = z.enum(['best_before', 'use_by']);
-export type DateKind = z.infer<typeof DateKindSchema>;
+import {
+  CategoryIdSchema,
+  DateKindSchema,
+  StorageLocationSchema,
+  type StorageLocation,
+} from '../model/primitives';
 
 export const CategoryGroupSchema = z.enum([
   'dairy',

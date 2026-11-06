@@ -1,6 +1,14 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
-import { addDays, daysBetween, localDate, minLocalDate, toLocalDate } from '../src/dates';
+import {
+  addDays,
+  daysBetween,
+  formatSwissDate,
+  localDate,
+  minLocalDate,
+  parseDateInput,
+  toLocalDate,
+} from '../src/dates';
 
 describe('toLocalDate', () => {
   it.each([
@@ -52,5 +60,62 @@ describe('calendar arithmetic', () => {
     expect(() => localDate('2026-02-30')).toThrow();
     expect(minLocalDate(localDate('2026-11-06'), localDate('2026-11-05'))).toBe('2026-11-05');
     expect(minLocalDate(localDate('2026-11-05'), localDate('2026-11-06'))).toBe('2026-11-05');
+  });
+});
+
+describe('parseDateInput', () => {
+  const today = localDate('2026-11-06');
+
+  it.each([
+    ['06.11.2026', '2026-11-06'],
+    ['6.11.2026', '2026-11-06'],
+    ['6.11.26', '2026-11-06'],
+    ['06:11:2026', '2026-11-06'],
+    ['6/11/2026', '2026-11-06'],
+    ['6-11-2026', '2026-11-06'],
+    ['6 11 2026', '2026-11-06'],
+    ['061126', '2026-11-06'],
+    ['06112026', '2026-11-06'],
+    ['2026-11-06', '2026-11-06'],
+    ['  24.12.2026 ', '2026-12-24'],
+    ['29.02.2028', '2028-02-29'],
+  ])('reads %j as %s', (input, expected) => {
+    expect(parseDateInput(input, today)).toBe(expected);
+  });
+
+  it.each([
+    ['24.12.', '2026-12-24'],
+    ['24.12', '2026-12-24'],
+    ['4.11.', '2026-11-04'], // just expired: stays this year
+    ['15.1.', '2027-01-15'], // long past this year: next January
+  ])('completes %j without a year to %s', (input, expected) => {
+    expect(parseDateInput(input, today)).toBe(expected);
+  });
+
+  it.each([
+    ['11.2026', '2026-11-30'],
+    ['02.2028', '2028-02-29'],
+    ['11/26', '2026-11-30'],
+  ])('reads month/year %j as the end of the month %s', (input, expected) => {
+    expect(parseDateInput(input, today)).toBe(expected);
+  });
+
+  it.each([
+    '',
+    'morgen',
+    '31.02.2026',
+    '32.1.2026',
+    '1.13.2026',
+    '6.11.202',
+    '6.11.2026.1',
+    '13.2026',
+    'ab.cd',
+  ])('rejects %j', (input) => {
+    expect(parseDateInput(input, today)).toBeNull();
+  });
+
+  it('formats dates the Swiss way and round-trips', () => {
+    expect(formatSwissDate(localDate('2026-11-06'))).toBe('06.11.2026');
+    expect(parseDateInput(formatSwissDate(localDate('2027-03-01')), today)).toBe('2027-03-01');
   });
 });

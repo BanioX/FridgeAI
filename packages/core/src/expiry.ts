@@ -1,6 +1,6 @@
-import type { Category, DateKind } from './catalog/category';
+import type { Category } from './catalog/category';
 import { addDays, daysBetween, minLocalDate } from './dates';
-import type { LocalDate, StorageLocation } from './model/primitives';
+import type { DateKind, LocalDate, StorageLocation } from './model/primitives';
 
 /** Items expiring within this many days count as «läuft bald ab». */
 export const SOON_THRESHOLD_DAYS = 3;

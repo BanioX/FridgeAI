@@ -1,6 +1,6 @@
 import { rappen } from '../money';
-import type { StorageLocation } from '../model/primitives';
-import type { Category, CategoryGroup, DateKind } from './category';
+import type { DateKind, StorageLocation } from '../model/primitives';
+import type { Category, CategoryGroup } from './category';
 
 /**
  * Built-in category catalog (Swiss household, Migros/Coop shop).
@@ -233,7 +233,7 @@ export const CATEGORIES: readonly Category[] = [
       'pouletflügel',
     ],
     tips: [
-      'Wenn Du es nicht bis zum Datum brauchst: vorher einfrieren.',
+      'Wenn du es nicht bis zum Datum brauchst: vorher einfrieren.',
       'Im Kühlschrank zuunterst lagern, damit nichts auf andere Lebensmittel tropft.',
     ],
   }),
@@ -276,7 +276,7 @@ export const CATEGORIES: readonly Category[] = [
       'siedfleisch',
     ],
     tips: [
-      'Vor dem Datum einfrieren, wenn Du es nicht mehr brauchst.',
+      'Vor dem Datum einfrieren, wenn du es nicht mehr brauchst.',
       'Im Kühlschrank zuunterst und gut abgedeckt lagern.',
     ],
   }),
@@ -355,7 +355,7 @@ export const CATEGORIES: readonly Category[] = [
     ],
     tips: [
       'Frischen Fisch am Einkaufstag oder am nächsten Tag zubereiten.',
-      'Wenn Du ihn nicht brauchst: vor dem Datum einfrieren.',
+      'Wenn du ihn nicht brauchst: vor dem Datum einfrieren.',
     ],
   }),
   def({
@@ -722,7 +722,7 @@ export const CATEGORIES: readonly Category[] = [
     ],
     tips: [
       'Altes Gipfeli im Ofen kurz aufbacken, dann schmeckt es wieder frisch.',
-      'Einfrieren, wenn Du sie nicht am gleichen Tag isst.',
+      'Einfrieren, wenn du sie nicht am gleichen Tag isst.',
     ],
   }),
   // Pantry
@@ -1122,7 +1122,7 @@ export const CATEGORIES: readonly Category[] = [
       'pastasalat',
     ],
     tips: [
-      'Frische Fertiggerichte bis zum Datum essen, nicht danach.',
+      'Fertiggerichte für die ersten Tage nach dem Einkauf einplanen, sie halten am kürzesten.',
       'Ungeöffnet kühl lagern, geöffnet am gleichen Tag essen.',
     ],
   }),
