@@ -97,7 +97,7 @@ test('corrects date, date kind, quantity and value of an item', async ({ page })
   await page.getByRole('button', { name: 'Speichern', exact: true }).click();
   await page.getByRole('link', { name: /Freilandeier/ }).click();
 
-  await page.getByRole('link', { name: 'Datum, Menge oder Preis ändern' }).click();
+  await page.getByRole('link', { name: 'Bearbeiten' }).click();
   await expect(
     page.getByRole('heading', { level: 1, name: 'Freilandeier bearbeiten' }),
   ).toBeVisible();
@@ -123,4 +123,51 @@ test('corrects date, date kind, quantity and value of an item', async ({ page })
   // «Back» goes to the list, not into the form again.
   await page.goBack();
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
+});
+
+test('fixes a typo, the category and the place of an item', async ({ page }) => {
+  await page.goto('/inventory/new');
+  await page.getByLabel('Was ist es?').fill('Apfle');
+  await page.getByRole('button', { name: 'Speichern', exact: true }).click();
+  await page.getByRole('link', { name: /Apfle/ }).click();
+  await page.getByRole('link', { name: 'Bearbeiten' }).click();
+
+  await page.getByLabel('Was ist es?').fill('Apfel');
+  await page.getByLabel('Kategorie').selectOption({ label: 'Äpfel & Birnen' });
+  // Exact, so «Notvorrat» does not match too.
+  await page
+    .locator('label')
+    .filter({ hasText: /^Vorrat$/ })
+    .click();
+  await expect(page.getByRole('radio', { name: 'Vorrat', exact: true })).toBeChecked();
+  await page.getByRole('button', { name: 'Änderungen speichern' }).click();
+
+  await expect(page.getByRole('heading', { level: 1, name: 'Apfel' })).toBeVisible();
+  await expect(page.getByText('1 Stk. · Vorrat')).toBeVisible();
+});
+
+test('deletes an item entered by mistake, with undo, without counting it as wasted', async ({
+  page,
+}) => {
+  await page.goto('/inventory/new');
+  await page.getByLabel('Was ist es?').fill('Testjoghurt');
+  await page.getByRole('button', { name: 'Speichern', exact: true }).click();
+  await page.getByRole('link', { name: /Testjoghurt/ }).click();
+
+  await page.getByRole('button', { name: 'Artikel löschen' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
+  await expect(page.getByRole('status')).toHaveText('Testjoghurt gelöscht.');
+  await expect(page.getByRole('link', { name: /Testjoghurt/ })).toHaveCount(0);
+
+  await page.getByRole('button', { name: 'Rückgängig' }).click();
+  await expect(page.getByRole('status')).toHaveText('Testjoghurt ist wieder im Vorrat.');
+  await expect(page.getByRole('link', { name: /Testjoghurt/ })).toBeVisible();
+
+  // Deleted for good this time: nothing shows up as wasted on the start page.
+  await page.getByRole('link', { name: /Testjoghurt/ }).click();
+  await page.getByRole('button', { name: 'Artikel löschen' }).click();
+  await expect(page.getByRole('status')).toHaveText('Testjoghurt gelöscht.');
+  await page.getByRole('navigation').getByRole('link', { name: 'Heute' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Heute retten' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Deine Wirkung diesen Monat' })).toHaveCount(0);
 });

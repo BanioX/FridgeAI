@@ -14,7 +14,7 @@ import {
   type ShareRecipient,
   type WasteReason,
 } from '@fridgeai/core';
-import { ArrowLeft, PackageOpen, Pencil, Snowflake, Sun, Undo2 } from 'lucide-react';
+import { ArrowLeft, PackageOpen, Pencil, Snowflake, Sun, Trash2, Undo2 } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { useAppData } from '../../app/AppData';
@@ -140,7 +140,12 @@ export function ItemDetailPage() {
         ...(outcome === 'shared_out' && recipient !== null ? { sharedWith: recipient } : {}),
       });
       if (result.remainingQuantity === 0) {
-        const closed: ClosedItem = { eventId: result.eventId, name: item.name, outcome };
+        const closed: ClosedItem = {
+          kind: 'outcome',
+          eventId: result.eventId,
+          name: item.name,
+          outcome,
+        };
         void navigate(`/inventory?location=${item.location}`, { state: { closed } });
         return null;
       }
@@ -179,6 +184,19 @@ export function ItemDetailPage() {
         to: item.location === 'freezer' ? 'fridge' : 'freezer',
       });
       return t.moved(describeDate(result.expiresOn));
+    });
+
+  // Entered by mistake or for a test: gone at once, «Rückgängig» waits in the list.
+  const remove = () =>
+    run(async () => {
+      await inventory['inventory.deleteItem']({
+        commandId: ids.next(),
+        householdId,
+        itemId: item.id,
+      });
+      const closed: ClosedItem = { kind: 'deleted', itemId: item.id, name: item.name };
+      void navigate(`/inventory?location=${item.location}`, { state: { closed } });
+      return null;
     });
 
   return (
@@ -361,6 +379,18 @@ export function ItemDetailPage() {
             {item.location === 'freezer' ? t.thaw : t.freeze}
           </Button>
         ) : null}
+        <Button
+          variant="ghost"
+          icon={Trash2}
+          fullWidth
+          disabled={busy}
+          className="text-danger hover:bg-today-bg"
+          onClick={() => {
+            void remove();
+          }}
+        >
+          {messages.editItem.delete}
+        </Button>
       </section>
     </div>
   );

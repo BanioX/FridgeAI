@@ -39,11 +39,19 @@ function ClosedNotice() {
     }
     setBusy(true);
     try {
-      await inventory['inventory.undoOutcome']({
-        commandId: ids.next(),
-        householdId,
-        eventId: closed.eventId,
-      });
+      if (closed.kind === 'deleted') {
+        await inventory['inventory.restoreItem']({
+          commandId: ids.next(),
+          householdId,
+          itemId: closed.itemId,
+        });
+      } else {
+        await inventory['inventory.undoOutcome']({
+          commandId: ids.next(),
+          householdId,
+          eventId: closed.eventId,
+        });
+      }
       setMessage(t.undone(closed.name));
       void navigate(`${location.pathname}${location.search}`, { replace: true, state: null });
     } catch {
@@ -53,7 +61,12 @@ function ClosedNotice() {
     }
   };
 
-  const text = closed === null ? message : t.closed[closed.outcome](closed.name);
+  const text =
+    closed === null
+      ? message
+      : closed.kind === 'deleted'
+        ? t.deleted(closed.name)
+        : t.closed[closed.outcome](closed.name);
   if (text === '') {
     return null;
   }
