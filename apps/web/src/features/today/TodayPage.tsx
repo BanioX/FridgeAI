@@ -91,12 +91,17 @@ export function TodayPage() {
           <ul className="space-y-2">
             {expiring.map((item) => (
               <li key={item.id}>
-                <ItemRow
-                  emoji={item.emoji ?? ''}
-                  name={item.name}
-                  meta={itemMeta(item)}
-                  status={expiryBadge(item.status, item.expiresOn, today, item.location)}
-                />
+                <Link
+                  to={`/inventory/${item.id}`}
+                  className="block rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2"
+                >
+                  <ItemRow
+                    emoji={item.emoji ?? ''}
+                    name={item.name}
+                    meta={itemMeta(item)}
+                    status={expiryBadge(item.status, item.expiresOn, today, item.location)}
+                  />
+                </Link>
               </li>
             ))}
           </ul>

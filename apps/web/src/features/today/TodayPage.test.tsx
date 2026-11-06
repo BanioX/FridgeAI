@@ -50,12 +50,16 @@ describe('TodayPage', () => {
     expect(screen.getByText(/^CHF\s/)).toBeDefined();
     expect(screen.getByText(messages.today.estimated)).toBeDefined();
 
-    const fridge = screen.getByRole('link', { name: new RegExp(messages.locations.fridge) });
+    // Expiring items link to their detail page; the location tiles link to the Vorrat tabs.
+    const expiringLink = within(list).getAllByRole('link')[0];
+    expect(expiringLink?.getAttribute('href')).toMatch(/^\/inventory\/[0-9a-f-]{36}$/);
+    const locations = within(screen.getByRole('region', { name: messages.today.locationsTitle }));
+    const fridge = locations.getByRole('link', { name: new RegExp(messages.locations.fridge) });
     expect(within(fridge).getByText('2 Artikel')).toBeDefined();
     expect(fridge.getAttribute('href')).toBe('/inventory?location=fridge');
-    const pantry = screen.getByRole('link', { name: new RegExp(messages.locations.pantry) });
+    const pantry = locations.getByRole('link', { name: new RegExp(messages.locations.pantry) });
     expect(within(pantry).getByText('1 Artikel')).toBeDefined();
-    const freezer = screen.getByRole('link', { name: new RegExp(messages.locations.freezer) });
+    const freezer = locations.getByRole('link', { name: new RegExp(messages.locations.freezer) });
     expect(within(freezer).getByText('leer')).toBeDefined();
     expect(screen.queryByText(messages.today.welcomeTitle)).toBeNull();
   });
