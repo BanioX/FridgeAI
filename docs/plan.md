@@ -140,7 +140,9 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 - 1a: pnpm-Workspaces, `tsconfig.base.json` (`strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`), ESLint (flat config, typescript-eslint, kein `any`), Prettier, Vitest mit Coverage, `packages/core` mit Beispieltest, `.nvmrc`, `.env.example`
 - 1b: `apps/web` mit Vite, React, Tailwind, React Router, `vite-plugin-pwa` (Minimal-Manifest), Testing Library, Playwright-Smoke-Test inkl. axe-Check
 - 1c: `.github/workflows/ci.yml` (gemäss Brief §10), Dependabot (npm + Actions), PR-Template «Was, Warum, Wie getestet» mit DoD-Checkliste, ADR-0002 (Stack)
-- **Delegation:** H für Konfiguration, O für tsconfig/ESLint-Regeln und CI-Review.
+- 1d: **Design-System** gemäss [`design.md`](./design.md): Farb- und Schrift-Tokens (grün, food-freundlich, elegant), selbst gehostete Schriften, Icons, überarbeitete App-Hülle *(neu, Wunsch Alban 6.11.2026)*
+- 1e: UI-Grundbausteine (Button, Karte, Status-Chip, Artikelzeile, Lagerort-Kachel) und Styleguide-Seite (nur im Entwicklungsmodus)
+- **Delegation:** H für Konfiguration, O für tsconfig/ESLint-Regeln, CI-Review und das Design-System.
 - **Fertig, wenn:** `pnpm lint | typecheck | test | build | e2e` lokal und in CI grün.
 
 #### Schritt 2 – Core-Domäne und Vertrag
@@ -305,6 +307,7 @@ Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ic
 6. **Dependency-Liste zur Freigabe** (alles Open Source, keine kostenpflichtigen Dienste):
    - Laufzeit: `react`, `react-dom`, `react-router`, `zod` (v4), `dexie`, `dexie-react-hooks`, `tailwindcss`, einzelne `@radix-ui/*`-Komponenten, `tesseract.js`, `@zxing/browser`, `pdfjs-dist`, `papaparse`; ab Schritt 7 `@tanstack/react-query` und der Client des gewählten Backends; ab Schritt 8 eine Web-Push-Bibliothek im Backend
    - Entwicklung: `typescript`, `vite`, `@vitejs/plugin-react`, `vite-plugin-pwa`, `vitest`, `@vitest/coverage-v8`, `fast-check`, `@testing-library/react`, `@testing-library/user-event`, `jsdom`, `fake-indexeddb`, `@playwright/test`, `@axe-core/playwright`, `eslint`, `typescript-eslint`, `eslint-plugin-react-hooks`, `prettier`
+   - Design (ergänzt 6.11.2026, delegiert): `@fontsource-variable/fraunces`, `@fontsource-variable/figtree` (OFL, selbst gehostet), `lucide-react` (ISC)
    - Erst in v1: `@modelcontextprotocol/sdk` (MCP-Server)
    - Bewusst **ohne** Dependency selbst gebaut: UUIDv7, Fuzzy-Matching, Datumshilfen, Textkatalog.
 7. **Echte Bon-Beispiele** – 2 bis 3 Migros-CSV-Exporte, 2 bis 3 Coop-Supercard-PDFs und 5 bis 10 Fotos von Migros-/Coop-Bons. Ich leite synthetische Fixtures ab, **die Originale kommen nie ins Repo**. Bitte hier in der Session teilen.
