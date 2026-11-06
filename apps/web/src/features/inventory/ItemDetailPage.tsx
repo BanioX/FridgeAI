@@ -30,7 +30,8 @@ import { parseAmount } from './add-item';
 import type { ClosedItem } from './closed-item';
 import { FROM_DETAIL } from './edit-state';
 import { itemMeta } from './item-meta';
-import { formatQuantity, portionLabel } from './portion-labels';
+import { formatQuantity } from '../../ui/quantity-text';
+import { portionLabel } from './portion-labels';
 
 const t = messages.itemDetail;
 const outcomeOptions = OutcomeSchema.options.map((value) => ({ value, label: t.outcomes[value] }));
