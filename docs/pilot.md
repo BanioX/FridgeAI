@@ -1,6 +1,6 @@
 # Pilot: FridgeAI ausprobieren
 
-Für den ersten Pilot mit Alban und einer weiteren Person. Stand: v0.3.0. Claude gibt den Pilot frei (CLAUDE.md, Prioritäten).
+Für den ersten Pilot mit Alban und einer weiteren Person. Stand: v0.4.0. Claude gibt den Pilot frei (CLAUDE.md, Prioritäten).
 
 ## Einrichten (5 Minuten pro Person)
 
@@ -17,7 +17,9 @@ Für den ersten Pilot mit Alban und einer weiteren Person. Stand: v0.3.0. Claude
 | 1 | 5 bis 10 Sachen aus dem Kühlschrank erfassen: Barcode scannen, sonst den Namen tippen | Ist der Scan scharf und schnell? Stimmen Name, Bild, Menge und Datum? |
 | 2–6 | Jeden Tag kurz «Heute retten» öffnen. Gegessenes, Weggeworfenes oder Weitergegebenes eintragen, auch Teile («⅓») | Ist es schneller als im Kopf? Fehlt eine Portion oder ein Grund? |
 | 2–6 | Vor dem Einkaufen die **Einkaufsliste** nutzen, nach dem Einkauf «In den Vorrat legen» | Hilft «Du hast noch …»? |
-| 7 | «Deine Wirkung diesen Monat» ansehen, einmal «Alles exportieren» | Würdest du die App weiter nutzen? Was nervt? |
+| 2–6 | Nach dem Einkauf die Standardartikel mit **«Schnell erfassen»** eintragen | Reicht ein Tipp, stimmen Menge und Ort? |
+| 2–6 | Unter «Rezeptideen» etwas kochen, danach **«Zutaten abbuchen»** | Passen die Ideen zu dem, was weg muss? |
+| 7 | Den **Kühlschrank-Check** auf «Heute» machen, «Deine Wirkung diesen Monat» ansehen, einmal «Alles exportieren» | Würdest du die App weiter nutzen? Was nervt? |
 
 ## Feedback
 

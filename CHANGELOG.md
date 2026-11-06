@@ -2,6 +2,33 @@
 
 Alle Änderungen an FridgeAI, neueste zuerst. Wird mit `pnpm release` erzeugt (ADR-0017).
 
+## [0.4.0] – 2026-11-06
+
+**Kühlschrank aktuell halten und Gefährdetes verkochen.** Wöchentlicher 30-Sekunden-Kühlschrank-Check (noch da, halb, gegessen, weggeworfen); «Schnell erfassen» mit den eigenen Standardartikeln in einem Tipp; Rezeptideen auf «Heute» aus dem, was bald abläuft, mit 25 selbst geschriebenen Schweizer Rezepten, Fehlendem auf die Einkaufsliste und Abbuchen nach dem Kochen; Listen und Auswahl im Apple-Stil; auf kleinen Handys bleibt der Artikelname lesbar.
+
+### Neu
+
+- book what was cooked – «Alles · Halb · Nichts» per food on the recipe page (R-03, ADR-0023) ([#88](https://github.com/BanioX/FridgeAI/pull/88))
+- eleven Swiss classics and sweet rescues (11b, data 2/2) ([#86](https://github.com/BanioX/FridgeAI/pull/86))
+- nine more recipes for fridge leftovers (11b, data 1/2) ([#85](https://github.com/BanioX/FridgeAI/pull/85))
+- «Rezeptideen» on Heute and a recipe page with missing items to the list (11c) ([#84](https://github.com/BanioX/FridgeAI/pull/84))
+- recipes.suggest and recipes.get on the device (11b/11c, contract) ([#83](https://github.com/BanioX/FridgeAI/pull/83))
+- recipes that rescue soon-expiring food – schema, ranking, first recipes (11b) ([#82](https://github.com/BanioX/FridgeAI/pull/82))
+- «Schnell erfassen» – usual products with one tap and undo (UC-07) ([#81](https://github.com/BanioX/FridgeAI/pull/81))
+- products.frequent – the household's usual products with last amount (UC-07, contract) ([#80](https://github.com/BanioX/FridgeAI/pull/80))
+- 30-second fridge check – still there, half, eaten or thrown away (UC-04) ([#79](https://github.com/BanioX/FridgeAI/pull/79))
+- fridge check logic – halfOf, queue, weekly due and last check (UC-04, ADR-0022) ([#78](https://github.com/BanioX/FridgeAI/pull/78))
+- inset grouped lists for Heute, Vorrat and Einkaufsliste (ADR-0021) ([#76](https://github.com/BanioX/FridgeAI/pull/76))
+- Apple segmented control for places, outcomes and date kinds (ADR-0021) ([#75](https://github.com/BanioX/FridgeAI/pull/75))
+
+### Behoben
+
+- readable item names on narrow phones – status chip under the name below 360 px ([#87](https://github.com/BanioX/FridgeAI/pull/87))
+
+### Dokumentation
+
+- ideas for design (swipe, sheets, dark mode, narrow phones) and operations ([#77](https://github.com/BanioX/FridgeAI/pull/77))
+
 ## [0.3.0] – 2026-11-06
 
 **Bereit für den Pilot.** Einkaufsliste mit «Du hast noch …»; Packungsbilder von Open Food Facts in Listen und Detailansicht, auf dem Gerät gemerkt; schärferer Barcode-Scan (Hauptkamera, Zoom, Rahmen, Foto aus der Galerie); Artikel bearbeiten (auch Name, Kategorie und Ort) und löschen mit Rückgängig; «Haushalt» mit Installationshinweis, Export als JSON oder CSV, «Alles löschen» und Datenschutz in klaren Worten; Apple-Schrift und grosse Titel; App-Icons; der Browser wird gebeten, die Daten zu behalten. Nach einem Update lädt die App einmal neu statt einen Fehler zu zeigen, und die feste Adresse enthält keine Demo-Daten mehr.
