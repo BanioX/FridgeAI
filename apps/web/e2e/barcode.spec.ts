@@ -1,3 +1,4 @@
+import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 
 const executablePath = process.env.PW_CHROMIUM_EXECUTABLE;
@@ -134,7 +135,14 @@ test('fills in the product from Open Food Facts and knows it offline next time',
     return route.fulfill({
       json: {
         status: 1,
-        product: { product_name_de: 'Vollmilch', brands: 'Alpenhof', quantity: '1 l' },
+        product: {
+          product_name_de: 'Vollmilch',
+          brands: 'Alpenhof',
+          quantity: '1 l',
+          nutriments: { 'energy-kcal_100g': 64, fat_100g: 3.5, proteins_100g: 3.3 },
+          nutriscore_grade: 'b',
+          allergens_tags: ['en:milk'],
+        },
       },
     });
   });
@@ -161,6 +169,18 @@ test('fills in the product from Open Food Facts and knows it offline next time',
   await expect(page.getByText('Gefunden: Vollmilch (Alpenhof, 1 l).')).toBeVisible();
   await expect(page.getByRole('link', { name: 'Daten: Open Food Facts (ODbL)' })).toBeVisible();
   expect(requests).toBe(1);
+
+  // The detail page shows the product facts, folded away until asked for.
+  await page.goto('/inventory');
+  await page.getByRole('link', { name: /Vollmilch/ }).click();
+  await expect(page.getByText('Alpenhof · 1 l')).toBeVisible();
+  await page.getByText('Nährwerte und Allergene').click();
+  await expect(page.getByText('Nutri-Score B')).toBeVisible();
+  await expect(page.getByRole('rowheader', { name: 'Eiweiss' })).toBeVisible();
+  await expect(page.getByText('3.3 g')).toBeVisible();
+  await expect(page.locator('p', { hasText: 'Enthält:' })).toHaveText('Enthält: Milch');
+  const facts = await new AxeBuilder({ page }).analyze();
+  expect(facts.violations).toEqual([]);
 });
 
 test('asks for the name when nobody knows the product', async ({ page }) => {
