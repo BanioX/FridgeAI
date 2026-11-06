@@ -144,3 +144,34 @@ export function suggestRecipes(
       missing,
     }));
 }
+
+export interface IngredientAtHome {
+  text: string;
+  staple: boolean;
+  optional: boolean;
+  /** Food at home that counts as this ingredient (never past its use-by date). */
+  atHome: string[];
+}
+
+/** For the recipe page: which ingredients are at home, with the same rules as the ranking. */
+export function ingredientsAtHome(
+  recipe: Recipe,
+  food: readonly FoodAtHome[],
+  today: LocalDate,
+): IngredientAtHome[] {
+  const usable = food.filter(
+    (entry) => expiryStatus(entry.expiresOn, today, entry.expiryKind).kind !== 'past_use_by',
+  );
+  return recipe.ingredients.map((ingredient) => ({
+    text: ingredient.text,
+    staple: ingredient.staple,
+    optional: ingredient.optional,
+    atHome: ingredient.staple
+      ? []
+      : [
+          ...new Set(
+            usable.filter((entry) => matches(ingredient, entry)).map((entry) => entry.name),
+          ),
+        ],
+  }));
+}
