@@ -81,7 +81,7 @@ test('reads a barcode from a photo with the self-hosted reader', async ({ page }
   });
   await page.goto('/inventory/new');
   await page.getByRole('button', { name: 'Barcode scannen' }).click();
-  await page.getByLabel('Foto vom Code wählen').setInputFiles({
+  await page.getByLabel('Code aus Foto lesen').setInputFiles({
     name: 'code.png',
     mimeType: 'image/png',
     buffer: await barcodePhoto(page, '7610000000004'),
@@ -109,7 +109,9 @@ test('explains a blocked camera and keeps the other ways open', async ({ page })
   await page.getByRole('button', { name: 'Barcode scannen' }).click();
   await page.getByRole('button', { name: 'Kamera starten' }).click();
   await expect(page.getByText(/Die Kamera ist blockiert/)).toBeVisible();
-  await expect(page.getByLabel('Foto vom Code wählen')).toBeAttached();
+  await expect(page.getByLabel('Code aus Foto lesen')).toBeAttached();
+  // Without «capture», phones offer the photo library as well as the camera.
+  await expect(page.getByLabel('Code aus Foto lesen')).not.toHaveAttribute('capture');
   await expect(page.getByLabel('Nummer unter dem Strichcode')).toBeVisible();
 });
 
@@ -120,7 +122,9 @@ test.describe('with camera permission', () => {
     await page.goto('/inventory/new');
     await page.getByRole('button', { name: 'Barcode scannen' }).click();
     await page.getByRole('button', { name: 'Kamera starten' }).click();
-    await expect(page.getByText('Halte den Strich- oder QR-Code ruhig ins Bild.')).toBeVisible();
+    await expect(
+      page.getByText(/^Code in den Rahmen, Handy etwa 20 cm entfernt halten/),
+    ).toBeVisible();
     await page.getByRole('button', { name: 'Kamera stoppen' }).click();
     await expect(page.getByRole('button', { name: 'Kamera starten' })).toBeVisible();
   });
