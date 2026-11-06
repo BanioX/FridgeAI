@@ -63,16 +63,21 @@ Das Datenmodell ist dafür vorbereitet: global eindeutige IDs (UUIDv7) ohne zent
 | Datum vom Etikett fotografieren | Logik fertig (2g), Kamera: v1 |
 | **Kühlschrank-Foto («wie Google Lens»)** | Port und Ablauf jetzt geplant, Umsetzung v1 (siehe 5.1) |
 
-### 5.1 Kühlschrank-Foto: so würde es funktionieren
+### 5.1 Kühlschrank-Foto: mit der KI der Nutzer:innen (ADR-0012)
 
-1. **Foto machen** (oder kurzes Video, langsam schwenken).
-2. **Erkennen:** Ein Bild-Erkennungsmodell findet Lebensmittel und gibt pro Fund Name, Kategorie, Menge (geschätzt) und Sicherheit zurück. Varianten:
-   - *Auf dem Gerät:* schnell, privat, aber nur grobe Klassen (Banane, Apfel, Flasche).
-   - *Server-KI mit Bildverständnis (Opt-in):* erkennt auch «Grana Padano 100 g, angebrochen». Kostet pro Foto ein paar Rappen, und das Bild verlässt das Gerät, deshalb nur mit ausdrücklicher Einwilligung; Bild wird nach der Auswertung gelöscht.
-3. **Bestätigen:** Eine Review-Liste wie beim Bon: Funde als Karten, sichere vorausgewählt, unsichere markiert. Antippen ändert, Wischen entfernt.
-4. **Abgleich mit dem Vorrat:** Was im Vorrat steht, aber auf dem Foto fehlt, schlägt die App als «aufgebraucht?» vor; Neues als «hinzufügen?». So wird das Foto zum automatischen Kühlschrank-Check (UC-04).
+FridgeAI trägt keine KI-Kosten pro Foto. Die Erkennung macht die KI, die die Person ohnehin nutzt (ChatGPT, Claude, Gemini …):
 
-Technisch: Port `FridgePhotoRecognizer` (gleiches Muster wie `ReceiptOcrEngine`), Ergebnis als Liste von Funden mit Sicherheit; dieselbe Review-Komponente wie für Bons.
+```
+Foto in der KI-App ──► KI erkennt Inhalt ──► Vorschlag in FridgeAI ──► bestätigen ──► Vorrat
+                         │                       ▲
+                         ├─ Stufe 1: Antwort kopieren und einfügen (ohne Server, sofort)
+                         └─ Stufe 2: MCP-Connector legt den Vorschlag direkt in den
+                                     Posteingang, Link «In FridgeAI öffnen» (v1)
+```
+
+- **Vorschläge statt direkter Änderungen:** Externe KI darf nur vorschlagen (`inventory:propose`), nie selbst ändern. Die Person bestätigt in derselben Review-Liste wie beim Bon.
+- **Abgleich mit dem Vorrat:** Was im Vorrat steht, aber auf dem Foto fehlt, wird als «aufgebraucht?» vorgeschlagen; so wird das Foto zum Kühlschrank-Check (UC-04).
+- **Eigene KI** nur gegen Bezahlung (Pro-Abo, Stufe 3).
 
 ## 6. Gemeinschaft: vom Haushalt zum Kollektiv
 

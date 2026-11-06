@@ -188,6 +188,11 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 - 5d: Übernahme in den Vorrat, Bild sofort verwerfen, Korrekturen in `ProductAlias`; E2E mit gemocktem OCR, Kamera-Fake-Device und verweigerter Berechtigung
 - **Delegation:** S für 5a und 5c, O für 5b und 5d.
 
+#### Schritt 5b – KI-Import «mit eigener KI erfassen» (ADR-0012, Stufe 1; Priorität nach dem manuellen Prototyp)
+- Auftrag (Prompt) zum Kopieren mit festem Antwortformat; Parser für die KI-Antwort (Zeilen oder JSON) in `core`, streng geprüft
+- «Einfügen» → Review-Liste → übernehmen; derselbe Posteingang wie später MCP und Bon-Scan
+- Kein Server, keine Kosten für FridgeAI
+
 #### Schritt 6 – Abschliessen, Wirkungs-Dashboard, Kühlschrank-Check (US-06, US-20, US-22)
 - 6a: `core/metrics`: gerettet/weggeworfen in CHF und kg pro Person und Haushalt, Schätzwerte klar markiert
 - 6b: Aktionen gegessen/weitergegeben/weggeworfen mit **Grund beim Wegwerfen** (abgelaufen, verdorben, zu viel gekauft, vergessen, schmeckt nicht) und **Empfänger beim Weitergeben** (Haushalt, Nachbarschaft, Familie/Freunde, Spende, öffentlicher Kühlschrank), ganz oder teilweise: **Anteile ¼ · ½ · ¾ · alles** bei Gramm, Milliliter und einzelnen Stücken, **«1 von 4»** bei Packungen mit mehreren Stück; «Geöffnet» setzt die Öffnungsregel; Rückgängig
@@ -266,7 +271,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 - Native Apps mit Capacitor (lokale Benachrichtigungen ohne Server, App-Store-Präsenz)
 - Bezahl-Abo, Haushalts-Challenges, «Darf ich?»-Anfrage, Allergene-Filter, Französisch
 - Optional serverseitiges OCR/LLM (Opt-in)
-- **Kühlschrank-Foto «wie Google Lens»:** Erkennen, bestätigen, mit dem Vorrat abgleichen (Port `FridgePhotoRecognizer`; Server-KI nur mit Einwilligung, siehe `architecture.md` 5.1)
+- **MCP-Connector für Claude und ChatGPT** (ADR-0012, Stufe 2): Foto in der KI-App → Vorschlag im FridgeAI-Posteingang → Link «In FridgeAI öffnen» → bestätigen; dazu Werkzeuge «Was läuft bald ab?», «Rezeptideen», «Auf die Einkaufsliste»
 - **Native Apps (Capacitor):** iOS-/Android-Widgets «Heute retten», Kurzbefehle/Siri/Action-Button (App Intents), Haptik
 - **Übersetzungen** FR, IT, EN (ADR-0008)
 - **Kreise:** Rette-Kreis über den Haushalt hinaus (Haus, Nachbarschaft, Kollektiv), siehe `architecture.md` Abschnitt 6
@@ -317,7 +322,7 @@ Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ic
 3. **Daten, die das Gerät verlassen** (neben dem Sync selbst)
    - a) **Open Food Facts:** Barcode-Nummer und IP-Adresse gehen an Open Food Facts (Frankreich). *Empfehlung:* erlaubt, mit Hinweis beim ersten Scan und Schalter in den Einstellungen.
    - b) **Web Push:** Der Server muss wissen, wann was abläuft. *Empfehlung:* Push nur mit Konto (die Daten sind durch den Sync ohnehin dort). Ohne Konto: Digest beim Öffnen.
-4. **Serverseitiges OCR/LLM-Parsing** – *Empfehlung:* nicht im MVP, im Pilot die Qualität auf dem Gerät messen und in v1 entscheiden.
+4. **Serverseitiges OCR/LLM-Parsing** – **Beantwortet (6.11.2026):** keine KI auf FridgeAI-Kosten. Erkennung über die KI der Nutzer:innen: «KI-Import» per Kopieren/Einfügen im Prototyp, MCP-Connector in v1, eigene KI nur über ein Pro-Abo (ADR-0012).
 5. **Freemium im MVP** – *Empfehlung:* alles gratis, nur die Mechanik `free | pro` bauen, Preise nach dem Pilot. CHF 9/Monat liegt über ZWIMP (CHF 4.90) und Kühlbär (CHF 3); ein Haushalts-Abo, das auf alle Mitglieder verteilt wird, könnte das auffangen.
 6. **Dependency-Liste zur Freigabe** (alles Open Source, keine kostenpflichtigen Dienste):
    - Laufzeit: `react`, `react-dom`, `react-router`, `zod` (v4), `dexie`, `dexie-react-hooks`, `tailwindcss`, einzelne `@radix-ui/*`-Komponenten, `tesseract.js`, `@zxing/browser`, `pdfjs-dist`, `papaparse`; ab Schritt 7 `@tanstack/react-query` und der Client des gewählten Backends; ab Schritt 8 eine Web-Push-Bibliothek im Backend
@@ -352,7 +357,7 @@ Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ic
 | 1 | Backend/Sync & Hosting | offen |
 | 2 | Auth-Methode | **E-Mail/Passwort, Google, Apple, Facebook** (ADR-0010) |
 | 3 | Daten, die das Gerät verlassen | offen |
-| 4 | Serverseitiges OCR/LLM | offen |
+| 4 | Serverseitiges OCR/LLM | **Bring your own AI** (ADR-0012) |
 | 5 | Freemium im MVP | offen |
 | 6 | Dependency-Liste | **freigegeben** (delegiert) |
 | 7 | Echte Bon-Beispiele | offen |
