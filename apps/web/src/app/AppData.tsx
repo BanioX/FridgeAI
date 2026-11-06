@@ -5,6 +5,7 @@ import { ensureLocalHousehold } from '../data/bootstrap';
 import { FridgeDb } from '../data/db';
 import { createInventoryHandlers, type InventoryHandlers } from '../data/handlers';
 import { createHouseholdHandlers, type HouseholdHandlers } from '../data/household-handlers';
+import { createRecipeHandlers, type RecipeHandlers } from '../data/recipe-handlers';
 import { createShoppingHandlers, type ShoppingHandlers } from '../data/shopping-handlers';
 import { cachedCatalog } from '../data/catalog-cache';
 import { openFoodFactsCatalog } from '../data/open-food-facts';
@@ -22,6 +23,7 @@ export interface AppData {
   inventory: InventoryHandlers;
   shopping: ShoppingHandlers;
   household: HouseholdHandlers;
+  recipes: RecipeHandlers;
 }
 
 const AppDataContext = createContext<AppData | null>(null);
@@ -67,6 +69,7 @@ export function AppDataProvider({ children, db }: { children: ReactNode; db?: Fr
           inventory: createInventoryHandlers(context),
           shopping: createShoppingHandlers(context),
           household: createHouseholdHandlers(context),
+          recipes: createRecipeHandlers(context),
         });
       })
       .catch(() => {
