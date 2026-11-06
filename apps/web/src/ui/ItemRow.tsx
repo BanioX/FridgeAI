@@ -1,5 +1,6 @@
+import { ChevronRight } from 'lucide-react';
 import { StatusChip } from './StatusChip';
-import { toneClasses, type Tone } from './tones';
+import type { Tone } from './tones';
 
 interface ItemRowProps {
   emoji: string;
@@ -8,16 +9,17 @@ interface ItemRowProps {
   name: string;
   meta: string;
   status: { tone: Tone; label: string };
+  /** Disclosure chevron for rows that open a detail page (Apple: «›» on navigating rows). */
+  chevron?: boolean;
 }
 
-/** One inventory item: status bar, pack picture or food emoji, name, meta line and expiry chip. */
-export function ItemRow({ emoji, image, name, meta, status }: ItemRowProps) {
+/**
+ * One inventory item as a row of a grouped list: pack picture or food emoji, name, meta line and
+ * the expiry chip, whose text carries the status (colour only supports it).
+ */
+export function ItemRow({ emoji, image, name, meta, status, chevron = false }: ItemRowProps) {
   return (
-    <div className="relative flex items-center gap-3 overflow-hidden rounded-2xl border border-line bg-surface py-3 pr-3 pl-4 shadow-card">
-      <span
-        aria-hidden="true"
-        className={`absolute inset-y-0 left-0 w-1 ${toneClasses[status.tone].accent}`}
-      />
+    <div className="flex min-h-15 items-center gap-3 py-2.5 pr-3 pl-4">
       {image === undefined ? (
         <span
           aria-hidden="true"
@@ -37,6 +39,9 @@ export function ItemRow({ emoji, image, name, meta, status }: ItemRowProps) {
         <p className="truncate text-sm text-ink-muted">{meta}</p>
       </div>
       <StatusChip tone={status.tone}>{status.label}</StatusChip>
+      {chevron ? (
+        <ChevronRight size={18} aria-hidden="true" className="-ml-1 shrink-0 text-ink-muted/60" />
+      ) : null}
     </div>
   );
 }

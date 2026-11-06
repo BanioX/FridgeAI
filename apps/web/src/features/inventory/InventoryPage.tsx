@@ -14,6 +14,7 @@ import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { expiryBadge } from '../../ui/expiry-badge';
 import { closedItemFrom } from './closed-item';
+import { GROUPED_ROW_LINK, GroupedList, GroupedListItem } from '../../ui/GroupedList';
 import { InventoryItemRow } from './InventoryItemRow';
 import { locationOrder } from './item-meta';
 
@@ -190,14 +191,12 @@ export function InventoryPage() {
             {selected === 'reserve' ? <Card variant="tip">{t.reserveTip}</Card> : null}
           </div>
         ) : (
-          <ul className="space-y-2">
+          <GroupedList>
             {visible.map((item) => (
-              <li key={item.id}>
-                <Link
-                  to={`/inventory/${item.id}`}
-                  className="block rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2"
-                >
+              <GroupedListItem key={item.id}>
+                <Link to={`/inventory/${item.id}`} className={GROUPED_ROW_LINK}>
                   <InventoryItemRow
+                    chevron
                     item={item}
                     status={expiryBadge(
                       expiryStatus(
@@ -212,9 +211,9 @@ export function InventoryPage() {
                     )}
                   />
                 </Link>
-              </li>
+              </GroupedListItem>
             ))}
-          </ul>
+          </GroupedList>
         )}
       </div>
 

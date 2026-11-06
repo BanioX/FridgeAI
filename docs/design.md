@@ -57,7 +57,8 @@ Beide Schriften werden **selbst gehostet** (npm-Pakete `@fontsource-variable/*`)
 
 ## Muster (werden mit den Features gebaut)
 
-- **Artikelzeile:** links 4-px-Statusstreifen, Emoji, Name, darunter Menge · Lagerort, rechts Status-Chip («heute», «morgen», «in 3 Tagen»).
+- **Listen** (Vorrat, «Heute retten», Einkaufsliste): Apples «inset grouped» Liste. Alle Zeilen liegen in einer weissen, abgerundeten Gruppe, getrennt durch Haarlinien ab dem Text, nicht als einzelne Karten.
+- **Artikelzeile:** Packungsbild oder Emoji, Name, darunter Menge · Lagerort, rechts Status-Chip («heute», «morgen», «in 3 Tagen») und «›», wenn die Zeile eine Detailseite öffnet. Der Status steht im Chip als Text, die Farbe unterstützt nur.
 - **Startseite «Heute retten»:** grosse Fraunces-Zahl (Wert im Kühlschrank in CHF), darunter die dringendsten Artikel, Lagerorte als drei Kacheln.
 - **Navigation:** weisse Leiste unten, aktives Ziel mit Basilikum-Pill hinter dem Icon.
 - **Primärbutton:** `basil-700`, weisse Schrift (8:1), volle Breite auf Mobile.
