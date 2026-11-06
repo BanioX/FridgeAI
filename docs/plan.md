@@ -1,6 +1,6 @@
 # FridgeAI – MVP-Plan
 
-> **Status: Entwurf v2, wartet auf Freigabe durch Alban.** Stand: 6. November 2026.
+> **Status: freigegeben durch Alban am 6. November 2026** («Du machst das, du bist die volle Pipeline. Ich sage, was wir machen, ausführen tust du.»).
 > Grundlagen: [`brief.md`](./brief.md) (Build-Brief), [`blue-ocean.md`](./blue-ocean.md) (Strategie), [`use-cases.md`](./use-cases.md) (Brainstorming). Offene Fragen: Abschnitt 9.
 >
 > **Neu in v2:** Plattform-Fähigkeit für API und MCP (Abschnitt 2), Push-Benachrichtigungen früher (Schritt 8), Dashboards in den Schritten 3 und 6, kleine MVP+-Ergänzungen aus den Use Cases, neue Fragen 11 bis 14.
@@ -288,6 +288,8 @@ Schritt 3 und 4 laufen parallel. Schritte 10, 11 und 12 sind voneinander weitgeh
 
 ## 9. Offene Fragen an dich
 
+**Delegation (6.11.2026):** Alban gibt die Richtung vor, Claude führt aus. Technische Entscheide treffe ich deshalb selbst nach den Empfehlungen unten und halte sie als ADR fest. Alban frage ich nur noch, wenn (a) er selbst handeln muss (Konten, Zugänge, Bon-Beispiele), (b) Kosten entstehen, (c) Daten das Gerät auf eine neue Art verlassen oder (d) sich das Produkt verändert. Das betrifft vor allem die Fragen 1, 3, 7, 11 und 13, die ich rechtzeitig vor Schritt 7 nochmals kurz vorlege.
+
 Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ich nur die Freigabe des Plans, Frage 6 und Frage 15.** Fragen 1 bis 3 und 11 brauche ich bis Ende Meilenstein B, Frage 7 vor Schritt 4.
 
 1. **Backend/Sync und Hosting** (für Haushalt, Kostenteilung, Rette-Kreis, Push)
@@ -334,16 +336,16 @@ Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ic
 | 3 | Daten, die das Gerät verlassen | offen |
 | 4 | Serverseitiges OCR/LLM | offen |
 | 5 | Freemium im MVP | offen |
-| 6 | Dependency-Liste | offen |
+| 6 | Dependency-Liste | **freigegeben** (delegiert) |
 | 7 | Echte Bon-Beispiele | offen |
 | 8 | Kostenteilung & Rette-Kreis | offen |
-| 9 | Reihenfolge & Umfang | offen |
+| 9 | Reihenfolge & Umfang | **freigegeben** (delegiert) |
 | 10 | Repo öffentlich oder privat | **privat** |
 | 11 | Push-Weg (PWA oder nativ) | offen |
 | 12 | API und MCP: wann | offen |
 | 13 | Anonymisierte Insights | offen |
 | 14 | Team, Termine, Validierung | a) **One-Man-Show**, b) Annahme: kein Schultermin, c) offen |
-| 15 | Merge-Ablauf | offen |
+| 15 | Merge-Ablauf | **B: Claude merged** nach grüner CI und eigenem Review |
 
 ---
 
