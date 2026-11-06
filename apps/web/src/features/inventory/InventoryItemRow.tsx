@@ -8,9 +8,11 @@ import { useProductImage } from './use-product-image';
 export function InventoryItemRow({
   item,
   status,
+  chevron = false,
 }: {
   item: InventoryItemView;
   status: { tone: Tone; label: string };
+  chevron?: boolean;
 }) {
   const image = useProductImage(item.gtin);
   return (
@@ -20,6 +22,7 @@ export function InventoryItemRow({
       name={item.name}
       meta={itemMeta(item)}
       status={status}
+      chevron={chevron}
     />
   );
 }

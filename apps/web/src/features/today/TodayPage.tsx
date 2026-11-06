@@ -18,6 +18,7 @@ import { BigNumber } from '../../ui/BigNumber';
 import { Card } from '../../ui/Card';
 import { LocationTile } from '../../ui/LocationTile';
 import { expiryBadge } from '../../ui/expiry-badge';
+import { GROUPED_ROW_LINK, GroupedList, GroupedListItem } from '../../ui/GroupedList';
 import { InventoryItemRow } from '../inventory/InventoryItemRow';
 import { locationOrder } from '../inventory/item-meta';
 import { checkDue, readLastCheck } from '../check/check-state';
@@ -112,21 +113,19 @@ export function TodayPage() {
         {expiring.length === 0 ? (
           <Card variant="tip">{t.expiringEmpty}</Card>
         ) : (
-          <ul className="space-y-2">
+          <GroupedList>
             {expiring.map((item) => (
-              <li key={item.id}>
-                <Link
-                  to={`/inventory/${item.id}`}
-                  className="block rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2"
-                >
+              <GroupedListItem key={item.id}>
+                <Link to={`/inventory/${item.id}`} className={GROUPED_ROW_LINK}>
                   <InventoryItemRow
+                    chevron
                     item={item}
                     status={expiryBadge(item.status, item.expiresOn, today, item.location)}
                   />
                 </Link>
-              </li>
+              </GroupedListItem>
             ))}
-          </ul>
+          </GroupedList>
         )}
       </section>
 
