@@ -27,8 +27,9 @@ export const routes: RouteObject[] = [
       { path: 'scan', element: <PlaceholderPage title={messages.pages.scan} /> },
       { path: 'shopping', element: <PlaceholderPage title={messages.pages.shopping} /> },
       { path: 'household', element: <HouseholdPage /> },
-      // Design-system reference, only in development builds (dead code in production).
-      ...(import.meta.env.DEV
+      // Demo data and design-system reference: dev and demo builds only (dead code in production).
+      // Inline on purpose: the bundler drops the lazy chunks only for a literal condition here.
+      ...(import.meta.env.DEV || import.meta.env.MODE === 'demo'
         ? [
             {
               path: 'dev/seed',

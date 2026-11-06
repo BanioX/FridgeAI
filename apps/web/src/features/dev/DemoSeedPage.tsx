@@ -4,8 +4,8 @@ import { Navigate } from 'react-router';
 import { useAppData, type AppData } from '../../app/AppData';
 
 /*
- * Development-only demo data for previews (route /dev/seed, see routes.tsx): a typical WG fridge
- * relative to today. Never part of production builds; strings are sample data, not product copy.
+ * Demo data for previews (route /dev/seed, see routes.tsx and dev-tools.ts): a typical WG fridge
+ * relative to today. Only in dev and demo builds; strings are sample data, not product copy.
  */
 async function seed({ householdId, ids, inventory, today }: AppData): Promise<void> {
   const { items } = await inventory['inventory.list']({ householdId });

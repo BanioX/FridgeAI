@@ -354,7 +354,7 @@ Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ic
 
 | Nr. | Thema | Antwort |
 | --- | --- | --- |
-| 1 | Backend/Sync & Hosting | offen |
+| 1 | Backend/Sync & Hosting | **Oracle Cloud + Docker** für den Server, erreichbar über Cloudflare Tunnel oder Tailscale Funnel (ADR-0009); PWA und Vorschau-Links auf **Cloudflare** (ADR-0013) |
 | 2 | Auth-Methode | **E-Mail/Passwort, Google, Apple, Facebook** (ADR-0010) |
 | 3 | Daten, die das Gerät verlassen | offen |
 | 4 | Serverseitiges OCR/LLM | **Bring your own AI** (ADR-0012) |
@@ -379,4 +379,4 @@ Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ic
 - Subagent-Aufträge enthalten immer: Ziel, Dateien, Typen/Interfaces, Akzeptanzkriterien, was nicht angefasst wird, wie getestet wird.
 - Neue Dependencies nur aus der freigegebenen Liste (Frage 6), alles andere frage ich vorher.
 - Nach jedem Meilenstein eine Statusmeldung: erledigt, offen, Entscheide nötig.
-- **Previews (Wunsch Alban, 6.11.2026):** Jede sichtbare UI-Änderung kommt mit einem kleinen Vorschaubild im iPhone-Format (`pnpm preview:shots`), damit Alban das Design laufend beurteilen kann.
+- **Previews (Wunsch Alban, 6.11.2026):** Jede sichtbare UI-Änderung kommt mit einem kleinen Vorschaubild im iPhone-Format (`pnpm preview:shots`), damit Alban das Design laufend beurteilen kann. Zusätzlich hat jeder PR einen Vorschau-Link auf Cloudflare, den Alban am Handy öffnet ([`previews.md`](./previews.md), ADR-0013).
