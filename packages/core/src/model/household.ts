@@ -44,7 +44,10 @@ export const ReminderPrefsSchema = z.object({
 });
 export type ReminderPrefs = z.infer<typeof ReminderPrefsSchema>;
 
-/** Rights a partner or AI assistant can be granted per household (plan, section 2). */
+/**
+ * Rights per household (plan, section 2). `household:*` (export everything, delete everything)
+ * belong to the household's own members only and can never be granted to a partner or AI.
+ */
 export const ScopeSchema = z.enum([
   'inventory:read',
   'inventory:write',
@@ -52,14 +55,19 @@ export const ScopeSchema = z.enum([
   'shopping_list:write',
   'recipes:read',
   'stats:read',
+  'household:read',
+  'household:write',
 ]);
 export type Scope = z.infer<typeof ScopeSchema>;
+
+/** What a partner app or MCP client may get, with consent (CLAUDE.md). */
+export const GrantableScopeSchema = ScopeSchema.exclude(['household:read', 'household:write']);
 
 /** A household's consent for an external client (partner app, MCP client) to access its data. */
 export const GrantSchema = z.object({
   ...syncFields,
   clientId: z.string().min(1).max(128),
-  scopes: z.array(ScopeSchema).min(1),
+  scopes: z.array(GrantableScopeSchema).min(1),
   grantedBy: IdSchema,
   grantedAt: IsoDateTimeSchema,
   revokedAt: IsoDateTimeSchema.optional(),

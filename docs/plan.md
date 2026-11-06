@@ -254,7 +254,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 ### Meilenstein E – Release-Reife
 
 #### Schritt 12 – Datenschutz, Entitlements, PWA (US-12)
-- 12a: Export (JSON und CSV) und Löschen (lokal komplett; Konto und Server-Daten inkl. Regel für Haushalte mit weiteren Mitgliedern)
+- 12a: Export (JSON und CSV) und Löschen (lokal komplett; Konto und Server-Daten inkl. Regel für Haushalte mit weiteren Mitgliedern) (umgesetzt lokal: `household.export`, `household.delete`, CSV-Baustein mit Schutz gegen Formeln; Oberfläche folgt; vorgezogen für den Pilot)
 - 12b: Entitlements `free | pro` als reine Funktion plus Hook; Partner-Mocks in einer Entwickler-Ansicht
 - 12c: PWA-Feinschliff: Icons, Installationshinweis, Offline-Check, Content-Security-Policy, Lighthouse-Check im CI
 - 12d: `docs/privacy.md` (Entwurf in einfacher Sprache, von dir/Fachperson zu prüfen), a11y-Durchgang, Pilot-Checkliste, bekannte Einschränkungen
