@@ -24,6 +24,17 @@ export const routes: RouteObject[] = [
       { path: 'scan', element: <PlaceholderPage title={messages.pages.scan} /> },
       { path: 'shopping', element: <PlaceholderPage title={messages.pages.shopping} /> },
       { path: 'household', element: <HouseholdPage /> },
+      // Design-system reference, only in development builds (dead code in production).
+      ...(import.meta.env.DEV
+        ? [
+            {
+              path: 'styleguide',
+              lazy: async () => ({
+                Component: (await import('../features/styleguide/StyleguidePage')).StyleguidePage,
+              }),
+            },
+          ]
+        : []),
       {
         path: '*',
         element: <PlaceholderPage title={messages.notFound.title} text={messages.notFound.text} />,
