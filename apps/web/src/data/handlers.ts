@@ -49,7 +49,12 @@ type Handler<TName extends OperationName> = (
 ) => Promise<OperationOutput<TName>>;
 
 export type CommandErrorCode =
-  'not_found' | 'not_active' | 'invalid_quantity' | 'unsuitable_location' | 'already_open';
+  | 'not_found'
+  | 'not_active'
+  | 'invalid_quantity'
+  | 'unsuitable_location'
+  | 'already_open'
+  | 'already_undone';
 
 export class CommandError extends Error {
   readonly code: CommandErrorCode;
@@ -368,6 +373,61 @@ export function createInventoryHandlers(ctx: HandlerContext) {
     });
   };
 
+  /**
+   * Gives the quantity of an outcome back to its item and soft-deletes the outcome, so statistics
+   * no longer count it. Works for any outcome, also one before a later outcome closed the item:
+   * a closed item keeps its last quantity, so it comes back with exactly this outcome's quantity.
+   */
+  const undoOutcome: Handler<'inventory.undoOutcome'> = async (raw) => {
+    const input = CONTRACT_V1['inventory.undoOutcome'].input.parse(raw);
+    return runCommand('inventory.undoOutcome', input.commandId, async () => {
+      const outcome = await db.outcomes.get(input.eventId);
+      if (outcome?.householdId !== input.householdId) {
+        throw new CommandError('not_found', `Outcome ${input.eventId} not found`);
+      }
+      if (outcome.deletedAt !== undefined) {
+        throw new CommandError('already_undone', `Outcome ${input.eventId} is already undone`);
+      }
+      const item = await db.items.get(outcome.itemId);
+      if (item?.householdId !== input.householdId || item.deletedAt !== undefined) {
+        throw new CommandError('not_found', `Item ${outcome.itemId} not found`);
+      }
+      const reopened = item.status !== 'active';
+      const quantity = reopened
+        ? outcome.quantity
+        : Math.round((item.quantity + outcome.quantity) * 1e6) / 1e6;
+      // Only a real receipt price goes back; an estimate was never stored on the item.
+      const priceRappen =
+        item.priceRappen === undefined || outcome.valueEstimated
+          ? item.priceRappen
+          : rappen((reopened ? 0 : item.priceRappen) + outcome.valueRappen);
+
+      const now = clock.now();
+      await db.outcomes.put(
+        OutcomeEventSchema.parse({ ...outcome, deletedAt: now, updatedAt: now }),
+      );
+      await db.items.put(
+        InventoryItemSchema.parse({
+          ...item,
+          status: 'active',
+          ...(reopened ? { statusChangedAt: now } : {}),
+          quantity,
+          ...(priceRappen === undefined ? {} : { priceRappen }),
+          updatedAt: now,
+        }),
+      );
+      await db.events.add(
+        event(input.householdId, 'outcome.undone', {
+          eventId: outcome.id,
+          itemId: item.id,
+          outcome: outcome.outcome,
+          quantity: outcome.quantity,
+        }),
+      );
+      return { itemId: item.id, quantity };
+    });
+  };
+
   const move: Handler<'inventory.move'> = async (raw) => {
     const input = CONTRACT_V1['inventory.move'].input.parse(raw);
     return runCommand('inventory.move', input.commandId, async () => {
@@ -510,6 +570,7 @@ export function createInventoryHandlers(ctx: HandlerContext) {
     'inventory.listExpiring': listExpiring,
     'inventory.addItem': addItem,
     'inventory.recordOutcome': recordOutcome,
+    'inventory.undoOutcome': undoOutcome,
     'inventory.move': move,
     'inventory.open': open,
     'products.lookup': lookupProduct,
