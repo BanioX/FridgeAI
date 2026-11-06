@@ -15,7 +15,7 @@ import {
   type WasteReason,
 } from '@fridgeai/core';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { ArrowLeft, PackageOpen, Snowflake, Sun, Undo2 } from 'lucide-react';
+import { ArrowLeft, PackageOpen, Pencil, Snowflake, Sun, Undo2 } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { useAppData } from '../../app/AppData';
@@ -28,8 +28,10 @@ import { describeDate } from '../../ui/date-text';
 import { expiryBadge } from '../../ui/expiry-badge';
 import { parseAmount } from './add-item';
 import type { ClosedItem } from './closed-item';
+import { FROM_DETAIL } from './edit-state';
 import { itemMeta } from './item-meta';
-import { formatQuantity, portionLabel } from './portion-labels';
+import { formatQuantity } from '../../ui/quantity-text';
+import { portionLabel } from './portion-labels';
 
 const t = messages.itemDetail;
 const outcomeOptions = OutcomeSchema.options.map((value) => ({ value, label: t.outcomes[value] }));
@@ -303,6 +305,14 @@ export function ItemDetailPage() {
         <h2 id="more-title" className="font-display text-xl font-semibold">
           {t.more}
         </h2>
+        <Link
+          to={`/inventory/${item.id}/edit`}
+          state={FROM_DETAIL}
+          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-line bg-surface px-5 font-semibold text-ink transition-colors hover:bg-surface-muted"
+        >
+          <Pencil size={20} aria-hidden="true" />
+          {messages.editItem.open}
+        </Link>
         {item.openedOn === undefined ? (
           <Button
             variant="secondary"
