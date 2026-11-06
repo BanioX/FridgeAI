@@ -8,6 +8,7 @@ import type {
   Product,
   ProductInfo,
   ReminderPrefs,
+  ShoppingListItem,
 } from '@fridgeai/core';
 import Dexie, { type EntityTable } from 'dexie';
 
@@ -50,6 +51,7 @@ export class FridgeDb extends Dexie {
   commands!: EntityTable<ProcessedCommand, 'commandId'>;
   meta!: EntityTable<MetaEntry, 'key'>;
   catalogCache!: EntityTable<CatalogCacheEntry, 'gtin'>;
+  shoppingItems!: EntityTable<ShoppingListItem, 'id'>;
 
   constructor(name = 'fridgeai') {
     super(name);
@@ -65,5 +67,7 @@ export class FridgeDb extends Dexie {
       meta: 'key',
     });
     this.version(2).stores({ catalogCache: 'gtin, fetchedAt' });
+    // Booleans cannot be indexed in IndexedDB: «checked» is filtered, not indexed.
+    this.version(3).stores({ shoppingItems: 'id, householdId' });
   }
 }

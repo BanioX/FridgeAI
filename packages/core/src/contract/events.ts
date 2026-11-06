@@ -96,6 +96,8 @@ export const DomainEventSchema = z.discriminatedUnion('type', [
   ),
   envelope('shopping_list.item_added', z.object({ shoppingItemId: IdSchema, name: z.string() })),
   envelope('shopping_list.item_checked', z.object({ shoppingItemId: IdSchema })),
+  envelope('shopping_list.item_unchecked', z.object({ shoppingItemId: IdSchema })),
+  envelope('shopping_list.item_removed', z.object({ shoppingItemId: IdSchema })),
   envelope(
     'receipt.imported',
     z.object({

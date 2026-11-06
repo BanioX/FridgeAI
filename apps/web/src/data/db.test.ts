@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { FridgeDb } from './db';
 
 describe('FridgeDb migrations', () => {
-  it('keeps everything from version 1 and adds the catalog cache in version 2', async () => {
+  it('keeps everything from version 1 and adds the later tables', async () => {
     const name = `migration-${crypto.randomUUID()}`;
     const v1 = new Dexie(name);
     v1.version(1).stores({
@@ -29,7 +29,8 @@ describe('FridgeDb migrations', () => {
     });
     expect(await db.products.where('gtin').equals('7610000000004').count()).toBe(1);
     expect(await db.catalogCache.count()).toBe(0);
-    expect(db.verno).toBe(2);
+    expect(await db.shoppingItems.count()).toBe(0);
+    expect(db.verno).toBe(3);
     db.close();
   });
 });
