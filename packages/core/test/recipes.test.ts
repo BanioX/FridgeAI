@@ -49,7 +49,7 @@ const soup = recipe('suppe', 30, [
 describe('recipe collection', () => {
   it('is valid, uses known categories and has unique ids', () => {
     const known = new Set(CATEGORIES.map((category) => category.id));
-    expect(RECIPES.length).toBeGreaterThanOrEqual(14);
+    expect(RECIPES.length).toBeGreaterThanOrEqual(25);
     expect(new Set(RECIPES.map((entry) => entry.id)).size).toBe(RECIPES.length);
     for (const entry of RECIPES) {
       for (const ingredient of entry.ingredients) {
