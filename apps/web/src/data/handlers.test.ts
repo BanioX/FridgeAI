@@ -139,6 +139,55 @@ describe('inventory.list and inventory.listExpiring', () => {
   });
 });
 
+describe('inventory.updateItem', () => {
+  const update = (itemId: Id, fields: Record<string, unknown>) =>
+    handlers['inventory.updateItem']({ commandId: ids.next(), householdId, itemId, ...fields });
+
+  it('corrects date, kind, quantity and price; a typed date is manual', async () => {
+    const { itemId } = await add({ name: 'Joghurt', quantity: 4 });
+    const result = await update(itemId, {
+      expiresOn: localDate('2026-11-25'),
+      expiryKind: 'use_by',
+      quantity: 6,
+      priceRappen: 450,
+    });
+    expect(result.changed).toEqual(['expiresOn', 'expiryKind', 'quantity', 'priceRappen']);
+    expect(await db.items.get(itemId)).toMatchObject({
+      expiresOn: '2026-11-25',
+      expirySource: 'manual',
+      expiryKind: 'use_by',
+      quantity: 6,
+      priceRappen: 450,
+    });
+    const events = await db.events.where('type').equals('item.updated').toArray();
+    expect(events.map((event) => event.payload)).toEqual([
+      { itemId, fields: ['expiresOn', 'expiryKind', 'quantity', 'priceRappen'] },
+    ]);
+  });
+
+  it('writes nothing when nothing changes and can remove a wrong price', async () => {
+    const { itemId, expiresOn } = await add({ name: 'Joghurt', quantity: 4, priceRappen: 380 });
+    expect((await update(itemId, { expiresOn, quantity: 4 })).changed).toEqual([]);
+    expect(await db.events.where('type').equals('item.updated').count()).toBe(0);
+    expect((await db.items.get(itemId))?.expirySource).toBe('category_estimate');
+
+    expect((await update(itemId, { priceRappen: null })).changed).toEqual(['priceRappen']);
+    expect((await db.items.get(itemId))?.priceRappen).toBeUndefined();
+  });
+
+  it('refuses empty changes and closed items', async () => {
+    const { itemId } = await add({ name: 'Vollmilch' });
+    await expect(update(itemId, {})).rejects.toThrow();
+    await handlers['inventory.recordOutcome']({
+      commandId: ids.next(),
+      householdId,
+      itemId,
+      outcome: 'eaten',
+    });
+    await expect(update(itemId, { quantity: 2 })).rejects.toMatchObject({ code: 'not_active' });
+  });
+});
+
 describe('inventory.recordOutcome', () => {
   it('records partial use with a proportional value and keeps the rest', async () => {
     const { itemId } = await add({ name: 'Joghurt', quantity: 4, priceRappen: 380 });
