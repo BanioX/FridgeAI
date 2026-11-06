@@ -2,8 +2,11 @@
  * @fridgeai/core – pure domain logic for FridgeAI.
  *
  * Rules (see CLAUDE.md): no DOM, no IndexedDB, no fetch. Everything external goes through ports.
- * The tsconfig enforces this by compiling without DOM and Node type definitions.
+ * The tsconfig enforces this by compiling src without DOM and Node type definitions.
  */
 export const CONTRACT_VERSION = 'v1' as const;
 
 export type ContractVersion = typeof CONTRACT_VERSION;
+
+export * from './ids';
+export * from './money';
