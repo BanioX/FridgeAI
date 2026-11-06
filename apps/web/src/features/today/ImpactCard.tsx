@@ -1,16 +1,11 @@
-import { displayQuantity, formatChf, type LocalDate } from '@fridgeai/core';
+import { formatChf, type LocalDate } from '@fridgeai/core';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
 import { Card } from '../../ui/Card';
+import { formatQuantity } from '../../ui/quantity-text';
 
 const t = messages.today;
-
-/** «1.2 kg», «350 g» (Swiss decimal point). */
-function weight(grams: number): string {
-  const shown = displayQuantity(grams, 'g');
-  return `${String(shown.amount)} ${shown.unit}`;
-}
 
 /**
  * «Deine Wirkung diesen Monat» (step 6, US-06): saved (eaten or given away) against wasted, in
@@ -43,14 +38,18 @@ export function ImpactCard({ from, to }: { from: LocalDate; to: LocalDate }) {
           <dd className="font-display text-2xl font-semibold text-basil-800 tabular-nums">
             {formatChf(stats.savedRappen)}
           </dd>
-          <dd className="text-sm text-ink-muted tabular-nums">{weight(stats.savedGrams)}</dd>
+          <dd className="text-sm text-ink-muted tabular-nums">
+            {formatQuantity(stats.savedGrams, 'g')}
+          </dd>
         </div>
         <div className="rounded-xl bg-surface-muted p-3">
           <dt className="text-sm font-semibold text-today">{t.wasted}</dt>
           <dd className="font-display text-2xl font-semibold text-today tabular-nums">
             {formatChf(stats.wastedRappen)}
           </dd>
-          <dd className="text-sm text-ink-muted tabular-nums">{weight(stats.wastedGrams)}</dd>
+          <dd className="text-sm text-ink-muted tabular-nums">
+            {formatQuantity(stats.wastedGrams, 'g')}
+          </dd>
         </div>
       </dl>
       <div

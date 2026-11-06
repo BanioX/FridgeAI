@@ -1,6 +1,6 @@
 import type { InventoryItemView, StorageLocation } from '@fridgeai/core';
 import { messages } from '../../app/messages.de-CH';
-import { formatQuantity } from './portion-labels';
+import { formatQuantity } from '../../ui/quantity-text';
 
 export const locationOrder: readonly StorageLocation[] = ['fridge', 'freezer', 'pantry', 'reserve'];
 

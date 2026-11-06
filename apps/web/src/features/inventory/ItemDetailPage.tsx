@@ -27,7 +27,8 @@ import { describeDate } from '../../ui/date-text';
 import { expiryBadge } from '../../ui/expiry-badge';
 import { parseAmount } from './add-item';
 import { itemMeta } from './item-meta';
-import { formatQuantity, portionLabel } from './portion-labels';
+import { formatQuantity } from '../../ui/quantity-text';
+import { portionLabel } from './portion-labels';
 
 const t = messages.itemDetail;
 const outcomeOptions = OutcomeSchema.options.map((value) => ({ value, label: t.outcomes[value] }));
