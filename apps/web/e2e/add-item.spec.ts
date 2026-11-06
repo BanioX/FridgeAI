@@ -33,7 +33,10 @@ test('adds eggs by pack size and keeps the form open for the next item', async (
   await expect(page.getByLabel('Verpackung')).toHaveValue('box');
 
   await page.getByRole('button', { name: 'Speichern und nächsten erfassen' }).click();
-  await expect(page.getByRole('status')).toHaveText('Freilandeier ist gespeichert.');
+  // The form's own status line (quick add has one too, once something was added).
+  await expect(page.getByRole('status').filter({ hasText: 'Freilandeier' })).toHaveText(
+    'Freilandeier ist gespeichert.',
+  );
   await expect(page.getByLabel('Was ist es?')).toHaveValue('');
   await expect(page.getByLabel('Was ist es?')).toBeFocused();
 
