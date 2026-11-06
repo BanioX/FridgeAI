@@ -123,6 +123,7 @@ CLAUDE.md            Arbeitsregeln für die KI-Entwicklung
 - KI-Erkennung über die KI deiner Wahl: FridgeAI bekommt nur die erkannte Liste ([ADR-0012](docs/adr/0012-bring-your-own-ai.md)).
 - Strenge Content-Security-Policy, alle Assets selbst gehostet, kein CDN; der E2E-Test schlägt bei jeder CSP-Verletzung fehl.
 - Partner- und KI-Zugriff auf Haushaltsdaten nur mit ausdrücklicher, widerrufbarer Einwilligung; kein Verkauf von Einzeldaten.
+- Datenschutzerklärung in einfacher Sprache als Entwurf: [`docs/privacy.md`](docs/privacy.md) (vor dem öffentlichen Start fachlich prüfen).
 
 ## Dokumentation
 
