@@ -2,12 +2,14 @@ import { createBrowserRouter, type RouteObject } from 'react-router';
 import { PlaceholderPage } from '../features/placeholder/PlaceholderPage';
 import { TodayPage } from '../features/today/TodayPage';
 import { AppShell } from './AppShell';
+import { RouteError } from './RouteError';
 import { messages } from './messages.de-CH';
 
 export const routes: RouteObject[] = [
   {
     path: '/',
     element: <AppShell />,
+    errorElement: <RouteError />,
     children: [
       // The start page loads with the app; every other page is its own chunk, fetched on first
       // visit and precached by the service worker for offline use.
