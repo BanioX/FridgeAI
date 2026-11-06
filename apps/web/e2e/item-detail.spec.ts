@@ -35,6 +35,20 @@ test('eats part of a cheese, opens it and throws the rest away with a reason', a
 
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
   await expect(page.getByText('Grana Padano')).toHaveCount(0);
+
+  // The start page now shows the month's impact: a third saved, the rest wasted.
+  const cspErrors: string[] = [];
+  page.on('console', (message) => {
+    if (message.text().includes('Content Security Policy')) {
+      cspErrors.push(message.text());
+    }
+  });
+  await page.getByRole('navigation').getByRole('link', { name: 'Heute' }).click();
+  await expect(page.getByRole('heading', { name: 'Deine Wirkung diesen Monat' })).toBeVisible();
+  await expect(page.getByRole('img', { name: '33 % gerettet' })).toBeVisible();
+  const today = await new AxeBuilder({ page }).analyze();
+  expect(today.violations).toEqual([]);
+  expect(cspErrors).toEqual([]);
 });
 
 test('a free amount larger than what is left is refused', async ({ page }) => {

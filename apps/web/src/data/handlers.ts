@@ -18,6 +18,7 @@ import {
   rappen,
   RESERVE_SOON_THRESHOLD_DAYS,
   soonThresholdFor,
+  summarizeImpact,
   type Category,
   type Clock,
   type DomainEvent,
@@ -493,6 +494,17 @@ export function createInventoryHandlers(ctx: HandlerContext) {
     };
   };
 
+  const wasteStats: Handler<'stats.waste'> = async (raw) => {
+    const input = CONTRACT_V1['stats.waste'].input.parse(raw);
+    const outcomes = await db.outcomes.where('householdId').equals(input.householdId).toArray();
+    const { savedRappen, wastedRappen, savedGrams, wastedGrams, estimated } = summarizeImpact(
+      outcomes,
+      input.from,
+      input.to,
+    );
+    return { savedRappen, wastedRappen, savedGrams, wastedGrams, estimated };
+  };
+
   return {
     'inventory.list': list,
     'inventory.listExpiring': listExpiring,
@@ -501,6 +513,7 @@ export function createInventoryHandlers(ctx: HandlerContext) {
     'inventory.move': move,
     'inventory.open': open,
     'products.lookup': lookupProduct,
+    'stats.waste': wasteStats,
   };
 }
 

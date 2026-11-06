@@ -391,3 +391,37 @@ describe('products.lookup', () => {
     expect(await handlers['products.lookup']({ householdId, gtin })).toEqual({ product: null });
   });
 });
+
+describe('stats.waste', () => {
+  it('sums this period: eaten and shared as saved, wasted separately', async () => {
+    const { itemId } = await add({ name: 'Joghurt', quantity: 4, priceRappen: 400 });
+    for (const outcome of ['eaten', 'shared_out', 'wasted'] as const) {
+      await handlers['inventory.recordOutcome']({
+        commandId: ids.next(),
+        householdId,
+        itemId,
+        outcome,
+        quantity: 1,
+      });
+    }
+    const stats = await handlers['stats.waste']({
+      householdId,
+      from: localDate('2026-11-01'),
+      to: localDate('2026-11-30'),
+    });
+    expect(stats).toEqual({
+      savedRappen: 200,
+      wastedRappen: 100,
+      // Joghurt: 180 g per cup from the category.
+      savedGrams: 360,
+      wastedGrams: 180,
+      estimated: false,
+    });
+    const before = await handlers['stats.waste']({
+      householdId,
+      from: localDate('2026-10-01'),
+      to: localDate('2026-10-31'),
+    });
+    expect(before.savedRappen).toBe(0);
+  });
+});
