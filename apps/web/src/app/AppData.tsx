@@ -4,6 +4,7 @@ import { browserClock, browserIds } from '../data/adapters';
 import { ensureLocalHousehold } from '../data/bootstrap';
 import { FridgeDb } from '../data/db';
 import { createInventoryHandlers, type InventoryHandlers } from '../data/handlers';
+import { openFoodFactsCatalog } from '../data/open-food-facts';
 import { messages } from './messages.de-CH';
 
 export interface AppData {
@@ -50,6 +51,7 @@ export function AppDataProvider({ children, db }: { children: ReactNode; db?: Fr
             clock: browserClock,
             ids: browserIds,
             actor: profile.member.id,
+            catalog: openFoodFactsCatalog(),
           }),
         });
       })

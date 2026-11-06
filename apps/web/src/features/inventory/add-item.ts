@@ -52,3 +52,11 @@ export function suggestedExpiry(
     addDays(today, 7)
   );
 }
+
+/** «1 l», «500 g», «2,5 dl» as printed on a pack → amount and unit; anything else → null. */
+export function parsePackSize(text: string): { amount: number; unit: InputUnit } | null {
+  const match = /^(\d+(?:[.,]\d+)?)\s*(g|kg|ml|cl|dl|l)$/i.exec(text.trim());
+  const unit = INPUT_UNITS.find((option) => option === match?.[2]?.toLowerCase());
+  const amount = match?.[1] === undefined ? null : parseAmount(match[1]);
+  return amount === null || unit === undefined ? null : { amount, unit };
+}
