@@ -4,6 +4,8 @@ Kurzfassung der Regeln. Vollständiger Brief: [`docs/brief.md`](docs/brief.md) �
 
 **Produkt:** Local-first PWA für Schweizer Haushalte (WGs, Paare). «Scan deinen Bon – FridgeAI weiss, was du hast, wem es gehört, wer was schuldet und was du heute retten musst.» Product Owner: Alban Hyseni.
 
+**Prioritäten** (Alban, 6.11.2026): Kühlschrank zuerst, Vorrat/Tiefkühler/Notvorrat zweitrangig. Design nach Apples Human Interface Guidelines (ADR-0021). Pilot Schweiz, dann DACH, gebaut für jede Währung (ADR-0019). Daten so kurz wie möglich, jederzeit exportier- und löschbar (ADR-0020). Den Pilot (Alban + 1 Person) gibt Claude frei, sobald er startklar ist. Ideen-Sammlung: [`docs/ideen/`](docs/ideen/).
+
 ## Sprache
 - UI-Texte und Doku: Deutsch (Schweiz), «ss» statt «ß», inklusive Schreibweise (Mitbewohner:innen).
 - Die App spricht immer **eine Person mit «du»** an (du, dein, dir), nie «ihr», «euch» oder «euer», auch in WGs und Familien (Alban, 6.11.2026). Ein Test prüft den Textkatalog.
@@ -15,6 +17,8 @@ Kurzfassung der Regeln. Vollständiger Brief: [`docs/brief.md`](docs/brief.md) �
 3. Kleine Entscheide selbst treffen und als ADR in `docs/adr/NNNN-titel.md` festhalten.
 4. **Previews für Alban:** Bei jeder sichtbaren UI-Änderung `pnpm preview:shots <route …>` ausführen und das kompakte `sheet.png` (aus `apps/web/.previews/…`) mit dem PR an Alban schicken, damit er das Design beurteilen kann. Dazu den Cloudflare-Vorschau-Link des PRs nennen ([`docs/previews.md`](docs/previews.md)). Feedback fliesst in einen Folge-PR.
 5. **Freigabe:** Alles, was kostenlos ist, darf ich ohne Rückfrage entscheiden und nutzen (Dienste im Gratis-Plan, Open-Source-Dependencies, Tools; Alban, 6.11.2026). **Alban fragen vor:** allem, was Geld kostet, Preis-/Freemium-Grenzen, allem, was Nutzerdaten das Gerät neu verlassen lässt, und grösseren Abweichungen vom Produkt.
+6. **Ideen unterwegs:** Bei jeder Arbeit festhalten, was erweiterbar oder zusätzlich sinnvoll wäre, in [`docs/ideen/`](docs/ideen/) (Nutzen, für wen, Aufwand, Kosten). Umsetzen nur, was im Plan steht. Ideen mit Kosten oder neuen Datenflüssen entscheidet Alban.
+7. **Tempo:** Claude baut ohne Rückfrage weiter und optimiert, bis das Limit erreicht ist (Alban, 6.11.2026). Die Grenzen aus Punkt 5 gelten weiter.
 
 ## Pflege-Rhythmus (macht immer Claude, nie Alban – ADR-0017)
 - **Jeder PR:** Conventional-Commit-Titel; README und Plan-Status nachführen, wenn sich Sichtbares ändert.
@@ -26,7 +30,7 @@ Kurzfassung der Regeln. Vollständiger Brief: [`docs/brief.md`](docs/brief.md) �
 ## Harte Regeln
 - Keine echten Partner-Integrationen (Migros, Coop, Lieferdienste): nur Interfaces mit Mocks.
 - Keine Secrets im Repo (`.env.example` ja, echte Keys nie). Keine personenbezogenen Daten in Fixtures, Logs oder Commits.
-- Geld immer als Integer-Rappen, nie Float. Salden und Metriken werden berechnet, nicht gespeichert.
+- Geld immer als Ganzzahl in der kleinsten Einheit der Haushaltswährung (CHF: Rappen), nie Float (ADR-0019). Salden und Metriken werden berechnet, nicht gespeichert.
 - Ablaufdaten als Kalendertag (`YYYY-MM-DD`, Europe/Zurich), Zeitpunkte als ISO-UTC.
 - `packages/core` ist reines TypeScript ohne Browser-Abhängigkeit; Äusseres nur über Ports.
 - Contract-first: Die UI ruft nur Commands/Queries des Vertrags (Zod-Schemas) auf, Änderungen erzeugen Domain Events. So bleiben REST-API und MCP-Server später ohne Umbau möglich (Plan, Abschnitt 2).

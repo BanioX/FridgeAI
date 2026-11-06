@@ -358,7 +358,7 @@ Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ic
 | 2 | Auth-Methode | **E-Mail/Passwort, Google, Apple, Facebook** (ADR-0010) |
 | 3 | Daten, die das Gerät verlassen | offen |
 | 4 | Serverseitiges OCR/LLM | **Bring your own AI** (ADR-0012) |
-| 5 | Freemium im MVP | offen |
+| 5 | Freemium im MVP | Brainstorming in [`ideen/monetarisierung.md`](./ideen/monetarisierung.md); Pilot ohne Werbung, Entscheid danach |
 | 6 | Dependency-Liste | **freigegeben** (delegiert) |
 | 7 | Echte Bon-Beispiele | offen |
 | 8 | Kostenteilung & Rette-Kreis | offen |
