@@ -18,3 +18,5 @@ export * from './money';
 export * from './scan/gs1';
 export * from './ports';
 export * from './ports/mocks';
+export * from './contract/events';
+export * from './contract/operations';
