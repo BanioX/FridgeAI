@@ -1,0 +1,67 @@
+import { z } from 'zod';
+import { IdSchema } from '../ids';
+import { IsoDateTimeSchema, syncFields, TimeOfDaySchema } from './primitives';
+
+export const PlanSchema = z.enum(['free', 'pro']);
+export type Plan = z.infer<typeof PlanSchema>;
+
+export const HouseholdSchema = z.object({
+  id: IdSchema,
+  name: z.string().trim().min(1).max(60),
+  plan: PlanSchema,
+  createdAt: IsoDateTimeSchema,
+  updatedAt: IsoDateTimeSchema,
+  deletedAt: IsoDateTimeSchema.optional(),
+});
+export type Household = z.infer<typeof HouseholdSchema>;
+
+export const RoleSchema = z.enum(['owner', 'member']);
+export type Role = z.infer<typeof RoleSchema>;
+
+export const MemberSchema = z.object({
+  ...syncFields,
+  displayName: z.string().trim().min(1).max(40),
+  role: RoleSchema,
+  /** Opaque account ID; absent for local-only profiles without an account. */
+  userId: z.string().min(1).max(128).optional(),
+  joinedAt: IsoDateTimeSchema,
+  leftAt: IsoDateTimeSchema.optional(),
+});
+export type Member = z.infer<typeof MemberSchema>;
+
+export const ReminderPrefsSchema = z.object({
+  ...syncFields,
+  memberId: IdSchema,
+  /** Local time of the daily «Retten-Digest». */
+  digestTime: TimeOfDaySchema,
+  /** Extra single reminders N days before expiry, e.g. [3, 1]. */
+  daysBefore: z
+    .array(z.int().min(0).max(14))
+    .max(5)
+    .refine((days) => new Set(days).size === days.length, 'Days must be unique'),
+  quietHours: z.object({ start: TimeOfDaySchema, end: TimeOfDaySchema }),
+  channels: z.object({ push: z.boolean(), inApp: z.boolean() }),
+});
+export type ReminderPrefs = z.infer<typeof ReminderPrefsSchema>;
+
+/** Rights a partner or AI assistant can be granted per household (plan, section 2). */
+export const ScopeSchema = z.enum([
+  'inventory:read',
+  'inventory:write',
+  'shopping_list:read',
+  'shopping_list:write',
+  'recipes:read',
+  'stats:read',
+]);
+export type Scope = z.infer<typeof ScopeSchema>;
+
+/** A household's consent for an external client (partner app, MCP client) to access its data. */
+export const GrantSchema = z.object({
+  ...syncFields,
+  clientId: z.string().min(1).max(128),
+  scopes: z.array(ScopeSchema).min(1),
+  grantedBy: IdSchema,
+  grantedAt: IsoDateTimeSchema,
+  revokedAt: IsoDateTimeSchema.optional(),
+});
+export type Grant = z.infer<typeof GrantSchema>;
