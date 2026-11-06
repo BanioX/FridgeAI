@@ -12,10 +12,10 @@ import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
-import { ItemRow } from '../../ui/ItemRow';
 import { expiryBadge } from '../../ui/expiry-badge';
 import { closedItemFrom } from './closed-item';
-import { itemMeta, locationOrder } from './item-meta';
+import { InventoryItemRow } from './InventoryItemRow';
+import { locationOrder } from './item-meta';
 
 const tabId = (location: StorageLocation) => `tab-${location}`;
 const panelId = (location: StorageLocation) => `panel-${location}`;
@@ -186,10 +186,8 @@ export function InventoryPage() {
                   to={`/inventory/${item.id}`}
                   className="block rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2"
                 >
-                  <ItemRow
-                    emoji={item.emoji ?? ''}
-                    name={item.name}
-                    meta={itemMeta(item)}
+                  <InventoryItemRow
+                    item={item}
                     status={expiryBadge(
                       expiryStatus(
                         item.expiresOn,
