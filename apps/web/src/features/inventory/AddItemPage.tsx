@@ -32,6 +32,7 @@ import {
   formatAmount,
   INPUT_UNITS,
   parseAmount,
+  parsePackSize,
   suggestedAmount,
   suggestedExpiry,
 } from './add-item';
@@ -77,6 +78,7 @@ export function AddItemPage() {
     date?: { expiresOn: LocalDate; kind: DateKind };
   } | null>(null);
   const [scanStatus, setScanStatus] = useState('');
+  const [fromOpenFoodFacts, setFromOpenFoodFacts] = useState(false);
 
   const category =
     (categoryChoice === null ? undefined : categoryById(categoryChoice)) ??
@@ -121,13 +123,42 @@ export function AddItemPage() {
       setDateChoice({ value: date.expiresOn });
     }
     const label = code.data.gtin ?? raw.slice(0, 40);
-    setScanStatus(
+    const found =
       date === undefined
         ? messages.scanner.found(label)
-        : messages.scanner.foundWithDate(label, formatSwissDate(date.expiresOn)),
-    );
+        : messages.scanner.foundWithDate(label, formatSwissDate(date.expiresOn));
     setScanOpen(false);
+    setFromOpenFoodFacts(false);
     nameInput.current?.focus();
+    if (code.data.gtin === undefined) {
+      setScanStatus(found);
+      return;
+    }
+    setScanStatus(`${found} ${messages.scanner.looking}`);
+    void lookUp(code.data.gtin, found);
+  }
+
+  /** Fills in what the household or Open Food Facts knows about the barcode (ADR-0016). */
+  async function lookUp(gtin: Gtin, found: string) {
+    const { product } = await inventory['products.lookup']({ householdId, gtin }).catch(() => ({
+      product: null,
+    }));
+    if (product === null) {
+      setScanStatus(`${found} ${messages.scanner.unknownProduct}`);
+      return;
+    }
+    setName((current) => (current.trim() === '' ? product.name : current));
+    setCategoryChoice(product.categoryId);
+    const pack = product.packSize === undefined ? null : parsePackSize(product.packSize);
+    if (pack !== null) {
+      setAmountText(formatAmount(pack.amount));
+      setUnitChoice(pack.unit);
+    }
+    const details = [product.brand, product.packSize].filter(Boolean).join(', ');
+    setScanStatus(
+      `${found} ${messages.scanner.product(product.name, details === '' ? '' : ` (${details})`)}`,
+    );
+    setFromOpenFoodFacts(product.source === 'off');
   }
 
   async function save(next: boolean) {
@@ -172,6 +203,7 @@ export function AddItemPage() {
       setDateChoice(null);
       setScanned(null);
       setScanStatus('');
+      setFromOpenFoodFacts(false);
       setPriceText('');
       setSubmitted(false);
       setRound((value) => value + 1);
@@ -209,6 +241,18 @@ export function AddItemPage() {
         <p aria-live="polite" className="font-semibold text-basil-800">
           {scanStatus}
         </p>
+        {fromOpenFoodFacts ? (
+          <p className="text-sm text-ink-muted">
+            <a
+              href="https://world.openfoodfacts.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-2"
+            >
+              {messages.scanner.attribution}
+            </a>
+          </p>
+        ) : null}
       </div>
 
       <form

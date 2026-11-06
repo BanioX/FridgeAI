@@ -1,6 +1,12 @@
 import { categoryById, localDate, type Category } from '@fridgeai/core';
 import { describe, expect, it } from 'vitest';
-import { formatAmount, parseAmount, suggestedAmount, suggestedExpiry } from './add-item';
+import {
+  formatAmount,
+  parseAmount,
+  parsePackSize,
+  suggestedAmount,
+  suggestedExpiry,
+} from './add-item';
 
 const category = (id: string): Category => {
   const found = categoryById(id);
@@ -52,5 +58,20 @@ describe('suggestedExpiry', () => {
   it('falls back to the default location where the food does not keep', () => {
     // Milk has no Notvorrat value: the fridge estimate is used.
     expect(suggestedExpiry(category('dairy-milk'), 'reserve', today)).toBe('2026-11-13');
+  });
+});
+
+describe('parsePackSize', () => {
+  it('reads pack sizes as printed', () => {
+    expect(parsePackSize('1 l')).toEqual({ amount: 1, unit: 'l' });
+    expect(parsePackSize('500g')).toEqual({ amount: 500, unit: 'g' });
+    expect(parsePackSize('2,5 dl')).toEqual({ amount: 2.5, unit: 'dl' });
+    expect(parsePackSize('1.5 L')).toEqual({ amount: 1.5, unit: 'l' });
+  });
+
+  it('ignores multipacks and anything unclear', () => {
+    for (const text of ['6 x 125 g', '4 Stück', 'ca. 300 g', '']) {
+      expect(parsePackSize(text), text).toBeNull();
+    }
   });
 });
