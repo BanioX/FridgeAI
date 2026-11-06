@@ -18,6 +18,7 @@ export const OFF_FIELDS = [
   'nutriments',
   'nutriscore_grade',
   'allergens_tags',
+  'image_front_small_url',
 ] as const;
 
 export function offProductUrl(gtin: Gtin): string {
@@ -36,6 +37,7 @@ const OffResponseSchema = z.object({
       nutriments: z.record(z.string(), z.unknown()).optional(),
       nutriscore_grade: z.string().optional(),
       allergens_tags: z.array(z.string()).optional(),
+      image_front_small_url: z.string().optional(),
     })
     .optional(),
 });
@@ -59,6 +61,10 @@ const text = (value: string | undefined, max: number): string | undefined => {
     .trim();
   return cleaned === undefined || cleaned === '' ? undefined : cleaned.slice(0, max);
 };
+
+/** Only pictures from the Open Food Facts image server, as JPEG, PNG or WebP. */
+const OFF_IMAGE_URL =
+  /^https:\/\/images\.openfoodfacts\.org\/images\/products\/(?!.*\.\.)[0-9a-z/_.-]{1,200}\.(?:jpe?g|png|webp)$/i;
 
 /** `en:milk` → `milk`, `de:schweiz` → `schweiz`. */
 const untag = (tag: string) => tag.replace(/^[a-z]{2}:/, '');
@@ -114,6 +120,7 @@ export function parseOffProduct(json: unknown, gtin: Gtin): ProductInfo | null {
     .filter((tag) => /^[a-z][a-z0-9-]{1,40}$/.test(tag))
     .slice(0, 20);
   const categoryHints = (product.categories_tags ?? []).map(untag).slice(0, 20);
+  const imageUrl = product.image_front_small_url?.trim();
   return {
     gtin,
     name,
@@ -124,5 +131,6 @@ export function parseOffProduct(json: unknown, gtin: Gtin): ProductInfo | null {
     ...(nutrition === undefined ? {} : { nutrition }),
     ...(nutriScore === undefined ? {} : { nutriScore }),
     ...(allergens.length === 0 ? {} : { allergens }),
+    ...(imageUrl !== undefined && OFF_IMAGE_URL.test(imageUrl) ? { imageUrl } : {}),
   };
 }

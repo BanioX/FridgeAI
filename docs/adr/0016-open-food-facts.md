@@ -18,6 +18,11 @@ Nach dem Scan (ADR-0014) soll die App Name, Kategorie, Packungsgrösse und Nähr
 - **Speichern:** Übernimmt die Person den Vorschlag, entsteht ein Produkt im Haushalt. Der nächste Scan desselben Barcodes braucht kein Netz mehr.
 - **Cache:** Antworten von Open Food Facts merkt sich das Gerät 30 Tage lang (Tabelle `catalogCache`, Dexie-Version 2). Die Tabelle enthält nur öffentliche Produktdaten, ist keine Haushaltsdaten und wird nie synchronisiert. Ein erneuter Scan funktioniert dadurch offline, und eine alte Antwort ist besser als keine. Unbekannte Barcodes werden nicht gemerkt.
 - **Beim Erfassen:** Das neue Produkt übernimmt Marke, Packungsgrösse, Nährwerte, Nutri-Score und Allergene aus dem Cache, mit `source: off`. Der Name bleibt der, den die Person gewählt hat.
+- **Packungsbild** (Wunsch Alban, 6.11.2026):
+  - Das kleine Frontbild (200 px) kommt einmal von `images.openfoodfacts.org`, im Hintergrund nach dem ersten Treffer. Dabei gelten dieselben Regeln wie bei der Abfrage: ohne Cookies, ohne Referrer, mit Zeitlimit.
+  - Angenommen werden nur JPEG, PNG oder WebP unter 300 KB von genau diesem Server.
+  - Das Bild bleibt als Data-URL auf dem Gerät (Tabelle `productImages`, Dexie-Version 4) und wird nie synchronisiert. Abrufbar ist es über die Abfrage `products.image`.
+  - Lizenz der Bilder: CC BY-SA, die App nennt die Quelle.
 - **Untrusted:** Die Antwort wird mit Zod geprüft (`parseOffProduct`). Unplausible Nährwerte werden verworfen, Steuerzeichen entfernt, Längen begrenzt.
 - **Lizenz:** Die Daten stehen unter ODbL. Die App nennt «Daten: Open Food Facts» beim Vorschlag. Eigene Daten bleiben getrennt (ADR-0015).
 

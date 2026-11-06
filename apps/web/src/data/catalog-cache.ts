@@ -13,8 +13,24 @@ export function cachedCatalog(
   db: FridgeDb,
   source: ProductCatalog,
   clock: Clock,
-  maxAgeDays = 30,
+  options: {
+    maxAgeDays?: number;
+    /** Downloads a pack picture; it is stored in the background once per barcode. */
+    image?: (url: string) => Promise<string | null>;
+  } = {},
 ): ProductCatalog {
+  const { maxAgeDays = 30, image } = options;
+
+  async function keepImage(gtin: Gtin, url: string | undefined): Promise<void> {
+    if (image === undefined || url === undefined || (await db.productImages.get(gtin))) {
+      return;
+    }
+    const dataUrl = await image(url);
+    if (dataUrl !== null) {
+      await db.productImages.put({ gtin, dataUrl, source: 'off', fetchedAt: clock.now() });
+    }
+  }
+
   return {
     async lookupByGtin(gtin: Gtin): Promise<ProductInfo | null> {
       const cached = await db.catalogCache.get(gtin);
@@ -26,6 +42,8 @@ export function cachedCatalog(
       const found = await source.lookupByGtin(gtin);
       if (found !== null) {
         await db.catalogCache.put({ gtin, info: found, fetchedAt: clock.now() });
+        // In the background: the name shows at once, the picture follows when it is there.
+        void keepImage(gtin, found.imageUrl).catch(() => undefined);
         return found;
       }
       // Offline or gone from the database: an old answer is better than none.

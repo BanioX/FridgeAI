@@ -7,6 +7,7 @@ import { createInventoryHandlers, type InventoryHandlers } from '../data/handler
 import { createShoppingHandlers, type ShoppingHandlers } from '../data/shopping-handlers';
 import { cachedCatalog } from '../data/catalog-cache';
 import { openFoodFactsCatalog } from '../data/open-food-facts';
+import { fetchProductImage } from '../data/product-images';
 import { messages } from './messages.de-CH';
 
 export interface AppData {
@@ -48,7 +49,9 @@ export function AppDataProvider({ children, db }: { children: ReactNode; db?: Fr
           clock: browserClock,
           ids: browserIds,
           actor: profile.member.id,
-          catalog: cachedCatalog(database, openFoodFactsCatalog(), browserClock),
+          catalog: cachedCatalog(database, openFoodFactsCatalog(), browserClock, {
+            image: (url) => fetchProductImage(url),
+          }),
         };
         setData({
           db: database,
