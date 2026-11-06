@@ -1,0 +1,9 @@
+{
+  "//": "Purity check: src only, no DOM and no Node types. Tests and configs are checked via tsconfig.json.",
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2023"],
+    "types": []
+  },
+  "include": ["src"]
+}
