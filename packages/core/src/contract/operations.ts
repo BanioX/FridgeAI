@@ -156,6 +156,37 @@ export const CONTRACT_V1 = {
     }),
     output: z.object({ itemId: IdSchema, expiresOn: LocalDateSchema }),
   }),
+  'inventory.updateItem': command({
+    name: 'inventory.updateItem',
+    summary: {
+      de: 'Datum, Datumsart, Menge oder Preis eines Artikels korrigieren.',
+      en: 'Correct the date, date kind, quantity or price of an item.',
+    },
+    scopes: ['inventory:write'],
+    input: z
+      .object({
+        ...commandBase,
+        itemId: IdSchema,
+        /** A date set by hand counts as `manual`, whatever the source was before. */
+        expiresOn: LocalDateSchema.optional(),
+        expiryKind: DateKindSchema.optional(),
+        /** What is left now, in the item's unit. */
+        quantity: QuantitySchema.optional(),
+        /** Value of what is left; null removes a wrong price (then estimates apply). */
+        priceRappen: RappenSchema.min(0).nullable().optional(),
+      })
+      .refine(
+        (input) =>
+          input.expiresOn !== undefined ||
+          input.expiryKind !== undefined ||
+          input.quantity !== undefined ||
+          input.priceRappen !== undefined,
+        { message: 'Nothing to change' },
+      ),
+    output: z.object({
+      changed: z.array(z.enum(['expiresOn', 'expiryKind', 'quantity', 'priceRappen'])),
+    }),
+  }),
   'inventory.recordOutcome': command({
     name: 'inventory.recordOutcome',
     summary: {

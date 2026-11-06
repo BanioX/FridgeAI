@@ -296,6 +296,51 @@ export function createInventoryHandlers(ctx: HandlerContext) {
     });
   };
 
+  /**
+   * Corrects what was entered wrong. Only fields that really change are written; a date set by
+   * hand becomes `manual`. A wrong price can be removed (null): then category estimates apply.
+   */
+  const updateItem: Handler<'inventory.updateItem'> = async (raw) => {
+    const input = CONTRACT_V1['inventory.updateItem'].input.parse(raw);
+    return runCommand('inventory.updateItem', input.commandId, async () => {
+      const item = await activeItem(input.householdId, input.itemId);
+      const changed: OperationOutput<'inventory.updateItem'>['changed'] = [];
+      const next: InventoryItem = { ...item };
+      if (input.expiresOn !== undefined && input.expiresOn !== item.expiresOn) {
+        next.expiresOn = input.expiresOn;
+        next.expirySource = 'manual';
+        changed.push('expiresOn');
+      }
+      if (input.expiryKind !== undefined && input.expiryKind !== item.expiryKind) {
+        next.expiryKind = input.expiryKind;
+        changed.push('expiryKind');
+      }
+      if (input.quantity !== undefined && Math.abs(input.quantity - item.quantity) > EPSILON) {
+        next.quantity = input.quantity;
+        changed.push('quantity');
+      }
+      if (
+        input.priceRappen !== undefined &&
+        (input.priceRappen ?? undefined) !== item.priceRappen
+      ) {
+        if (input.priceRappen === null) {
+          delete next.priceRappen;
+        } else {
+          next.priceRappen = input.priceRappen;
+        }
+        changed.push('priceRappen');
+      }
+      if (changed.length === 0) {
+        return { changed };
+      }
+      await db.items.put(InventoryItemSchema.parse({ ...next, updatedAt: clock.now() }));
+      await db.events.add(
+        event(input.householdId, 'item.updated', { itemId: item.id, fields: changed }),
+      );
+      return { changed };
+    });
+  };
+
   const recordOutcome: Handler<'inventory.recordOutcome'> = async (raw) => {
     const input = CONTRACT_V1['inventory.recordOutcome'].input.parse(raw);
     return runCommand('inventory.recordOutcome', input.commandId, async () => {
@@ -569,6 +614,7 @@ export function createInventoryHandlers(ctx: HandlerContext) {
     'inventory.list': list,
     'inventory.listExpiring': listExpiring,
     'inventory.addItem': addItem,
+    'inventory.updateItem': updateItem,
     'inventory.recordOutcome': recordOutcome,
     'inventory.undoOutcome': undoOutcome,
     'inventory.move': move,
