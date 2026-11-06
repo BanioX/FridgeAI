@@ -8,6 +8,8 @@ import {
   type StorageLocation,
 } from '@fridgeai/core';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { ClipboardCheck } from 'lucide-react';
+import { useState } from 'react';
 import { Link } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { DEV_TOOLS } from '../../app/dev-tools';
@@ -18,10 +20,13 @@ import { LocationTile } from '../../ui/LocationTile';
 import { expiryBadge } from '../../ui/expiry-badge';
 import { InventoryItemRow } from '../inventory/InventoryItemRow';
 import { locationOrder } from '../inventory/item-meta';
+import { checkDue, readLastCheck } from '../check/check-state';
 import { ImpactCard } from './ImpactCard';
 
 export function TodayPage() {
   const { householdId, inventory, today } = useAppData();
+  // Read once per visit; a finished check writes it before coming back here.
+  const [lastCheck] = useState(readLastCheck);
   const all = useLiveQuery(
     async () => (await inventory['inventory.list']({ householdId })).items,
     [householdId],
@@ -47,6 +52,7 @@ export function TodayPage() {
   const estimated = fridgeValues.some((value) => value.estimated);
   const countOf = (location: StorageLocation) =>
     all.filter((item) => item.location === location).length;
+  const showCheck = countOf('fridge') > 0 && checkDue(lastCheck, today);
   const t = messages.today;
 
   return (
@@ -80,6 +86,22 @@ export function TodayPage() {
         <Card>
           <BigNumber value={formatChf(total)} label={t.valueLabel} />
           {estimated ? <p className="mt-1 text-sm text-ink-muted">{t.estimated}</p> : null}
+        </Card>
+      ) : null}
+
+      {showCheck ? (
+        <Card variant="tip" className="space-y-3">
+          <h2 className="flex items-center gap-2 font-semibold">
+            <ClipboardCheck size={20} aria-hidden="true" />
+            {messages.pages.check}
+          </h2>
+          <p>{messages.check.cardText}</p>
+          <Link
+            to="/check"
+            className="inline-flex min-h-11 items-center justify-center rounded-xl bg-basil-700 px-4 font-semibold text-white transition-colors hover:bg-basil-800 active:bg-basil-900"
+          >
+            {messages.check.cardStart}
+          </Link>
         </Card>
       ) : null}
 

@@ -196,7 +196,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 #### Schritt 6 – Abschliessen, Wirkungs-Dashboard, Kühlschrank-Check (US-06, US-20, US-22)
 - 6a: `core/metrics`: gerettet/weggeworfen in CHF und kg pro Person und Haushalt, Schätzwerte klar markiert
 - 6b: Aktionen gegessen/weitergegeben/weggeworfen mit **Grund beim Wegwerfen** (abgelaufen, verdorben, zu viel gekauft, vergessen, schmeckt nicht) und **Empfänger beim Weitergeben** (Haushalt, Nachbarschaft, Familie/Freunde, Spende, öffentlicher Kühlschrank), ganz oder teilweise: **Anteile ¼ · ½ · ¾ · alles** bei Gramm, Milliliter und einzelnen Stücken, **«1 von 4»** bei Packungen mit mehreren Stück; «Geöffnet» setzt die Öffnungsregel; Rückgängig
-- 6c: **Wirkungs-Dashboard** (D-01, D-02): Woche/Monat, Trend, pro Person, Vergleich mit dem Schweizer Durchschnitt (D-03); **Kühlschrank-Check** (UC-04)
+- 6c: **Wirkungs-Dashboard** (D-01, D-02): Woche/Monat, Trend, pro Person, Vergleich mit dem Schweizer Durchschnitt (D-03); **Kühlschrank-Check** (UC-04) (umgesetzt: Kühlschrank-Check mit «Noch da · Halb · Gegessen · Weggeworfen» und «Zurück», ADR-0022; Dashboard bisher als Monatskarte auf «Heute»)
 - **Delegation:** O für 6a, S für 6b und 6c.
 
 **→ Statusmeldung an dich nach Meilenstein B.**

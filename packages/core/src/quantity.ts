@@ -151,3 +151,17 @@ export function portionChoices(
   }));
   return [...parts, ...pieces, all];
 }
+
+/**
+ * What «halb» means in the fridge check (UC-04, ADR-0022): the half that is gone. Whole grams or
+ * millilitres; pieces to a quarter, so of 3 yoghurts 1½ are gone. `null` when there is too little to
+ * split (below 20 g/ml, a quarter piece). Pieces round down, so the check rather keeps too much
+ * than too little.
+ */
+export function halfOf(quantity: number, unit: Unit): number | null {
+  const half = unit === 'pcs' ? Math.floor(quantity * 2) / 4 : Math.round(quantity / 2);
+  if (unit !== 'pcs' && quantity < MIN_FRACTION_AMOUNT) {
+    return null;
+  }
+  return half > 0 && half < quantity ? half : null;
+}
