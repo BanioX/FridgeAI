@@ -9,6 +9,7 @@ import {
   type OperationName,
   type OperationOutput,
   type ProductCatalog,
+  type ProductSearch,
 } from '@fridgeai/core';
 import type { Table } from 'dexie';
 import type { FridgeDb } from './db';
@@ -21,6 +22,8 @@ export interface HandlerContext {
   actor: Id;
   /** Open product databases for unknown barcodes (Open Food Facts); none = household only. */
   catalog?: ProductCatalog;
+  /** Name search in open databases; none = household only. */
+  search?: ProductSearch;
 }
 
 export type Handler<TName extends OperationName> = (

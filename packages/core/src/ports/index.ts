@@ -75,6 +75,22 @@ export interface ProductCatalog {
   lookupByGtin: (gtin: Gtin) => Promise<ProductInfo | null>;
 }
 
+/** A product found by name in an open database (barcode, name, brand, pack size as printed). */
+export interface ProductSearchHit {
+  gtin: Gtin;
+  name: string;
+  brand?: string;
+  packSize?: string;
+}
+
+/**
+ * Search by name. `unavailable` means offline, too many searches or a broken answer: the person
+ * then simply types the product by hand.
+ */
+export interface ProductSearch {
+  searchByName: (query: string, limit: number) => Promise<ProductSearchHit[] | 'unavailable'>;
+}
+
 /** Asks several catalogs in order (cache → Open Food Facts → Open Food Repo …), first hit wins. */
 export function chainCatalogs(catalogs: readonly ProductCatalog[]): ProductCatalog {
   return {
