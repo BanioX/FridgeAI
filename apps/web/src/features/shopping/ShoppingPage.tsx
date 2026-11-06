@@ -9,6 +9,7 @@ import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { describeDate } from '../../ui/date-text';
 import { formatQuantity } from '../../ui/quantity-text';
+import { GroupedList, GroupedListItem } from '../../ui/GroupedList';
 
 const t = messages.shopping;
 type Entry = OperationOutput<'shopping.list'>['items'][number];
@@ -85,10 +86,7 @@ export function ShoppingPage() {
   const basket = entries?.filter((entry) => entry.checked) ?? [];
 
   const row = (entry: Entry) => (
-    <li
-      key={entry.id}
-      className="flex items-center gap-3 rounded-2xl border border-line bg-surface px-4 py-2 shadow-card"
-    >
+    <GroupedListItem key={entry.id} inset="check" className="flex items-center gap-3 px-4 py-1">
       <input
         id={`${id}-${entry.id}`}
         type="checkbox"
@@ -140,7 +138,7 @@ export function ShoppingPage() {
       >
         <X size={20} aria-hidden="true" />
       </button>
-    </li>
+    </GroupedListItem>
   );
 
   return (
@@ -190,7 +188,7 @@ export function ShoppingPage() {
               <h2 id={`${id}-open`} className="font-display text-xl font-semibold">
                 {t.open}
               </h2>
-              <ul className="space-y-2">{open.map(row)}</ul>
+              <GroupedList>{open.map(row)}</GroupedList>
             </section>
           )}
           {basket.length === 0 ? null : (
@@ -198,7 +196,7 @@ export function ShoppingPage() {
               <h2 id={`${id}-basket`} className="font-display text-xl font-semibold">
                 {t.basket(basket.length)}
               </h2>
-              <ul className="space-y-2">{basket.map(row)}</ul>
+              <GroupedList>{basket.map(row)}</GroupedList>
             </section>
           )}
         </>

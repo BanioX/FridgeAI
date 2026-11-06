@@ -33,7 +33,8 @@ Local-first PWA für Schweizer Haushalte (WGs, Paare, Familien) gegen Food Waste
 | **Abschliessen** | Gegessen, weitergegeben (an wen), weggeworfen (warum) – ganz oder in sinnvollen Portionen (⅛ Kuchen, ⅓ Käse, 2 von 4 Joghurts) |
 | **Öffnungsregel** | «Nach dem Öffnen innert 21 Tagen» verkürzt das Datum automatisch |
 | **Einfrieren** | Umlagern mit neu geschätztem Datum |
-| **Korrigieren** | Rückgängig nach Gegessen/Weggeworfen; Datum, Menge und Preis nachträglich ändern |
+| **Kühlschrank-Check** | Einmal pro Woche jeden Artikel kurz bestätigen: noch da, halb, gegessen oder weggeworfen |
+| **Korrigieren** | Rückgängig nach Gegessen/Weggeworfen; Name, Kategorie, Ort, Datum, Menge und Preis ändern; Artikel löschen |
 | **Produktdaten** | Nach dem Scan: Bild, Marke, Nährwerte, Nutri-Score, Allergene (Open Food Facts, 30 Tage offline) |
 | **Einkaufsliste** | «Du hast noch …» gegen Doppelkäufe, abhaken, «In den Vorrat legen» |
 | **Wirkung** | Gerettet und weggeworfen diesen Monat in CHF und Gewicht |

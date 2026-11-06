@@ -8,6 +8,8 @@ Brainstorming, laufend gepflegt (CLAUDE.md: «Ideen unterwegs»). Hier steht, wa
 | [`monetarisierung.md`](./monetarisierung.md) | Gratis mit Werbung oder Pro ohne Werbung und Tracking, Partner, Büro |
 | [`benachrichtigungen.md`](./benachrichtigungen.md) | Push-Mitteilungen: was technisch geht und was es braucht |
 | [`scan-und-produktdaten.md`](./scan-und-produktdaten.md) | Woher Produktdaten und Bilder kommen, der Vergleich mit Yazio, was eine native App bringt |
+| [`design-und-bedienung.md`](./design-und-bedienung.md) | Wischgesten, Sheets, Dunkelmodus, schmale Handys, grosse Schrift |
+| [`technik.md`](./technik.md) | 404 für alte Dateien, Fehlerberichte ohne Personendaten, Lighthouse in der CI |
 
 **Produkt-Prioritäten** (Alban, 6.11.2026):
 
