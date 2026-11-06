@@ -67,6 +67,17 @@ Und er darf das Erfassen **nicht mühsamer** machen. Laut Blue-Ocean-Analyse ist
 
 **Technische Einschränkung, ehrlich:** Web Push für eine PWA braucht einen Server, der weiss, wann was abläuft (also ein Konto mit Sync). Auf dem iPhone funktioniert Web Push nur, wenn die App zum Home-Bildschirm hinzugefügt wurde. Ohne Konto zeigt die App den Digest beim Öffnen und ein Badge. Native Apps (Capacitor, v1) können Erinnerungen lokal auf dem Gerät planen, ganz ohne Server. Entscheid: Frage 11 im Plan.
 
+## 1a. Erfassen der Zukunft (neu, Alban 6.11.2026)
+
+| # | Use Case | Nutzen | Phase |
+| --- | --- | --- | --- |
+| S-01 | **Scan-Modus «Schnell»**: Barcode erkannt, sofort weiter | Einkauf in Sekunden erfassen | MVP (Schritt 10) |
+| S-02 | **Scan-Modus «Gründlich»**: Packung langsam drehen, die App sucht über mehrere Bilder Barcode **und** Ablaufdatum (Rundum-Scan), Fortschritt «Barcode ✓ · Datum …» | Echtes Datum statt Schätzung | MVP (Logik 2i, Kamera Schritt 10) |
+| S-03 | **Kühlschrank-Foto «wie Google Lens»**: Foto oder Schwenk, die App erkennt Lebensmittel, man bestätigt in einer Liste, Abgleich mit dem Vorrat | Erfassen und Kühlschrank-Check in einem | v1 (Server-KI nur mit Einwilligung) |
+| S-04 | **Öffnungsregel**: «Grana Padano gültig bis März, nach dem Öffnen innert 3 Wochen» – mit «Geöffnet» gilt ab sofort das frühere Datum; die Regel kommt aus der Kategorie oder vom Etikett | Realistische Erinnerungen | MVP (Logik 2j, UI Schritt 6) |
+| S-05 | **Teilweise verbraucht quittieren**: ¼ · ½ · ¾ · alles bei Gramm/ml, «1 von 4» bei Mehrfachpackungen | Vorrat bleibt genau | MVP (Schritt 6) |
+| S-06 | **iOS-/Android-Widget** «Heute retten», **Kurzbefehle, Siri, Action-Button**, Haptik | Ohne App zu öffnen | v1 |
+
 ## 2a. Notvorrat: Langzeit-Lagerung (neu, Alban 6.11.2026)
 
 Der Bund empfiehlt jedem Haushalt einen Notvorrat (Kampagne «Kluger Rat – Notvorrat» des BWL): Lebensmittel für rund eine Woche und 9 Liter Trinkwasser pro Person, **regelmässig aufbrauchen und ersetzen, um Abfall zu vermeiden**. Dazu kommen Prepper und Organisationen (Armee, Zivilschutz, Gemeinden, Firmen) mit Lebensmitteln, die 25 bis 50 Jahre halten.
@@ -80,6 +91,42 @@ Der Bund empfiehlt jedem Haushalt einen Notvorrat (Kampagne «Kluger Rat – Not
 | N-05 | Checkliste nach Empfehlung des Bundes (Wasser, Reis, Teigwaren, Öl, Salz …) mit Ampel | Vollständigkeit auf einen Blick | v1 |
 | N-06 | Jahres-Check: einmal im Jahr alles durchgehen | Vorrat bleibt aktuell | v1 |
 | N-07 | Organisationen (Zivilschutz, Gemeinden, Firmen, Armee) verwalten grosse Langzeit-Bestände | B2B, passt zu Option C | Vision |
+
+## 2b. Abschliessen: essen, weitergeben, wegwerfen – und daraus lernen (Alban 6.11.2026)
+
+| # | Use Case | Nutzen | Phase |
+| --- | --- | --- | --- |
+| A-01 | **Wegwerfen mit Grund**: abgelaufen, verdorben, zu viel gekauft, vergessen, schmeckt nicht | Ehrliche Statistik statt Schuldgefühl | MVP (Schritt 6) |
+| A-02 | **Weitergeben mit Empfänger**: Haushalt, Nachbarschaft, Familie/Freunde, Spende, öffentlicher Kühlschrank | Zählt als «gerettet», zeigt Wirkung | MVP (Schritt 6) |
+| A-03 | **Muster erkennen**: «Brot wird oft weggeworfen, weil zu viel gekauft» → Tipp «kleineres Brot» oder «halb einfrieren» | Prävention | v1 |
+| A-04 | **Mengen wie im Alltag**: 250 g, 1.5 l, 3 dl, 2 Becher à 180 g, ½ Packung | Erfassen ohne Umrechnen | MVP (Schritt 3d) |
+
+## 2c. Gemeinschaft: vom Haushalt zum Kollektiv (Vision, Alban 6.11.2026)
+
+| # | Use Case | Nutzen | Phase |
+| --- | --- | --- | --- |
+| K-01 | Familie und WG einladen (Link/Code), gemeinsamer Vorrat | Basis des USP | MVP (Schritt 7) |
+| K-02 | **Kreise** über den Haushalt hinaus: Haus, Strasse, Quartier – freiwillig, nur grober Ort | Nachbarschaft rettet gemeinsam | Vision |
+| K-03 | **Kollektiv**: Frugalist:innen, Foodsharing-Gruppen, öffentliche Kühlschränke, Gemeinden teilen Überschüsse | Food Waste als Gemeinschaftsaufgabe | Vision |
+| K-04 | Regeln für Kreise ausserhalb des Haushalts: nie nach dem Verbrauchsdatum, Hinweise zu Kühlkette und Allergenen, Melden/Sperren | Sicherheit und Vertrauen | Vision |
+| K-05 | **Haus-Kreis** (Beispiel Albans Haus, 6 Wohnungen): Einladung per QR-Code im Treppenhaus; jede Wohnung zeigt freiwillig, was bald abläuft; Nachbar:innen fragen «Darf ich das haben?», die Besitzer:in sagt Ja oder Nein, Abholung «liegt vor der Tür von Wohnung 3» | Retten ohne Fremde, ohne Adresse | v1 (nach dem Rette-Kreis im Haushalt) |
+| K-06 | **Suche-Wunsch** im Haus: «Hat jemand 2 Eier?» – klassisches Ausleihen unter Nachbarn | Weniger Einkäufe, mehr Gemeinschaft | v1 |
+| K-07 | **Wirkung des Hauses**: «Unser Haus hat diesen Monat 12 kg gerettet» | Motivation, Grundlage für Gemeinde-Programme (Option C) | v1 |
+
+### Ökosystem-Brainstorming (wenn es soweit kommt)
+
+```
+Person ─ Haushalt ─ Haus ─ Quartier ─ Gemeinde ─ Kollektiv/Organisationen
+   │        │         │        │          │               │
+ Vorrat  teilen,   anfragen, Angebote  Wirkungs-     Foodsharing,
+ retten  Kosten    abholen   (grob,    berichte,     öffentliche
+         teilen              PLZ)      Challenges    Kühlschränke,
+                                                    Partner (Händler)
+```
+
+- **Gleiche Bausteine überall:** Angebot, Anfrage, Zusage, Abholung, Ergebnis («weitergegeben → gerettet»). Nur der Kreis wird grösser.
+- **Vertrauen wächst mit der Nähe:** Im Haushalt alles sichtbar; im Haus nur Freigegebenes; im Quartier nur Angebote ohne Namen und mit grobem Ort.
+- **Monetarisierung ohne Datenverkauf:** Gemeinden und Arbeitgeber bezahlen Programme mit aggregierter Wirkung; Händler bezahlen für Nachkauf-Vorschläge und Bon-Sync mit Einwilligung; Pro-Abo für Haushalte.
 
 ## 3. Kochen & Verwerten: Rezepte
 
