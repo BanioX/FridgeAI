@@ -4,7 +4,6 @@ import {
   CONTRACT_V1,
   estimateFromCategory,
   daysBetween,
-  DomainEventSchema,
   estimateExpiry,
   expiryAfterMove,
   expiryAfterOpening,
@@ -20,51 +19,15 @@ import {
   soonThresholdFor,
   summarizeImpact,
   type Category,
-  type Clock,
-  type DomainEvent,
   type Id,
-  type IdGenerator,
   type InventoryItem,
   type InventoryItemView,
-  type OperationInput,
-  type OperationName,
   type OperationOutput,
   type Product,
-  type ProductCatalog,
 } from '@fridgeai/core';
-import type { FridgeDb } from './db';
+import { CommandError, createCommandKit, type Handler, type HandlerContext } from './command';
 
-export interface HandlerContext {
-  db: FridgeDb;
-  clock: Clock;
-  ids: IdGenerator;
-  /** The member acting (author of events and outcomes). */
-  actor: Id;
-  /** Open product databases for unknown barcodes (Open Food Facts); none = household only. */
-  catalog?: ProductCatalog;
-}
-
-type Handler<TName extends OperationName> = (
-  input: OperationInput<TName>,
-) => Promise<OperationOutput<TName>>;
-
-export type CommandErrorCode =
-  | 'not_found'
-  | 'not_active'
-  | 'invalid_quantity'
-  | 'unsuitable_location'
-  | 'already_open'
-  | 'already_undone';
-
-export class CommandError extends Error {
-  readonly code: CommandErrorCode;
-
-  constructor(code: CommandErrorCode, message: string) {
-    super(message);
-    this.name = 'CommandError';
-    this.code = code;
-  }
-}
+export { CommandError, type CommandErrorCode, type HandlerContext } from './command';
 
 const EPSILON = 1e-9;
 
@@ -117,37 +80,7 @@ export function createInventoryHandlers(ctx: HandlerContext) {
   const { db, clock, ids, actor, catalog } = ctx;
   const allTables = [db.items, db.products, db.outcomes, db.events, db.commands, db.catalogCache];
 
-  function event<TType extends DomainEvent['type']>(
-    householdId: Id,
-    type: TType,
-    payload: Extract<DomainEvent, { type: TType }>['payload'],
-  ): DomainEvent {
-    return DomainEventSchema.parse({
-      id: ids.next(),
-      type,
-      version: 1,
-      householdId,
-      actor,
-      at: clock.now(),
-      payload,
-    });
-  }
-
-  async function runCommand<TName extends OperationName>(
-    name: TName,
-    commandId: Id,
-    execute: () => Promise<OperationOutput<TName>>,
-  ): Promise<OperationOutput<TName>> {
-    return db.transaction('rw', allTables, async () => {
-      const done = await db.commands.get(commandId);
-      if (done !== undefined) {
-        return CONTRACT_V1[name].output.parse(done.result) as OperationOutput<TName>;
-      }
-      const result = await execute();
-      await db.commands.add({ commandId, operation: name, result, at: clock.now() });
-      return result;
-    });
-  }
+  const { event, runCommand } = createCommandKit(ctx, allTables);
 
   async function activeItem(householdId: Id, itemId: Id): Promise<InventoryItem> {
     const item = await db.items.get(itemId);
