@@ -29,6 +29,8 @@ interface Spec {
   location: StorageLocation;
   /** Days for [fridge, freezer, pantry]. */
   shelf: ShelfLife;
+  /** Notvorrat days, if it differs from the pantry value. */
+  reserve?: number;
   /** Price of a typical pack in Rappen; weight of a typical pack in grams. */
   price: number;
   grams?: number;
@@ -47,7 +49,12 @@ function def(spec: Spec): Category {
     isFood: spec.group !== 'non_food',
     dateKind: spec.dateKind,
     defaultLocation: spec.location,
-    shelfLifeDays: { fridge, freezer, pantry },
+    shelfLifeDays: {
+      fridge,
+      freezer,
+      pantry,
+      ...(spec.reserve === undefined ? {} : { reserve: spec.reserve }),
+    },
     avgPriceRappen: rappen(spec.price),
     ...(spec.grams === undefined ? {} : { avgWeightGrams: spec.grams }),
     defaultOwner: spec.owner,
@@ -1141,6 +1148,74 @@ export const CATEGORIES: readonly Category[] = [
     tips: [
       'Geöffneten Tofu in frischem Wasser lagern und das Wasser täglich wechseln.',
       'Eingefrorener Tofu wird fester und saugt Marinade besser auf.',
+    ],
+  }),
+  // Notvorrat (long-term emergency stock; Swiss federal advice «Kluger Rat – Notvorrat»:
+  // food for about one week and 9 litres of water per person, used up and replaced regularly)
+  def({
+    id: 'reserve-freeze-dried',
+    de: 'Gefriergetrocknete Mahlzeiten',
+    emoji: '🏕️',
+    group: 'reserve',
+    dateKind: 'best_before',
+    location: 'reserve',
+    shelf: [null, null, 9125],
+    reserve: 9125,
+    price: 1290,
+    grams: 120,
+    owner: 'shared',
+    keywords: [
+      'gefriergetrocknet',
+      'trekkingmahlzeit',
+      'outdoor mahlzeit',
+      'langzeitnahrung',
+      'survival food',
+    ],
+    tips: [
+      'Kühl, trocken und dunkel lagern, dann hält die Packung am längsten.',
+      'Rollierend lagern: das Älteste zuerst essen und gleich ersetzen.',
+      LOOK,
+    ],
+  }),
+  def({
+    id: 'reserve-rations',
+    de: 'Notrationen & Feldverpflegung',
+    emoji: '🎒',
+    group: 'reserve',
+    dateKind: 'best_before',
+    location: 'reserve',
+    shelf: [null, null, 1825],
+    price: 590,
+    grams: 500,
+    owner: 'shared',
+    keywords: [
+      'notration',
+      'notverpflegung',
+      'feldration',
+      'notvorrat riegel',
+      'notfallriegel',
+      'epa',
+    ],
+    tips: [
+      'Der Bund empfiehlt Lebensmittel für rund eine Woche als Notvorrat.',
+      'Rollierend lagern: das Älteste zuerst essen und gleich ersetzen.',
+    ],
+  }),
+  def({
+    id: 'reserve-water',
+    de: 'Trinkwasser-Vorrat',
+    emoji: '💧',
+    group: 'reserve',
+    dateKind: 'best_before',
+    location: 'reserve',
+    shelf: [null, null, 730],
+    price: 300,
+    grams: 9000,
+    owner: 'shared',
+    keywords: ['notwasser', 'wasservorrat', 'trinkwasser', 'wasserkanister', 'wasserkonserve'],
+    tips: [
+      'Der Bund empfiehlt 9 Liter Trinkwasser pro Person, also ein Sixpack.',
+      'Wasser vor dem Datum zum Kochen brauchen und den Vorrat ersetzen.',
     ],
   }),
   // Non-food

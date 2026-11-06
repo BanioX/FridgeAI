@@ -1,9 +1,16 @@
-import type { Category } from './catalog/category';
-import { addDays, daysBetween, minLocalDate } from './dates';
+import { shelfLifeAt, type Category } from './catalog/category';
+import { addDays, addMonths, addYears, daysBetween, minLocalDate } from './dates';
 import type { DateKind, LocalDate, StorageLocation } from './model/primitives';
 
 /** Items expiring within this many days count as «läuft bald ab». */
 export const SOON_THRESHOLD_DAYS = 3;
+
+/** The Notvorrat needs months of notice: eat the oldest stock and replace it («rollierend»). */
+export const RESERVE_SOON_THRESHOLD_DAYS = 90;
+
+export function soonThresholdFor(location: StorageLocation): number {
+  return location === 'reserve' ? RESERVE_SOON_THRESHOLD_DAYS : SOON_THRESHOLD_DAYS;
+}
 
 /** Thawed food keeps at most this many days; use-by food (meat, fish) only one. */
 const THAWED_MAX_DAYS = 2;
@@ -45,7 +52,7 @@ export function estimateExpiry(
   location: StorageLocation,
   purchasedOn: LocalDate,
 ): LocalDate | null {
-  const days = category.shelfLifeDays[location];
+  const days = shelfLifeAt(category, location);
   return days === null ? null : addDays(purchasedOn, days);
 }
 
@@ -71,7 +78,7 @@ export function expiryAfterMove(params: {
   currentExpiresOn: LocalDate;
 }): MoveResult | null {
   const { category, from, to, today, currentExpiresOn } = params;
-  const targetDays = category.shelfLifeDays[to];
+  const targetDays = shelfLifeAt(category, to);
   if (targetDays === null) {
     return null;
   }
@@ -87,4 +94,84 @@ export function expiryAfterMove(params: {
     return { expiresOn: addDays(today, thawedDays) };
   }
   return { expiresOn: minLocalDate(currentExpiresOn, addDays(today, targetDays)) };
+}
+
+export type PresetUnit = 'day' | 'week' | 'month' | 'year';
+
+export interface ExpiryPreset {
+  unit: PresetUnit;
+  amount: number;
+  date: LocalDate;
+}
+
+type Horizon = readonly (readonly [PresetUnit, number])[];
+
+const SHORT: Horizon = [
+  ['day', 1],
+  ['day', 2],
+  ['day', 3],
+  ['week', 1],
+  ['week', 2],
+];
+const MEDIUM: Horizon = [
+  ['week', 1],
+  ['month', 1],
+  ['month', 3],
+  ['month', 6],
+  ['year', 1],
+];
+const LONG: Horizon = [
+  ['month', 6],
+  ['year', 1],
+  ['year', 2],
+  ['year', 3],
+  ['year', 5],
+];
+const RESERVE: Horizon = [
+  ['year', 1],
+  ['year', 5],
+  ['year', 10],
+  ['year', 25],
+  ['year', 50],
+];
+
+/**
+ * One-tap date choices for the expiry field, matched to the time horizon of the item: days for the
+ * fridge, months for the freezer, years for the pantry and decades for the Notvorrat.
+ */
+export function expiryPresets(
+  location: StorageLocation,
+  today: LocalDate,
+  typicalShelfLifeDays: number | null = null,
+): ExpiryPreset[] {
+  let horizon: Horizon;
+  if (location === 'reserve') {
+    horizon = RESERVE;
+  } else if (location === 'freezer') {
+    horizon = MEDIUM;
+  } else if (typicalShelfLifeDays !== null && typicalShelfLifeDays > 365) {
+    horizon = LONG;
+  } else if (typicalShelfLifeDays !== null && typicalShelfLifeDays > 21) {
+    horizon = MEDIUM;
+  } else {
+    horizon = SHORT;
+  }
+  return horizon.map(([unit, amount]) => {
+    let date: LocalDate;
+    switch (unit) {
+      case 'day':
+        date = addDays(today, amount);
+        break;
+      case 'week':
+        date = addDays(today, amount * 7);
+        break;
+      case 'month':
+        date = addMonths(today, amount);
+        break;
+      case 'year':
+        date = addYears(today, amount);
+        break;
+    }
+    return { unit, amount, date };
+  });
 }

@@ -12,7 +12,11 @@ export type IsoDateTime = z.infer<typeof IsoDateTimeSchema>;
 /** Local time of day `HH:MM`, e.g. for the daily digest. */
 export const TimeOfDaySchema = z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/, 'Expected HH:MM');
 
-export const StorageLocationSchema = z.enum(['fridge', 'freezer', 'pantry']);
+/**
+ * Where food is kept. `reserve` = «Notvorrat»: long-term emergency stock (Swiss federal advice
+ * «Kluger Rat – Notvorrat»), also for preppers and organisations with decades-long shelf lives.
+ */
+export const StorageLocationSchema = z.enum(['fridge', 'freezer', 'pantry', 'reserve']);
 export type StorageLocation = z.infer<typeof StorageLocationSchema>;
 export const STORAGE_LOCATIONS = StorageLocationSchema.options;
 
