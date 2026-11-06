@@ -166,6 +166,7 @@ export const messages = {
     public_fridge: 'öffentlicher Kühlschrank',
   },
   aiImport: {
+    title: 'Mit deiner eigenen KI erfassen',
     intro:
       'Mach ein Foto vom Kühlschrank, Einkauf oder Kassenbon mit deiner eigenen KI (ChatGPT, Claude, Gemini …) und übernimm die Liste hier.',
     step1: '1. Auftrag kopieren',

@@ -84,8 +84,9 @@ test('reads a barcode from a photo with the self-hosted reader', async ({ page }
 });
 
 test('takes the date from a typed GS1 code', async ({ page }) => {
-  await page.goto('/inventory/new');
-  await page.getByRole('button', { name: 'Barcode scannen' }).click();
+  // From the «Scannen» tab the scanner is already open in the add form.
+  await page.goto('/scan');
+  await page.getByRole('link', { name: 'Barcode scannen' }).click();
   await page.getByLabel('Nummer unter dem Strichcode').fill('(01)07610000000004(17)271231');
   await page.getByRole('button', { name: 'Übernehmen' }).click();
   await expect(
