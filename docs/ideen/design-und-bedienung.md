@@ -27,6 +27,7 @@ Ideen aus der Arbeit an der Apple-Designsprache (ADR-0021). Noch nicht beschloss
 - **Beobachtung:** Bei 320 px Breite (iPhone SE der 1. Generation, grosse Systemschrift) drückt ein langer Chip wie «Nicht mehr essen» den Namen auf «Rauc…».
 - **Idee:** Unter etwa 360 px den Chip unter den Namen setzen, oder ein kürzeres Label («abgelaufen») mit dem vollen Text für Screenreader.
 - **Aufwand:** S.
+- **Stand:** umgesetzt. Unter 360 px rutscht der Chip unter den Namen.
 
 ## Grosse Systemschrift (Dynamic Type)
 
