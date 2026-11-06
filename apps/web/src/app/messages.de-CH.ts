@@ -20,6 +20,12 @@ export const messages = {
   contractVersion: 'Datenvertrag',
   loading: 'FridgeAI wird geladen …',
   errors: {
+    title: 'Da ist etwas schiefgelaufen',
+    text: 'Lade FridgeAI bitte neu. Deine Daten bleiben auf dem Gerät erhalten.',
+    updating: 'Neue Version',
+    updatingText: 'FridgeAI wurde aktualisiert und lädt neu. Einen Moment.',
+    reload: 'Neu laden',
+    home: 'Zur Startseite',
     storage:
       'Der lokale Speicher ist nicht verfügbar. Ist der private Modus aktiv? FridgeAI braucht ihn, um deinen Vorrat zu speichern.',
   },
@@ -341,14 +347,6 @@ export const messages = {
       'Produkt noch unbekannt: Gib den Namen ein. Beim nächsten Scan kennt FridgeAI es.',
     attribution: 'Daten: Open Food Facts (ODbL)',
     foundWithDate: (code: string, date: string) => `Barcode ${code} erkannt, haltbar bis ${date}.`,
-  },
-  errors: {
-    title: 'Da ist etwas schiefgelaufen',
-    text: 'Lade FridgeAI bitte neu. Deine Daten bleiben auf dem Gerät erhalten.',
-    updating: 'Neue Version',
-    updatingText: 'FridgeAI wurde aktualisiert und lädt neu. Einen Moment.',
-    reload: 'Neu laden',
-    home: 'Zur Startseite',
   },
   notFound: {
     title: 'Seite nicht gefunden',
