@@ -115,7 +115,7 @@ export function AiImportPage() {
 
   return (
     <div className="space-y-6 pb-8">
-      <h1 className="font-display text-3xl font-semibold tracking-tight">{messages.pages.scan}</h1>
+      <h1 className="large-title">{messages.pages.scan}</h1>
 
       <Link
         to="/inventory/new?scan=1"
