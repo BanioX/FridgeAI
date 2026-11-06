@@ -215,6 +215,11 @@ export const messages = {
     unknownCode:
       'Diesen Code kennt FridgeAI nicht. Bitte tipp die Nummer unter dem Strichcode ein.',
     found: (code: string) => `Barcode ${code} erkannt.`,
+    looking: 'Suche Produktdaten …',
+    product: (name: string, details: string) => `Gefunden: ${name}${details}.`,
+    unknownProduct:
+      'Produkt noch unbekannt: Gib den Namen ein. Beim nächsten Scan kennt FridgeAI es.',
+    attribution: 'Daten: Open Food Facts (ODbL)',
     foundWithDate: (code: string, date: string) => `Barcode ${code} erkannt, haltbar bis ${date}.`,
   },
   notFound: {

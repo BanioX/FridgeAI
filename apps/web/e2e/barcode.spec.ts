@@ -9,6 +9,13 @@ test.use({
   },
 });
 
+// Open Food Facts is never called for real in tests: unknown by default, a product where needed.
+test.beforeEach(async ({ page }) => {
+  await page.route('https://world.openfoodfacts.org/**', (route) =>
+    route.fulfill({ status: 404, json: { status: 0 } }),
+  );
+});
+
 /** EAN-13 as bars (1 = black module): the real encoding, so ZXing reads it like a pack. */
 function ean13Modules(code: string): string {
   const L = ['0001101', '0011001', '0010011', '0111101', '0100011'];
@@ -116,4 +123,50 @@ test.describe('with camera permission', () => {
     await page.getByRole('button', { name: 'Kamera stoppen' }).click();
     await expect(page.getByRole('button', { name: 'Kamera starten' })).toBeVisible();
   });
+});
+
+test('fills in the product from Open Food Facts and knows it offline next time', async ({
+  page,
+}) => {
+  let requests = 0;
+  await page.route('https://world.openfoodfacts.org/**', (route) => {
+    requests += 1;
+    return route.fulfill({
+      json: {
+        status: 1,
+        product: { product_name_de: 'Vollmilch', brands: 'Alpenhof', quantity: '1 l' },
+      },
+    });
+  });
+  const scan = async () => {
+    await page.getByRole('button', { name: 'Barcode scannen' }).click();
+    await page.getByLabel('Nummer unter dem Strichcode').fill('7610000000004');
+    await page.getByRole('button', { name: 'Übernehmen' }).click();
+  };
+
+  await page.goto('/inventory/new');
+  await scan();
+  await expect(page.getByText('Gefunden: Vollmilch (Alpenhof, 1 l).')).toBeVisible();
+  await expect(page.getByLabel('Was ist es?')).toHaveValue('Vollmilch');
+  await expect(page.getByLabel('Kategorie')).toHaveValue('dairy-milk');
+  await expect(page.getByLabel('Menge')).toHaveValue('1');
+  await expect(page.getByLabel('Einheit')).toHaveValue('l');
+  await expect(page.getByRole('link', { name: 'Daten: Open Food Facts (ODbL)' })).toBeVisible();
+  await page.getByRole('button', { name: 'Speichern und nächsten erfassen' }).click();
+  await expect(page.getByText('Vollmilch ist gespeichert.')).toBeVisible();
+
+  // Second scan: the household knows the product, no request and no attribution needed.
+  await scan();
+  await expect(page.getByText('Gefunden: Vollmilch.')).toBeVisible();
+  await expect(page.getByRole('link', { name: /Open Food Facts/ })).toHaveCount(0);
+  expect(requests).toBe(1);
+});
+
+test('asks for the name when nobody knows the product', async ({ page }) => {
+  await page.goto('/inventory/new');
+  await page.getByRole('button', { name: 'Barcode scannen' }).click();
+  await page.getByLabel('Nummer unter dem Strichcode').fill('7610000000004');
+  await page.getByRole('button', { name: 'Übernehmen' }).click();
+  await expect(page.getByText(/Produkt noch unbekannt/)).toBeVisible();
+  await expect(page.getByLabel('Was ist es?')).toBeFocused();
 });
