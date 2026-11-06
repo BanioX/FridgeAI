@@ -65,7 +65,7 @@ export const messages = {
     reserve: 'Notvorrat',
   },
   today: {
-    valueLabel: 'liegen gerade in eurem Kühlschrank',
+    valueLabel: 'liegen gerade in deinem Kühlschrank',
     estimated: 'teilweise geschätzt',
     expiringTitle: 'Läuft bald ab',
     expiringEmpty: 'Nichts läuft in den nächsten 3 Tagen ab. Gut gemacht!',
@@ -74,7 +74,7 @@ export const messages = {
       count === 0 ? 'leer' : count === 1 ? '1 Artikel' : `${String(count)} Artikel`,
     welcomeTitle: 'Willkommen bei FridgeAI',
     welcomeText:
-      'Erfasse, was ihr zu Hause habt, und FridgeAI sagt dir, was du heute retten solltest.',
+      'Erfasse, was du zu Hause hast, und FridgeAI sagt dir, was du heute retten solltest.',
     firstItem: 'Ersten Artikel erfassen',
     loadDemo: 'Beispieldaten laden',
   },

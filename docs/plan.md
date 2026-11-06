@@ -317,7 +317,7 @@ Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ic
    - A) **Supabase, verwaltet, Region Zürich** (laut Supabase-Regionsliste `eu-central-2`; prüfe ich vor dem Setup). Postgres, Auth, Row-Level-Security und Realtime aus einer Hand. Haken: Supabase ist ein US-Unternehmen (Auftragsbearbeitungsvertrag, US CLOUD Act als Restrisiko).
    - B) **Selbst betrieben bei einem Schweizer Anbieter** (Postgres plus kleine API). Volle Datenhoheit, aber Betrieb, Backups und Updates liegen bei uns.
    - *Empfehlung:* A für MVP und Pilot. Alles läuft hinter dem `SyncAdapter`, ein späterer Wechsel zu B ist möglich. Die PWA selbst ebenfalls in der Schweiz hosten.
-   - **Update 6.11.2026:** Alban wünscht Docker/Cloudflare nach dem Muster von HUB-042. Neuer Vorschlag: **B als selbst betriebener Docker-Stack** (Hono + PostgreSQL, ADR-0009) auf Oracle Cloud Always Free (Zürich) oder Albans Server; offen ist nur noch das Hosting-Ziel und eine Domain.
+   - **Update 6.11.2026:** Alban wünscht Docker/Cloudflare nach dem Muster von HUB-042. Neuer Vorschlag: **B als selbst betriebener Docker-Stack** (Hono + PostgreSQL, ADR-0009) auf Oracle Cloud Always Free (Zürich) oder Albans Server. Hosting entschieden (siehe Tabelle); die Domain kauft Alban erst nach dem Pilot.
 2. **Auth-Methode** – **Beantwortet (6.11.2026):** Registrierung wie eine normale App mit E-Mail + Passwort, Google, Apple und Facebook; umgesetzt mit Better Auth (ADR-0010). Passkeys und Magic Link folgen.
 3. **Daten, die das Gerät verlassen** (neben dem Sync selbst)
    - a) **Open Food Facts:** Barcode-Nummer und IP-Adresse gehen an Open Food Facts (Frankreich). *Empfehlung:* erlaubt, mit Hinweis beim ersten Scan und Schalter in den Einstellungen.
@@ -379,4 +379,6 @@ Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ic
 - Subagent-Aufträge enthalten immer: Ziel, Dateien, Typen/Interfaces, Akzeptanzkriterien, was nicht angefasst wird, wie getestet wird.
 - Neue Dependencies nur aus der freigegebenen Liste (Frage 6), alles andere frage ich vorher.
 - Nach jedem Meilenstein eine Statusmeldung: erledigt, offen, Entscheide nötig.
+- **Freigabe (Alban, 6.11.2026):** «Du darfst alles, solange es kostenlos ist.» Kostenlose Dienste, Gratis-Pläne, Open-Source-Dependencies und Tools entscheide ich selbst. Vorher frage ich nur bei Kosten, Preisgrenzen, neuen Wegen, auf denen Nutzerdaten das Gerät verlassen, und grösseren Produktänderungen.
+- **Ansprache:** Die App sagt immer «du» zu einer Person, nie «ihr» (Alban, 6.11.2026).
 - **Previews (Wunsch Alban, 6.11.2026):** Jede sichtbare UI-Änderung kommt mit einem kleinen Vorschaubild im iPhone-Format (`pnpm preview:shots`), damit Alban das Design laufend beurteilen kann. Zusätzlich hat jeder PR einen Vorschau-Link auf Cloudflare, den Alban am Handy öffnet ([`previews.md`](./previews.md), ADR-0013).
