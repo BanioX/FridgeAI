@@ -59,7 +59,7 @@ describe('recipes', () => {
     const { recipe } = await recipes['recipes.get']({ householdId, recipeId: 'bananen-pancakes' });
     expect(recipe?.title).toBe('Bananen-Pancakes');
     expect(recipe?.ingredients.find((entry) => entry.text === '2 Eier')?.atHome).toEqual([
-      'Freilandeier',
+      expect.objectContaining({ name: 'Freilandeier', unit: 'pcs', expiresOn: '2026-11-12' }),
     ]);
     expect(recipe?.steps.length).toBeGreaterThan(0);
     expect(await recipes['recipes.get']({ householdId, recipeId: 'gibt-es-nicht' })).toEqual({

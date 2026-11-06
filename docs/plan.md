@@ -244,7 +244,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 #### Schritt 11 – Einkaufsliste & Rezepte (US-07, US-08)
 - 11a: Geteilte Einkaufsliste; Abhaken → «In den Vorrat legen?»; **Doppelkauf-Warnung** (E-02) (umgesetzt: lokale Liste mit Abhaken, Löschen und Doppelkauf-Hinweis; Oberfläche folgt; «geteilt» mit Schritt 7)
 - 11b: `RecipeProvider` mit kuratierter JSON-Sammlung (rund 30 Schweizer Alltagsgerichte, selbst geschrieben), Ranking nach bald ablaufenden Zutaten; Rezeptidee im Digest (umgesetzt: Schema, Rangfolge nach Dringlichkeit, nie nach dem Verbrauchsdatum, `recipes.suggest`/`recipes.get`, erste Rezepte)
-- 11c: Rezept-Ansicht mit 3 Vorschlägen, fehlende Zutaten auf die Liste, **nach dem Kochen abbuchen** (R-03) (umgesetzt: «Rezeptideen» auf «Heute», Rezeptseite mit «Da» und «Fehlt», Fehlendes auf die Liste; Abbuchen folgt)
+- 11c: Rezept-Ansicht mit 3 Vorschlägen, fehlende Zutaten auf die Liste, **nach dem Kochen abbuchen** (R-03) (umgesetzt: «Rezeptideen» auf «Heute», Rezeptseite mit «Da» und «Fehlt», Fehlendes auf die Liste, nach dem Kochen abbuchen mit «Alles · Halb · Nichts», ADR-0023)
 - **Delegation:** S für 11a und 11c, O für das Ranking, H für Rezeptdaten nach Schema.
 
 **→ Statusmeldung an dich nach Meilenstein D.**
