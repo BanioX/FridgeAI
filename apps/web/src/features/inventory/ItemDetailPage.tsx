@@ -32,6 +32,7 @@ import { FROM_DETAIL } from './edit-state';
 import { itemMeta } from './item-meta';
 import { formatQuantity } from '../../ui/quantity-text';
 import { portionLabel } from './portion-labels';
+import { ProductFacts } from './ProductFacts';
 
 const t = messages.itemDetail;
 const outcomeOptions = OutcomeSchema.options.map((value) => ({ value, label: t.outcomes[value] }));
@@ -194,6 +195,11 @@ export function ItemDetailPage() {
         </span>
         <div className="min-w-0">
           <h1 className="font-display text-3xl font-semibold tracking-tight">{item.name}</h1>
+          {item.brand === undefined && item.packSize === undefined ? null : (
+            <p className="text-sm text-ink-muted">
+              {[item.brand, item.packSize].filter((part) => part !== undefined).join(' · ')}
+            </p>
+          )}
           <p className="text-ink-muted">{itemMeta(item)}</p>
         </div>
       </div>
@@ -217,6 +223,8 @@ export function ItemDetailPage() {
           <StatusChip tone={badge.tone}>{badge.label}</StatusChip>
         </div>
       </Card>
+
+      <ProductFacts item={item} />
 
       <section aria-labelledby="outcome-title" className="space-y-5">
         <h2 id="outcome-title" className="font-display text-xl font-semibold">
