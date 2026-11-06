@@ -97,7 +97,7 @@ export function StyleguidePage() {
       </header>
 
       <Card>
-        <BigNumber value="CHF 42.80" label="liegen gerade in eurem Kühlschrank" />
+        <BigNumber value="CHF 42.80" label="liegen gerade in deinem Kühlschrank" />
       </Card>
 
       <section className="space-y-3">
