@@ -88,6 +88,14 @@ export const messages = {
     reserveTip:
       'Der Bund empfiehlt einen Notvorrat für rund eine Woche und 9 Liter Wasser pro Person.',
     add: 'Hinzufügen',
+    closed: {
+      eaten: (name: string) => `${name}: als gegessen gespeichert.`,
+      wasted: (name: string) => `${name}: als weggeworfen gespeichert.`,
+      shared_out: (name: string) => `${name}: als weitergegeben gespeichert.`,
+    },
+    undo: 'Rückgängig',
+    undone: (name: string) => `${name} ist wieder im Vorrat.`,
+    undoFailed: 'Rückgängig hat nicht geklappt. Bitte versuch es nochmals.',
   },
   addItem: {
     name: 'Was ist es?',
@@ -145,6 +153,8 @@ export const messages = {
       shared_out: 'Als weitergegeben speichern',
     },
     left: (rest: string) => `Gespeichert. Noch ${rest} übrig.`,
+    undo: 'Rückgängig',
+    undone: (amount: string) => `Rückgängig gemacht. Wieder ${amount} da.`,
     more: 'Weitere Aktionen',
     open: 'Als geöffnet markieren',
     opened: (date: string) => `Geöffnet. Neu haltbar bis ${date}.`,

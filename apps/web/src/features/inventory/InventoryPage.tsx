@@ -5,18 +5,79 @@ import {
   type StorageLocation,
 } from '@fridgeai/core';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { Plus } from 'lucide-react';
-import { useRef, type KeyboardEvent } from 'react';
-import { Link, useSearchParams } from 'react-router';
+import { Plus, Undo2 } from 'lucide-react';
+import { useRef, useState, type KeyboardEvent } from 'react';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
+import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { ItemRow } from '../../ui/ItemRow';
 import { expiryBadge } from '../../ui/expiry-badge';
+import { closedItemFrom } from './closed-item';
 import { itemMeta, locationOrder } from './item-meta';
 
 const tabId = (location: StorageLocation) => `tab-${location}`;
 const panelId = (location: StorageLocation) => `panel-${location}`;
+
+/**
+ * After an item was closed on its detail page: «Mozzarella: als gegessen gespeichert.» with undo.
+ * The notice lives in the history entry, so it disappears once the person moves on.
+ */
+function ClosedNotice() {
+  const { householdId, ids, inventory } = useAppData();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const closed = closedItemFrom(location.state);
+  const [message, setMessage] = useState('');
+  const [busy, setBusy] = useState(false);
+  const t = messages.inventory;
+
+  const undo = async () => {
+    if (closed === null || busy) {
+      return;
+    }
+    setBusy(true);
+    try {
+      await inventory['inventory.undoOutcome']({
+        commandId: ids.next(),
+        householdId,
+        eventId: closed.eventId,
+      });
+      setMessage(t.undone(closed.name));
+      void navigate(`${location.pathname}${location.search}`, { replace: true, state: null });
+    } catch {
+      setMessage(t.undoFailed);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const text = closed === null ? message : t.closed[closed.outcome](closed.name);
+  if (text === '') {
+    return null;
+  }
+  // The card stays mounted from «gespeichert» to «wieder im Vorrat», so the change is announced.
+  return (
+    <Card variant="tip" className="flex flex-wrap items-center justify-between gap-2 py-3">
+      <p role="status" className="font-semibold">
+        {text}
+      </p>
+      {closed === null ? null : (
+        <Button
+          variant="ghost"
+          icon={Undo2}
+          disabled={busy}
+          onClick={() => {
+            void undo();
+          }}
+        >
+          {t.undo}
+        </Button>
+      )}
+    </Card>
+  );
+}
 
 export function InventoryPage() {
   const { householdId, inventory, today } = useAppData();
@@ -64,6 +125,8 @@ export function InventoryPage() {
       <h1 className="font-display text-3xl font-semibold tracking-tight">
         {messages.pages.inventory}
       </h1>
+
+      <ClosedNotice />
 
       <div
         role="tablist"

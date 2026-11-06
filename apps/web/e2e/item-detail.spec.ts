@@ -34,7 +34,7 @@ test('eats part of a cheese, opens it and throws the rest away with a reason', a
   await page.getByRole('button', { name: 'Als weggeworfen speichern' }).click();
 
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
-  await expect(page.getByText('Grana Padano')).toHaveCount(0);
+  await expect(page.getByRole('link', { name: /Grana Padano/ })).toHaveCount(0);
 
   // The start page now shows the month's impact: a third saved, the rest wasted.
   const cspErrors: string[] = [];
@@ -49,6 +49,34 @@ test('eats part of a cheese, opens it and throws the rest away with a reason', a
   const today = await new AxeBuilder({ page }).analyze();
   expect(today.violations).toEqual([]);
   expect(cspErrors).toEqual([]);
+});
+
+test('a wrong tap can be undone, in part and in full', async ({ page }) => {
+  await page.goto('/inventory/new');
+  await page.getByLabel('Was ist es?').fill('Grana Padano');
+  await page.getByRole('button', { name: 'Speichern', exact: true }).click();
+  await page.getByRole('link', { name: /Grana Padano/ }).click();
+
+  await choose(page, '⅓ · 100 g');
+  await page.getByRole('button', { name: 'Als gegessen speichern' }).click();
+  await expect(page.getByRole('status')).toHaveText('Gespeichert. Noch 200 g übrig.');
+  await page.getByRole('button', { name: 'Rückgängig' }).click();
+  await expect(page.getByRole('status')).toHaveText('Rückgängig gemacht. Wieder 300 g da.');
+  await expect(page.getByRole('button', { name: 'Rückgängig' })).toHaveCount(0);
+  await expect(page.getByText('300 g · Kühlschrank')).toBeVisible();
+
+  await choose(page, 'Weggeworfen');
+  await page.getByRole('button', { name: 'Als weggeworfen speichern' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
+  await expect(page.getByRole('status')).toHaveText('Grana Padano: als weggeworfen gespeichert.');
+  await expect(page.getByRole('link', { name: /Grana Padano/ })).toHaveCount(0);
+  const notice = await new AxeBuilder({ page }).analyze();
+  expect(notice.violations).toEqual([]);
+
+  await page.getByRole('button', { name: 'Rückgängig' }).click();
+  await expect(page.getByRole('status')).toHaveText('Grana Padano ist wieder im Vorrat.');
+  await expect(page.getByRole('link', { name: /Grana Padano/ })).toBeVisible();
+  await expect(page.getByText('300 g · Kühlschrank')).toBeVisible();
 });
 
 test('a free amount larger than what is left is refused', async ({ page }) => {

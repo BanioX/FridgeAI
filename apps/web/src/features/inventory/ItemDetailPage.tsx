@@ -9,12 +9,13 @@ import {
   ShareRecipientSchema,
   soonThresholdFor,
   WasteReasonSchema,
+  type Id,
   type Outcome,
   type ShareRecipient,
   type WasteReason,
 } from '@fridgeai/core';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { ArrowLeft, PackageOpen, Pencil, Snowflake, Sun } from 'lucide-react';
+import { ArrowLeft, PackageOpen, Pencil, Snowflake, Sun, Undo2 } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { useAppData } from '../../app/AppData';
@@ -26,6 +27,7 @@ import { StatusChip } from '../../ui/StatusChip';
 import { describeDate } from '../../ui/date-text';
 import { expiryBadge } from '../../ui/expiry-badge';
 import { parseAmount } from './add-item';
+import type { ClosedItem } from './closed-item';
 import { FROM_DETAIL } from './edit-state';
 import { itemMeta } from './item-meta';
 import { formatQuantity, portionLabel } from './portion-labels';
@@ -62,6 +64,8 @@ export function ItemDetailPage() {
   const [reason, setReason] = useState<WasteReason | null>(null);
   const [recipient, setRecipient] = useState<ShareRecipient | null>(null);
   const [status, setStatus] = useState('');
+  /** The partial outcome just saved: it can be undone until the next action. */
+  const [undoable, setUndoable] = useState<Id | null>(null);
   const [busy, setBusy] = useState(false);
 
   if (item === undefined) {
@@ -110,6 +114,7 @@ export function ItemDetailPage() {
     }
     setBusy(true);
     setStatus('');
+    setUndoable(null);
     try {
       const message = await action();
       if (message !== null) {
@@ -137,12 +142,24 @@ export function ItemDetailPage() {
         ...(outcome === 'shared_out' && recipient !== null ? { sharedWith: recipient } : {}),
       });
       if (result.remainingQuantity === 0) {
-        void navigate(`/inventory?location=${item.location}`);
+        const closed: ClosedItem = { eventId: result.eventId, name: item.name, outcome };
+        void navigate(`/inventory?location=${item.location}`, { state: { closed } });
         return null;
       }
       setPortion(null);
       setOtherText('');
+      setUndoable(result.eventId);
       return t.left(formatQuantity(result.remainingQuantity, item.unit));
+    });
+
+  const undo = (eventId: Id) =>
+    run(async () => {
+      const result = await inventory['inventory.undoOutcome']({
+        commandId: ids.next(),
+        householdId,
+        eventId,
+      });
+      return t.undone(formatQuantity(result.quantity, item.unit));
     });
 
   const open = () =>
@@ -265,9 +282,23 @@ export function ItemDetailPage() {
         </Button>
       </section>
 
-      <p role="status" className="font-semibold text-basil-800">
-        {status}
-      </p>
+      <div className="flex min-h-12 flex-wrap items-center gap-x-3 gap-y-1">
+        <p role="status" className="font-semibold text-basil-800">
+          {status}
+        </p>
+        {undoable === null ? null : (
+          <Button
+            variant="ghost"
+            icon={Undo2}
+            disabled={busy}
+            onClick={() => {
+              void undo(undoable);
+            }}
+          >
+            {t.undo}
+          </Button>
+        )}
+      </div>
 
       <section aria-labelledby="more-title" className="space-y-3">
         <h2 id="more-title" className="font-display text-xl font-semibold">
