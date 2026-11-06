@@ -9,6 +9,7 @@ import {
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Link } from 'react-router';
 import { useAppData } from '../../app/AppData';
+import { DEV_TOOLS } from '../../app/dev-tools';
 import { messages } from '../../app/messages.de-CH';
 import { BigNumber } from '../../ui/BigNumber';
 import { Card } from '../../ui/Card';
@@ -54,12 +55,22 @@ export function TodayPage() {
         <Card>
           <h2 className="font-display text-xl font-semibold">{t.welcomeTitle}</h2>
           <p className="mt-2 text-ink-muted">{t.welcomeText}</p>
-          <Link
-            to="/inventory/new"
-            className="mt-4 inline-flex min-h-12 items-center justify-center rounded-xl bg-basil-700 px-5 font-semibold text-white transition-colors hover:bg-basil-800 active:bg-basil-900"
-          >
-            {t.firstItem}
-          </Link>
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <Link
+              to="/inventory/new"
+              className="inline-flex min-h-12 items-center justify-center rounded-xl bg-basil-700 px-5 font-semibold text-white transition-colors hover:bg-basil-800 active:bg-basil-900"
+            >
+              {t.firstItem}
+            </Link>
+            {DEV_TOOLS ? (
+              <Link
+                to="/dev/seed"
+                className="inline-flex min-h-12 items-center justify-center rounded-xl px-4 font-semibold text-basil-800 underline-offset-4 hover:underline"
+              >
+                {t.loadDemo}
+              </Link>
+            ) : null}
+          </div>
         </Card>
       ) : null}
 

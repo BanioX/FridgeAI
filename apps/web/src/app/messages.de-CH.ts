@@ -76,6 +76,7 @@ export const messages = {
     welcomeText:
       'Erfasse, was ihr zu Hause habt, und FridgeAI sagt dir, was du heute retten solltest.',
     firstItem: 'Ersten Artikel erfassen',
+    loadDemo: 'Beispieldaten laden',
   },
   inventory: {
     tabsLabel: 'Lagerorte',
