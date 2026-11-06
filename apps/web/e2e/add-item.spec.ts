@@ -43,3 +43,28 @@ test('adds eggs by pack size and keeps the form open for the next item', async (
   await page.goto('/inventory');
   await expect(page.getByText('10 Stk. · Kühlschrank')).toBeVisible();
 });
+
+test('a tap on the calendar symbol lands on the real date field (iPhone opens its wheel)', async ({
+  page,
+}) => {
+  await page.goto('/inventory/new');
+  const calendar = page.getByLabel('Kalender öffnen');
+  // In the middle of the screen, like a person sees it, not under the tab bar.
+  await calendar.evaluate((element) => {
+    element.scrollIntoView({ block: 'center' });
+  });
+  const box = await calendar.boundingBox();
+  expect(box).not.toBeNull();
+  const { x, y, width, height } = box ?? { x: 0, y: 0, width: 0, height: 0 };
+  // Whatever lies under the middle of the symbol receives the tap: it must be the date field.
+  const hit = await page.evaluate(
+    ([px, py]) => {
+      const element = document.elementFromPoint(px ?? 0, py ?? 0);
+      return element instanceof HTMLInputElement ? element.type : element?.tagName;
+    },
+    [x + width / 2, y + height / 2],
+  );
+  expect(hit).toBe('date');
+  await calendar.fill('2026-12-24');
+  await expect(page.getByLabel('Haltbar bis')).toHaveValue('24.12.2026');
+});

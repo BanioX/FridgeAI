@@ -1,5 +1,5 @@
 import { localDate, type LocalDate } from '@fridgeai/core';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -132,5 +132,18 @@ describe('DateField', () => {
     await userEvent.click(screen.getByRole('button', { name: '50 Jahre' }));
     expect(screen.getByLabelText<HTMLInputElement>('Ablaufdatum').value).toBe('06.11.2076');
     expect(screen.getByText(/in 50 Jahren/)).toBeDefined();
+  });
+
+  it('takes the date from the calendar field, which lies on the calendar symbol for iPhone taps', () => {
+    const onValue = vi.fn();
+    render(<Harness initial={null} onValue={onValue} />);
+    const calendar = screen.getByLabelText<HTMLInputElement>('Kalender öffnen');
+    // A real, tappable date field (not hidden off-screen): iOS opens its wheel only for those.
+    expect(calendar.type).toBe('date');
+    expect(calendar.className).toContain('inset-0');
+    expect(calendar.tabIndex).not.toBe(-1);
+    fireEvent.change(calendar, { target: { value: '2026-12-24' } });
+    expect(onValue).toHaveBeenLastCalledWith('2026-12-24');
+    expect(screen.getByLabelText<HTMLInputElement>('Ablaufdatum').value).toBe('24.12.2026');
   });
 });
