@@ -29,6 +29,8 @@ describe('matchCategoryByName', () => {
     ['Schoggi', 'pantry-sweets'],
     ['Buttergipfeli', 'bakery-pastry'],
     ['Saurer Rahm', 'dairy-cream'],
+    ['Grana Padano', 'dairy-cheese-hard'],
+    ['Bergkäse', 'dairy-cheese-hard'],
     ['Pouletbrust', 'meat-poultry'],
     ['Gefriergetrocknet Risotto', 'reserve-freeze-dried'],
   ])('maps %s to %s', (name, expected) => {
