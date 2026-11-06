@@ -20,7 +20,8 @@
     "build:cf": "pnpm --filter @fridgeai/web build:demo",
     "e2e": "pnpm --filter @fridgeai/web e2e",
     "preview:shots": "pnpm --filter @fridgeai/web preview:shots",
-    "licenses:check": "node scripts/check-licenses.mjs"
+    "licenses:check": "node scripts/check-licenses.mjs",
+    "release": "node scripts/release.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
