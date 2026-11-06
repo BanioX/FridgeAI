@@ -28,7 +28,7 @@ Local-first PWA für Schweizer Haushalte (WGs, Paare, Familien) gegen Food Waste
 | --- | --- |
 | **Heute retten** | Was bald abläuft, Wert im Kühlschrank in CHF, Lagerorte auf einen Blick |
 | **Vorrat** | Kühlschrank, Tiefkühler, Vorrat, Notvorrat (bis 100 Jahre) |
-| **Erfassen** | Name genügt: Kategorie, Lagerort, Menge, Verpackung und Ablaufdatum werden vorgeschlagen; Eier im 6er/10er, Datumsfeld mit Schnellwahl und Eintippen; «Schnell erfassen»: die eigenen Standardartikel mit einem Tipp; Suche nach Namen wie «Coop Weggli» (eigene Produkte und Open Food Facts Schweiz) |
+| **Erfassen** | Name genügt: Kategorie, Lagerort, Menge, Verpackung und Ablaufdatum werden vorgeschlagen; Eier im 6er/10er, Datumsfeld mit Schnellwahl und Eintippen; «Schnell erfassen»: die eigenen Standardartikel mit einem Tipp; Suche beim Tippen wie «Coop Weggli» (eigene Produkte und Open Food Facts Schweiz) |
 | **Scannen** | Barcode, QR und GS1-DataMatrix (Datum aus dem Code); KI-Import: Foto in deiner KI, Liste in FridgeAI übernehmen |
 | **Abschliessen** | Gegessen, weitergegeben (an wen), weggeworfen (warum) – ganz oder in sinnvollen Portionen (⅛ Kuchen, ⅓ Käse, 2 von 4 Joghurts) |
 | **Öffnungsregel** | «Nach dem Öffnen innert 21 Tagen» verkürzt das Datum automatisch |

@@ -10,7 +10,7 @@ export function GroupedList({ children }: { children: ReactNode }) {
 
 /**
  * One row of a grouped list. `inset` is where the hairline above the row begins, so it lines up
- * with the text after an icon (`icon`, 40 px picture) or a checkbox (`check`).
+ * with the text after an icon (`icon`, 40 px picture), a checkbox (`check`) or plain text (`text`).
  */
 export function GroupedListItem({
   children,
@@ -18,10 +18,12 @@ export function GroupedListItem({
   className = '',
 }: {
   children: ReactNode;
-  inset?: 'icon' | 'check';
+  inset?: 'icon' | 'check' | 'text';
   className?: string;
 }) {
-  const line = inset === 'icon' ? 'before:left-[4.25rem]' : 'before:left-13';
+  const line = { icon: 'before:left-[4.25rem]', check: 'before:left-13', text: 'before:left-4' }[
+    inset
+  ];
   return (
     <li
       className={`relative before:absolute before:top-0 before:right-0 before:h-px before:bg-line first:before:hidden ${line} ${className}`}
