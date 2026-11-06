@@ -2,11 +2,13 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import { staticHeaders } from './scripts/static-headers.ts';
 
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    staticHeaders(new URL('public/_headers', import.meta.url)),
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'auto',

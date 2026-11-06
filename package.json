@@ -15,6 +15,7 @@
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "build": "pnpm -r --if-present run build",
+    "build:cf": "pnpm --filter @fridgeai/web build:demo",
     "e2e": "pnpm --filter @fridgeai/web e2e",
     "preview:shots": "pnpm --filter @fridgeai/web preview:shots"
   },

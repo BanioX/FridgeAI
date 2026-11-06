@@ -1,6 +1,6 @@
 # ADR-0009: Backend-Stack und Betrieb (nach dem Muster von HUB-042)
 
-- **Status:** vorgeschlagen (Hosting-Ziel bestätigt Alban, siehe Plan Frage 1)
+- **Status:** angenommen (Alban hat Cloudflare, Oracle Cloud, Tailscale und Docker zur Verfügung, 6.11.2026; Plan Frage 1)
 - **Datum:** 2026-11-06
 
 ## Kontext
@@ -20,4 +20,5 @@ Ab Schritt 7 braucht FridgeAI einen Server: Haushalt teilen, Sync, Push, später
 
 - Gleicher Betrieb auf Laptop, CI und Server; Alban kennt ihn bereits.
 - Skalierung gemäss `docs/architecture.md`: zustandslose API-Container, verwaltetes Postgres, später Aufteilen nach `householdId`.
-- Offene Punkte für Alban: Hosting-Ziel bestätigen, Domain (ca. CHF 10–15 pro Jahr).
+- Die PWA und die Vorschau-Links laufen schon vorher auf Cloudflare (ADR-0013); der Server kommt mit Schritt 7 dazu.
+- Offen für Alban: eigene Domain (ca. CHF 10–15 pro Jahr). Ohne Domain geht der Pilot über Tailscale Funnel oder einen Cloudflare Quick Tunnel.

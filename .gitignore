@@ -13,3 +13,7 @@ test-results/
 
 # Claude Code subagent worktrees
 .claude/worktrees/
+
+# Cloudflare Wrangler
+.wrangler/
+.dev.vars*

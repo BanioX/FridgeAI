@@ -46,6 +46,21 @@ jobs:
       - name: Build
         run: pnpm build
 
+      # Demo data and the style guide must never ship in production builds (routes.tsx).
+      - name: Check production build has no dev tools
+        run: |
+          if ls apps/web/dist/assets | grep -E '^(DemoSeedPage|StyleguidePage)-'; then
+            echo "Dev tools found in the production build" >&2
+            exit 1
+          fi
+
+      # The same command Cloudflare runs for main and the preview links (docs/previews.md).
+      - name: Build for Cloudflare (demo mode)
+        run: |
+          pnpm build:cf
+          test -f apps/web/dist/_headers
+          ls apps/web/dist/assets | grep -E '^StyleguidePage-'
+
       - name: Upload coverage
         if: always()
         uses: actions/upload-artifact@v7

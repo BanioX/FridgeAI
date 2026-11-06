@@ -1,0 +1,16 @@
+// Cloudflare Workers Builds: production from `main`, a Preview URL for every other branch / PR.
+// Static assets only, no server code. Setup steps for the dashboard: docs/previews.md, ADR-0013.
+{
+  "name": "fridgeai",
+  "compatibility_date": "2026-10-23",
+  "assets": {
+    // Built by `pnpm build:cf` (demo mode: /dev/seed and /styleguide are available).
+    "directory": "./apps/web/dist",
+    // Unknown paths serve index.html, so React Router handles /inventory etc.
+    "not_found_handling": "single-page-application",
+  },
+  "workers_dev": true,
+  "preview_urls": true,
+  // Required for Worker Previews; empty because the app has no bindings, variables or secrets.
+  "previews": {},
+}
