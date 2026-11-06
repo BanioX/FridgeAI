@@ -27,6 +27,8 @@ describe('contract v1', () => {
       'recipes.suggest',
       'stats.waste',
       'rescue.offer',
+      'household.export',
+      'household.delete',
     ]);
   });
 

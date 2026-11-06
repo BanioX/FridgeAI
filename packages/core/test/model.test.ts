@@ -97,6 +97,9 @@ describe('household and members', () => {
     expect(GrantSchema.safeParse(grant).success).toBe(true);
     expect(GrantSchema.safeParse({ ...grant, scopes: [] }).success).toBe(false);
     expect(GrantSchema.safeParse({ ...grant, scopes: ['admin'] }).success).toBe(false);
+    // Exporting or deleting everything stays with the household's own members.
+    expect(GrantSchema.safeParse({ ...grant, scopes: ['household:read'] }).success).toBe(false);
+    expect(GrantSchema.safeParse({ ...grant, scopes: ['household:write'] }).success).toBe(false);
   });
 });
 
