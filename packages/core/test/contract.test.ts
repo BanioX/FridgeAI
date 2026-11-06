@@ -14,6 +14,7 @@ describe('contract v1', () => {
       'inventory.listExpiring',
       'inventory.addItem',
       'inventory.recordOutcome',
+      'inventory.undoOutcome',
       'inventory.open',
       'inventory.move',
       'products.lookup',

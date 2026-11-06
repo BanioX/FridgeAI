@@ -24,4 +24,5 @@ Alban (6.11.2026): Mengen, «die Sinn machen» (Liter, Gramm, Becher, Cup …); 
 ## Konsequenzen
 
 - Der Vertrag erhält dazu `inventory.open` und optionale Felder für Grund, Empfänger, Verpackung und Packungsgrösse (nur Ergänzungen, kein Breaking Change).
+- **Rückgängig:** `inventory.undoOutcome` gibt die Menge eines Abschlusses dem Artikel zurück, bei echtem Bon-Preis auch dessen Wert. Ein abgeschlossener Artikel wird wieder aktiv. Der Abschluss bleibt als soft-gelöscht erhalten und zählt in keiner Statistik mehr. Dazu gibt es das Event `outcome.undone`.
 - Statistik kann später nach Grund und Empfänger auswerten (A-03, Wirkungsberichte).
