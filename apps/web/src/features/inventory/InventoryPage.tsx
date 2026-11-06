@@ -142,7 +142,7 @@ export function InventoryPage() {
       <div
         role="tablist"
         aria-label={t.tabsLabel}
-        className="grid grid-cols-4 gap-1 rounded-2xl bg-surface-muted p-1"
+        className="grid grid-cols-4 gap-0.5 rounded-xl bg-surface-muted p-0.5"
       >
         {locationOrder.map((location, index) => {
           const active = location === selected;
@@ -168,7 +168,7 @@ export function InventoryPage() {
               onKeyDown={(event) => {
                 onKeyDown(event, index);
               }}
-              className={`flex min-h-12 flex-col items-center justify-center rounded-xl px-1 text-sm transition-colors ${
+              className={`flex min-h-12 min-w-0 flex-col items-center justify-center rounded-[0.625rem] px-1 text-center text-[0.8125rem] leading-tight hyphens-auto transition-colors ${
                 active
                   ? 'bg-surface font-semibold text-basil-800 shadow-card'
                   : 'font-medium text-ink-muted'
