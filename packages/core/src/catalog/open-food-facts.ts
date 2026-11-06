@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { NutritionSchema, type Nutrition } from '../model/inventory';
-import type { Gtin } from '../model/primitives';
-import type { ProductInfo } from '../ports';
+import { GtinSchema, type Gtin } from '../model/primitives';
+import type { ProductInfo, ProductSearchHit } from '../ports';
 
 /**
  * Open Food Facts (ODbL, ADR-0016): free product database, also strong on Swiss products. Only
@@ -133,4 +133,63 @@ export function parseOffProduct(json: unknown, gtin: Gtin): ProductInfo | null {
     ...(allergens.length === 0 ? {} : { allergens }),
     ...(imageUrl !== undefined && OFF_IMAGE_URL.test(imageUrl) ? { imageUrl } : {}),
   };
+}
+
+/**
+ * Search by name (like «Coop Gipfeli»): Open Food Facts full-text search, all words must match,
+ * only products sold in Switzerland. Rate limit: 10 searches per minute and person, so the app
+ * searches on a tap, never while typing. Only the typed words leave the device.
+ */
+export function offSearchUrl(query: string, limit: number): string {
+  const params: [string, string][] = [
+    ['search_terms', query.trim().replace(/\s+/g, ' ').slice(0, 80)],
+    ['search_simple', '1'],
+    ['action', 'process'],
+    ['json', '1'],
+    ['page_size', String(Math.min(Math.max(Math.trunc(limit), 1), 20))],
+    ['tagtype_0', 'countries'],
+    ['tag_contains_0', 'contains'],
+    ['tag_0', 'switzerland'],
+    ['fields', 'code,product_name,product_name_de,brands,quantity'],
+  ];
+  // No URLSearchParams: the core stays free of browser and Node types.
+  const queryString = params.map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  return `https://world.openfoodfacts.org/cgi/search.pl?${queryString}`;
+}
+
+const OffSearchSchema = z.object({
+  products: z.array(
+    z.object({
+      code: z.string().optional(),
+      product_name: z.string().optional(),
+      product_name_de: z.string().optional(),
+      brands: z.string().optional(),
+      quantity: z.string().optional(),
+    }),
+  ),
+});
+
+/** Search hits with a valid barcode and a name, at most one per barcode; null for a broken answer. */
+export function parseOffSearch(json: unknown): ProductSearchHit[] | null {
+  const parsed = OffSearchSchema.safeParse(json);
+  if (!parsed.success) {
+    return null;
+  }
+  const hits = new Map<string, ProductSearchHit>();
+  for (const product of parsed.data.products) {
+    const gtin = GtinSchema.safeParse(product.code?.trim()).data;
+    const name = text(product.product_name_de, 120) ?? text(product.product_name, 120);
+    if (gtin === undefined || name === undefined || hits.has(gtin)) {
+      continue;
+    }
+    const brand = text(product.brands?.split(',')[0], 80);
+    const packSize = text(product.quantity, 30);
+    hits.set(gtin, {
+      gtin,
+      name,
+      ...(brand === undefined ? {} : { brand }),
+      ...(packSize === undefined ? {} : { packSize }),
+    });
+  }
+  return [...hits.values()];
 }

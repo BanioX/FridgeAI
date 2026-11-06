@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { offProductUrl, parseOffProduct } from '../src/catalog/open-food-facts';
+import {
+  offProductUrl,
+  offSearchUrl,
+  parseOffProduct,
+  parseOffSearch,
+} from '../src/catalog/open-food-facts';
 import { GtinSchema } from '../src/model/primitives';
 
 const gtin = GtinSchema.parse('7610000000004');
@@ -97,5 +102,47 @@ describe('Open Food Facts', () => {
   it('drops implausible nutrition values instead of storing them', () => {
     const typo = { product: { product_name: 'Butter', nutriments: { fat_100g: 820 } } };
     expect(parseOffProduct(typo, gtin)?.nutrition).toBeUndefined();
+  });
+
+  it('searches Swiss products by name, all words, with a bounded page size', () => {
+    const url = new URL(offSearchUrl('  Coop   Gipfeli ', 50));
+    expect(url.origin + url.pathname).toBe('https://world.openfoodfacts.org/cgi/search.pl');
+    expect(url.searchParams.get('search_terms')).toBe('Coop Gipfeli');
+    expect(url.searchParams.get('page_size')).toBe('20');
+    expect(url.searchParams.get('tag_0')).toBe('switzerland');
+    expect(url.searchParams.get('fields')).toBe(
+      'code,product_name,product_name_de,brands,quantity',
+    );
+  });
+
+  it('turns search answers into hits with valid barcodes, German names first, no duplicates', () => {
+    // Shaped like a real search.pl answer, with invented values.
+    const answer = {
+      count: 4,
+      page: 1,
+      products: [
+        {
+          code: '7610000000004',
+          product_name: 'Croissant',
+          product_name_de: 'Gipfeli',
+          brands: 'Coop, Eigenmarke',
+          quantity: '4 × 45 g',
+        },
+        { code: '7610000000004', product_name_de: 'Gipfeli doppelt' },
+        { code: '1234', product_name_de: 'Falscher Code' },
+        { code: '96385074', product_name: ' Weggli ', brands: '', quantity: '' },
+        { code: '7610000000011', brands: 'Ohne Namen' },
+      ],
+    };
+    expect(parseOffSearch(answer)).toEqual([
+      { gtin: '7610000000004', name: 'Gipfeli', brand: 'Coop', packSize: '4 × 45 g' },
+      { gtin: '96385074', name: 'Weggli' },
+    ]);
+  });
+
+  it('says null for broken answers (e.g. an HTML page when too many searches were made)', () => {
+    expect(parseOffSearch('<html>Too many requests</html>')).toBeNull();
+    expect(parseOffSearch({ count: 0 })).toBeNull();
+    expect(parseOffSearch({ products: [] })).toEqual([]);
   });
 });

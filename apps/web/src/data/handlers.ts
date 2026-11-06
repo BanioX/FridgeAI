@@ -29,6 +29,7 @@ import {
 } from '@fridgeai/core';
 import { CommandError, createCommandKit, type Handler, type HandlerContext } from './command';
 import { createFrequentProductsHandler } from './frequent-handler';
+import { createProductSearchHandler } from './product-search-handler';
 
 export { CommandError, type CommandErrorCode, type HandlerContext } from './command';
 
@@ -710,6 +711,7 @@ export function createInventoryHandlers(ctx: HandlerContext) {
     'products.lookup': lookupProduct,
     'products.image': productImage,
     ...createFrequentProductsHandler(ctx),
+    ...createProductSearchHandler(ctx),
     'stats.waste': wasteStats,
   };
 }

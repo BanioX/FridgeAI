@@ -341,6 +341,35 @@ export const CONTRACT_V1 = {
     input: z.object({ ...queryBase, gtin: GtinSchema }),
     output: z.object({ product: ProductLookupSchema.nullable() }),
   }),
+  'products.search': query({
+    name: 'products.search',
+    summary: {
+      de: 'Produkt nach Namen suchen («Coop Gipfeli»): zuerst im Haushalt, dann in offenen Produktdatenbanken (Schweiz).',
+      en: 'Find a product by name: the household first, then open product databases (Switzerland).',
+    },
+    scopes: ['inventory:read'],
+    input: z.object({
+      ...queryBase,
+      query: z.string().trim().min(2).max(80),
+      limit: z.int().min(1).max(20).default(8),
+    }),
+    output: z.object({
+      products: z.array(
+        z.object({
+          /** Missing for products the household typed in without a barcode. */
+          gtin: GtinSchema.optional(),
+          name: z.string(),
+          brand: z.string().optional(),
+          /** As printed, e.g. «4 × 45 g». */
+          packSize: z.string().optional(),
+          categoryId: CategoryIdSchema,
+          source: z.enum(['household', 'off']),
+        }),
+      ),
+      /** `unavailable`: offline or too many searches; the household's own products still come. */
+      openDatabase: z.enum(['searched', 'unavailable', 'none']),
+    }),
+  }),
   'products.frequent': query({
     name: 'products.frequent',
     summary: {
