@@ -1,13 +1,20 @@
 name: Release
 
-# A version tag (vX.Y.Z, pushed after the release PR is merged, ADR-0017) becomes a GitHub
-# Release whose notes are that version's section of CHANGELOG.md.
+# When a release PR (`pnpm release`, ADR-0017) lands on main, the version in package.json has no
+# GitHub Release yet: this creates tag vX.Y.Z on that commit and the release, with that version's
+# section of CHANGELOG.md as notes. Every other change to package.json is a no-op.
 on:
   push:
-    tags: ['v*']
+    branches: [main]
+    paths: [package.json]
+  workflow_dispatch:
 
 permissions:
   contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   release:
@@ -17,15 +24,24 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Create the release from CHANGELOG.md
+      - name: Release the version in package.json if it has none yet
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          version="${GITHUB_REF_NAME#v}"
+          version="$(node -p "require('./package.json').version ?? ''")"
+          if [ -z "$version" ]; then
+            echo "No version in package.json, nothing to release."
+            exit 0
+          fi
+          tag="v${version}"
+          if gh release view "$tag" > /dev/null 2>&1; then
+            echo "${tag} is already released."
+            exit 0
+          fi
           awk -v head="## [${version}]" 'index($0, "## [") == 1 { take = index($0, head) == 1 } take' \
             CHANGELOG.md > notes.md
           test -s notes.md
           prerelease=""
           if [[ "$version" == 0.* ]]; then prerelease="--prerelease"; fi
-          gh release create "$GITHUB_REF_NAME" --verify-tag $prerelease \
-            --title "FridgeAI ${GITHUB_REF_NAME}" --notes-file notes.md
+          gh release create "$tag" --target "$GITHUB_SHA" $prerelease \
+            --title "FridgeAI ${tag}" --notes-file notes.md
