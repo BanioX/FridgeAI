@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto';
-import { localDate, rappen, type Id } from '@fridgeai/core';
+import { GtinSchema, inMemoryCatalog, localDate, rappen, type Id } from '@fridgeai/core';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { ensureLocalHousehold } from './bootstrap';
 import type { FridgeDb } from './db';
@@ -351,5 +351,43 @@ describe('inventory.move', () => {
     await expect(
       handlers['inventory.move']({ commandId: ids.next(), householdId, itemId, to: 'fridge' }),
     ).rejects.toMatchObject({ code: 'unsuitable_location' });
+  });
+});
+
+describe('products.lookup', () => {
+  const gtin = GtinSchema.parse('7610000000004');
+
+  it('finds a product the household already has, by barcode', async () => {
+    await add({ name: 'Bio Vollmilch', gtin });
+    const { product } = await handlers['products.lookup']({ householdId, gtin });
+    expect(product).toMatchObject({
+      name: 'Bio Vollmilch',
+      categoryId: 'dairy-milk',
+      source: 'household',
+    });
+  });
+
+  it('asks the open database for unknown barcodes and maps the category from the name', async () => {
+    const withCatalog = createInventoryHandlers({
+      db,
+      clock: fixedClock('2026-11-06T09:00:00.000Z', '2026-11-06'),
+      ids,
+      actor: ids.next(),
+      catalog: inMemoryCatalog([
+        { gtin, name: 'Vollmilch', brand: 'Alpenhof', packSize: '1 l', source: 'off' },
+      ]),
+    });
+    const { product } = await withCatalog['products.lookup']({ householdId, gtin });
+    expect(product).toEqual({
+      name: 'Vollmilch',
+      brand: 'Alpenhof',
+      packSize: '1 l',
+      categoryId: 'dairy-milk',
+      source: 'off',
+    });
+  });
+
+  it('returns null without a catalog or when nobody knows the code', async () => {
+    expect(await handlers['products.lookup']({ householdId, gtin })).toEqual({ product: null });
   });
 });

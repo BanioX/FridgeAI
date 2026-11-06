@@ -29,6 +29,7 @@ import {
   type OperationName,
   type OperationOutput,
   type Product,
+  type ProductCatalog,
 } from '@fridgeai/core';
 import type { FridgeDb } from './db';
 
@@ -38,6 +39,8 @@ export interface HandlerContext {
   ids: IdGenerator;
   /** The member acting (author of events and outcomes). */
   actor: Id;
+  /** Open product databases for unknown barcodes (Open Food Facts); none = household only. */
+  catalog?: ProductCatalog;
 }
 
 type Handler<TName extends OperationName> = (
@@ -90,7 +93,7 @@ function toView(item: InventoryItem, product: Product | undefined): InventoryIte
  * event, remember the result. The UI only talks to these handlers, never to Dexie directly.
  */
 export function createInventoryHandlers(ctx: HandlerContext) {
-  const { db, clock, ids, actor } = ctx;
+  const { db, clock, ids, actor, catalog } = ctx;
   const allTables = [db.items, db.products, db.outcomes, db.events, db.commands];
 
   function event<TType extends DomainEvent['type']>(
@@ -448,6 +451,48 @@ export function createInventoryHandlers(ctx: HandlerContext) {
     });
   };
 
+  const lookupProduct: Handler<'products.lookup'> = async (raw) => {
+    const input = CONTRACT_V1['products.lookup'].input.parse(raw);
+    // The household's own product wins: it carries the name and category the person chose.
+    const own = await db.products
+      .where('householdId')
+      .equals(input.householdId)
+      .filter((product) => product.deletedAt === undefined && product.gtin === input.gtin)
+      .first();
+    if (own !== undefined) {
+      return {
+        product: {
+          name: own.name,
+          categoryId: own.categoryId,
+          source: 'household',
+          ...(own.brand === undefined ? {} : { brand: own.brand }),
+          ...(own.packSize === undefined ? {} : { packSize: own.packSize }),
+          ...(own.nutrition === undefined ? {} : { nutrition: own.nutrition }),
+          ...(own.nutriScore === undefined ? {} : { nutriScore: own.nutriScore }),
+        },
+      };
+    }
+    const found = await catalog?.lookupByGtin(input.gtin);
+    if (found === undefined || found === null) {
+      return { product: null };
+    }
+    const category =
+      matchCategoryByName(found.name) ??
+      matchCategoryByName((found.categoryHints ?? []).join(' ')) ??
+      fallbackCategory();
+    return {
+      product: {
+        name: found.name,
+        categoryId: category.id,
+        source: found.source,
+        ...(found.brand === undefined ? {} : { brand: found.brand }),
+        ...(found.packSize === undefined ? {} : { packSize: found.packSize }),
+        ...(found.nutrition === undefined ? {} : { nutrition: found.nutrition }),
+        ...(found.nutriScore === undefined ? {} : { nutriScore: found.nutriScore }),
+      },
+    };
+  };
+
   return {
     'inventory.list': list,
     'inventory.listExpiring': listExpiring,
@@ -455,6 +500,7 @@ export function createInventoryHandlers(ctx: HandlerContext) {
     'inventory.recordOutcome': recordOutcome,
     'inventory.move': move,
     'inventory.open': open,
+    'products.lookup': lookupProduct,
   };
 }
 

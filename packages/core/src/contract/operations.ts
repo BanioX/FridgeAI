@@ -2,7 +2,12 @@ import { z } from 'zod';
 import { IdSchema } from '../ids';
 import { RappenSchema } from '../money';
 import type { Scope } from '../model/household';
-import { OutcomeSchema, ShareRecipientSchema, WasteReasonSchema } from '../model/inventory';
+import {
+  NutritionSchema,
+  OutcomeSchema,
+  ShareRecipientSchema,
+  WasteReasonSchema,
+} from '../model/inventory';
 import {
   CategoryIdSchema,
   ContainerSchema,
@@ -72,6 +77,20 @@ export const InventoryItemViewSchema = z.object({
   openedOn: LocalDateSchema.optional(),
 });
 export type InventoryItemView = z.infer<typeof InventoryItemViewSchema>;
+
+/** A product found for a barcode: from the household's own products or an open database. */
+export const ProductLookupSchema = z.object({
+  name: z.string(),
+  brand: z.string().optional(),
+  /** Pack size as printed, e.g. «1 l», «500 g». */
+  packSize: z.string().optional(),
+  categoryId: CategoryIdSchema,
+  nutrition: NutritionSchema.optional(),
+  nutriScore: z.enum(['a', 'b', 'c', 'd', 'e']).optional(),
+  /** `household`: known from an earlier item; `off`: Open Food Facts (ODbL, attribution). */
+  source: z.enum(['household', 'off', 'openfoodrepo', 'partner']),
+});
+export type ProductLookup = z.infer<typeof ProductLookupSchema>;
 
 export const ExpiryStatusSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('fresh'), daysLeft: z.int() }),
@@ -186,6 +205,16 @@ export const CONTRACT_V1 = {
     scopes: ['inventory:write'],
     input: z.object({ ...commandBase, itemId: IdSchema, to: StorageLocationSchema }),
     output: z.object({ expiresOn: LocalDateSchema }),
+  }),
+  'products.lookup': query({
+    name: 'products.lookup',
+    summary: {
+      de: 'Produkt zu einem Barcode finden: zuerst im Haushalt, dann in offenen Produktdatenbanken.',
+      en: 'Find the product for a barcode: the household first, then open product databases.',
+    },
+    scopes: ['inventory:read'],
+    input: z.object({ ...queryBase, gtin: GtinSchema }),
+    output: z.object({ product: ProductLookupSchema.nullable() }),
   }),
   'shopping.list': query({
     name: 'shopping.list',
