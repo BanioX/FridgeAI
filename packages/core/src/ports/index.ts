@@ -65,6 +65,8 @@ export interface ProductInfo {
   nutrition?: Nutrition;
   nutriScore?: 'a' | 'b' | 'c' | 'd' | 'e';
   allergens?: string[];
+  /** Front picture of the pack (Open Food Facts: CC BY-SA), downloaded once and kept locally. */
+  imageUrl?: string;
   source: 'off' | 'openfoodrepo' | 'partner';
 }
 

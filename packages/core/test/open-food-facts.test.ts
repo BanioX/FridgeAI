@@ -32,7 +32,7 @@ const milk = {
 describe('Open Food Facts', () => {
   it('asks only for the fields FridgeAI uses', () => {
     expect(offProductUrl(gtin)).toBe(
-      'https://world.openfoodfacts.org/api/v2/product/7610000000004.json?fields=product_name,product_name_de,generic_name_de,brands,quantity,categories_tags,nutriments,nutriscore_grade,allergens_tags',
+      'https://world.openfoodfacts.org/api/v2/product/7610000000004.json?fields=product_name,product_name_de,generic_name_de,brands,quantity,categories_tags,nutriments,nutriscore_grade,allergens_tags,image_front_small_url',
     );
   });
 
@@ -73,6 +73,25 @@ describe('Open Food Facts', () => {
     expect(parseOffProduct({ product: { brands: 'Ohne Namen' } }, gtin)).toBeNull();
     expect(parseOffProduct('<html>', gtin)).toBeNull();
     expect(parseOffProduct(null, gtin)).toBeNull();
+  });
+
+  it('keeps only pack pictures from the Open Food Facts image server', () => {
+    const withImage = (url: string) =>
+      parseOffProduct({ product: { product_name: 'Milch', image_front_small_url: url } }, gtin)
+        ?.imageUrl;
+    const good =
+      'https://images.openfoodfacts.org/images/products/761/000/000/0004/front_de.3.200.jpg';
+    expect(withImage(good)).toBe(good);
+    for (const bad of [
+      'http://images.openfoodfacts.org/images/products/761/front.jpg',
+      'https://evil.example/images/products/761/front.jpg',
+      'https://images.openfoodfacts.org/images/products/761/front.svg',
+      'https://images.openfoodfacts.org/images/products/../../x.jpg',
+      'https://images.openfoodfacts.org/images/products/761/front.jpg?track=1',
+      'javascript:alert(1)',
+    ]) {
+      expect(withImage(bad), bad).toBeUndefined();
+    }
   });
 
   it('drops implausible nutrition values instead of storing them', () => {

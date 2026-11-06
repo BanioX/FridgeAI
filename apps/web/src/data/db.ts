@@ -30,6 +30,14 @@ export interface CatalogCacheEntry {
   fetchedAt: string;
 }
 
+/** A downloaded pack picture (step 10b): device-local like the catalog cache, never synced. */
+export interface ProductImageEntry {
+  gtin: Gtin;
+  dataUrl: string;
+  source: 'off';
+  fetchedAt: string;
+}
+
 export interface MetaEntry {
   key: 'currentHouseholdId' | 'currentMemberId';
   value: string;
@@ -52,6 +60,7 @@ export class FridgeDb extends Dexie {
   meta!: EntityTable<MetaEntry, 'key'>;
   catalogCache!: EntityTable<CatalogCacheEntry, 'gtin'>;
   shoppingItems!: EntityTable<ShoppingListItem, 'id'>;
+  productImages!: EntityTable<ProductImageEntry, 'gtin'>;
 
   constructor(name = 'fridgeai') {
     super(name);
@@ -69,5 +78,6 @@ export class FridgeDb extends Dexie {
     this.version(2).stores({ catalogCache: 'gtin, fetchedAt' });
     // Booleans cannot be indexed in IndexedDB: «checked» is filtered, not indexed.
     this.version(3).stores({ shoppingItems: 'id, householdId' });
+    this.version(4).stores({ productImages: 'gtin' });
   }
 }

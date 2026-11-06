@@ -1,6 +1,6 @@
 import 'fake-indexeddb/auto';
 import { GtinSchema, type Gtin, type ProductCatalog, type ProductInfo } from '@fridgeai/core';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { cachedCatalog } from './catalog-cache';
 import { fixedClock, testDb } from './test-helpers';
 
@@ -43,6 +43,26 @@ describe('cachedCatalog', () => {
     await db.catalogCache.put({ gtin, info: milk, fetchedAt: '2026-09-01T09:00:00.000Z' });
     const offline = countingCatalog(null);
     expect(await cachedCatalog(db, offline.catalog, clock).lookupByGtin(gtin)).toEqual(milk);
+  });
+
+  it('keeps the pack picture once, in the background', async () => {
+    const db = testDb();
+    const imageUrl = 'https://images.openfoodfacts.org/images/products/761/front.200.jpg';
+    const { catalog } = countingCatalog({ ...milk, imageUrl });
+    const downloads: string[] = [];
+    const image = (url: string) => {
+      downloads.push(url);
+      return Promise.resolve('data:image/jpeg;base64,/9j/4A==');
+    };
+    const clock = fixedClock('2026-11-06T09:00:00.000Z');
+    await cachedCatalog(db, catalog, clock, { image }).lookupByGtin(gtin);
+    await vi.waitFor(async () => {
+      expect(await db.productImages.get(gtin)).toMatchObject({ source: 'off' });
+    });
+    // A refresh after 30 days does not download the same picture again.
+    await cachedCatalog(db, catalog, clock, { image, maxAgeDays: 0 }).lookupByGtin(gtin);
+    await new Promise((resolve) => setTimeout(resolve, 20));
+    expect(downloads).toEqual([imageUrl]);
   });
 
   it('does not remember unknown barcodes', async () => {

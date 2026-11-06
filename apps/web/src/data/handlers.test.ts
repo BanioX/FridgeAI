@@ -557,6 +557,22 @@ describe('products.lookup', () => {
     });
   });
 
+  it('answers with the stored pack picture, and the item names its barcode', async () => {
+    expect(await handlers['products.image']({ householdId, gtin })).toEqual({ image: null });
+    await db.productImages.put({
+      gtin,
+      dataUrl: 'data:image/jpeg;base64,/9j/4A==',
+      source: 'off',
+      fetchedAt: '2026-11-06T09:00:00.000Z',
+    });
+    expect(await handlers['products.image']({ householdId, gtin })).toEqual({
+      image: { dataUrl: 'data:image/jpeg;base64,/9j/4A==', source: 'off' },
+    });
+    const { itemId } = await add({ name: 'Vollmilch', gtin });
+    const { items } = await handlers['inventory.list']({ householdId });
+    expect(items.find((item) => item.id === itemId)?.gtin).toBe(gtin);
+  });
+
   it('returns null without a catalog or when nobody knows the code', async () => {
     expect(await handlers['products.lookup']({ householdId, gtin })).toEqual({ product: null });
   });
