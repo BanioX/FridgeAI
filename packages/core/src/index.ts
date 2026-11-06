@@ -30,3 +30,5 @@ export * from './import/ai-import';
 export * from './catalog/open-food-facts';
 export * from './metrics';
 export * from './frequent-products';
+export * from './recipes/recipe';
+export * from './recipes/recipes.de-CH';

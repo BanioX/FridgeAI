@@ -7,6 +7,7 @@ import type { Id } from '../ids';
 import type { Rappen } from '../money';
 import type { Nutrition } from '../model/inventory';
 import type { CategoryId, Gtin, IsoDateTime, LocalDate, Retailer } from '../model/primitives';
+import type { Recipe } from '../recipes/recipe';
 
 /** Cooperative cancellation without DOM/Node AbortSignal types. */
 export interface CancelCheck {
@@ -90,16 +91,6 @@ export function chainCatalogs(catalogs: readonly ProductCatalog[]): ProductCatal
 }
 
 // --- Recipes -----------------------------------------------------------------------------
-
-export interface Recipe {
-  id: string;
-  title: { de: string };
-  minutes: number;
-  servings: number;
-  ingredients: { categoryId: CategoryId; label: { de: string }; optional?: boolean }[];
-  steps: { de: string }[];
-  tags: string[];
-}
 
 /** Source of candidate recipes; ranking by expiring food happens in core (step 11b). */
 export interface RecipeProvider {
