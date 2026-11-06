@@ -11,3 +11,5 @@ export type ContractVersion = typeof CONTRACT_VERSION;
 export * from './ids';
 export * from './money';
 export * from './model';
+export * from './dates';
+export * from './expiry';
