@@ -121,27 +121,6 @@ const RAW: unknown[] = [
       '30 Minuten backen, bis die Oberfläche goldbraun ist.',
     ],
   },
-  {
-    id: 'joghurt-beeren-bowl',
-    title: 'Joghurt-Bowl mit Früchten',
-    minutes: 5,
-    servings: 1,
-    tags: ['vegetarisch', 'schnell'],
-    ingredients: [
-      { text: '200 g Joghurt', categories: ['dairy-yoghurt'] },
-      {
-        text: 'Beeren, Banane oder Apfel',
-        categories: ['produce-berries', 'produce-bananas', 'produce-apples'],
-      },
-      { text: 'Müesli oder Haferflocken', categories: ['pantry-cereal'], optional: true },
-      { text: 'Honig', staple: true },
-    ],
-    steps: [
-      'Früchte waschen und klein schneiden.',
-      'Joghurt in eine Schale geben, Früchte und Müesli darauf verteilen.',
-      'Nach Geschmack mit Honig süssen.',
-    ],
-  },
 ];
 
 export const RECIPES: readonly Recipe[] = RAW.map((recipe) => RecipeSchema.parse(recipe));
