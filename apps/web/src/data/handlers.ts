@@ -2,6 +2,7 @@ import {
   addDays,
   categoryById,
   CONTRACT_V1,
+  estimateFromCategory,
   daysBetween,
   DomainEventSchema,
   estimateExpiry,
@@ -268,25 +269,13 @@ export function createInventoryHandlers(ctx: HandlerContext) {
       const product = await db.products.get(item.productId);
       const category = categoryOf(product);
       const share = quantity / item.quantity;
-      const packs =
-        item.unit === 'pcs'
-          ? quantity
-          : category.avgWeightGrams
-            ? quantity / category.avgWeightGrams
-            : share;
-      const valueRappen = rappen(
-        Math.round(
-          item.priceRappen === undefined
-            ? (category.avgPriceRappen ?? 0) * packs
-            : item.priceRappen * share,
-        ),
-      );
-      const grams =
-        item.unit === 'pcs'
-          ? category.avgWeightGrams === undefined
-            ? undefined
-            : Math.round(category.avgWeightGrams * quantity)
-          : Math.round(quantity);
+      // priceRappen always holds the value of what is left, so partial use stays exact.
+      const estimate = estimateFromCategory(quantity, item.unit, category);
+      const valueRappen =
+        item.priceRappen === undefined
+          ? estimate.valueRappen
+          : rappen(Math.round(item.priceRappen * share));
+      const grams = estimate.grams;
 
       const now = clock.now();
       const outcome = OutcomeEventSchema.parse({
@@ -311,7 +300,14 @@ export function createInventoryHandlers(ctx: HandlerContext) {
         InventoryItemSchema.parse(
           closed
             ? { ...item, status: input.outcome, statusChangedAt: now, updatedAt: now }
-            : { ...item, quantity: remaining, updatedAt: now },
+            : {
+                ...item,
+                quantity: remaining,
+                ...(item.priceRappen === undefined
+                  ? {}
+                  : { priceRappen: rappen(item.priceRappen - valueRappen) }),
+                updatedAt: now,
+              },
         ),
       );
       await db.events.add(

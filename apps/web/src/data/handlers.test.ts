@@ -152,7 +152,19 @@ describe('inventory.recordOutcome', () => {
     expect(result.remainingQuantity).toBe(3);
     const outcome = await db.outcomes.get(result.eventId);
     expect(outcome).toMatchObject({ valueRappen: 95, valueEstimated: false, owner: 'shared' });
-    expect(await db.items.get(itemId)).toMatchObject({ quantity: 3, status: 'active' });
+    expect(await db.items.get(itemId)).toMatchObject({
+      quantity: 3,
+      status: 'active',
+      priceRappen: 285,
+    });
+    const second = await handlers['inventory.recordOutcome']({
+      commandId: ids.next(),
+      householdId,
+      itemId,
+      outcome: 'eaten',
+      quantity: 1,
+    });
+    expect(await db.outcomes.get(second.eventId)).toMatchObject({ valueRappen: 95 });
   });
 
   it('closes the item when everything is used and emits used_up', async () => {
