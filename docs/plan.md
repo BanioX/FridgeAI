@@ -288,7 +288,7 @@ Schritt 3 und 4 laufen parallel. Schritte 10, 11 und 12 sind voneinander weitgeh
 
 ## 9. Offene Fragen an dich
 
-Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ich nur die Freigabe des Plans und Frage 6.** Fragen 1 bis 3 und 11 brauche ich bis Ende Meilenstein B, Frage 7 vor Schritt 4.
+Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ich nur die Freigabe des Plans, Frage 6 und Frage 15.** Fragen 1 bis 3 und 11 brauche ich bis Ende Meilenstein B, Frage 7 vor Schritt 4.
 
 1. **Backend/Sync und Hosting** (für Haushalt, Kostenteilung, Rette-Kreis, Push)
    - A) **Supabase, verwaltet, Region Zürich** (laut Supabase-Regionsliste `eu-central-2`; prüfe ich vor dem Setup). Postgres, Auth, Row-Level-Security und Realtime aus einer Hand. Haken: Supabase ist ein US-Unternehmen (Auftragsbearbeitungsvertrag, US CLOUD Act als Restrisiko).
@@ -319,9 +319,13 @@ Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ic
 12. **API und MCP: wann?** – *Empfehlung:* Im MVP nur der Vertrag (Schritt 2d), die Events und das Einwilligungsmodell. REST-API und MCP-Server in v1, sobald es echte Partner-Gespräche gibt. Ausnahme: Wenn ihr für die Schule eine Demo «Claude fragt FridgeAI» wollt, kann ich einen schreibgeschützten MCP-Server als Zusatzschritt nach Schritt 9 einplanen (2 bis 3 PRs).
 13. **«Datenbasierte Insights (anonymisiert)» aus dem Businessplan vs. «kein Verkauf von Daten» aus dem Brief** – *Empfehlung:* Nie Einzeldaten verkaufen oder weitergeben. Erlaubt sind nur aggregierte Wirkungsberichte innerhalb eines Programms (Option C), bei dem Haushalte aktiv mitmachen (Opt-in), mit einer Mindestgruppengrösse, damit niemand erkennbar ist. Das passt zum Vertrauensversprechen und bleibt trotzdem monetarisierbar.
 14. **Rahmen**
-    - a) Coden Kevin, Patrick und Tommy mit? Dann richte ich Branch-Schutz, Code-Reviews und eine Einstiegsdoku für sie ein.
-    - b) Gibt es einen Schultermin (Präsentation, Abgabe), auf den der Pilot-Alpha oder eine Demo fertig sein muss?
-    - c) Die Blue-Ocean-Analyse empfiehlt vor dem Code Interviews, Landingpage-Test und Concierge-MVP. Laufen die schon? Die Schritte 1 bis 3 sind auch ohne diese Ergebnisse sinnvoll; ab Schritt 7 würde ich die Interview-Erkenntnisse gern einfliessen lassen.
+    - a) ~~Coden weitere Personen mit?~~ **Beantwortet:** Nein, persönliches Projekt von Alban, vorerst One-Man-Show (6.11.2026). Folgen siehe Abschnitt 10.
+    - b) Schultermin: Annahme *keiner*, da persönliches Projekt. Falls doch, bitte melden.
+    - c) Die Blue-Ocean-Analyse empfiehlt vor dem Code Interviews, Landingpage-Test und Concierge-MVP. Machst du die parallel? Die Schritte 1 bis 6 sind auch ohne diese Ergebnisse sinnvoll; ab Schritt 7 würde ich Erkenntnisse aus Gesprächen mit WGs gern einfliessen lassen.
+15. **Merge-Ablauf** (neu, weil One-Man-Show) – Bei rund 45 PRs wirst du sonst zum Flaschenhals.
+    - A) Du reviewst und mergst jeden PR selbst.
+    - B) Ich merge selbst, sobald CI grün ist und ich den PR reviewt habe. Du prüfst gesammelt bei der Statusmeldung nach jedem Meilenstein und kannst jederzeit eingreifen. PRs, die einen Entscheid aus Abschnitt 9 umsetzen, Geldlogik, Sync, Auth oder Datenschutz betreffen, lege ich dir trotzdem einzeln vor.
+    - *Empfehlung:* B.
 
 | Nr. | Thema | Antwort |
 | --- | --- | --- |
@@ -338,12 +342,14 @@ Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ic
 | 11 | Push-Weg (PWA oder nativ) | offen |
 | 12 | API und MCP: wann | offen |
 | 13 | Anonymisierte Insights | offen |
-| 14 | Team, Termine, Validierung | offen |
+| 14 | Team, Termine, Validierung | a) **One-Man-Show**, b) Annahme: kein Schultermin, c) offen |
+| 15 | Merge-Ablauf | offen |
 
 ---
 
 ## 10. Arbeitsweise
 
+- **Ein-Personen-Projekt:** Alban ist einziger Mensch im Projekt. Deshalb keine Team-Prozesse (CODEOWNERS, Einstiegsdoku für andere, Review-Pflicht durch Zweite). Sicherheitsnetz sind die CI (muss grün sein, Branch-Schutz auf `main`), mein Review jedes Diffs und bei Bedarf der `reviewer`-Subagent als zweite Meinung zu Sicherheit und Datenschutz.
 - Branch pro PR (`feat/<schritt>-<thema>`, z. B. `feat/02a-core-model`), PR mit «Was, Warum, Wie getestet» und DoD-Checkliste.
 - Subagent-Aufträge enthalten immer: Ziel, Dateien, Typen/Interfaces, Akzeptanzkriterien, was nicht angefasst wird, wie getestet wird.
 - Neue Dependencies nur aus der freigegebenen Liste (Frage 6), alles andere frage ich vorher.
