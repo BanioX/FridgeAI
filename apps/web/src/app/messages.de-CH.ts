@@ -232,6 +232,42 @@ export const messages = {
     toInventory: 'In den Vorrat legen',
     failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
   },
+  household: {
+    install: 'FridgeAI als App',
+    installIos:
+      'In Safari unten auf «Teilen» tippen, dann «Zum Home-Bildschirm». Danach startet FridgeAI wie eine App, auch offline.',
+    installOther: 'Im Browser-Menü «App installieren» oder «Zum Startbildschirm» wählen.',
+    data: 'Deine Daten',
+    dataText:
+      'Alles bleibt auf diesem Gerät. Ein Konto zum Teilen mit Mitbewohner:innen kommt später.',
+    exportJson: 'Alles exportieren (JSON)',
+    exportCsv: 'Vorrat als Tabelle (CSV)',
+    exported: (file: string) => `${file} ist gespeichert.`,
+    deleteAll: 'Alles löschen',
+    deleteQuestion:
+      'Wirklich alles löschen? Vorrat, Liste, Statistik und Einstellungen sind danach weg. Das lässt sich nicht rückgängig machen.',
+    deleteConfirm: 'Ja, alles löschen',
+    deleteCancel: 'Abbrechen',
+    failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
+    privacy: 'Datenschutz in Kürze',
+    privacyPoints: [
+      'Dein Vorrat, deine Liste und deine Statistik bleiben auf diesem Gerät.',
+      'Beim Scannen geht nur die Barcode-Nummer an Open Food Facts, damit Name, Nährwerte und Bild kommen.',
+      'Fotos von Bons und Codes werden nur gelesen, nie gespeichert.',
+      'Kein Konto, kein Tracking, keine Werbung.',
+    ],
+    csvHeader: [
+      'Name',
+      'Menge',
+      'Einheit',
+      'Lagerort',
+      'Haltbar bis',
+      'Datum',
+      'Wert CHF',
+      'Marke',
+      'Barcode',
+    ],
+  },
   wasteReasons: {
     expired: 'abgelaufen',
     spoiled: 'verdorben',

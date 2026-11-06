@@ -1,12 +1,13 @@
 import type { LucideIcon } from 'lucide-react';
 import type { ButtonHTMLAttributes } from 'react';
 
-type Variant = 'primary' | 'secondary' | 'ghost';
+type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 
 const variantClasses: Record<Variant, string> = {
   primary: 'bg-basil-700 text-white hover:bg-basil-800 active:bg-basil-900',
   secondary: 'border border-line bg-surface text-ink hover:bg-surface-muted',
   ghost: 'text-basil-700 hover:bg-basil-50',
+  danger: 'bg-danger text-white hover:opacity-90 active:opacity-80',
 };
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
