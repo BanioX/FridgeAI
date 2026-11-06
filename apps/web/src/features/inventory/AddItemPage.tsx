@@ -218,9 +218,7 @@ export function AddItemPage() {
 
   return (
     <div className="space-y-6 pb-8">
-      <h1 className="font-display text-3xl font-semibold tracking-tight">
-        {messages.pages.addItem}
-      </h1>
+      <h1 className="large-title">{messages.pages.addItem}</h1>
 
       <div className="space-y-3">
         <Button

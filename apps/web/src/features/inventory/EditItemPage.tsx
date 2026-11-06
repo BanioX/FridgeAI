@@ -132,7 +132,7 @@ function EditItemForm({ item }: { item: InventoryItemView }) {
         <ArrowLeft size={20} aria-hidden="true" />
         {t.back}
       </Link>
-      <h1 className="font-display text-3xl font-semibold tracking-tight">{t.title(item.name)}</h1>
+      <h1 className="large-title">{t.title(item.name)}</h1>
 
       <form
         noValidate
