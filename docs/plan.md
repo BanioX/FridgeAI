@@ -169,7 +169,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 - 3a: Dexie-Schema, Repositories hinter Interfaces, Event-Log und Outbox lokal, Migrations-Tests (`fake-indexeddb`), automatischer lokaler Haushalt
 - 3b: App-Shell (Navigation: Heute · Vorrat · Scannen · Liste · Haushalt), Vorrat mit **vier Tabs** (Kühlschrank, Tiefkühler, Vorrat, Notvorrat), Sortierung nach Ablauf, Filter «Läuft bald ab»
 - 3c: **Startseite «Heute retten»** (UC-01): was heute/morgen abläuft, Wert im Kühlschrank in CHF (UC-03), Badge; Verbrauchsdatum-Warnungen
-- 3d: Manuelle Erfassung mit Autovervollständigung und Standardartikeln (UC-07), Bearbeiten, Verschieben mit Neuberechnung; **Datumsfeld gemäss [`design.md`](./design.md#datumsfeld-ablaufdatum)**: Vorschlag vorausgewählt, Schnellwahl passend zum Zeithorizont (Tage bis 50 Jahre), Tippen `dd.mm.yyyy` mit automatischen Punkten und Live-Vorschau, nativer Kalender; Offline-Cache der App-Shell; E2E «Artikel erfassen» und «Offline neu laden»
+- 3d: Manuelle Erfassung mit **sinnvollen Mengen** (g, kg, ml, dl, l, Stück, Becher, Packung, Flasche, Dose, Glas, Bund; Packungsgrösse wie «Becher à 180 g»), Autovervollständigung und Standardartikeln (UC-07), Bearbeiten, Verschieben mit Neuberechnung; **Datumsfeld gemäss [`design.md`](./design.md#datumsfeld-ablaufdatum)**: Vorschlag vorausgewählt, Schnellwahl passend zum Zeithorizont (Tage bis 50 Jahre), Tippen `dd.mm.yyyy` mit automatischen Punkten und Live-Vorschau, nativer Kalender; Offline-Cache der App-Shell; E2E «Artikel erfassen» und «Offline neu laden»
 - **Delegation:** O für 3a (sync-kritisch), S für 3b bis 3d nach meinen Komponenten-Schnittstellen.
 - **Parallel möglich mit Schritt 4.**
 
@@ -190,7 +190,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 
 #### Schritt 6 – Abschliessen, Wirkungs-Dashboard, Kühlschrank-Check (US-06, US-20, US-22)
 - 6a: `core/metrics`: gerettet/weggeworfen in CHF und kg pro Person und Haushalt, Schätzwerte klar markiert
-- 6b: Aktionen gegessen/weitergegeben/weggeworfen, ganz oder teilweise: **Anteile ¼ · ½ · ¾ · alles** bei Gramm, Milliliter und einzelnen Stücken, **«1 von 4»** bei Packungen mit mehreren Stück; «Geöffnet» setzt die Öffnungsregel; Rückgängig
+- 6b: Aktionen gegessen/weitergegeben/weggeworfen mit **Grund beim Wegwerfen** (abgelaufen, verdorben, zu viel gekauft, vergessen, schmeckt nicht) und **Empfänger beim Weitergeben** (Haushalt, Nachbarschaft, Familie/Freunde, Spende, öffentlicher Kühlschrank), ganz oder teilweise: **Anteile ¼ · ½ · ¾ · alles** bei Gramm, Milliliter und einzelnen Stücken, **«1 von 4»** bei Packungen mit mehreren Stück; «Geöffnet» setzt die Öffnungsregel; Rückgängig
 - 6c: **Wirkungs-Dashboard** (D-01, D-02): Woche/Monat, Trend, pro Person, Vergleich mit dem Schweizer Durchschnitt (D-03); **Kühlschrank-Check** (UC-04)
 - **Delegation:** O für 6a, S für 6b und 6c.
 
@@ -203,7 +203,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 #### Schritt 7 – Konto, Haushalt & Sync (US-09, US-15, US-17, US-18)
 *Voraussetzung: Fragen 1 bis 3 beantwortet.*
 - 7a: ADR Sync (HLC, Feld-LWW, Outbox, Pull mit Cursor, Soft-Delete) und Implementierung in `core` mit Konflikt-Tests
-- 7b: **Backend nach ADR-0009** (Hono + PostgreSQL in Docker wie HUB-042): Schema inkl. Event-Log und `Grant`-Tabelle, Row-Level-Security «nur eigener Haushalt», Magic Link; `docker-compose.yml`, Seed-Skript für Testnutzer; Infrastruktur als Code, keine Secrets
+- 7b: **Backend nach ADR-0009, Login nach ADR-0010** (E-Mail/Passwort mit Bestätigung, Google, Apple, Facebook) (Hono + PostgreSQL in Docker wie HUB-042): Schema inkl. Event-Log und `Grant`-Tabelle, Row-Level-Security «nur eigener Haushalt», Magic Link; `docker-compose.yml`, Seed-Skript für Testnutzer; Infrastruktur als Code, keine Secrets
 - 7c: `SyncAdapter` im Web, Hintergrund-Sync, Offline-Warteschlange, «Zuletzt synchronisiert»
 - 7d: Haushalt erstellen, Einladung per Link/Code (kurz, ablaufend, widerrufbar), Beitritt mit «Vorrat mitnehmen?», Rollen, Verlassen
 - 7e: Besitz pro Artikel, Filter «Meins / Geteilt / Alle»; E2E mit zwei Browser-Kontexten
@@ -313,7 +313,7 @@ Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ic
    - B) **Selbst betrieben bei einem Schweizer Anbieter** (Postgres plus kleine API). Volle Datenhoheit, aber Betrieb, Backups und Updates liegen bei uns.
    - *Empfehlung:* A für MVP und Pilot. Alles läuft hinter dem `SyncAdapter`, ein späterer Wechsel zu B ist möglich. Die PWA selbst ebenfalls in der Schweiz hosten.
    - **Update 6.11.2026:** Alban wünscht Docker/Cloudflare nach dem Muster von HUB-042. Neuer Vorschlag: **B als selbst betriebener Docker-Stack** (Hono + PostgreSQL, ADR-0009) auf Oracle Cloud Always Free (Zürich) oder Albans Server; offen ist nur noch das Hosting-Ziel und eine Domain.
-2. **Auth-Methode** – *Empfehlung:* Magic Link per E-Mail im MVP. Passkeys in v1, Apple/Google-Login mit den nativen Apps. Für API/MCP später OAuth.
+2. **Auth-Methode** – **Beantwortet (6.11.2026):** Registrierung wie eine normale App mit E-Mail + Passwort, Google, Apple und Facebook; umgesetzt mit Better Auth (ADR-0010). Passkeys und Magic Link folgen.
 3. **Daten, die das Gerät verlassen** (neben dem Sync selbst)
    - a) **Open Food Facts:** Barcode-Nummer und IP-Adresse gehen an Open Food Facts (Frankreich). *Empfehlung:* erlaubt, mit Hinweis beim ersten Scan und Schalter in den Einstellungen.
    - b) **Web Push:** Der Server muss wissen, wann was abläuft. *Empfehlung:* Push nur mit Konto (die Daten sind durch den Sync ohnehin dort). Ohne Konto: Digest beim Öffnen.
@@ -350,7 +350,7 @@ Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ic
 | Nr. | Thema | Antwort |
 | --- | --- | --- |
 | 1 | Backend/Sync & Hosting | offen |
-| 2 | Auth-Methode | offen |
+| 2 | Auth-Methode | **E-Mail/Passwort, Google, Apple, Facebook** (ADR-0010) |
 | 3 | Daten, die das Gerät verlassen | offen |
 | 4 | Serverseitiges OCR/LLM | offen |
 | 5 | Freemium im MVP | offen |
