@@ -1,6 +1,6 @@
 import { GtinSchema } from '@fridgeai/core';
 import { describe, expect, it, vi } from 'vitest';
-import { openFoodFactsCatalog } from './open-food-facts';
+import { openFoodFactsCatalog, openFoodFactsSearch } from './open-food-facts';
 
 const gtin = GtinSchema.parse('7610000000004');
 const json = (body: unknown, status = 200) =>
@@ -36,5 +36,28 @@ describe('openFoodFactsCatalog', () => {
         });
       });
     expect(await openFoodFactsCatalog(hanging, 10).lookupByGtin(gtin)).toBeNull();
+  });
+});
+
+describe('openFoodFactsSearch', () => {
+  it('sends only the words, without cookies or referrer, and returns the hits', async () => {
+    const fetchJson = vi.fn(() =>
+      json({ products: [{ code: '7610000000004', product_name_de: 'Gipfeli', brands: 'Coop' }] }),
+    );
+    expect(await openFoodFactsSearch(fetchJson).searchByName('coop gipfeli', 8)).toEqual([
+      { gtin, name: 'Gipfeli', brand: 'Coop' },
+    ]);
+    expect(fetchJson).toHaveBeenCalledWith(
+      expect.stringContaining('search_terms=coop%20gipfeli'),
+      expect.objectContaining({ credentials: 'omit', referrerPolicy: 'no-referrer' }),
+    );
+  });
+
+  it('is unavailable when offline, rate limited or broken', async () => {
+    const search = (fetchJson: () => Promise<Response>) =>
+      openFoodFactsSearch(fetchJson).searchByName('weggli', 8);
+    expect(await search(() => json({}, 429))).toBe('unavailable');
+    expect(await search(() => Promise.resolve(new Response('<html>')))).toBe('unavailable');
+    expect(await search(() => Promise.reject(new TypeError('offline')))).toBe('unavailable');
   });
 });

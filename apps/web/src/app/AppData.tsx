@@ -8,7 +8,7 @@ import { createHouseholdHandlers, type HouseholdHandlers } from '../data/househo
 import { createRecipeHandlers, type RecipeHandlers } from '../data/recipe-handlers';
 import { createShoppingHandlers, type ShoppingHandlers } from '../data/shopping-handlers';
 import { cachedCatalog } from '../data/catalog-cache';
-import { openFoodFactsCatalog } from '../data/open-food-facts';
+import { openFoodFactsCatalog, openFoodFactsSearch } from '../data/open-food-facts';
 import { requestPersistentStorage } from '../data/persistence';
 import { fetchProductImage } from '../data/product-images';
 import { messages } from './messages.de-CH';
@@ -59,6 +59,7 @@ export function AppDataProvider({ children, db }: { children: ReactNode; db?: Fr
           catalog: cachedCatalog(database, openFoodFactsCatalog(), browserClock, {
             image: (url) => fetchProductImage(url),
           }),
+          search: openFoodFactsSearch(),
         };
         setData({
           db: database,
