@@ -127,6 +127,16 @@ export const messages = {
     saved: (name: string) => `${name} ist gespeichert.`,
     failed: 'Speichern hat nicht geklappt. Bitte versuch es nochmals.',
   },
+  quickAdd: {
+    title: 'Schnell erfassen',
+    hint: 'Ein Tipp speichert es wie beim letzten Mal, das Datum wird geschätzt.',
+    /** Hidden after the chip text, so screen readers hear «Vollmilch 1 l erfassen». */
+    add: 'erfassen',
+    saved: (name: string, quantity: string, place: string) =>
+      `${name} ist gespeichert: ${quantity}, ${place}.`,
+    undone: (name: string) => `${name} wieder entfernt.`,
+    failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
+  },
   inputUnits: { pcs: 'Stück', g: 'g', kg: 'kg', ml: 'ml', cl: 'cl', dl: 'dl', l: 'l' },
   containers: {
     piece: 'Stück',
