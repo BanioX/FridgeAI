@@ -30,9 +30,11 @@ describe('parseAmount', () => {
     }
   });
 
-  it('formats with a decimal comma', () => {
-    expect(formatAmount(1.5)).toBe('1,5');
+  it('formats with a decimal point and no thousands separator', () => {
+    expect(formatAmount(1.5)).toBe('1.5');
     expect(formatAmount(300)).toBe('300');
+    expect(formatAmount(1250)).toBe('1250');
+    expect(formatAmount(0.1 + 0.2)).toBe('0.3');
   });
 });
 
