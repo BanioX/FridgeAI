@@ -74,8 +74,11 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile
 
+      # Only the browser: GitHub's Ubuntu runners already ship the system libraries Chromium needs.
+      # `--with-deps` runs apt-get, which hung for >10 minutes on 2026-11-06 (PR #10).
       - name: Install Playwright browser
-        run: pnpm --filter @fridgeai/web exec playwright install --with-deps chromium
+        timeout-minutes: 5
+        run: pnpm --filter @fridgeai/web exec playwright install chromium
 
       - name: E2E
         run: pnpm e2e
