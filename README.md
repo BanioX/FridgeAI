@@ -6,7 +6,7 @@
 
 Local-first PWA für Schweizer Haushalte (WGs, Paare, Familien) gegen Food Waste. Alles funktioniert offline auf dem Gerät; KI-Erkennung läuft über die KI, die du ohnehin nutzt (ChatGPT, Claude, Gemini), ohne Kosten für FridgeAI.
 
-**Product Owner:** Alban Hyseni · **Status:** Prototyp (manuell vollständig, Scannen im Aufbau) · **Lizenz:** proprietär, alle Rechte vorbehalten
+**Product Owner:** Alban Hyseni · **Status:** bereit für den Pilot ([`docs/pilot.md`](docs/pilot.md)); Bon-Scan und Teilen im Haushalt folgen · **Lizenz:** proprietär, alle Rechte vorbehalten
 
 ---
 
@@ -33,6 +33,11 @@ Local-first PWA für Schweizer Haushalte (WGs, Paare, Familien) gegen Food Waste
 | **Abschliessen** | Gegessen, weitergegeben (an wen), weggeworfen (warum) – ganz oder in sinnvollen Portionen (⅛ Kuchen, ⅓ Käse, 2 von 4 Joghurts) |
 | **Öffnungsregel** | «Nach dem Öffnen innert 21 Tagen» verkürzt das Datum automatisch |
 | **Einfrieren** | Umlagern mit neu geschätztem Datum |
+| **Korrigieren** | Rückgängig nach Gegessen/Weggeworfen; Datum, Menge und Preis nachträglich ändern |
+| **Produktdaten** | Nach dem Scan: Bild, Marke, Nährwerte, Nutri-Score, Allergene (Open Food Facts, 30 Tage offline) |
+| **Einkaufsliste** | «Du hast noch …» gegen Doppelkäufe, abhaken, «In den Vorrat legen» |
+| **Wirkung** | Gerettet und weggeworfen diesen Monat in CHF und Gewicht |
+| **Haushalt** | App installieren, alles exportieren (JSON/CSV) oder löschen, Datenschutz in Kürze |
 
 Geplant: Teilen in WG und Familie, Kosten aufteilen, Push-Erinnerungen, Wirkungs-Dashboard, MCP-Connector für ChatGPT/Claude, Büro-Kühlschrank. Reihenfolge: [`docs/plan.md`](docs/plan.md).
 
