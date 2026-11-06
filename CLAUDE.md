@@ -16,6 +16,13 @@ Kurzfassung der Regeln. Vollständiger Brief: [`docs/brief.md`](docs/brief.md) �
 4. **Previews für Alban:** Bei jeder sichtbaren UI-Änderung `pnpm preview:shots <route …>` ausführen und das kompakte `sheet.png` (aus `apps/web/.previews/…`) mit dem PR an Alban schicken, damit er das Design beurteilen kann. Dazu den Cloudflare-Vorschau-Link des PRs nennen ([`docs/previews.md`](docs/previews.md)). Feedback fliesst in einen Folge-PR.
 5. **Freigabe:** Alles, was kostenlos ist, darf ich ohne Rückfrage entscheiden und nutzen (Dienste im Gratis-Plan, Open-Source-Dependencies, Tools; Alban, 6.11.2026). **Alban fragen vor:** allem, was Geld kostet, Preis-/Freemium-Grenzen, allem, was Nutzerdaten das Gerät neu verlassen lässt, und grösseren Abweichungen vom Produkt.
 
+## Pflege-Rhythmus (macht immer Claude, nie Alban – ADR-0017)
+- **Jeder PR:** Conventional-Commit-Titel; README und Plan-Status nachführen, wenn sich Sichtbares ändert.
+- **Wöchentlich:** Dependabot-PRs prüfen und bei grüner CI mergen.
+- **Alle 10 gemergten PRs** (`pnpm release --count`) oder am Meilenstein-Ende: Release mit `pnpm release` → Release-PR → Merge → Tag `vX.Y.Z` pushen → GitHub Release entsteht automatisch; Statusmeldung an Alban.
+- **Alle 50 PRs:** Gesundheits-Check (Dependencies, Lizenzen, Bundle, tote Dateien, Doku, Tests, Sicherheits-Review).
+- **Alle 100 PRs:** grosses Review (Architektur, Plan, ADRs, Performance, Barrierefreiheit) mit Roadmap-Vorschlag.
+
 ## Harte Regeln
 - Keine echten Partner-Integrationen (Migros, Coop, Lieferdienste): nur Interfaces mit Mocks.
 - Keine Secrets im Repo (`.env.example` ja, echte Keys nie). Keine personenbezogenen Daten in Fixtures, Logs oder Commits.
