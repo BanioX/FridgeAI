@@ -43,6 +43,8 @@ export const DomainEventSchema = z.discriminatedUnion('type', [
     }),
   ),
   envelope('item.updated', z.object({ itemId: IdSchema, fields: z.array(z.string()).min(1) })),
+  envelope('item.deleted', z.object({ itemId: IdSchema })),
+  envelope('item.restored', z.object({ itemId: IdSchema })),
   envelope(
     'item.moved',
     z.object({
