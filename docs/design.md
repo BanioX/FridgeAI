@@ -34,19 +34,17 @@ Alle Text-/Hintergrund-Paare erfüllen WCAG AA (mindestens 4.5:1), geprüft beim
 
 ## Schrift
 
-> **Abgelöst durch ADR-0021 (6.11.2026):** künftig Systemschrift (SF Pro auf Apple-Geräten) nach Apples Human Interface Guidelines. Die Tabelle unten gilt, bis der Umbau gemergt ist.
+Systemschrift nach Apples Human Interface Guidelines (ADR-0021): SF Pro auf Apple-Geräten, Roboto auf Android, Segoe UI unter Windows. Es wird nichts geladen, die Grössen in `rem` folgen der Textgrösse des Systems.
 
-| Rolle | Schrift | Grösse/Gewicht |
-| --- | --- | --- |
-| Display (Seitentitel, grosse Zahlen) | **Fraunces** (Variable, OFL) | 28–34 px, 600 |
-| Text und Bedienung | **Figtree** (Variable, OFL) | 16 px Basis, 400/500/600 |
-| Klein (Meta, Chips) | Figtree | 13–14 px, 500 |
-
-Beide Schriften werden **selbst gehostet** (npm-Pakete `@fontsource-variable/*`), nicht von Google Fonts geladen: Sonst sähe Google die IP-Adresse jeder Nutzerin.
+| Rolle | Grösse/Gewicht |
+| --- | --- |
+| Grosser Titel (`large-title`) | 34 px, 700 |
+| Text und Bedienung | 17 px, 400/600 |
+| Klein (Meta, Chips) | 13–14 px, 600 |
 
 ## Form, Tiefe, Bewegung
 
-- Radien: 8 px (Chips), 12 px (Eingaben, Buttons), 16 px (Karten), 24 px (Sheets), Pill für Status.
+- Radien: 10 px (Segmente), 12 px (Segment-Spur), 12 px (Eingaben, Buttons), 16 px (Karten), 24 px (Sheets), Pill für Chips und Status.
 - Schatten sparsam: Karten nur hauchdünn, schwebende Elemente (Sheets, Toast) etwas mehr.
 - Bewegung 150–200 ms, ease-out; `prefers-reduced-motion` schaltet Animationen ab.
 
@@ -59,8 +57,10 @@ Beide Schriften werden **selbst gehostet** (npm-Pakete `@fontsource-variable/*`)
 
 - **Listen** (Vorrat, «Heute retten», Einkaufsliste): Apples «inset grouped» Liste. Alle Zeilen liegen in einer weissen, abgerundeten Gruppe, getrennt durch Haarlinien ab dem Text, nicht als einzelne Karten.
 - **Artikelzeile:** Packungsbild oder Emoji, Name, darunter Menge · Lagerort, rechts Status-Chip («heute», «morgen», «in 3 Tagen») und «›», wenn die Zeile eine Detailseite öffnet. Der Status steht im Chip als Text, die Farbe unterstützt nur.
-- **Startseite «Heute retten»:** grosse Fraunces-Zahl (Wert im Kühlschrank in CHF), darunter die dringendsten Artikel, Lagerorte als drei Kacheln.
+- **Startseite «Heute retten»:** grosse Zahl (Wert im Kühlschrank in CHF), darunter die dringendsten Artikel, Lagerorte als drei Kacheln.
 - **Navigation:** weisse Leiste unten, aktives Ziel mit Basilikum-Pill hinter dem Icon.
+- **Segment-Auswahl** (2–4 kurze Optionen, z. B. «Wo ist es?»): eine graue Spur mit gleich breiten Segmenten, 13 px. Das gewählte Segment ist basilikumgrün mit weisser Schrift statt iOS-weiss, damit der Zustand 3:1 Kontrast hat. Sehr lange Wörter trennen auf schmalen Handys mit Bindestrich.
+- **Auswahl-Chips** (Portionen, Gründe): Pills, die umbrechen.
 - **Primärbutton:** `basil-700`, weisse Schrift (8:1), volle Breite auf Mobile.
 
 ## Datumsfeld (Ablaufdatum)
