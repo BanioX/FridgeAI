@@ -7,7 +7,7 @@ import {
   type StorageLocation,
 } from '@fridgeai/core';
 import { CalendarDays } from 'lucide-react';
-import { useId, useRef, useState } from 'react';
+import { useId, useState } from 'react';
 import { messages } from '../app/messages.de-CH';
 import { describeDate, describeRelative, nextDateText } from './date-text';
 
@@ -40,7 +40,6 @@ export function DateField({
   estimated = false,
 }: DateFieldProps) {
   const id = useId();
-  const nativeInput = useRef<HTMLInputElement>(null);
   const [text, setText] = useState(value === null ? '' : formatSwissDate(value));
   const [autoFormatting, setAutoFormatting] = useState(true);
   const [lastValue, setLastValue] = useState(value);
@@ -78,16 +77,16 @@ export function DateField({
     onChange(date);
   }
 
-  function openCalendar() {
-    const input = nativeInput.current;
-    if (input === null) {
-      return;
-    }
+  /**
+   * Desktop browsers open the picker only through `showPicker()`. On iPhone the tap itself
+   * reaches the (invisible) native date field, which opens the date wheel; `showPicker()` is then
+   * not needed and may throw.
+   */
+  function openPicker(input: HTMLInputElement) {
     try {
       input.showPicker();
     } catch {
-      input.focus();
-      input.click();
+      // Already open, or not supported: the native tap handling takes over.
     }
   }
 
@@ -119,29 +118,27 @@ export function DateField({
             invalid ? 'border-today' : 'border-line'
           }`}
         />
-        <button
-          type="button"
-          onClick={openCalendar}
-          aria-label={t.openCalendar}
-          className="flex min-h-12 min-w-12 items-center justify-center rounded-xl border border-line bg-surface text-basil-700 hover:bg-surface-muted"
-        >
+        {/* The real date field lies invisibly on top of the calendar symbol: iOS opens its date
+            wheel only for a tap on the field itself, not for a hidden field opened by code. */}
+        <div className="relative flex min-h-12 min-w-12 items-center justify-center rounded-xl border border-line bg-surface text-basil-700 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-basil-600 hover:bg-surface-muted">
           <CalendarDays size={22} aria-hidden="true" />
-        </button>
-        <input
-          ref={nativeInput}
-          type="date"
-          tabIndex={-1}
-          aria-hidden="true"
-          value={parsed ?? ''}
-          max="2126-12-31"
-          onChange={(event) => {
-            const date = parseDateInput(event.target.value, today);
-            if (date !== null) {
-              choose(date);
-            }
-          }}
-          className="sr-only"
-        />
+          <input
+            type="date"
+            aria-label={t.openCalendar}
+            value={parsed ?? ''}
+            max="2126-12-31"
+            onClick={(event) => {
+              openPicker(event.currentTarget);
+            }}
+            onChange={(event) => {
+              const date = parseDateInput(event.target.value, today);
+              if (date !== null) {
+                choose(date);
+              }
+            }}
+            className="absolute inset-0 h-full w-full cursor-pointer appearance-none text-base opacity-0"
+          />
+        </div>
       </div>
 
       <p
