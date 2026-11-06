@@ -1,7 +1,10 @@
+import { localDate, type LocalDate } from '@fridgeai/core';
 import { Leaf, PencilLine, ScanLine } from 'lucide-react';
+import { useState } from 'react';
 import { BigNumber } from '../../ui/BigNumber';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
+import { DateField } from '../../ui/DateField';
 import { ItemRow } from '../../ui/ItemRow';
 import { LocationTile } from '../../ui/LocationTile';
 import { StatusChip } from '../../ui/StatusChip';
@@ -53,6 +56,38 @@ const basilScale = [
   'bg-basil-900',
 ] as const;
 
+const sampleToday = localDate('2026-11-06');
+
+function DateFieldDemo() {
+  const [milk, setMilk] = useState<LocalDate | null>(localDate('2026-11-13'));
+  const [reserve, setReserve] = useState<LocalDate | null>(null);
+  return (
+    <div className="space-y-6">
+      <Card>
+        <DateField
+          label="Ablaufdatum Vollmilch"
+          value={milk}
+          onChange={setMilk}
+          today={sampleToday}
+          location="fridge"
+          typicalShelfLifeDays={7}
+          estimated
+        />
+      </Card>
+      <Card>
+        <DateField
+          label="Ablaufdatum Notration"
+          value={reserve}
+          onChange={setReserve}
+          today={sampleToday}
+          location="reserve"
+          typicalShelfLifeDays={9125}
+        />
+      </Card>
+    </div>
+  );
+}
+
 export function StyleguidePage() {
   return (
     <div className="space-y-10">
@@ -97,6 +132,11 @@ export function StyleguidePage() {
           <LocationTile location="pantry" label="Vorrat" countLabel="23 Artikel" />
           <LocationTile location="reserve" label="Notvorrat" countLabel="reicht 9 Tage" />
         </div>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="font-display text-xl font-semibold">Datum</h2>
+        <DateFieldDemo />
       </section>
 
       <section className="space-y-3">
