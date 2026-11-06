@@ -27,7 +27,19 @@ Kurzfassung der Regeln. Vollständiger Brief: [`docs/brief.md`](docs/brief.md) �
 - Kamera nur nach Nutzeraktion, alle Berechtigungszustände und Fallbacks (Foto-Upload, manuell) behandeln.
 
 ## Befehle
-Werden in Schritt 1 eingerichtet: `pnpm lint` · `pnpm typecheck` · `pnpm test` · `pnpm build` · `pnpm e2e`
+Node 24 und pnpm 10 (über `packageManager`/Corepack). Vor jedem Push alles grün:
+
+```
+pnpm install
+pnpm format:check   # pnpm format zum Korrigieren
+pnpm lint
+pnpm typecheck      # inkl. Reinheits-Check von packages/core
+pnpm test           # pnpm test:coverage für Abdeckung
+pnpm build
+pnpm e2e            # Playwright; lokal ggf. PW_CHROMIUM_EXECUTABLE setzen
+```
+
+Stack und Versionsentscheide: [`docs/adr/0002-tech-stack-and-tooling.md`](docs/adr/0002-tech-stack-and-tooling.md).
 
 ## Agent-Orchestrierung
 - Opus: Plan, Architektur, ADRs, Datenmodell, Ports, Parser-Strategie, Sync, Geldlogik, Sicherheit/Datenschutz, Review **jedes** Subagent-Ergebnisses.
