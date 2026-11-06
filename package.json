@@ -1,12 +1,14 @@
 {
   "name": "fridgeai",
   "private": true,
+  "license": "UNLICENSED",
   "type": "module",
   "packageManager": "pnpm@10.34.9",
   "engines": {
     "node": ">=24"
   },
   "scripts": {
+    "dev": "pnpm --filter @fridgeai/web dev",
     "lint": "eslint . --max-warnings 0",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
@@ -17,7 +19,8 @@
     "build": "pnpm -r --if-present run build",
     "build:cf": "pnpm --filter @fridgeai/web build:demo",
     "e2e": "pnpm --filter @fridgeai/web e2e",
-    "preview:shots": "pnpm --filter @fridgeai/web preview:shots"
+    "preview:shots": "pnpm --filter @fridgeai/web preview:shots",
+    "licenses:check": "node scripts/check-licenses.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
