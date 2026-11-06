@@ -1,0 +1,118 @@
+import { expect, test, type Page } from '@playwright/test';
+
+const executablePath = process.env.PW_CHROMIUM_EXECUTABLE;
+// A fake camera, so «Kamera starten» meets a real device and the permission decides.
+test.use({
+  launchOptions: {
+    args: ['--use-fake-device-for-media-stream'],
+    ...(executablePath ? { executablePath } : {}),
+  },
+});
+
+/** EAN-13 as bars (1 = black module): the real encoding, so ZXing reads it like a pack. */
+function ean13Modules(code: string): string {
+  const L = ['0001101', '0011001', '0010011', '0111101', '0100011'];
+  L.push('0110001', '0101111', '0111011', '0110111', '0001011');
+  const G = L.map((bits) =>
+    Array.from(bits)
+      .reverse()
+      .map((b) => (b === '1' ? '0' : '1'))
+      .join(''),
+  );
+  const R = L.map((bits) =>
+    Array.from(bits)
+      .map((b) => (b === '1' ? '0' : '1'))
+      .join(''),
+  );
+  const parity = ['LLLLLL', 'LLGLGG', 'LLGGLG', 'LLGGGL', 'LGLLGG'];
+  parity.push('LGGLLG', 'LGGGLL', 'LGLGLG', 'LGLGGL', 'LGGLGL');
+  const digits = Array.from(code, Number);
+  const pattern = parity[digits[0] ?? 0] ?? '';
+  const left = digits
+    .slice(1, 7)
+    .map((d, i) => (pattern[i] === 'G' ? G[d] : L[d]))
+    .join('');
+  const right = digits
+    .slice(7)
+    .map((d) => R[d])
+    .join('');
+  return `101${left}01010${right}101`;
+}
+
+/** Draws the code on a canvas in the page and returns it as a PNG, like a phone photo. */
+async function barcodePhoto(page: Page, code: string): Promise<Buffer> {
+  const dataUrl = await page.evaluate((modules) => {
+    const scale = 4;
+    const quiet = 12;
+    const canvas = document.createElement('canvas');
+    canvas.width = (modules.length + quiet * 2) * scale;
+    canvas.height = 220;
+    const context = canvas.getContext('2d');
+    if (context === null) {
+      throw new Error('no canvas');
+    }
+    context.fillStyle = '#fff';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = '#000';
+    Array.from(modules).forEach((bit, index) => {
+      if (bit === '1') {
+        context.fillRect((quiet + index) * scale, 20, scale, 180);
+      }
+    });
+    return canvas.toDataURL('image/png');
+  }, ean13Modules(code));
+  return Buffer.from(dataUrl.split(',')[1] ?? '', 'base64');
+}
+
+test('reads a barcode from a photo with the self-hosted reader', async ({ page }) => {
+  const cspErrors: string[] = [];
+  page.on('console', (message) => {
+    if (message.text().includes('Content Security Policy')) {
+      cspErrors.push(message.text());
+    }
+  });
+  await page.goto('/inventory/new');
+  await page.getByRole('button', { name: 'Barcode scannen' }).click();
+  await page.getByLabel('Foto vom Code wählen').setInputFiles({
+    name: 'code.png',
+    mimeType: 'image/png',
+    buffer: await barcodePhoto(page, '7610000000004'),
+  });
+  await expect(page.getByText('Barcode 7610000000004 erkannt.')).toBeVisible();
+  await expect(page.getByLabel('Was ist es?')).toBeFocused();
+  expect(cspErrors).toEqual([]);
+});
+
+test('takes the date from a typed GS1 code', async ({ page }) => {
+  await page.goto('/inventory/new');
+  await page.getByRole('button', { name: 'Barcode scannen' }).click();
+  await page.getByLabel('Nummer unter dem Strichcode').fill('(01)07610000000004(17)271231');
+  await page.getByRole('button', { name: 'Übernehmen' }).click();
+  await expect(
+    page.getByText('Barcode 7610000000004 erkannt, haltbar bis 31.12.2027.'),
+  ).toBeVisible();
+  await expect(page.getByLabel('Haltbar bis')).toHaveValue('31.12.2027');
+  await expect(page.getByText('geschätzt', { exact: true })).toHaveCount(0);
+});
+
+test('explains a blocked camera and keeps the other ways open', async ({ page }) => {
+  await page.goto('/inventory/new');
+  await page.getByRole('button', { name: 'Barcode scannen' }).click();
+  await page.getByRole('button', { name: 'Kamera starten' }).click();
+  await expect(page.getByText(/Die Kamera ist blockiert/)).toBeVisible();
+  await expect(page.getByLabel('Foto vom Code wählen')).toBeAttached();
+  await expect(page.getByLabel('Nummer unter dem Strichcode')).toBeVisible();
+});
+
+test.describe('with camera permission', () => {
+  test.use({ permissions: ['camera'] });
+
+  test('starts the live camera and stops it again', async ({ page }) => {
+    await page.goto('/inventory/new');
+    await page.getByRole('button', { name: 'Barcode scannen' }).click();
+    await page.getByRole('button', { name: 'Kamera starten' }).click();
+    await expect(page.getByText('Halte den Strich- oder QR-Code ruhig ins Bild.')).toBeVisible();
+    await page.getByRole('button', { name: 'Kamera stoppen' }).click();
+    await expect(page.getByRole('button', { name: 'Kamera starten' })).toBeVisible();
+  });
+});

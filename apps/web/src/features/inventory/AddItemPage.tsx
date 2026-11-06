@@ -2,24 +2,32 @@ import {
   CATEGORIES,
   categoryById,
   ContainerSchema,
+  expiryFromScan,
   fallbackCategory,
+  formatSwissDate,
   matchCategoryByName,
   parseChf,
+  parseScannedCode,
   portioningOf,
   shelfLifeAt,
   StorageLocationSchema,
   toBaseQuantity,
   type Container,
+  type DateKind,
+  type Gtin,
   type InputUnit,
   type LocalDate,
   type StorageLocation,
 } from '@fridgeai/core';
 import { useId, useRef, useState } from 'react';
+import { ScanBarcode } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
 import { Button } from '../../ui/Button';
+import { Card } from '../../ui/Card';
 import { DateField } from '../../ui/DateField';
+import { BarcodeScanner } from '../scan/BarcodeScanner';
 import {
   formatAmount,
   INPUT_UNITS,
@@ -63,6 +71,12 @@ export function AddItemPage() {
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState('');
   const [round, setRound] = useState(0);
+  const [scanOpen, setScanOpen] = useState(params.get('scan') === '1');
+  const [scanned, setScanned] = useState<{
+    gtin?: Gtin;
+    date?: { expiresOn: LocalDate; kind: DateKind };
+  } | null>(null);
+  const [scanStatus, setScanStatus] = useState('');
 
   const category =
     (categoryChoice === null ? undefined : categoryById(categoryChoice)) ??
@@ -86,6 +100,35 @@ export function AddItemPage() {
     price: price === null || (price !== undefined && price < 0) ? t.priceInvalid : null,
   };
   const shown = (error: string | null) => (submitted ? error : null);
+  // The code's date counts as read from the pack only while the person keeps it.
+  const dateFromCode =
+    scanned?.date !== undefined && dateChoice?.value === scanned.date.expiresOn
+      ? scanned.date
+      : undefined;
+
+  function onCode(raw: string) {
+    const code = parseScannedCode(raw, today);
+    if (code === null) {
+      setScanStatus(messages.scanner.unknownCode);
+      return;
+    }
+    const date = expiryFromScan(code.data) ?? undefined;
+    setScanned({
+      ...(code.data.gtin === undefined ? {} : { gtin: code.data.gtin }),
+      ...(date === undefined ? {} : { date }),
+    });
+    if (date !== undefined) {
+      setDateChoice({ value: date.expiresOn });
+    }
+    const label = code.data.gtin ?? raw.slice(0, 40);
+    setScanStatus(
+      date === undefined
+        ? messages.scanner.found(label)
+        : messages.scanner.foundWithDate(label, formatSwissDate(date.expiresOn)),
+    );
+    setScanOpen(false);
+    nameInput.current?.focus();
+  }
 
   async function save(next: boolean) {
     setSubmitted(true);
@@ -110,6 +153,10 @@ export function AddItemPage() {
         ...(base.unit === 'pcs' && container !== '' ? { container } : {}),
         // Without a chosen date the handler estimates the same date the form showed.
         ...(dateChoice === null ? {} : { expiresOn }),
+        ...(dateFromCode === undefined
+          ? {}
+          : { expirySource: 'gs1_code', expiryKind: dateFromCode.kind }),
+        ...(scanned?.gtin === undefined ? {} : { gtin: scanned.gtin }),
         ...(price === undefined ? {} : { priceRappen: price }),
       });
       if (!next) {
@@ -123,6 +170,8 @@ export function AddItemPage() {
       setUnitChoice(null);
       setContainerChoice(null);
       setDateChoice(null);
+      setScanned(null);
+      setScanStatus('');
       setPriceText('');
       setSubmitted(false);
       setRound((value) => value + 1);
@@ -139,6 +188,28 @@ export function AddItemPage() {
       <h1 className="font-display text-3xl font-semibold tracking-tight">
         {messages.pages.addItem}
       </h1>
+
+      <div className="space-y-3">
+        <Button
+          variant="secondary"
+          icon={ScanBarcode}
+          fullWidth
+          aria-expanded={scanOpen}
+          onClick={() => {
+            setScanOpen(!scanOpen);
+          }}
+        >
+          {messages.scanner.open}
+        </Button>
+        {scanOpen ? (
+          <Card>
+            <BarcodeScanner onCode={onCode} />
+          </Card>
+        ) : null}
+        <p aria-live="polite" className="font-semibold text-basil-800">
+          {scanStatus}
+        </p>
+      </div>
 
       <form
         noValidate
