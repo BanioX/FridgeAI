@@ -1,3 +1,4 @@
+import { DEFAULT_PORTIONING } from './catalog/category';
 import type { PackageSize, Unit } from './model/primitives';
 
 /** Units people type or read; stored as base units g, ml or pcs (ADR-0011). */
@@ -63,37 +64,90 @@ export function knownGrams(
   return packageSize === undefined ? undefined : Math.round(quantity * packageSize.amount);
 }
 
-export interface PortionChoice {
-  /** `quarter`, `half`, `three_quarters`, `all`, or `pieces` for whole pieces. */
-  kind: 'quarter' | 'half' | 'three_quarters' | 'all' | 'pieces';
-  /** Amount consumed in the item's base unit. */
-  quantity: number;
+/** A fraction in lowest terms, e.g. 1/3. */
+export interface Fraction {
+  numerator: number;
+  denominator: number;
 }
+
+const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
+
+/**
+ * The fractions below 1 that the given denominators offer, in lowest terms and ascending:
+ * [3, 4] → ¼ ⅓ ½ ⅔ ¾. Denominators above 4 only add their unit fraction ([8] → ⅛, not ⅜).
+ */
+export function fractionsFor(splits: readonly number[]): Fraction[] {
+  const fractions = new Map<string, Fraction>();
+  for (const denominator of splits) {
+    const largest = denominator <= 4 ? denominator - 1 : 1;
+    for (let numerator = 1; numerator <= largest; numerator += 1) {
+      const divisor = gcd(numerator, denominator);
+      const fraction = { numerator: numerator / divisor, denominator: denominator / divisor };
+      fractions.set(`${String(fraction.numerator)}/${String(fraction.denominator)}`, fraction);
+    }
+  }
+  return [...fractions.values()].sort(
+    (a, b) => a.numerator / a.denominator - b.numerator / b.denominator,
+  );
+}
+
+/** One quick choice for «how much was used?»; `quantity` is in the item's base unit. */
+export type PortionChoice =
+  /** g/ml: a fraction of what is left (¼ of 400 g = 100 g); pieces: a fraction of one piece. */
+  | ({ kind: 'fraction'; quantity: number } & Fraction)
+  | { kind: 'pieces'; count: number; quantity: number }
+  | { kind: 'all'; quantity: number };
 
 /** Below this many grams or millilitres, fractions are pointless: only «alles». */
 const MIN_FRACTION_AMOUNT = 20;
+/** At most this many «N Stück» choices; larger amounts go through free input. */
+const MAX_PIECE_CHOICES = 5;
 
 /**
- * Quick choices for «how much was used?» (S-05): «1 von 4» for several whole pieces,
- * ¼ · ½ · ¾ · alles for grams, millilitres and a single piece.
+ * Quick choices for «how much was used?» (S-05). `splits` comes from the category
+ * (`portioningOf(category).splits`): a cake offers ⅛ ¼ ½ ¾, a hard cheese ¼ ⅓ ½ ⅔ ¾, eggs none.
+ * - g/ml: fractions of what is left, or only «alles» below 20 g/ml.
+ * - Pieces: «1 · 2 · 3 Stück» while more than one piece is left, fractions of one piece while
+ *   less than two are left (half a loaf, ⅛ of the last cake), always «alles» last.
+ * Free input stays available in the UI for anything else.
  */
-export function portionChoices(quantity: number, unit: Unit): PortionChoice[] {
+export function portionChoices(
+  quantity: number,
+  unit: Unit,
+  splits: readonly number[] = DEFAULT_PORTIONING.splits,
+): PortionChoice[] {
   const all: PortionChoice = { kind: 'all', quantity };
-  if (unit === 'pcs' && Number.isInteger(quantity) && quantity >= 2) {
-    const pieces = Array.from({ length: Math.min(quantity - 1, 5) }, (_, index) => ({
-      kind: 'pieces' as const,
-      quantity: index + 1,
-    }));
-    return [...pieces, all];
+  const fractions = fractionsFor(splits);
+  if (unit !== 'pcs') {
+    if (quantity < MIN_FRACTION_AMOUNT) {
+      return [all];
+    }
+    const parts = fractions
+      .map((fraction) => ({
+        kind: 'fraction' as const,
+        ...fraction,
+        quantity: round((quantity * fraction.numerator) / fraction.denominator, 0),
+      }))
+      .filter((choice) => choice.quantity > 0 && choice.quantity < quantity)
+      // Rounded to whole grams, two fractions of a small amount can land on the same value.
+      .filter((choice, index, list) => choice.quantity !== list[index - 1]?.quantity);
+    return [...parts, all];
   }
-  if (unit !== 'pcs' && quantity < MIN_FRACTION_AMOUNT) {
-    return [all];
-  }
-  const decimals = unit === 'pcs' ? 2 : 0;
-  const fractions: PortionChoice[] = [
-    { kind: 'quarter', quantity: round(quantity * 0.25, decimals) },
-    { kind: 'half', quantity: round(quantity * 0.5, decimals) },
-    { kind: 'three_quarters', quantity: round(quantity * 0.75, decimals) },
-  ];
-  return [...fractions.filter((choice) => choice.quantity > 0 && choice.quantity < quantity), all];
+  const parts =
+    quantity < 2
+      ? fractions
+          .map((fraction) => ({
+            kind: 'fraction' as const,
+            ...fraction,
+            quantity: round(fraction.numerator / fraction.denominator, 4),
+          }))
+          .filter((choice) => choice.quantity < quantity)
+      : [];
+  const wholePieces = Math.min(Math.ceil(quantity) - 1, MAX_PIECE_CHOICES);
+  const pieces = Array.from({ length: Math.max(wholePieces, 0) }, (_, index) => ({
+    kind: 'pieces' as const,
+    count: index + 1,
+    quantity: index + 1,
+  }));
+  return [...parts, ...pieces, all];
 }

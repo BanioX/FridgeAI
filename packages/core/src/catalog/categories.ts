@@ -1,6 +1,6 @@
 import { rappen } from '../money';
 import type { DateKind, StorageLocation } from '../model/primitives';
-import type { Category, CategoryGroup } from './category';
+import type { Category, CategoryGroup, Portioning } from './category';
 
 /**
  * Built-in category catalog (Swiss household, Migros/Coop shop).
@@ -33,6 +33,8 @@ interface Spec {
   reserve?: number;
   /** Days the food keeps after opening. */
   opened?: number;
+  /** Unit, container, pack sizes and fractions (default: pieces in quarters). */
+  portion?: Portioning;
   /** Price of a typical pack in Rappen; weight of a typical pack in grams. */
   price: number;
   grams?: number;
@@ -60,6 +62,7 @@ function def(spec: Spec): Category {
     ...(spec.opened === undefined ? {} : { afterOpeningDays: spec.opened }),
     avgPriceRappen: rappen(spec.price),
     ...(spec.grams === undefined ? {} : { avgWeightGrams: spec.grams }),
+    ...(spec.portion === undefined ? {} : { portioning: spec.portion }),
     defaultOwner: spec.owner,
     keywords: [...spec.keywords],
     tips: { de: [...spec.tips] },
@@ -72,6 +75,7 @@ export const CATEGORIES: readonly Category[] = [
   // Dairy
   def({
     id: 'dairy-milk',
+    portion: { unit: 'ml', container: 'pack', splits: [4] },
     opened: 3,
     de: 'Milch',
     emoji: '🥛',
@@ -91,6 +95,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'dairy-uht-milk',
+    portion: { unit: 'ml', container: 'pack', splits: [4] },
     opened: 3,
     de: 'H-Milch',
     emoji: '🥛',
@@ -106,6 +111,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'dairy-cream',
+    portion: { unit: 'ml', splits: [4] },
     opened: 3,
     de: 'Rahm',
     emoji: '🥛',
@@ -124,6 +130,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'dairy-yoghurt',
+    portion: { unit: 'pcs', container: 'cup', packs: [4], splits: [2] },
     opened: 3,
     de: 'Joghurt',
     emoji: '🥛',
@@ -142,6 +149,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'dairy-butter',
+    portion: { unit: 'g', splits: [4] },
     opened: 30,
     de: 'Butter',
     emoji: '🧈',
@@ -160,6 +168,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'dairy-cheese-hard',
+    portion: { unit: 'g', splits: [3, 4] },
     opened: 21,
     de: 'Hartkäse',
     emoji: '🧀',
@@ -187,6 +196,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'dairy-cheese-soft',
+    portion: { unit: 'pcs', splits: [4] },
     opened: 3,
     de: 'Quark & Frischkäse',
     emoji: '🧀',
@@ -214,6 +224,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'dairy-eggs',
+    portion: { unit: 'pcs', container: 'box', packs: [6, 10], splits: [] },
     de: 'Eier',
     emoji: '🥚',
     group: 'dairy',
@@ -232,6 +243,7 @@ export const CATEGORIES: readonly Category[] = [
   // Meat and fish (use_by)
   def({
     id: 'meat-poultry',
+    portion: { unit: 'g', splits: [4] },
     de: 'Poulet',
     emoji: '🍗',
     group: 'meat',
@@ -256,6 +268,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'meat-minced',
+    portion: { unit: 'g', splits: [4] },
     de: 'Hackfleisch',
     emoji: '🍖',
     group: 'meat',
@@ -273,6 +286,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'meat-fresh',
+    portion: { unit: 'g', splits: [4] },
     de: 'Fleisch frisch',
     emoji: '🥩',
     group: 'meat',
@@ -299,6 +313,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'meat-coldcuts',
+    portion: { unit: 'g', splits: [4] },
     opened: 3,
     de: 'Aufschnitt',
     emoji: '🥓',
@@ -326,6 +341,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'meat-sausage',
+    portion: { unit: 'pcs', splits: [2] },
     opened: 3,
     de: 'Würste',
     emoji: '🌭',
@@ -353,6 +369,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'fish-fresh',
+    portion: { unit: 'g', splits: [4] },
     de: 'Fisch frisch',
     emoji: '🐟',
     group: 'fish',
@@ -379,6 +396,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'fish-smoked-salmon',
+    portion: { unit: 'g', splits: [4] },
     opened: 2,
     de: 'Rauchlachs',
     emoji: '🍣',
@@ -398,6 +416,7 @@ export const CATEGORIES: readonly Category[] = [
   // Produce
   def({
     id: 'produce-salad',
+    portion: { unit: 'pcs', splits: [2, 4] },
     de: 'Salat & Blattgemüse',
     emoji: '🥬',
     group: 'produce',
@@ -424,6 +443,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'produce-tomatoes',
+    portion: { unit: 'pcs', splits: [2] },
     de: 'Tomaten',
     emoji: '🍅',
     group: 'produce',
@@ -449,6 +469,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'produce-cucumber',
+    portion: { unit: 'pcs', splits: [2, 3] },
     de: 'Gurke',
     emoji: '🥒',
     group: 'produce',
@@ -466,6 +487,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'produce-carrots',
+    portion: { unit: 'g', splits: [4] },
     de: 'Rüebli',
     emoji: '🥕',
     group: 'produce',
@@ -483,6 +505,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'produce-potatoes',
+    portion: { unit: 'g', splits: [4] },
     de: 'Kartoffeln',
     emoji: '🥔',
     group: 'produce',
@@ -508,6 +531,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'produce-onions',
+    portion: { unit: 'pcs', splits: [2] },
     de: 'Zwiebeln & Knoblauch',
     emoji: '🧅',
     group: 'produce',
@@ -525,6 +549,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'produce-mushrooms',
+    portion: { unit: 'g', splits: [4] },
     de: 'Pilze',
     emoji: '🍄',
     group: 'produce',
@@ -550,6 +575,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'produce-berries',
+    portion: { unit: 'g', splits: [4] },
     de: 'Beeren',
     emoji: '🍓',
     group: 'produce',
@@ -575,6 +601,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'produce-apples',
+    portion: { unit: 'pcs', splits: [2] },
     de: 'Äpfel & Birnen',
     emoji: '🍎',
     group: 'produce',
@@ -592,6 +619,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'produce-bananas',
+    portion: { unit: 'pcs', splits: [2] },
     de: 'Bananen',
     emoji: '🍌',
     group: 'produce',
@@ -609,6 +637,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'produce-citrus',
+    portion: { unit: 'pcs', splits: [2] },
     de: 'Zitrusfrüchte',
     emoji: '🍊',
     group: 'produce',
@@ -635,6 +664,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'produce-herbs',
+    portion: { unit: 'pcs', container: 'bunch', splits: [2] },
     de: 'Frische Kräuter',
     emoji: '🌿',
     group: 'produce',
@@ -661,6 +691,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'produce-avocado',
+    portion: { unit: 'pcs', splits: [2] },
     de: 'Avocado',
     emoji: '🥑',
     group: 'produce',
@@ -679,6 +710,7 @@ export const CATEGORIES: readonly Category[] = [
   // Bakery
   def({
     id: 'bakery-bread',
+    portion: { unit: 'pcs', splits: [2, 4] },
     de: 'Brot',
     emoji: '🍞',
     group: 'bakery',
@@ -721,6 +753,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'bakery-pastry',
+    portion: { unit: 'pcs', splits: [8, 4] },
     de: 'Gipfeli & Gebäck',
     emoji: '🥐',
     group: 'bakery',
@@ -748,6 +781,7 @@ export const CATEGORIES: readonly Category[] = [
   // Pantry
   def({
     id: 'pantry-pasta',
+    portion: { unit: 'g', splits: [4] },
     de: 'Pasta',
     emoji: '🍝',
     group: 'pantry',
@@ -774,6 +808,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'pantry-rice',
+    portion: { unit: 'g', splits: [4] },
     de: 'Reis',
     emoji: '🍚',
     group: 'pantry',
@@ -800,6 +835,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'pantry-flour',
+    portion: { unit: 'g', splits: [4] },
     de: 'Mehl & Zucker',
     emoji: '🌾',
     group: 'pantry',
@@ -826,6 +862,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'pantry-canned',
+    portion: { unit: 'pcs', container: 'can', splits: [2] },
     opened: 3,
     de: 'Konserven',
     emoji: '🥫',
@@ -853,6 +890,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'pantry-cereal',
+    portion: { unit: 'g', splits: [4] },
     opened: 90,
     de: 'Müesli & Cerealien',
     emoji: '🥣',
@@ -880,6 +918,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'pantry-oil',
+    portion: { unit: 'ml', container: 'bottle', splits: [4] },
     opened: 180,
     de: 'Öl & Essig',
     emoji: '🫒',
@@ -898,6 +937,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'pantry-spices',
+    portion: { unit: 'pcs', container: 'jar', splits: [] },
     de: 'Gewürze & Salz',
     emoji: '🧂',
     group: 'pantry',
@@ -951,6 +991,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'pantry-sweets',
+    portion: { unit: 'pcs', splits: [4] },
     de: 'Süsses & Snacks',
     emoji: '🍫',
     group: 'pantry',
@@ -978,6 +1019,7 @@ export const CATEGORIES: readonly Category[] = [
   // Frozen
   def({
     id: 'frozen-vegetables',
+    portion: { unit: 'g', splits: [4] },
     de: 'Tiefkühlgemüse',
     emoji: '🥦',
     group: 'frozen',
@@ -1003,6 +1045,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'frozen-meals',
+    portion: { unit: 'pcs', splits: [8, 4] },
     de: 'Tiefkühl-Pizza & Fertiges',
     emoji: '🍕',
     group: 'frozen',
@@ -1029,6 +1072,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'frozen-icecream',
+    portion: { unit: 'ml', splits: [4] },
     opened: 30,
     de: 'Glace',
     emoji: '🍦',
@@ -1048,6 +1092,7 @@ export const CATEGORIES: readonly Category[] = [
   // Drinks
   def({
     id: 'drinks-juice',
+    portion: { unit: 'ml', container: 'pack', splits: [4] },
     opened: 5,
     de: 'Saft',
     emoji: '🧃',
@@ -1075,6 +1120,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'drinks-soft',
+    portion: { unit: 'pcs', container: 'bottle', packs: [6], splits: [2] },
     opened: 3,
     de: 'Getränke & Wasser',
     emoji: '🥤',
@@ -1102,6 +1148,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'drinks-alcohol',
+    portion: { unit: 'pcs', container: 'bottle', packs: [6], splits: [2] },
     opened: 5,
     de: 'Bier & Wein',
     emoji: '🍷',
@@ -1130,6 +1177,7 @@ export const CATEGORIES: readonly Category[] = [
   // Prepared
   def({
     id: 'prepared-ready-meals',
+    portion: { unit: 'pcs', splits: [2] },
     de: 'Fertiggerichte & Salate',
     emoji: '🥗',
     group: 'prepared',
@@ -1156,6 +1204,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'prepared-tofu',
+    portion: { unit: 'pcs', splits: [2] },
     opened: 3,
     de: 'Tofu & Fleischersatz',
     emoji: '🍲',
@@ -1176,6 +1225,7 @@ export const CATEGORIES: readonly Category[] = [
   // food for about one week and 9 litres of water per person, used up and replaced regularly)
   def({
     id: 'reserve-freeze-dried',
+    portion: { unit: 'pcs', container: 'bag', splits: [] },
     opened: 1,
     de: 'Gefriergetrocknete Mahlzeiten',
     emoji: '🏕️',
@@ -1202,6 +1252,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'reserve-rations',
+    portion: { unit: 'pcs', splits: [] },
     de: 'Notrationen & Feldverpflegung',
     emoji: '🎒',
     group: 'reserve',
@@ -1226,6 +1277,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'reserve-water',
+    portion: { unit: 'pcs', container: 'bottle', packs: [6], splits: [] },
     opened: 2,
     de: 'Trinkwasser-Vorrat',
     emoji: '💧',
@@ -1260,6 +1312,7 @@ export const CATEGORIES: readonly Category[] = [
   // Non-food
   def({
     id: 'nonfood-toilet-paper',
+    portion: { unit: 'pcs', splits: [] },
     de: 'WC-Papier & Haushaltspapier',
     emoji: '🧻',
     group: 'non_food',

@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { CATEGORIES } from '../src/catalog/categories';
-import { CategoryGroupSchema, CategorySchema } from '../src/catalog/category';
+import {
+  CategoryGroupSchema,
+  CategorySchema,
+  DEFAULT_PORTIONING,
+  PortioningSchema,
+  portioningOf,
+} from '../src/catalog/category';
 
 describe('CATEGORIES', () => {
   it('has every category pass the schema', () => {
@@ -70,5 +76,44 @@ describe('CATEGORIES', () => {
     for (const category of CATEGORIES.filter((c) => c.dateKind === 'use_by')) {
       expect(category.tips.de.join(' '), category.id).not.toMatch(/probieren/);
     }
+  });
+});
+
+describe('portioning', () => {
+  const byId = (id: string) => {
+    const category = CATEGORIES.find((c) => c.id === id);
+    if (category === undefined) {
+      throw new Error(id);
+    }
+    return portioningOf(category);
+  };
+
+  it('counts eggs in boxes of 6 or 10 and never splits them', () => {
+    expect(byId('dairy-eggs')).toEqual({
+      unit: 'pcs',
+      container: 'box',
+      packs: [6, 10],
+      splits: [],
+    });
+  });
+
+  it('counts bananas and yoghurt cups, cuts cake in eighths and hard cheese in thirds', () => {
+    expect(byId('produce-bananas').unit).toBe('pcs');
+    expect(byId('dairy-yoghurt')).toMatchObject({ unit: 'pcs', container: 'cup' });
+    expect(byId('bakery-pastry').splits).toContain(8);
+    expect(byId('dairy-cheese-hard')).toMatchObject({ unit: 'g', splits: [3, 4] });
+  });
+
+  it('measures loose staples in grams or millilitres', () => {
+    expect(byId('pantry-rice').unit).toBe('g');
+    expect(byId('dairy-milk').unit).toBe('ml');
+  });
+
+  it('falls back to pieces in quarters', () => {
+    expect(byId('pantry-other')).toEqual(DEFAULT_PORTIONING);
+  });
+
+  it('rejects pack sizes for amounts', () => {
+    expect(PortioningSchema.safeParse({ unit: 'g', packs: [6], splits: [] }).success).toBe(false);
   });
 });
