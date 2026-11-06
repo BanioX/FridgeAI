@@ -142,7 +142,7 @@ export function InventoryPage() {
       </div>
 
       <Link
-        to="/inventory/new"
+        to={`/inventory/new?location=${selected}`}
         className="fixed right-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-10 inline-flex min-h-12 items-center gap-2 rounded-full bg-basil-700 px-5 font-semibold text-white shadow-lg transition-colors hover:bg-basil-800 active:bg-basil-900"
       >
         <Plus size={20} aria-hidden="true" />

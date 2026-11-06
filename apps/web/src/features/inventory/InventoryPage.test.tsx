@@ -48,7 +48,7 @@ describe('InventoryPage', () => {
     expect(fridge.textContent).toContain('1');
     expect(screen.getByRole('tabpanel')).toBeDefined();
     expect(screen.getByRole('link', { name: messages.inventory.add }).getAttribute('href')).toBe(
-      '/inventory/new',
+      '/inventory/new?location=fridge',
     );
   });
 
