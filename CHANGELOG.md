@@ -2,6 +2,35 @@
 
 Alle Änderungen an FridgeAI, neueste zuerst. Wird mit `pnpm release` erzeugt (ADR-0017).
 
+## [0.3.0] – 2026-11-06
+
+**Bereit für den Pilot.** Einkaufsliste mit «Du hast noch …»; Packungsbilder von Open Food Facts in Listen und Detailansicht, auf dem Gerät gemerkt; schärferer Barcode-Scan (Hauptkamera, Zoom, Rahmen, Foto aus der Galerie); Artikel bearbeiten (auch Name, Kategorie und Ort) und löschen mit Rückgängig; «Haushalt» mit Installationshinweis, Export als JSON oder CSV, «Alles löschen» und Datenschutz in klaren Worten; Apple-Schrift und grosse Titel; App-Icons; der Browser wird gebeten, die Daten zu behalten. Nach einem Update lädt die App einmal neu statt einen Fehler zu zeigen, und die feste Adresse enthält keine Demo-Daten mehr.
+
+### Neu
+
+- «Bearbeiten» with name, category and place; «Artikel löschen» with undo ([#73](https://github.com/BanioX/FridgeAI/pull/73))
+- delete a wrong item and correct name, category and place (contract) ([#72](https://github.com/BanioX/FridgeAI/pull/72))
+- ask the browser to keep the local data (persistent storage) ([#68](https://github.com/BanioX/FridgeAI/pull/68))
+- home screen icons for iPhone and Android ([#67](https://github.com/BanioX/FridgeAI/pull/67))
+- Apple typography – system font, large titles, no brand bar (ADR-0021) ([#66](https://github.com/BanioX/FridgeAI/pull/66))
+- «Haushalt» – install hint, export JSON/CSV, delete everything, privacy (12a) ([#65](https://github.com/BanioX/FridgeAI/pull/65))
+- export and delete all household data on the device (12a, ADR-0020) ([#64](https://github.com/BanioX/FridgeAI/pull/64))
+- pack pictures in the lists and on the detail page (10b) ([#63](https://github.com/BanioX/FridgeAI/pull/63))
+- keep the pack picture from Open Food Facts on the device (10b, data) ([#62](https://github.com/BanioX/FridgeAI/pull/62))
+- «Einkaufsliste» – add, hint at food at home, check off, into the inventory (11a) ([#59](https://github.com/BanioX/FridgeAI/pull/59))
+- shopping list on the device – add, check off, remove, «Du hast noch …» (11a) ([#57](https://github.com/BanioX/FridgeAI/pull/57))
+
+### Behoben
+
+- main on Cloudflare without demo data and styleguide, previews keep them ([#69](https://github.com/BanioX/FridgeAI/pull/69))
+- reload once into the new version instead of «Unexpected Application Error» ([#71](https://github.com/BanioX/FridgeAI/pull/71))
+- sharper barcode scans – main lens, 1920×1080, 2× zoom, frame, gallery photos ([#60](https://github.com/BanioX/FridgeAI/pull/60))
+
+### Dokumentation
+
+- pilot guide and README for the pilot ([#70](https://github.com/BanioX/FridgeAI/pull/70))
+- ideas folder, product priorities and ADRs for currencies, data retention and Apple design ([#61](https://github.com/BanioX/FridgeAI/pull/61))
+
 ## [0.2.0] – 2026-11-06
 
 **Korrigieren, verstehen, wiederfinden.** Rückgängig nach Gegessen, Weitergegeben oder Weggeworfen; Datum, Menge und Preis nachträglich ändern; «Deine Wirkung diesen Monat» auf der Startseite; Nährwerte, Nutri-Score und Allergene nach dem Scan (30 Tage offline gemerkt); Zahlen mit Dezimalpunkt wie bei Franken und Reste als Bruch («¾ Stk.»).
