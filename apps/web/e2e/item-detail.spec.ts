@@ -89,3 +89,38 @@ test('a free amount larger than what is left is refused', async ({ page }) => {
   await expect(page.getByText('Bitte eine Menge zwischen 0 und dem Rest angeben.')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Als gegessen speichern' })).toBeDisabled();
 });
+
+test('corrects date, date kind, quantity and value of an item', async ({ page }) => {
+  await page.goto('/inventory/new');
+  await page.getByLabel('Was ist es?').fill('Freilandeier');
+  await page.getByRole('button', { name: '10er' }).click();
+  await page.getByRole('button', { name: 'Speichern', exact: true }).click();
+  await page.getByRole('link', { name: /Freilandeier/ }).click();
+
+  await page.getByRole('link', { name: 'Datum, Menge oder Preis ändern' }).click();
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Freilandeier bearbeiten' }),
+  ).toBeVisible();
+  await expect(page.getByLabel(/Was noch da ist/)).toHaveValue('10');
+  const form = await new AxeBuilder({ page }).analyze();
+  expect(form.violations).toEqual([]);
+
+  await page.getByRole('button', { name: 'Änderungen speichern' }).click();
+  await expect(page.getByRole('status')).toHaveText('Nichts geändert.');
+
+  await page.getByLabel('Haltbar bis').fill('24.12.2027');
+  await choose(page, 'Zu verbrauchen');
+  await page.getByLabel(/Was noch da ist/).fill('6');
+  await page.getByLabel(/Wert in CHF/).fill('4.20');
+  await page.getByRole('button', { name: 'Änderungen speichern' }).click();
+
+  await expect(page.getByRole('heading', { level: 1, name: 'Freilandeier' })).toBeVisible();
+  await expect(page.getByText('6 Stk. · Kühlschrank')).toBeVisible();
+  await expect(page.getByText('Zu verbrauchen bis')).toBeVisible();
+  await expect(page.getByText(/24\. Dez\. 2027/)).toBeVisible();
+  await expect(page.getByText('(geschätzt)')).toHaveCount(0);
+
+  // «Back» goes to the list, not into the form again.
+  await page.goBack();
+  await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
+});
