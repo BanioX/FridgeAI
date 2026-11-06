@@ -24,3 +24,4 @@ export * from './scan/label';
 export * from './catalog/match';
 export * from './value';
 export * from './quantity';
+export * from './import/ai-import';
