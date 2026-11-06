@@ -1,0 +1,63 @@
+# Changelog
+
+Alle Änderungen an FridgeAI, neueste zuerst. Wird mit `pnpm release` erzeugt (ADR-0017).
+
+## [0.1.0] – 2026-11-06
+
+**Erstes Release: der manuelle Prototyp.** Erfassen von Hand, per Barcode (mit Produktdaten von Open Food Facts) oder mit deiner eigenen KI; «Heute retten», Vorrat mit Notvorrat, Detailansicht mit Gegessen, Weitergegeben und Weggeworfen in sinnvollen Portionen, Öffnungsregel, Einfrieren. Läuft offline als PWA, Vorschau-Links für jeden PR.
+
+### Neu
+
+- a scan fills in name, category and pack size (household first, then Open Food Facts) ([#42](https://github.com/BanioX/FridgeAI/pull/42))
+- products.lookup – household first, then Open Food Facts (ADR-0016) ([#40](https://github.com/BanioX/FridgeAI/pull/40))
+- barcode and QR scanning – camera, photo or typed number (step 10a, ADR-0014) ([#38](https://github.com/BanioX/FridgeAI/pull/38))
+- «Scannen» with your own AI – copy prompt, paste answer, review, take over ([#37](https://github.com/BanioX/FridgeAI/pull/37))
+- AI import – prompt and strict parser for the user's own AI (ADR-0012, step 5b) ([#36](https://github.com/BanioX/FridgeAI/pull/36))
+- item detail with eaten / thrown away / given away, opening and freezing (step 6) ([#34](https://github.com/BanioX/FridgeAI/pull/34))
+- building blocks for item actions (choice chips, portion labels, texts) ([#33](https://github.com/BanioX/FridgeAI/pull/33))
+- «Artikel erfassen» form (step 3d) ([#32](https://github.com/BanioX/FridgeAI/pull/32))
+- add-item helpers and texts (amount parsing, suggestions) ([#31](https://github.com/BanioX/FridgeAI/pull/31))
+- inventory.open, packaging on add, reasons and recipients on outcomes ([#30](https://github.com/BanioX/FridgeAI/pull/30))
+- category-aware portions (thirds, quarters, eighths, egg packs, pieces) ([#28](https://github.com/BanioX/FridgeAI/pull/28))
+- everyday quantities, portions, after-opening rule, waste reasons ([#25](https://github.com/BanioX/FridgeAI/pull/25))
+- «Heute retten» start page and Vorrat page with four tabs ([#24](https://github.com/BanioX/FridgeAI/pull/24))
+- inventory operations of contract v1 on IndexedDB ([#22](https://github.com/BanioX/FridgeAI/pull/22))
+- local IndexedDB storage, local household bootstrap, name matching ([#21](https://github.com/BanioX/FridgeAI/pull/21))
+- read expiry dates from label text for future label photos ([#20](https://github.com/BanioX/FridgeAI/pull/20))
+- contract v1 – commands, queries, domain events, JSON Schema export ([#19](https://github.com/BanioX/FridgeAI/pull/19))
+- DateField – quick choices, typing with auto dots, native calendar ([#18](https://github.com/BanioX/FridgeAI/pull/18))
+- ports for capturing, product data, recipes, partners, sync and notifications ([#17](https://github.com/BanioX/FridgeAI/pull/17))
+- Notvorrat as fourth storage location with decade-long dates ([#16](https://github.com/BanioX/FridgeAI/pull/16))
+- read GS1 codes with expiry dates – DataMatrix, Digital Link ([#15](https://github.com/BanioX/FridgeAI/pull/15))
+- Swiss dates, expiry status, category catalog and manual date entry ([#14](https://github.com/BanioX/FridgeAI/pull/14))
+- domain model schemas incl. expiry source and nutrition ([#13](https://github.com/BanioX/FridgeAI/pull/13))
+- Rappen money type, CHF parsing/formatting, allocation and UUIDv7 ([#10](https://github.com/BanioX/FridgeAI/pull/10))
+- UI primitives and development-only styleguide ([#8](https://github.com/BanioX/FridgeAI/pull/8))
+- green design system with tokens, self-hosted fonts and icons ([#7](https://github.com/BanioX/FridgeAI/pull/7))
+- React PWA shell with routing, Tailwind and Playwright smoke test ([#6](https://github.com/BanioX/FridgeAI/pull/6))
+
+### Behoben
+
+- address one person with «du», never «ihr»; record free-tools approval ([#29](https://github.com/BanioX/FridgeAI/pull/29))
+
+### Dokumentation
+
+- README as project guide, proprietary licence, licence check in CI (ADR-0015) ([#39](https://github.com/BanioX/FridgeAI/pull/39))
+- office fridge brainstorm (label instead of marker, fair disposal, team plans) ([#35](https://github.com/BanioX/FridgeAI/pull/35))
+- bring-your-own-AI for photo recognition (copy/paste import now, MCP later), ADR-0012 ([#26](https://github.com/BanioX/FridgeAI/pull/26))
+- architecture and scaling vision, i18n/backend/auth ADRs, new use cases ([#23](https://github.com/BanioX/FridgeAI/pull/23))
+- product and nutrition data sources (OFF, Open Food Repo, BLV, YAZIO) ([#11](https://github.com/BanioX/FridgeAI/pull/11))
+- MVP plan, brief, strategy summary, use cases and Claude setup ([#1](https://github.com/BanioX/FridgeAI/pull/1))
+
+### Wartung
+
+- release and maintenance rhythm – changelog, tags, GitHub Releases (ADR-0017) ([#41](https://github.com/BanioX/FridgeAI/pull/41))
+- Cloudflare preview links for every PR, production headers in E2E, ADR-0013 ([#27](https://github.com/BanioX/FridgeAI/pull/27))
+- install Playwright Chromium without apt dependencies ([#12](https://github.com/BanioX/FridgeAI/pull/12))
+- preview script for compact phone screenshots ([#9](https://github.com/BanioX/FridgeAI/pull/9))
+- PR template, ADR-0002 stack and tooling, documented commands ([#5](https://github.com/BanioX/FridgeAI/pull/5))
+- Bump actions/setup-node from 6 to 7 ([#4](https://github.com/BanioX/FridgeAI/pull/4))
+- Bump actions/checkout from 6 to 7 ([#3](https://github.com/BanioX/FridgeAI/pull/3))
+- pnpm monorepo, strict TypeScript, ESLint, Vitest and CI ([#2](https://github.com/BanioX/FridgeAI/pull/2))
+- Initial commit
+
