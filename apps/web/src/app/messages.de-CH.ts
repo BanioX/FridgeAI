@@ -285,12 +285,13 @@ export const messages = {
     start: 'Kamera starten',
     stop: 'Kamera stoppen',
     starting: 'Kamera startet …',
-    hint: 'Halte den Strich- oder QR-Code ruhig ins Bild.',
+    hint: 'Code in den Rahmen, Handy etwa 20 cm entfernt halten. Ist es unscharf: etwas weiter weg.',
+    torch: 'Licht',
     denied:
       'Die Kamera ist blockiert. Erlaube sie in den Einstellungen deines Browsers, oder nimm ein Foto bzw. tipp die Nummer ein.',
     unavailable:
       'Auf diesem Gerät gibt es keine Kamera für die App. Nimm ein Foto oder tipp die Nummer ein.',
-    photo: 'Foto vom Code wählen',
+    photo: 'Code aus Foto lesen',
     noCode: 'Auf dem Foto hat FridgeAI keinen Code gefunden. Versuch es näher und schärfer.',
     manual: 'Nummer unter dem Strichcode',
     manualSubmit: 'Übernehmen',
