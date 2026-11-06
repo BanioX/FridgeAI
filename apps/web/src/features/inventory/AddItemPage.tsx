@@ -1,0 +1,375 @@
+import {
+  CATEGORIES,
+  categoryById,
+  ContainerSchema,
+  fallbackCategory,
+  matchCategoryByName,
+  parseChf,
+  portioningOf,
+  shelfLifeAt,
+  StorageLocationSchema,
+  toBaseQuantity,
+  type Container,
+  type InputUnit,
+  type LocalDate,
+  type StorageLocation,
+} from '@fridgeai/core';
+import { useId, useRef, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router';
+import { useAppData } from '../../app/AppData';
+import { messages } from '../../app/messages.de-CH';
+import { Button } from '../../ui/Button';
+import { DateField } from '../../ui/DateField';
+import {
+  formatAmount,
+  INPUT_UNITS,
+  parseAmount,
+  suggestedAmount,
+  suggestedExpiry,
+} from './add-item';
+import { locationOrder } from './item-meta';
+
+const t = messages.addItem;
+const sortedCategories = [...CATEGORIES].sort((a, b) => a.name.de.localeCompare(b.name.de, 'de'));
+const fieldClass = (invalid: boolean, width = 'w-full') =>
+  `min-h-12 ${width} rounded-xl border bg-surface px-4 text-lg outline-none focus:border-basil-600 ${
+    invalid ? 'border-today' : 'border-line'
+  }`;
+
+/**
+ * «Artikel erfassen» (step 3d): the name suggests the category, which suggests location, unit,
+ * amount and expiry date. Everything stays editable; nothing needs more than the name.
+ */
+export function AddItemPage() {
+  const { householdId, ids, inventory, today } = useAppData();
+  const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const id = useId();
+  const fromTab = StorageLocationSchema.safeParse(params.get('location'));
+  const nameInput = useRef<HTMLInputElement>(null);
+
+  // `null` means «use the suggestion», so suggestions follow the name until the person decides.
+  const [name, setName] = useState('');
+  const [categoryChoice, setCategoryChoice] = useState<string | null>(null);
+  const [locationChoice, setLocationChoice] = useState<StorageLocation | null>(
+    fromTab.success ? fromTab.data : null,
+  );
+  const [amountText, setAmountText] = useState<string | null>(null);
+  const [unitChoice, setUnitChoice] = useState<InputUnit | null>(null);
+  const [containerChoice, setContainerChoice] = useState<Container | '' | null>(null);
+  const [dateChoice, setDateChoice] = useState<{ value: LocalDate | null } | null>(null);
+  const [priceText, setPriceText] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [status, setStatus] = useState('');
+  const [round, setRound] = useState(0);
+
+  const category =
+    (categoryChoice === null ? undefined : categoryById(categoryChoice)) ??
+    matchCategoryByName(name) ??
+    fallbackCategory();
+  const portioning = portioningOf(category);
+  const location = locationChoice ?? category.defaultLocation;
+  const suggestion = suggestedAmount(category);
+  const unit = unitChoice ?? suggestion.unit;
+  const amountValue = amountText ?? formatAmount(suggestion.amount);
+  const container = containerChoice ?? portioning.container ?? '';
+  const expiresOn =
+    dateChoice === null ? suggestedExpiry(category, location, today) : dateChoice.value;
+  const amount = parseAmount(amountValue);
+  const price = priceText.trim() === '' ? undefined : parseChf(priceText);
+
+  const errors = {
+    name: name.trim() === '' ? t.nameMissing : null,
+    amount: amount === null ? t.amountInvalid : null,
+    date: expiresOn === null ? t.dateMissing : null,
+    price: price === null || (price !== undefined && price < 0) ? t.priceInvalid : null,
+  };
+  const shown = (error: string | null) => (submitted ? error : null);
+
+  async function save(next: boolean) {
+    setSubmitted(true);
+    setStatus('');
+    if (saving || amount === null || expiresOn === null || price === null) {
+      return;
+    }
+    if (Object.values(errors).some((error) => error !== null)) {
+      return;
+    }
+    setSaving(true);
+    try {
+      const base = toBaseQuantity(amount, unit);
+      await inventory['inventory.addItem']({
+        commandId: ids.next(),
+        householdId,
+        name: name.trim(),
+        categoryId: category.id,
+        location,
+        quantity: base.quantity,
+        unit: base.unit,
+        ...(base.unit === 'pcs' && container !== '' ? { container } : {}),
+        // Without a chosen date the handler estimates the same date the form showed.
+        ...(dateChoice === null ? {} : { expiresOn }),
+        ...(price === undefined ? {} : { priceRappen: price }),
+      });
+      if (!next) {
+        void navigate(`/inventory?location=${location}`);
+        return;
+      }
+      setStatus(t.saved(name.trim()));
+      setName('');
+      setCategoryChoice(null);
+      setAmountText(null);
+      setUnitChoice(null);
+      setContainerChoice(null);
+      setDateChoice(null);
+      setPriceText('');
+      setSubmitted(false);
+      setRound((value) => value + 1);
+      nameInput.current?.focus();
+    } catch {
+      setStatus(t.failed);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="space-y-6 pb-8">
+      <h1 className="font-display text-3xl font-semibold tracking-tight">
+        {messages.pages.addItem}
+      </h1>
+
+      <form
+        noValidate
+        className="space-y-6"
+        onSubmit={(event) => {
+          event.preventDefault();
+          void save(false);
+        }}
+      >
+        <div className="space-y-1.5">
+          <label htmlFor={`${id}-name`} className="font-semibold">
+            {t.name}
+          </label>
+          <input
+            id={`${id}-name`}
+            ref={nameInput}
+            value={name}
+            onChange={(event) => {
+              setName(event.target.value);
+            }}
+            placeholder={t.namePlaceholder}
+            autoComplete="off"
+            autoCapitalize="sentences"
+            enterKeyHint="done"
+            aria-invalid={shown(errors.name) !== null}
+            aria-describedby={`${id}-name-error`}
+            className={fieldClass(shown(errors.name) !== null)}
+          />
+          <p id={`${id}-name-error`} className="text-sm text-today">
+            {shown(errors.name)}
+          </p>
+        </div>
+
+        <div className="space-y-1.5">
+          <label htmlFor={`${id}-category`} className="font-semibold">
+            {t.category}
+          </label>
+          <div className="flex items-center gap-3">
+            <span aria-hidden="true" className="text-3xl">
+              {category.emoji}
+            </span>
+            <select
+              id={`${id}-category`}
+              value={category.id}
+              onChange={(event) => {
+                setCategoryChoice(event.target.value);
+              }}
+              className={fieldClass(false)}
+            >
+              {sortedCategories.map((option) => (
+                <option key={option.id} value={option.id}>
+                  {option.name.de}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <fieldset className="space-y-1.5">
+          <legend className="font-semibold">{t.location}</legend>
+          <div className="grid grid-cols-4 gap-1 rounded-2xl bg-surface-muted p-1">
+            {locationOrder.map((option) => (
+              <label
+                key={option}
+                className={`flex min-h-12 cursor-pointer items-center justify-center rounded-xl px-1 text-center text-sm transition-colors has-focus-visible:outline-2 has-focus-visible:outline-basil-600 ${
+                  option === location
+                    ? 'bg-surface font-semibold text-basil-800 shadow-card'
+                    : 'font-medium text-ink-muted'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name={`${id}-location`}
+                  value={option}
+                  checked={option === location}
+                  onChange={() => {
+                    setLocationChoice(option);
+                  }}
+                  className="sr-only"
+                />
+                {messages.locations[option]}
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <div className="space-y-1.5">
+          <label htmlFor={`${id}-amount`} className="font-semibold">
+            {t.amount}
+          </label>
+          <div className="flex gap-2">
+            <input
+              id={`${id}-amount`}
+              value={amountValue}
+              onChange={(event) => {
+                setAmountText(event.target.value);
+              }}
+              inputMode="decimal"
+              autoComplete="off"
+              aria-invalid={shown(errors.amount) !== null}
+              aria-describedby={`${id}-amount-error`}
+              className={`${fieldClass(shown(errors.amount) !== null, 'min-w-0 flex-1')} tabular-nums`}
+            />
+            <select
+              aria-label={t.unit}
+              value={unit}
+              onChange={(event) => {
+                const chosen = INPUT_UNITS.find((option) => option === event.target.value);
+                setUnitChoice(chosen ?? null);
+              }}
+              className={fieldClass(false, 'w-32 shrink-0')}
+            >
+              {INPUT_UNITS.map((option) => (
+                <option key={option} value={option}>
+                  {messages.inputUnits[option]}
+                </option>
+              ))}
+            </select>
+          </div>
+          <p id={`${id}-amount-error`} className="text-sm text-today">
+            {shown(errors.amount)}
+          </p>
+          {portioning.packs === undefined ? null : (
+            <div role="group" aria-label={t.packsLabel} className="flex flex-wrap gap-2">
+              {portioning.packs.map((count) => {
+                const selected = unit === 'pcs' && amount === count;
+                return (
+                  <button
+                    key={count}
+                    type="button"
+                    aria-pressed={selected}
+                    onClick={() => {
+                      setAmountText(String(count));
+                      setUnitChoice('pcs');
+                    }}
+                    className={`min-h-10 rounded-full border px-4 text-sm font-semibold transition-colors ${
+                      selected
+                        ? 'border-basil-700 bg-basil-700 text-white'
+                        : 'border-line bg-surface text-ink hover:bg-surface-muted'
+                    }`}
+                  >
+                    {t.pack(count)}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {unit === 'pcs' ? (
+          <div className="space-y-1.5">
+            <label htmlFor={`${id}-container`} className="font-semibold">
+              {t.container}
+            </label>
+            <select
+              id={`${id}-container`}
+              value={container}
+              onChange={(event) => {
+                const parsed = ContainerSchema.safeParse(event.target.value);
+                setContainerChoice(parsed.success ? parsed.data : '');
+              }}
+              className={fieldClass(false)}
+            >
+              <option value="">{t.noContainer}</option>
+              {ContainerSchema.options.map((option) => (
+                <option key={option} value={option}>
+                  {messages.containers[option]}
+                </option>
+              ))}
+            </select>
+          </div>
+        ) : null}
+
+        <div className="space-y-1.5">
+          <DateField
+            key={round}
+            label={t.expiry}
+            value={expiresOn}
+            onChange={(value) => {
+              setDateChoice({ value });
+            }}
+            today={today}
+            location={location}
+            typicalShelfLifeDays={shelfLifeAt(category, location)}
+            estimated={dateChoice === null}
+          />
+          <p className="text-sm text-today">{shown(errors.date)}</p>
+        </div>
+
+        <div className="space-y-1.5">
+          <label htmlFor={`${id}-price`} className="font-semibold">
+            {t.price}
+          </label>
+          <input
+            id={`${id}-price`}
+            value={priceText}
+            onChange={(event) => {
+              setPriceText(event.target.value);
+            }}
+            inputMode="decimal"
+            autoComplete="off"
+            placeholder={t.pricePlaceholder}
+            aria-invalid={shown(errors.price) !== null}
+            aria-describedby={`${id}-price-error`}
+            className={`${fieldClass(shown(errors.price) !== null)} tabular-nums`}
+          />
+          <p id={`${id}-price-error`} className="text-sm text-today">
+            {shown(errors.price)}
+          </p>
+        </div>
+
+        <p role="status" className="font-semibold text-basil-800">
+          {status}
+        </p>
+
+        <div className="space-y-2">
+          <Button type="submit" fullWidth disabled={saving}>
+            {t.save}
+          </Button>
+          <Button
+            variant="secondary"
+            fullWidth
+            disabled={saving}
+            onClick={() => {
+              void save(true);
+            }}
+          >
+            {t.saveAndNext}
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
+}
