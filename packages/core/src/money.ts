@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { groupThousands } from './format';
 
 /**
  * Money in FridgeAI is always an integer number of Rappen (1 CHF = 100 Rappen).
@@ -73,11 +74,6 @@ export function parseChf(input: string): Rappen | null {
     return null;
   }
   return rappen(negative && total !== 0 ? -total : total);
-}
-
-/** Groups the integer part with the Swiss thousands separator (’). */
-function groupThousands(digits: string): string {
-  return digits.replace(/\B(?=(\d{3})+(?!\d))/g, '’');
 }
 
 /**
