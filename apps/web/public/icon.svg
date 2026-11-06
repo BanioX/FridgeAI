@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="FridgeAI">
+  <rect width="512" height="512" rx="112" fill="#15803d" />
+  <rect x="152" y="72" width="208" height="368" rx="32" fill="#ffffff" />
+  <rect x="172" y="92" width="168" height="328" rx="20" fill="#dcfce7" />
+  <line x1="172" y1="196" x2="340" y2="196" stroke="#15803d" stroke-width="12" stroke-linecap="round" />
+  <rect x="190" y="124" width="12" height="52" rx="6" fill="#15803d" />
+  <rect x="190" y="236" width="12" height="84" rx="6" fill="#15803d" />
+</svg>
