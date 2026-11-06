@@ -130,7 +130,7 @@ describe('ingredientsAtHome', () => {
       food('Spinat', 'produce-salad', '2026-11-03', 'use_by'),
     ];
     expect(ingredientsAtHome(omelette, atHome, today)).toEqual([
-      { text: 'Eier', staple: false, optional: false, atHome: ['Eier'] },
+      { text: 'Eier', staple: false, optional: false, atHome: [atHome[0]] },
       { text: 'Spinat', staple: false, optional: false, atHome: [] },
       { text: 'Käse', staple: false, optional: true, atHome: [] },
       { text: 'Salz', staple: true, optional: false, atHome: [] },

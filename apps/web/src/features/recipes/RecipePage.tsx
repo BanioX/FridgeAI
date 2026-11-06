@@ -6,6 +6,8 @@ import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
 import { Button } from '../../ui/Button';
 import { GroupedList, GroupedListItem } from '../../ui/GroupedList';
+import { CookedBooking } from './CookedBooking';
+import { usedFood } from './cooked';
 
 const t = messages.recipes;
 
@@ -82,7 +84,7 @@ export function RecipePage() {
           {recipe.ingredients.map((ingredient) => {
             const there = ingredient.atHome.length > 0;
             const note = there
-              ? t.atHome(ingredient.atHome.join(', '))
+              ? t.atHome([...new Set(ingredient.atHome.map((food) => food.name))].join(', '))
               : ingredient.staple
                 ? t.staple
                 : ingredient.optional
@@ -138,6 +140,8 @@ export function RecipePage() {
           ))}
         </ol>
       </section>
+
+      <CookedBooking food={usedFood(recipe.ingredients)} />
     </div>
   );
 }

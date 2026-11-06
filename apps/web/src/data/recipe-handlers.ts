@@ -3,12 +3,11 @@ import {
   ingredientsAtHome,
   RECIPES,
   suggestRecipes,
-  type FoodAtHome,
   type Id,
   type RecipeProvider,
 } from '@fridgeai/core';
 import type { Handler, HandlerContext } from './command';
-import { toFoodAtHome } from './food-at-home';
+import { toFoodAtHome, type ItemAtHome } from './food-at-home';
 
 /** The curated collection that ships with the app (plan 11b); no server, no costs. */
 export const localRecipes: RecipeProvider = { recipes: () => Promise.resolve(RECIPES) };
@@ -20,7 +19,7 @@ export const localRecipes: RecipeProvider = { recipes: () => Promise.resolve(REC
 export function createRecipeHandlers(ctx: HandlerContext, provider: RecipeProvider = localRecipes) {
   const { db, clock } = ctx;
 
-  async function foodAtHome(householdId: Id): Promise<FoodAtHome[]> {
+  async function foodAtHome(householdId: Id): Promise<ItemAtHome[]> {
     const [items, products] = await Promise.all([
       db.items.where('[householdId+status]').equals([householdId, 'active']).toArray(),
       db.products.where('householdId').equals(householdId).toArray(),
@@ -48,7 +47,20 @@ export function createRecipeHandlers(ctx: HandlerContext, provider: RecipeProvid
         minutes: recipe.minutes,
         servings: recipe.servings,
         tags: recipe.tags,
-        ingredients: ingredientsAtHome(recipe, food, clock.today()),
+        ingredients: ingredientsAtHome(recipe, food, clock.today()).map((ingredient) => ({
+          ...ingredient,
+          // Exactly the contract's fields: nothing internal leaks into API or MCP answers.
+          atHome: ingredient.atHome.map(
+            ({ itemId, name, quantity, unit, expiresOn, expiryKind }) => ({
+              itemId,
+              name,
+              quantity,
+              unit,
+              expiresOn,
+              expiryKind,
+            }),
+          ),
+        })),
         steps: recipe.steps,
       },
     };

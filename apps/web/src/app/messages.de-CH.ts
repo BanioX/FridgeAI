@@ -137,6 +137,24 @@ export const messages = {
         ? '1 Zutat ist auf der Einkaufsliste.'
         : `${String(count)} Zutaten sind auf der Einkaufsliste.`,
     steps: 'So geht’s',
+    cooked: {
+      title: 'Gekocht?',
+      text: 'Buche ab, was du dafür gebraucht hast. So stimmt dein Vorrat.',
+      start: 'Zutaten abbuchen',
+      all: 'Alles',
+      half: 'Halb',
+      none: 'Nichts',
+      book: 'Abbuchen',
+      cancel: 'Abbrechen',
+      booked: (count: number) =>
+        count === 0
+          ? 'Nichts abgebucht.'
+          : count === 1
+            ? '1 Zutat als gegessen abgebucht.'
+            : `${String(count)} Zutaten als gegessen abgebucht.`,
+      undone: 'Rückgängig gemacht, alles ist wieder im Vorrat.',
+      failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
+    },
     failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
   },
   inventory: {
