@@ -175,3 +175,24 @@ export function expiryPresets(
     return { unit, amount, date };
   });
 }
+
+/**
+ * Opening a pack (ADR-0011): from today, «after opening within N days» applies. The effective date
+ * is the earlier of the current date and today + N. N comes from the label (item) or the category;
+ * without either, opening changes nothing. The previous date is kept to allow undo.
+ */
+export function expiryAfterOpening(params: {
+  expiresOn: LocalDate;
+  today: LocalDate;
+  itemAfterOpeningDays?: number;
+  categoryAfterOpeningDays?: number;
+}): { expiresOn: LocalDate; shortened: boolean } {
+  const days = params.itemAfterOpeningDays ?? params.categoryAfterOpeningDays;
+  if (days === undefined) {
+    return { expiresOn: params.expiresOn, shortened: false };
+  }
+  const afterOpening = addDays(params.today, days);
+  return afterOpening < params.expiresOn
+    ? { expiresOn: afterOpening, shortened: true }
+    : { expiresOn: params.expiresOn, shortened: false };
+}
