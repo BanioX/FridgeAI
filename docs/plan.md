@@ -1,7 +1,7 @@
 # FridgeAI – MVP-Plan
 
 > **Status: freigegeben durch Alban am 6. November 2026** («Du machst das, du bist die volle Pipeline. Ich sage, was wir machen, ausführen tust du.»).
-> Grundlagen: [`brief.md`](./brief.md) (Build-Brief), [`blue-ocean.md`](./blue-ocean.md) (Strategie), [`use-cases.md`](./use-cases.md) (Brainstorming). Offene Fragen: Abschnitt 9.
+> Grundlagen: [`brief.md`](./brief.md) (Build-Brief), [`blue-ocean.md`](./blue-ocean.md) (Strategie), [`use-cases.md`](./use-cases.md) (Brainstorming), [`architecture.md`](./architecture.md) (Architektur und Skalierung). Offene Fragen: Abschnitt 9.
 >
 > **Neu in v2:** Plattform-Fähigkeit für API und MCP (Abschnitt 2), Push-Benachrichtigungen früher (Schritt 8), Dashboards in den Schritten 3 und 6, kleine MVP+-Ergänzungen aus den Use Cases, neue Fragen 11 bis 14.
 
@@ -155,6 +155,8 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 - 2e: **Vertrag v1**: Command-/Query-Registry mit Zod-Ein-/Ausgabe, Domain Events, `commandId`; Test, der aus dem Vertrag JSON Schema erzeugt (Beweis für spätere OpenAPI/MCP-Tauglichkeit); ADR-0005 (Contract-first, API/MCP) — umgesetzt: 10 Operationen, 11 Event-Typen
 - 2f: **GS1-Codes lesen** (ADR-0006): EAN/UPC, GS1 DataMatrix und GS1 Digital Link (QR) mit Ablaufdatum (AI 17/15), Charge, Gewicht; vorausschauend für «GS1 Sunrise 2027»
 - 2h: **Notvorrat** als vierter Lagerort (ADR-0007): Haltbarkeit bis 100 Jahre, Warnung 90 Tage vorher, Schnellwahl passend zum Zeithorizont (`expiryPresets`), Monats-/Jahresrechnung, Kategorien für gefriergetrocknete Mahlzeiten, Notrationen und Trinkwasser
+- 2i: **Scan-Sitzung** für die Modi «Schnell» (erster sicherer Barcode) und «Gründlich» (Packung langsam drehen, bis Barcode und Ablaufdatum über mehrere Bilder bestätigt sind)
+- 2j: **Öffnungsregel:** `openedOn` und «nach dem Öffnen innert N Tagen» pro Kategorie oder vom Etikett; gültig ist das frühere Datum
 - 2g: Ablaufdatum aus Etikett-Text erkennen («zu verbrauchen bis», «mindestens haltbar bis», FR/IT) als Grundlage für «Datum fotografieren» (v1)
 - **Delegation:** O für Modell, Geld, Ports und Vertrag. S entwirft den Kategorien-Katalog, ich prüfe ihn (besonders Verbrauchsdatum-Kategorien). H für Tabellentests.
 - **Tests:** ≥ 95 % Abdeckung, Property-Tests für Rappen.
@@ -188,7 +190,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 
 #### Schritt 6 – Abschliessen, Wirkungs-Dashboard, Kühlschrank-Check (US-06, US-20, US-22)
 - 6a: `core/metrics`: gerettet/weggeworfen in CHF und kg pro Person und Haushalt, Schätzwerte klar markiert
-- 6b: Aktionen gegessen/weitergegeben/weggeworfen, ganz oder teilweise, Rückgängig
+- 6b: Aktionen gegessen/weitergegeben/weggeworfen, ganz oder teilweise: **Anteile ¼ · ½ · ¾ · alles** bei Gramm, Milliliter und einzelnen Stücken, **«1 von 4»** bei Packungen mit mehreren Stück; «Geöffnet» setzt die Öffnungsregel; Rückgängig
 - 6c: **Wirkungs-Dashboard** (D-01, D-02): Woche/Monat, Trend, pro Person, Vergleich mit dem Schweizer Durchschnitt (D-03); **Kühlschrank-Check** (UC-04)
 - **Delegation:** O für 6a, S für 6b und 6c.
 
@@ -201,7 +203,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 #### Schritt 7 – Konto, Haushalt & Sync (US-09, US-15, US-17, US-18)
 *Voraussetzung: Fragen 1 bis 3 beantwortet.*
 - 7a: ADR Sync (HLC, Feld-LWW, Outbox, Pull mit Cursor, Soft-Delete) und Implementierung in `core` mit Konflikt-Tests
-- 7b: Backend-Schema inkl. Event-Log und `Grant`-Tabelle, Row-Level-Security «nur eigener Haushalt», Auth (Frage 2); Infrastruktur als Code, keine Secrets
+- 7b: **Backend nach ADR-0009** (Hono + PostgreSQL in Docker wie HUB-042): Schema inkl. Event-Log und `Grant`-Tabelle, Row-Level-Security «nur eigener Haushalt», Magic Link; `docker-compose.yml`, Seed-Skript für Testnutzer; Infrastruktur als Code, keine Secrets
 - 7c: `SyncAdapter` im Web, Hintergrund-Sync, Offline-Warteschlange, «Zuletzt synchronisiert»
 - 7d: Haushalt erstellen, Einladung per Link/Code (kurz, ablaufend, widerrufbar), Beitritt mit «Vorrat mitnehmen?», Rollen, Verlassen
 - 7e: Besitz pro Artikel, Filter «Meins / Geteilt / Alle»; E2E mit zwei Browser-Kontexten
@@ -227,7 +229,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 ### Meilenstein D – Basis komplett
 
 #### Schritt 10 – Barcode & Händler-Import (US-02, US-03)
-- 10a: Barcode-Adapter (nativer `BarcodeDetector`, sonst `@zxing/browser`) für EAN-13/EAN-8/UPC **und GS1 DataMatrix / QR (Digital Link)**; enthält der Code ein Ablaufdatum, wird es automatisch übernommen (`expirySource: gs1_code`); nutzt den Kamera-Adapter aus 5a
+- 10a: Barcode-Adapter (nativer `BarcodeDetector`, sonst `@zxing/browser`) für EAN-13/EAN-8/UPC **und GS1 DataMatrix / QR (Digital Link)**; **Scan-Modi «Schnell» und «Gründlich»** (wählbar, Fortschritt «Barcode ✓ · Datum …», Haptik bei Treffern); enthält der Code ein Ablaufdatum, wird es automatisch übernommen (`expirySource: gs1_code`); nutzt den Kamera-Adapter aus 5a
 - 10b: `ProductCatalog`-Adapter für Open Food Facts mit lokalem Cache; übernimmt **Name, Marke, Packungsgrösse, Nährwerte, Kalorien, Nutri-Score und Allergene** und zeigt sie auf der Produktseite (kein Kalorien-Tagebuch); manuelle Erfassung bei keinem Treffer, «Schon im Vorrat: 2 Stk.», Quellenangabe gemäss OFF-Lizenz (ODbL); optional Open Food Repo (EPFL) als zweite Quelle für Schweizer Produkte, falls API und Bedingungen bestätigt sind (siehe [`data-sources.md`](./data-sources.md))
 - 10c: Migros-CSV-Parser (papaparse) + Fixtures
 - 10d: Coop-PDF-Textextraktion (pdfjs-dist, selbst gehostet) + Parser + Fixtures
@@ -264,6 +266,10 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 - Native Apps mit Capacitor (lokale Benachrichtigungen ohne Server, App-Store-Präsenz)
 - Bezahl-Abo, Haushalts-Challenges, «Darf ich?»-Anfrage, Allergene-Filter, Französisch
 - Optional serverseitiges OCR/LLM (Opt-in)
+- **Kühlschrank-Foto «wie Google Lens»:** Erkennen, bestätigen, mit dem Vorrat abgleichen (Port `FridgePhotoRecognizer`; Server-KI nur mit Einwilligung, siehe `architecture.md` 5.1)
+- **Native Apps (Capacitor):** iOS-/Android-Widgets «Heute retten», Kurzbefehle/Siri/Action-Button (App Intents), Haptik
+- **Übersetzungen** FR, IT, EN (ADR-0008)
+- **Kreise:** Rette-Kreis über den Haushalt hinaus (Haus, Nachbarschaft, Kollektiv), siehe `architecture.md` Abschnitt 6
 - **«Datum fotografieren»:** OCR auf dem Gerät liest das Ablaufdatum vom Etikett (`expirySource: label_ocr`, Logik aus 2g)
 - Nährwerte pro Kategorie aus der Schweizer Nährwertdatenbank (BLV, offen, lokal mitgeliefert); YAZIO nur über eine Partnerschaft (siehe [`data-sources.md`](./data-sources.md))
 
@@ -306,6 +312,7 @@ Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ic
    - A) **Supabase, verwaltet, Region Zürich** (laut Supabase-Regionsliste `eu-central-2`; prüfe ich vor dem Setup). Postgres, Auth, Row-Level-Security und Realtime aus einer Hand. Haken: Supabase ist ein US-Unternehmen (Auftragsbearbeitungsvertrag, US CLOUD Act als Restrisiko).
    - B) **Selbst betrieben bei einem Schweizer Anbieter** (Postgres plus kleine API). Volle Datenhoheit, aber Betrieb, Backups und Updates liegen bei uns.
    - *Empfehlung:* A für MVP und Pilot. Alles läuft hinter dem `SyncAdapter`, ein späterer Wechsel zu B ist möglich. Die PWA selbst ebenfalls in der Schweiz hosten.
+   - **Update 6.11.2026:** Alban wünscht Docker/Cloudflare nach dem Muster von HUB-042. Neuer Vorschlag: **B als selbst betriebener Docker-Stack** (Hono + PostgreSQL, ADR-0009) auf Oracle Cloud Always Free (Zürich) oder Albans Server; offen ist nur noch das Hosting-Ziel und eine Domain.
 2. **Auth-Methode** – *Empfehlung:* Magic Link per E-Mail im MVP. Passkeys in v1, Apple/Google-Login mit den nativen Apps. Für API/MCP später OAuth.
 3. **Daten, die das Gerät verlassen** (neben dem Sync selbst)
    - a) **Open Food Facts:** Barcode-Nummer und IP-Adresse gehen an Open Food Facts (Frankreich). *Empfehlung:* erlaubt, mit Hinweis beim ersten Scan und Schalter in den Einstellungen.
