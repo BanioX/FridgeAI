@@ -1,10 +1,6 @@
 import { CONTRACT_VERSION } from '@fridgeai/core';
 import { createBrowserRouter, type RouteObject } from 'react-router';
 import { PlaceholderPage } from '../features/placeholder/PlaceholderPage';
-import { AiImportPage } from '../features/import/AiImportPage';
-import { AddItemPage } from '../features/inventory/AddItemPage';
-import { InventoryPage } from '../features/inventory/InventoryPage';
-import { ItemDetailPage } from '../features/inventory/ItemDetailPage';
 import { TodayPage } from '../features/today/TodayPage';
 import { AppShell } from './AppShell';
 import { messages } from './messages.de-CH';
@@ -24,11 +20,33 @@ export const routes: RouteObject[] = [
     path: '/',
     element: <AppShell />,
     children: [
+      // The start page loads with the app; every other page is its own chunk, fetched on first
+      // visit and precached by the service worker for offline use.
       { index: true, element: <TodayPage /> },
-      { path: 'inventory', element: <InventoryPage /> },
-      { path: 'inventory/new', element: <AddItemPage /> },
-      { path: 'inventory/:itemId', element: <ItemDetailPage /> },
-      { path: 'scan', element: <AiImportPage /> },
+      {
+        path: 'inventory',
+        lazy: async () => ({
+          Component: (await import('../features/inventory/InventoryPage')).InventoryPage,
+        }),
+      },
+      {
+        path: 'inventory/new',
+        lazy: async () => ({
+          Component: (await import('../features/inventory/AddItemPage')).AddItemPage,
+        }),
+      },
+      {
+        path: 'inventory/:itemId',
+        lazy: async () => ({
+          Component: (await import('../features/inventory/ItemDetailPage')).ItemDetailPage,
+        }),
+      },
+      {
+        path: 'scan',
+        lazy: async () => ({
+          Component: (await import('../features/import/AiImportPage')).AiImportPage,
+        }),
+      },
       { path: 'shopping', element: <PlaceholderPage title={messages.pages.shopping} /> },
       { path: 'household', element: <HouseholdPage /> },
       // Demo data and design-system reference: dev and demo builds only (dead code in production).
