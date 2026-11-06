@@ -2,6 +2,33 @@
 
 Alle Änderungen an FridgeAI, neueste zuerst. Wird mit `pnpm release` erzeugt (ADR-0017).
 
+## [0.2.0] – 2026-11-06
+
+**Korrigieren, verstehen, wiederfinden.** Rückgängig nach Gegessen, Weitergegeben oder Weggeworfen; Datum, Menge und Preis nachträglich ändern; «Deine Wirkung diesen Monat» auf der Startseite; Nährwerte, Nutri-Score und Allergene nach dem Scan (30 Tage offline gemerkt); Zahlen mit Dezimalpunkt wie bei Franken und Reste als Bruch («¾ Stk.»).
+
+### Neu
+
+- product facts on the detail page – brand, nutrition, Nutri-Score, allergens (10b) ([#55](https://github.com/BanioX/FridgeAI/pull/55))
+- remember Open Food Facts answers and keep the facts on the product (10b) ([#54](https://github.com/BanioX/FridgeAI/pull/54))
+- «Datum, Menge oder Preis ändern» – edit an item ([#53](https://github.com/BanioX/FridgeAI/pull/53))
+- inventory.updateItem – correct date, date kind, quantity or price (contract) ([#52](https://github.com/BanioX/FridgeAI/pull/52))
+- «Rückgängig» after eaten, shared or wasted ([#50](https://github.com/BanioX/FridgeAI/pull/50))
+- inventory.undoOutcome – give eaten, shared or wasted food back (contract) ([#49](https://github.com/BanioX/FridgeAI/pull/49))
+- «Deine Wirkung diesen Monat» on the start page (stats.waste, step 6) ([#46](https://github.com/BanioX/FridgeAI/pull/46))
+
+### Behoben
+
+- Swiss decimal point and readable piece fractions in quantities (ADR-0018) ([#47](https://github.com/BanioX/FridgeAI/pull/47))
+
+### Tests
+
+- wait for the lazy Vorrat page instead of any heading ([#48](https://github.com/BanioX/FridgeAI/pull/48))
+
+### Wartung
+
+- command kit for local handlers (transaction, idempotency, events) ([#56](https://github.com/BanioX/FridgeAI/pull/56))
+- one quantity formatter for all pages (ui/quantity-text) ([#51](https://github.com/BanioX/FridgeAI/pull/51))
+
 ## [0.1.0] – 2026-11-06
 
 **Erstes Release: der manuelle Prototyp.** Erfassen von Hand, per Barcode (mit Produktdaten von Open Food Facts) oder mit deiner eigenen KI; «Heute retten», Vorrat mit Notvorrat, Detailansicht mit Gegessen, Weitergegeben und Weggeworfen in sinnvollen Portionen, Öffnungsregel, Einfrieren. Läuft offline als PWA, Vorschau-Links für jeden PR.
