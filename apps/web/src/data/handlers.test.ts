@@ -225,7 +225,7 @@ describe('inventory.undoOutcome', () => {
   const undo = (eventId: Id, commandId: Id = ids.next()) =>
     handlers['inventory.undoOutcome']({ commandId, householdId, eventId });
 
-  it('gives a partial use back with its price and marks the outcome as undone', async () => {
+  it('gives a partial use back with its price and stops counting it', async () => {
     const { itemId } = await add({ name: 'Joghurt', quantity: 4, priceRappen: 380 });
     const { eventId } = await record(itemId, 'eaten', 1);
     const commandId = ids.next();
@@ -237,6 +237,12 @@ describe('inventory.undoOutcome', () => {
       priceRappen: 380,
     });
     expect((await db.outcomes.get(eventId))?.deletedAt).toBeDefined();
+    const stats = await handlers['stats.waste']({
+      householdId,
+      from: localDate('2026-11-01'),
+      to: localDate('2026-11-30'),
+    });
+    expect(stats.savedRappen).toBe(0);
     expect(await db.events.where('type').equals('outcome.undone').count()).toBe(1);
     await expect(undo(eventId)).rejects.toMatchObject({ code: 'already_undone' });
   });
