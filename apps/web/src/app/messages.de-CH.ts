@@ -388,6 +388,83 @@ export const messages = {
     donation: 'Spende',
     public_fridge: 'öffentlicher Kühlschrank',
   },
+  reports: {
+    title: 'Berichte als PDF',
+    intro: 'FridgeAI erstellt den Bericht auf deinem Gerät. Teilen oder speichern entscheidest du.',
+    kindLegend: 'Bericht',
+    periodLegend: 'Zeitraum',
+    kinds: {
+      all: 'Alles',
+      fridge: 'Kühlschrank jetzt',
+      impact: 'Deine Wirkung',
+      shopping: 'Einkäufe',
+    },
+    periods: { month: 'Dieser Monat', quarter: 'Letzte 3 Monate', year: 'Dieses Jahr' },
+    create: 'PDF erstellen',
+    creating: 'PDF wird erstellt …',
+    created: 'Das PDF ist bereit.',
+    failed: 'Das PDF liess sich nicht erstellen. Bitte versuch es nochmals.',
+    pdf: {
+      heading: (kind: string) => `FridgeAI · ${kind}`,
+      subtitle: (household: string, period: string, created: string) =>
+        `${household} · ${period} · erstellt am ${created}`,
+      glance: 'Auf einen Blick',
+      inFridge: 'Im Vorrat',
+      saved: 'Gerettet',
+      wasted: 'Weggeworfen',
+      rate: 'Rettungsquote',
+      items: (count: number) => (count === 1 ? '1 Artikel' : `${String(count)} Artikel`),
+      insights: 'Was auffällt',
+      months: 'Gerettet und weggeworfen pro Monat',
+      wasteTop: 'Was im Abfall landet',
+      urgent: 'Jetzt essen: abgelaufen oder bald fällig',
+      inventory: 'Alles im Vorrat',
+      shopping: 'Einkäufe nach Laden',
+      columns: {
+        name: 'Artikel',
+        amount: 'Menge',
+        place: 'Ort',
+        until: 'Haltbar bis',
+        days: 'Tage',
+        value: 'Wert',
+        category: 'Kategorie',
+        count: 'Anzahl',
+        shop: 'Laden',
+        receipts: 'Bons',
+        spent: 'Ausgaben',
+        reason: 'Grund',
+      },
+      total: 'Total',
+      estimated: '* geschätzt aus dem Durchschnittspreis der Kategorie',
+      footer: (page: number, pages: number) =>
+        `Erstellt auf deinem Gerät mit FridgeAI · Seite ${String(page)} von ${String(pages)}`,
+      none: 'Keine Daten in diesem Zeitraum.',
+    },
+    insights: {
+      strong: (percent: number) =>
+        `Stark: Du hast ${String(percent)} % von dem gerettet, was du abgeschlossen hast.`,
+      okay: (percent: number) => `Du hast ${String(percent)} % gerettet. Da geht noch etwas.`,
+      low: (percent: number) =>
+        `Nur ${String(percent)} % gerettet. Der Kühlschrank-Check auf «Heute» hilft, nichts zu vergessen.`,
+      topWaste: (category: string, count: number, value: string) =>
+        `Am meisten weggeworfen: ${category} (${String(count)}×, ${value}).`,
+      reason: (reason: string) => `Häufigster Grund: ${reason}.`,
+      tips: {
+        expired: 'Tipp: «Heute retten» zeigt jeden Tag, was bald abläuft.',
+        spoiled: 'Tipp: Den Kühlschrank auf 5 °C stellen und Offenes zuerst essen.',
+        too_much: 'Tipp: Kleinere Packungen kaufen oder rechtzeitig einfrieren.',
+        forgotten: 'Tipp: Der Kühlschrank-Check auf «Heute» erinnert dich jede Woche.',
+        did_not_like: 'Tipp: Unter «Rezeptideen» findest du andere Ideen für die Reste.',
+        other: 'Tipp: Ein Grund beim Wegwerfen hilft, das Muster zu erkennen.',
+      },
+      urgent: (count: number) =>
+        count === 1
+          ? '1 Artikel ist abgelaufen oder läuft in 3 Tagen ab.'
+          : `${String(count)} Artikel sind abgelaufen oder laufen in 3 Tagen ab.`,
+      shop: (shop: string, value: string) => `Am meisten ausgegeben bei ${shop}: ${value}.`,
+      nothing: 'Noch wenig Daten. Mit jedem Bon und jedem Abschluss wird der Bericht genauer.',
+    },
+  },
   priceMemory: {
     last: (price: string, shop: string, date: string) => `Zuletzt ${price} bei ${shop} (${date})`,
     usual: (price: string) => `üblich ${price}`,
