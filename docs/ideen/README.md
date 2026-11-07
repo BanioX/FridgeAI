@@ -2,6 +2,8 @@
 
 Brainstorming, laufend gepflegt (CLAUDE.md: «Ideen unterwegs»). Hier steht, was rettich später können könnte, nicht was beschlossen ist. Beschlüsse stehen in [`../plan.md`](../plan.md) und den [ADRs](../adr/).
 
+**Grosse Hebel mit Abklärungsbedarf** (Partner, Verträge, Kosten, Recht, neue Datenflüsse) und der Geschäftsmodell-Entwurf parken in [`parkplatz.md`](./parkplatz.md).
+
 | Datei | Thema |
 | --- | --- |
 | [`personalisierung.md`](./personalisierung.md) | Rezepte aus bald Ablaufendem, Menüplanung, Zielgruppen (Sport, Frugalismus, Tracking, «No-Brainer») |
