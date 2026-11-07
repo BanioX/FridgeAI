@@ -22,6 +22,7 @@ import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { GroupedList, GroupedListItem } from '../../ui/GroupedList';
 import { formatAmount } from '../inventory/add-item';
+import { MatchPanel, MatchRow, useReceiptMatching } from './ReceiptMatch';
 import { PriceField } from './PriceField';
 import { priceHint, type PriceMemory } from './price-hint';
 import { sha256Hex } from './hash';
@@ -91,6 +92,13 @@ function amountText(line: ParsedReceiptLine): string {
   return `${formatAmount(shown.amount)} ${messages.inputUnits[shown.unit]}`;
 }
 
+/**
+ * Worth asking the open database: packed food. Loose produce and weighed goods rarely have one
+ * barcode for everyone (ADR-0036).
+ */
+const isPacked = (line: ParsedReceiptLine) =>
+  isFood(line) && line.unit !== 'g' && matchCategoryByName(line.name)?.group !== 'produce';
+
 /** Purchase time as printed (local time of the device), else now. */
 function purchasedAt(receipt: ParsedReceipt) {
   const printed =
@@ -113,9 +121,11 @@ export function ReceiptUpload() {
   const [status, setStatus] = useState('');
   const [busy, setBusy] = useState(false);
   const [review, setReview] = useState<Review | null>(null);
+  const matching = useReceiptMatching();
 
   async function read(file: File) {
     setReview(null);
+    matching.reset();
     if (file.size > MAX_BYTES) {
       setStatus(t.tooLarge);
       return;
@@ -175,19 +185,27 @@ export function ReceiptUpload() {
         totalRappen: receipt.totalRappen ?? receipt.computedTotalRappen,
         source: current.source,
         hash: current.hash,
-        lines: receipt.lines.map((line, index) => ({
-          name: (line.name.trim() === '' ? t.fallbackNames[line.kind] : line.name).slice(0, 120),
-          kind: line.kind,
-          quantity: line.quantity,
-          unit: line.unit,
-          ...(line.unitPriceRappen === undefined ? {} : { unitPriceRappen: line.unitPriceRappen }),
-          priceRappen: line.priceRappen,
-          discountRappen: line.discountRappen,
-          isFood: isFood(line),
-          ...(current.chosen.has(index)
-            ? { location: (matchCategoryByName(line.name) ?? fallbackCategory()).defaultLocation }
-            : {}),
-        })),
+        lines: receipt.lines.map((line, index) => {
+          const found = matching.confirmed.has(index)
+            ? matching.matches.get(index)?.match
+            : undefined;
+          return {
+            name: (line.name.trim() === '' ? t.fallbackNames[line.kind] : line.name).slice(0, 120),
+            kind: line.kind,
+            quantity: line.quantity,
+            unit: line.unit,
+            ...(line.unitPriceRappen === undefined
+              ? {}
+              : { unitPriceRappen: line.unitPriceRappen }),
+            priceRappen: line.priceRappen,
+            discountRappen: line.discountRappen,
+            isFood: isFood(line),
+            ...(current.chosen.has(index)
+              ? { location: (matchCategoryByName(line.name) ?? fallbackCategory()).defaultLocation }
+              : {}),
+            ...(found === undefined ? {} : { gtin: found.gtin, productName: found.name }),
+          };
+        }),
       });
       if (result.duplicate) {
         setStatus(t.duplicate);
@@ -252,52 +270,57 @@ export function ReceiptUpload() {
                   formatChf(receipt.totalRappen),
                 )}
           </p>
+          <MatchPanel
+            matching={matching}
+            lines={receipt.lines.flatMap((line, index) =>
+              review.chosen.has(index) && isPacked(line) ? [{ index, name: line.name }] : [],
+            )}
+          />
           <GroupedList>
             {receipt.lines.map((line, index) =>
               line.kind !== 'item' ? null : (
-                <GroupedListItem
-                  key={`${String(index)}-${line.name}`}
-                  inset="check"
-                  className="flex items-center gap-2 pr-2"
-                >
-                  <label className="flex min-h-14 min-w-0 flex-1 cursor-pointer items-center gap-3 py-2 pl-4">
-                    <input
-                      type="checkbox"
-                      checked={review.chosen.has(index)}
-                      onChange={() => {
-                        const chosen = new Set(review.chosen);
-                        if (!chosen.delete(index)) {
-                          chosen.add(index);
-                        }
-                        setReview({ ...review, chosen });
+                <GroupedListItem key={`${String(index)}-${line.name}`} inset="check">
+                  <div className="flex items-center gap-2 pr-2">
+                    <label className="flex min-h-14 min-w-0 flex-1 cursor-pointer items-center gap-3 py-2 pl-4">
+                      <input
+                        type="checkbox"
+                        checked={review.chosen.has(index)}
+                        onChange={() => {
+                          const chosen = new Set(review.chosen);
+                          if (!chosen.delete(index)) {
+                            chosen.add(index);
+                          }
+                          setReview({ ...review, chosen });
+                        }}
+                        className="size-6 shrink-0 accent-basil-700"
+                      />
+                      <span className="min-w-0 flex-1">
+                        <span className="line-clamp-2 block font-semibold break-words">
+                          {line.name}
+                        </span>
+                        <span className="block truncate text-sm text-ink-muted">
+                          {[
+                            amountText(line),
+                            line.discountRappen < 0
+                              ? t.instead(formatChf(line.priceRappen, { currency: false }))
+                              : undefined,
+                            isFood(line) ? undefined : t.notFood,
+                          ]
+                            .filter(Boolean)
+                            .join(' · ')}
+                        </span>
+                        <PriceHint hint={priceHint(line, review.memory.get(line.name))} />
+                      </span>
+                    </label>
+                    <PriceField
+                      name={line.name}
+                      value={paid(line)}
+                      onChange={(price) => {
+                        setReview({ ...review, receipt: withPrice(receipt, index, price) });
                       }}
-                      className="size-6 shrink-0 accent-basil-700"
                     />
-                    <span className="min-w-0 flex-1">
-                      <span className="line-clamp-2 block font-semibold break-words">
-                        {line.name}
-                      </span>
-                      <span className="block truncate text-sm text-ink-muted">
-                        {[
-                          amountText(line),
-                          line.discountRappen < 0
-                            ? t.instead(formatChf(line.priceRappen, { currency: false }))
-                            : undefined,
-                          isFood(line) ? undefined : t.notFood,
-                        ]
-                          .filter(Boolean)
-                          .join(' · ')}
-                      </span>
-                      <PriceHint hint={priceHint(line, review.memory.get(line.name))} />
-                    </span>
-                  </label>
-                  <PriceField
-                    name={line.name}
-                    value={paid(line)}
-                    onChange={(price) => {
-                      setReview({ ...review, receipt: withPrice(receipt, index, price) });
-                    }}
-                  />
+                  </div>
+                  {review.chosen.has(index) ? <MatchRow matching={matching} index={index} /> : null}
                 </GroupedListItem>
               ),
             )}

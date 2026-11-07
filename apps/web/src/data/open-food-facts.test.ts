@@ -1,6 +1,6 @@
 import { GtinSchema } from '@fridgeai/core';
 import { describe, expect, it, vi } from 'vitest';
-import { openFoodFactsCatalog, openFoodFactsSearch } from './open-food-facts';
+import { openFoodFactsCatalog, openFoodFactsSearch, rateLimitedSearch } from './open-food-facts';
 
 const gtin = GtinSchema.parse('7610000000004');
 const json = (body: unknown, status = 200) =>
@@ -59,5 +59,34 @@ describe('openFoodFactsSearch', () => {
     expect(await search(() => json({}, 429))).toBe('unavailable');
     expect(await search(() => Promise.resolve(new Response('<html>')))).toBe('unavailable');
     expect(await search(() => Promise.reject(new TypeError('offline')))).toBe('unavailable');
+  });
+});
+
+describe('rateLimitedSearch', () => {
+  it('lets a few searches through at once and makes the next one wait for a free slot', async () => {
+    let time = 0;
+    const waits: number[] = [];
+    const sent: string[] = [];
+    const search = rateLimitedSearch(
+      {
+        searchByName: (query) => {
+          sent.push(`${String(time)}:${query}`);
+          return Promise.resolve([]);
+        },
+      },
+      {
+        max: 2,
+        windowMs: 60_000,
+        now: () => time,
+        sleep: (ms) => {
+          waits.push(ms);
+          time += ms;
+          return Promise.resolve();
+        },
+      },
+    );
+    await Promise.all(['a', 'b', 'c'].map((query) => search.searchByName(query, 5)));
+    expect(sent).toEqual(['0:a', '0:b', '60000:c']);
+    expect(waits).toEqual([60_000]);
   });
 });
