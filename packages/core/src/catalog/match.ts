@@ -1,5 +1,6 @@
 import { CATEGORIES } from './categories';
 import type { Category } from './category';
+import { RECEIPT_WORDS } from './receipt-words';
 
 /** Category used when nothing matches; people can change it later. */
 export const FALLBACK_CATEGORY_ID = 'pantry-other';
@@ -31,9 +32,15 @@ export function normalizeFoodText(text: string): string {
     .trim();
 }
 
+const receiptWords = Object.entries(RECEIPT_WORDS);
 const indexed = CATEGORIES.map((category) => ({
   category,
-  keywords: category.keywords.map(normalizeFoodText).filter((keyword) => keyword.length >= 3),
+  keywords: [
+    ...category.keywords,
+    ...receiptWords.flatMap(([word, id]) => (id === category.id ? [word] : [])),
+  ]
+    .map(normalizeFoodText)
+    .filter((keyword) => keyword.length >= 3),
 }));
 
 /**
