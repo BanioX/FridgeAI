@@ -16,7 +16,7 @@ Alle Text-/Hintergrund-Paare erfüllen WCAG AA (mindestens 4.5:1), geprüft beim
 
 | Token | Wert | Verwendung |
 | --- | --- | --- |
-| `basil-50 … 950` | `#F0F7F2` … `#0D2317` (500 = `#3B8A5A`, 600 = `#2C7149`, 700 = `#245B3C`) | Marke, Primäraktionen, «frisch» |
+| `basil-50 … 950` | «Symbol-Grün», sanft (Alban, 7.11.2026): `#F5F9F7` … `#1F442E` (600 = `#438D61` nur für Grafik, 700 = `#3A7853` Knöpfe und Links, 800 = `#346748` Text) | Marke, Primäraktionen, «frisch». Weiss auf 700: 5.3:1, 700 auf `oat`: 4.9:1, 800 auf 100: 5.8:1 |
 | `oat` (Hintergrund) | `#F8F6F1` | App-Hintergrund |
 | `surface` | `#FFFFFF` | Karten, Navigation |
 | `surface-muted` | `#F1EEE6` | Eingabefelder, Chips |

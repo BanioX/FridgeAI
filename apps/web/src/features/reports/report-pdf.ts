@@ -17,8 +17,8 @@ const PAGE = { width: 210, height: 297, margin: 16 };
 const CONTENT = PAGE.width - 2 * PAGE.margin;
 type Rgb = [number, number, number];
 const COLOR: Record<'basil' | 'basilLight' | 'ink' | 'muted' | 'line' | 'today', Rgb> = {
-  basil: [36, 91, 60],
-  basilLight: [240, 247, 242],
+  basil: [58, 120, 83],
+  basilLight: [245, 249, 247],
   ink: [28, 33, 30],
   muted: [100, 108, 103],
   line: [222, 226, 222],

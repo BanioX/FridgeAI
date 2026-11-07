@@ -12,18 +12,18 @@
     sans-serif;
   --font-display: var(--font-sans);
 
-  /* Brand: basil */
-  --color-basil-50: #f0f7f2;
-  --color-basil-100: #dceee2;
-  --color-basil-200: #b9dcc6;
-  --color-basil-300: #8cc3a1;
-  --color-basil-400: #5ca679;
-  --color-basil-500: #3b8a5a;
-  --color-basil-600: #2c7149;
-  --color-basil-700: #245b3c;
-  --color-basil-800: #1f4932;
-  --color-basil-900: #1b3d2b;
-  --color-basil-950: #0d2317;
+  /* Brand: basil, the soft «Symbol-Grün» (Alban, 7.11.2026; WCAG AA on white and oat) */
+  --color-basil-50: #f5f9f7;
+  --color-basil-100: #e8f2ec;
+  --color-basil-200: #c6ded0;
+  --color-basil-300: #9bc3ab;
+  --color-basil-400: #6da483;
+  --color-basil-500: #54a474;
+  --color-basil-600: #438d61;
+  --color-basil-700: #3a7853;
+  --color-basil-800: #346748;
+  --color-basil-900: #305b41;
+  --color-basil-950: #1f442e;
 
   /* Neutrals: warm, like baking paper */
   --color-oat: #f8f6f1;
