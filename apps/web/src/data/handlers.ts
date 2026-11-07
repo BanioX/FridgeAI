@@ -523,8 +523,23 @@ export function createInventoryHandlers(ctx: HandlerContext) {
         throw new CommandError('already_undone', `Outcome ${input.eventId} is already undone`);
       }
       const item = await db.items.get(outcome.itemId);
-      if (item?.householdId !== input.householdId || item.deletedAt !== undefined) {
+      if (item?.householdId !== input.householdId) {
         throw new CommandError('not_found', `Item ${outcome.itemId} not found`);
+      }
+      const now = clock.now();
+      const undone = event(input.householdId, 'outcome.undone', {
+        eventId: outcome.id,
+        itemId: item.id,
+        outcome: outcome.outcome,
+        quantity: outcome.quantity,
+      });
+      if (item.deletedAt !== undefined) {
+        // The item itself was deleted later: only the entry goes, statistics no longer count it.
+        await db.outcomes.put(
+          OutcomeEventSchema.parse({ ...outcome, deletedAt: now, updatedAt: now }),
+        );
+        await db.events.add(undone);
+        return { itemId: item.id, quantity: 0 };
       }
       const reopened = item.status !== 'active';
       const quantity = reopened
@@ -536,7 +551,6 @@ export function createInventoryHandlers(ctx: HandlerContext) {
           ? item.priceRappen
           : rappen((reopened ? 0 : item.priceRappen) + outcome.valueRappen);
 
-      const now = clock.now();
       await db.outcomes.put(
         OutcomeEventSchema.parse({ ...outcome, deletedAt: now, updatedAt: now }),
       );
@@ -550,14 +564,7 @@ export function createInventoryHandlers(ctx: HandlerContext) {
           updatedAt: now,
         }),
       );
-      await db.events.add(
-        event(input.householdId, 'outcome.undone', {
-          eventId: outcome.id,
-          itemId: item.id,
-          outcome: outcome.outcome,
-          quantity: outcome.quantity,
-        }),
-      );
+      await db.events.add(undone);
       return { itemId: item.id, quantity };
     });
   };
@@ -689,6 +696,53 @@ export function createInventoryHandlers(ctx: HandlerContext) {
     return { image: entry === undefined ? null : { dataUrl: entry.dataUrl, source: entry.source } };
   };
 
+  /** At most this many entries: enough for a year of a household, small enough for a phone. */
+  const HISTORY_LIMIT = 500;
+
+  const history: Handler<'inventory.history'> = async (raw) => {
+    const input = CONTRACT_V1['inventory.history'].input.parse(raw);
+    const outcomes = (await db.outcomes.where('householdId').equals(input.householdId).toArray())
+      .filter((outcome) => {
+        const day = toLocalDate(outcome.at);
+        return outcome.deletedAt === undefined && day >= input.from && day <= input.to;
+      })
+      .sort((a, b) => b.at.localeCompare(a.at))
+      .slice(0, HISTORY_LIMIT);
+    const items = new Map(
+      (await db.items.bulkGet([...new Set(outcomes.map((outcome) => outcome.itemId))]))
+        .filter((item) => item !== undefined)
+        .map((item) => [item.id, item]),
+    );
+    const products = new Map(
+      (await db.products.bulkGet([...new Set([...items.values()].map((item) => item.productId))]))
+        .filter((product) => product !== undefined)
+        .map((product) => [product.id, product]),
+    );
+    return {
+      outcomes: outcomes.flatMap((outcome) => {
+        const item = items.get(outcome.itemId);
+        const name = item === undefined ? undefined : products.get(item.productId)?.name;
+        return item === undefined || name === undefined
+          ? []
+          : [
+              {
+                eventId: outcome.id,
+                itemId: item.id,
+                name,
+                outcome: outcome.outcome,
+                quantity: outcome.quantity,
+                unit: item.unit,
+                valueRappen: outcome.valueRappen,
+                valueEstimated: outcome.valueEstimated,
+                ...(outcome.wasteReason === undefined ? {} : { wasteReason: outcome.wasteReason }),
+                ...(outcome.sharedWith === undefined ? {} : { sharedWith: outcome.sharedWith }),
+                at: outcome.at,
+              },
+            ];
+      }),
+    };
+  };
+
   const wasteStats: Handler<'stats.waste'> = async (raw) => {
     const input = CONTRACT_V1['stats.waste'].input.parse(raw);
     const outcomes = await db.outcomes.where('householdId').equals(input.householdId).toArray();
@@ -709,6 +763,7 @@ export function createInventoryHandlers(ctx: HandlerContext) {
     'inventory.restoreItem': restoreItem,
     'inventory.recordOutcome': recordOutcome,
     'inventory.undoOutcome': undoOutcome,
+    'inventory.history': history,
     'inventory.move': move,
     'inventory.open': open,
     'products.lookup': lookupProduct,
