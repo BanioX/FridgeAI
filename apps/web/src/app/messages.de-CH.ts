@@ -358,6 +358,20 @@ export const messages = {
     } as Record<string, string | undefined>,
     hint: 'Angaben aus einer offenen Datenbank, ohne Gewähr. Massgebend ist die Packung.',
     imageCredit: 'Bild: Open Food Facts (CC BY-SA)',
+    photo: {
+      missing:
+        'Nährwerte fehlen. Fotografiere die Nährwerttabelle auf der Packung oder wähle einen Screenshot, z. B. von Migipedia oder coop.ch. rettich liest sie auf deinem Gerät.',
+      choose: 'Foto oder Screenshot wählen',
+      reading: 'Bild wird gelesen, das dauert ein paar Sekunden …',
+      tooLarge: 'Die Datei ist zu gross (höchstens 15 MB).',
+      notFound: 'Keine Nährwerttabelle erkannt. Versuch ein scharfes Bild nur von der Tabelle.',
+      failed: 'Das Bild konnte nicht gelesen werden. Versuch es noch einmal.',
+      preview: 'Das hat rettich gelesen. Stimmt es mit der Packung überein?',
+      save: 'Speichern',
+      discard: 'Verwerfen',
+      saveFailed: 'Das Speichern hat nicht geklappt. Versuch es noch einmal.',
+      note: 'Aus deinem Bild gelesen, ohne Gewähr. Massgebend ist die Packung.',
+    },
   },
   shopping: {
     what: 'Was brauchst du?',

@@ -537,6 +537,20 @@ export const CONTRACT_V1 = {
     input: z.object({ ...commandBase, itemId: IdSchema, to: StorageLocationSchema }),
     output: z.object({ expiresOn: LocalDateSchema }),
   }),
+  'products.setNutrition': command({
+    name: 'products.setNutrition',
+    summary: {
+      de: 'Nährwerte eines Produkts setzen, z. B. aus einem Foto der Nährwerttabelle (auf dem Gerät gelesen).',
+      en: 'Set the nutrition facts of a product, e.g. read on the device from a photo of the label.',
+    },
+    scopes: ['inventory:write'],
+    input: z.object({
+      ...commandBase,
+      itemId: IdSchema,
+      nutrition: NutritionSchema,
+    }),
+    output: z.object({ productId: IdSchema }),
+  }),
   'products.lookup': query({
     name: 'products.lookup',
     summary: {
