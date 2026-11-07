@@ -1,0 +1,34 @@
+import AxeBuilder from '@axe-core/playwright';
+import { expect, test } from './test';
+
+test('deletes a wrong «Weggeworfen» from the history, the food comes back', async ({ page }) => {
+  await page.goto('/inventory/new');
+  await page.getByLabel('Was ist es?').fill('Joghurt');
+  await page.getByRole('button', { name: 'Speichern', exact: true }).click();
+  await page.getByRole('link', { name: /Joghurt/ }).click();
+  await page.locator('label').filter({ hasText: 'Weggeworfen' }).click();
+  await page.locator('label').filter({ hasText: 'vergessen' }).click();
+  await page.getByRole('button', { name: 'Als weggeworfen speichern' }).click();
+  await expect(page.getByRole('link', { name: /Joghurt/ })).toHaveCount(0);
+
+  // From «Deine Wirkung» on Start to the history.
+  await page.getByRole('navigation').getByRole('link', { name: 'Start' }).click();
+  await page.getByRole('link', { name: 'Verlauf ansehen' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Verlauf' })).toBeVisible();
+  const entry = page.getByRole('listitem').filter({ hasText: 'Joghurt' });
+  await expect(entry).toContainText('Weggeworfen');
+  await expect(entry).toContainText('vergessen');
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+
+  await page.getByRole('button', { name: 'Eintrag Joghurt löschen' }).click();
+  await page.getByRole('button', { name: 'Abbrechen' }).click();
+  await page.getByRole('button', { name: 'Eintrag Joghurt löschen' }).click();
+  await page.getByRole('button', { name: 'Eintrag löschen', exact: true }).click();
+  await expect(page.getByRole('status')).toHaveText(
+    'Eintrag gelöscht. Joghurt ist wieder im Vorrat.',
+  );
+  await expect(page.getByText('In diesem Zeitraum hast du nichts abgeschlossen.')).toBeVisible();
+
+  await page.getByRole('navigation').getByRole('link', { name: 'Vorrat' }).click();
+  await expect(page.getByRole('link', { name: /Joghurt/ })).toBeVisible();
+});
