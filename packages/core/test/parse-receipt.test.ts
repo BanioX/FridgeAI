@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { normalizeReceiptLine, parseReceiptText } from '../src/receipt/parse-receipt';
+import {
+  normalizeReceiptLine,
+  parseReceiptText,
+  type ParsedReceipt,
+} from '../src/receipt/parse-receipt';
 
 // Synthetic receipts in the usual Swiss layouts (ADR-0027). Invented stores and products only.
 const COOP = `
@@ -110,5 +114,101 @@ describe('parseReceiptText', () => {
     const receipt = parseReceiptText('Coop\nProtein Bar 2.20\nNetto Sauce 1.90\nTotal 4.10');
     expect(receipt.lines.map((line) => line.name)).toEqual(['Protein Bar', 'Netto Sauce']);
     expect(receipt.sumCheck).toBe('ok');
+  });
+});
+
+// Layouts of real Coop and Migros PDFs (ADR-0027), with invented content.
+const COOP_PDF = `
+                                         Musterstadt Zentrum
+                               07.11.26 17:12 00123 00456789 001 0001234
+Artikel                                        Menge    Preis   Aktion          Total   Zusatz
+Semmeli 80G                                    4.0      0.70                     2.80   0   A
+Coop Naturaplan Joghurt Mocca 180g             2.0      0.95    0.80             1.60   0   A
+Coop Pouletbrust 2St. ca. 330g                 0.312    10.40   8.30             8.30   0   A
+Bananen                                        0.734    2.90                     2.13   0   A
+Naturaplan Bio Coconutwater 1L                 1.0      3.95                     3.95   0   A
+Oecoplan Papiertasche                          1.0      0.40                     0.40   1 # A
+Total CHF                                                                    19.18
+Mastercard                                                                     19.18
+GR                                                 MWST%        TOTAL          MWST
+1                                                    8.10         0.40          0.03
+0                                                    2.60        18.78          0.48
+`;
+
+const MIGROS_PDF = `
+                   GENOSSENSCHAFT MIGROS MUSTERLAND
+                        M Musterstadt Bahnhof
+Artikelbezeichnung           Menge       Preis    Gespart    Total      #
+Plastiksack             1        0.05            0.05 2
+Mini-Laugen Gruyère     2        1.95    0.60    3.30 S1
+M-Budget Vollmilch      1        1.25            1.25 1
+Rüebli                  0.860    2.40            2.06 1
+Volvic Bio Orange 75cl 1         1.95            1.95 1
+--------------------------------------------------------
+Sie sparen total                                   0.60
+Total CHF                                                    8.61
+Visa                                            8.61
+        21.10.2026                       16:04
+Gr               Satz             Total             MWST
+1                2.60 %            8.56             0.22
+2                8.10 %            0.05             0.00
+`;
+
+const rows = (receipt: ParsedReceipt) =>
+  receipt.lines.map((line) => [
+    line.kind,
+    line.name,
+    `${String(line.quantity)} ${line.unit}`,
+    line.unitPriceRappen,
+    line.priceRappen,
+    line.discountRappen,
+    line.isFood,
+  ]);
+
+describe('parseReceiptText with real layouts', () => {
+  it('reads a Coop receipt: «Aktion» column, weighed packs, per-kg goods and VAT groups', () => {
+    const receipt = parseReceiptText(COOP_PDF);
+    expect(receipt).toMatchObject({
+      retailer: 'coop',
+      storeName: 'Musterstadt Zentrum',
+      purchasedOn: '2026-11-07',
+      purchasedTime: '17:12',
+      totalRappen: 1918,
+      sumCheck: 'ok',
+    });
+    expect(rows(receipt)).toEqual([
+      ['item', 'Semmeli 80G', '4 pcs', 70, 280, 0, true],
+      ['item', 'Coop Naturaplan Joghurt Mocca 180g', '2 pcs', 95, 190, -30, true],
+      ['item', 'Coop Pouletbrust 2St. ca. 330g', '312 g', 3333, 1040, -210, true],
+      ['item', 'Bananen', '734 g', 290, 213, 0, true],
+      ['item', 'Naturaplan Bio Coconutwater 1L', '1 pcs', 395, 395, 0, true],
+      ['bag', 'Oecoplan Papiertasche', '1 pcs', 40, 40, 0, undefined],
+    ]);
+  });
+
+  it('reads a Migros receipt: «Gespart» column, «S1» codes and non-food by VAT rate', () => {
+    const receipt = parseReceiptText(MIGROS_PDF);
+    expect(receipt).toMatchObject({
+      retailer: 'migros',
+      storeName: 'M Musterstadt Bahnhof',
+      purchasedOn: '2026-10-21',
+      purchasedTime: '16:04',
+      sumCheck: 'ok',
+    });
+    expect(rows(receipt)).toEqual([
+      ['bag', 'Plastiksack', '1 pcs', 5, 5, 0, undefined],
+      ['item', 'Mini-Laugen Gruyère', '2 pcs', 195, 390, -60, true],
+      ['item', 'M-Budget Vollmilch', '1 pcs', 125, 125, 0, true],
+      ['item', 'Rüebli', '860 g', 240, 206, 0, true],
+      ['item', 'Volvic Bio Orange 75cl', '1 pcs', 195, 195, 0, true],
+    ]);
+  });
+
+  it('flags a misread amount on a Coop PDF', () => {
+    const receipt = parseReceiptText(
+      COOP_PDF.replace('3.95                     3.95', '3.95  8.95'),
+    );
+    expect(receipt.sumCheck).toBe('mismatch');
+    expect(receipt.computedTotalRappen - (receipt.totalRappen ?? 0)).toBe(500);
   });
 });
