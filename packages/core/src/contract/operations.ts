@@ -99,6 +99,8 @@ const ReportSchema = z.object({
     savedRappen: RappenSchema,
     wastedRappen: RappenSchema,
     savedGrams: z.number().min(0),
+    savedCount: z.int().min(0),
+    wastedCount: z.int().min(0),
     wastedGrams: z.number().min(0),
     estimated: z.boolean(),
     savedShare: z.number().min(0).max(1).nullable(),
@@ -397,6 +399,29 @@ export const CONTRACT_V1 = {
     input: z.object({ ...commandBase, eventId: IdSchema }),
     output: z.object({ itemId: IdSchema, quantity: z.number().min(0) }),
   }),
+  'inventory.changeOutcome': command({
+    name: 'inventory.changeOutcome',
+    summary: {
+      de: 'Einen Eintrag korrigieren: gegessen, weitergegeben oder weggeworfen, Grund oder Empfänger. Menge, Wert und Datum bleiben.',
+      en: 'Correct an entry: eaten, shared or wasted, reason or recipient. Amount, value and date stay.',
+    },
+    scopes: ['inventory:write'],
+    input: z
+      .object({
+        ...commandBase,
+        eventId: IdSchema,
+        outcome: OutcomeSchema,
+        wasteReason: WasteReasonSchema.optional(),
+        sharedWith: ShareRecipientSchema.optional(),
+      })
+      .refine((input) => input.wasteReason === undefined || input.outcome === 'wasted', {
+        message: 'A waste reason only fits wasted food',
+      })
+      .refine((input) => input.sharedWith === undefined || input.outcome === 'shared_out', {
+        message: 'A recipient only fits shared food',
+      }),
+    output: z.object({ eventId: IdSchema, outcome: OutcomeSchema }),
+  }),
   'inventory.history': query({
     name: 'inventory.history',
     summary: {
@@ -661,8 +686,8 @@ export const CONTRACT_V1 = {
   'stats.waste': query({
     name: 'stats.waste',
     summary: {
-      de: 'Gerettet und weggeworfen in CHF und kg für einen Zeitraum.',
-      en: 'Food saved and wasted in CHF and kg for a period.',
+      de: 'Gerettet (kurz vor Ablauf gegessen oder weitergegeben) und weggeworfen in CHF, kg und Anzahl für einen Zeitraum.',
+      en: 'Food rescued (eaten or shared shortly before expiry) and wasted in CHF, kg and count for a period.',
     },
     scopes: ['stats:read'],
     input: z.object({ ...queryBase, from: LocalDateSchema, to: LocalDateSchema }),
@@ -671,6 +696,9 @@ export const CONTRACT_V1 = {
       wastedRappen: RappenSchema.min(0),
       savedGrams: z.int().min(0),
       wastedGrams: z.int().min(0),
+      /** Rescued: eaten or shared while at risk (ADR-0033); ordinary eating is not counted. */
+      savedCount: z.int().min(0),
+      wastedCount: z.int().min(0),
       estimated: z.boolean(),
     }),
   }),

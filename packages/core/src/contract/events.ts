@@ -84,6 +84,17 @@ export const DomainEventSchema = z.discriminatedUnion('type', [
     }),
   ),
   envelope(
+    'outcome.changed',
+    z.object({
+      eventId: IdSchema,
+      itemId: IdSchema,
+      from: OutcomeSchema,
+      to: OutcomeSchema,
+      wasteReason: WasteReasonSchema.optional(),
+      sharedWith: ShareRecipientSchema.optional(),
+    }),
+  ),
+  envelope(
     'item.opened',
     z.object({
       itemId: IdSchema,

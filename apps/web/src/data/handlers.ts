@@ -10,6 +10,7 @@ import {
   expiryStatus,
   fallbackCategory,
   InventoryItemSchema,
+  isAtRisk,
   matchCategoryByName,
   normalizeFoodText,
   OutcomeEventSchema,
@@ -462,6 +463,12 @@ export function createInventoryHandlers(ctx: HandlerContext) {
         valueRappen,
         valueEstimated: item.priceRappen === undefined,
         ...(grams === undefined ? {} : { grams }),
+        atRisk: isAtRisk(
+          item.expiresOn,
+          item.expiryKind,
+          clock.today(),
+          soonThresholdFor(item.location),
+        ),
         owner: item.owner,
         at: now,
         by: actor,
@@ -566,6 +573,58 @@ export function createInventoryHandlers(ctx: HandlerContext) {
       );
       await db.events.add(undone);
       return { itemId: item.id, quantity };
+    });
+  };
+
+  /**
+   * Corrects how an entry ended (eaten, shared, wasted) and its reason or recipient. Amount, value
+   * and date stay, so it stays in its month. If it is the entry that closed the item, the item's
+   * status follows.
+   */
+  const changeOutcome: Handler<'inventory.changeOutcome'> = async (raw) => {
+    const input = CONTRACT_V1['inventory.changeOutcome'].input.parse(raw);
+    return runCommand('inventory.changeOutcome', input.commandId, async () => {
+      const outcome = await db.outcomes.get(input.eventId);
+      if (outcome?.householdId !== input.householdId) {
+        throw new CommandError('not_found', `Outcome ${input.eventId} not found`);
+      }
+      if (outcome.deletedAt !== undefined) {
+        throw new CommandError('already_undone', `Outcome ${input.eventId} is undone`);
+      }
+      const now = clock.now();
+      const changed = { ...outcome, outcome: input.outcome, updatedAt: now };
+      delete changed.wasteReason;
+      delete changed.sharedWith;
+      await db.outcomes.put(
+        OutcomeEventSchema.parse({
+          ...changed,
+          ...(input.wasteReason === undefined ? {} : { wasteReason: input.wasteReason }),
+          ...(input.sharedWith === undefined ? {} : { sharedWith: input.sharedWith }),
+        }),
+      );
+      const item = await db.items.get(outcome.itemId);
+      if (item !== undefined && item.status !== 'active' && item.deletedAt === undefined) {
+        const latest = (await db.outcomes.where('itemId').equals(item.id).toArray())
+          .filter((entry) => entry.deletedAt === undefined)
+          // Same instant: the later id (UUIDv7) is the later entry.
+          .sort((a, b) => b.at.localeCompare(a.at) || b.id.localeCompare(a.id))[0];
+        if (latest?.id === outcome.id) {
+          await db.items.put(
+            InventoryItemSchema.parse({ ...item, status: input.outcome, updatedAt: now }),
+          );
+        }
+      }
+      await db.events.add(
+        event(input.householdId, 'outcome.changed', {
+          eventId: outcome.id,
+          itemId: outcome.itemId,
+          from: outcome.outcome,
+          to: input.outcome,
+          ...(input.wasteReason === undefined ? {} : { wasteReason: input.wasteReason }),
+          ...(input.sharedWith === undefined ? {} : { sharedWith: input.sharedWith }),
+        }),
+      );
+      return { eventId: outcome.id, outcome: input.outcome };
     });
   };
 
@@ -746,12 +805,16 @@ export function createInventoryHandlers(ctx: HandlerContext) {
   const wasteStats: Handler<'stats.waste'> = async (raw) => {
     const input = CONTRACT_V1['stats.waste'].input.parse(raw);
     const outcomes = await db.outcomes.where('householdId').equals(input.householdId).toArray();
-    const { savedRappen, wastedRappen, savedGrams, wastedGrams, estimated } = summarizeImpact(
-      outcomes,
-      input.from,
-      input.to,
-    );
-    return { savedRappen, wastedRappen, savedGrams, wastedGrams, estimated };
+    const summary = summarizeImpact(outcomes, input.from, input.to);
+    return {
+      savedRappen: summary.savedRappen,
+      wastedRappen: summary.wastedRappen,
+      savedGrams: summary.savedGrams,
+      wastedGrams: summary.wastedGrams,
+      savedCount: summary.savedCount,
+      wastedCount: summary.wastedCount,
+      estimated: summary.estimated,
+    };
   };
 
   return {
@@ -763,6 +826,7 @@ export function createInventoryHandlers(ctx: HandlerContext) {
     'inventory.restoreItem': restoreItem,
     'inventory.recordOutcome': recordOutcome,
     'inventory.undoOutcome': undoOutcome,
+    'inventory.changeOutcome': changeOutcome,
     'inventory.history': history,
     'inventory.move': move,
     'inventory.open': open,

@@ -1,5 +1,5 @@
 import { daysBetween, toLocalDate } from '../dates';
-import { summarizeImpact, type ImpactSummary } from '../metrics';
+import { isRescue, summarizeImpact, type ImpactSummary } from '../metrics';
 import { rappen, sumRappen, type Rappen } from '../money';
 import type { OutcomeEvent, WasteReason } from '../model/inventory';
 import type { LocalDate, Retailer, StorageLocation, Unit } from '../model/primitives';
@@ -19,7 +19,14 @@ export interface ReportItem {
 /** A closed item (eaten, shared, thrown away) with the category of its product. */
 export type ReportOutcome = Pick<
   OutcomeEvent,
-  'outcome' | 'wasteReason' | 'valueRappen' | 'grams' | 'valueEstimated' | 'at' | 'deletedAt'
+  | 'outcome'
+  | 'wasteReason'
+  | 'valueRappen'
+  | 'grams'
+  | 'valueEstimated'
+  | 'at'
+  | 'deletedAt'
+  | 'atRisk'
 > & { categoryId: string };
 
 export interface ReportPurchase {
@@ -112,11 +119,13 @@ export function buildReport(input: {
   });
   const months = monthsBetween(from, to).map((month) => {
     const inMonth = active.filter((outcome) => toLocalDate(outcome.at).startsWith(month));
-    const sum = (wasted: boolean) =>
-      sumRappen(
-        inMonth.filter((o) => (o.outcome === 'wasted') === wasted).map((o) => o.valueRappen),
-      );
-    return { month, savedRappen: sum(false), wastedRappen: sum(true) };
+    const sum = (keep: (outcome: (typeof inMonth)[number]) => boolean) =>
+      sumRappen(inMonth.filter(keep).map((o) => o.valueRappen));
+    return {
+      month,
+      savedRappen: sum(isRescue),
+      wastedRappen: sum((o) => o.outcome === 'wasted'),
+    };
   });
   const wasted = active.filter((outcome) => outcome.outcome === 'wasted');
   const byCategory = new Map<string, { count: number; valueRappen: number }>();
