@@ -33,7 +33,7 @@ Kurzfassung der Regeln. Vollständiger Brief: [`docs/brief.md`](docs/brief.md) �
 - Geld immer als Ganzzahl in der kleinsten Einheit der Haushaltswährung (CHF: Rappen), nie Float (ADR-0019). Salden und Metriken werden berechnet, nicht gespeichert.
 - Ablaufdaten als Kalendertag (`YYYY-MM-DD`, Europe/Zurich), Zeitpunkte als ISO-UTC.
 - `packages/core` ist reines TypeScript ohne Browser-Abhängigkeit; Äusseres nur über Ports.
-- Contract-first: Die UI ruft nur Commands/Queries des Vertrags (Zod-Schemas) auf, Änderungen erzeugen Domain Events. So bleiben REST-API und MCP-Server später ohne Umbau möglich (Plan, Abschnitt 2).
+- Contract-first: Die UI ruft nur Commands/Queries der Schnittstelle (Zod-Schemas, im Code `contract`) auf, Änderungen erzeugen Domain Events. So bleiben REST-API und MCP-Server später ohne Umbau möglich (Plan, Abschnitt 2).
 - Partner- oder KI-Zugriff auf Haushaltsdaten nur mit ausdrücklicher, widerrufbarer Einwilligung pro Haushalt. Kein Verkauf von Einzeldaten.
 - Bon-Bilder werden nach der Auswertung nicht gespeichert (ausser expliziter Opt-in). Assets (OCR-Modelle, Worker) selbst hosten, kein CDN.
 - TypeScript `strict`, kein `any`. Neue Dependencies nur kostenlos, gut gepflegt und schlank, im PR begründen; im ausgelieferten Code nur permissive Lizenzen (MIT, Apache-2.0, ISC, BSD, OFL), nirgends GPL/AGPL (`pnpm licenses:check`, ADR-0015).

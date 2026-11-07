@@ -25,7 +25,7 @@ Die App prüft die eingefügten Daten streng (Zod) und speichert nichts ohne Bes
 - FridgeAI stellt einen **MCP-Server** bereit (OAuth, Einwilligung pro Haushalt über `Grant`). Claude und ChatGPT können ihn als Connector einbinden.
 - Werkzeug `propose_items`: Die KI legt erkannte Artikel als **Vorschlag in den Posteingang** des Haushalts – sie kann den Vorrat nie direkt ändern (eigener, enger Scope `inventory:propose`).
 - Die Antwort der KI enthält einen Link «In FridgeAI öffnen» (**App-Absprung**), dazu kommt optional eine Push-Nachricht; die App zeigt den Vorschlag zur Bestätigung.
-- Weitere Werkzeuge aus dem Vertrag: «Was läuft bald ab?», «Rezeptideen», «Auf die Einkaufsliste».
+- Weitere Werkzeuge aus der Schnittstelle: «Was läuft bald ab?», «Rezeptideen», «Auf die Einkaufsliste».
 
 ### Stufe 3 – eigene KI nur gegen Bezahlung (optional, später)
 

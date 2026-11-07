@@ -24,24 +24,26 @@ Local-first PWA für Schweizer Haushalte (WGs, Paare, Familien) gegen Food Waste
 
 ## Was die App heute kann
 
+Unten vier Tabs: **Start · Vorrat · ＋ Erfassen · Mehr** ([ADR-0031](docs/adr/0031-four-tab-navigation.md)). Hinter ＋ liegen alle Wege in den Vorrat, unter «Mehr» Berichte, Nachkaufen und deine Daten.
+
 | Bereich | Funktion |
 | --- | --- |
-| **Heute retten** | Was bald abläuft, Wert im Kühlschrank in CHF, Lagerorte auf einen Blick |
+| **Start** | Was bald abläuft, Wert im Kühlschrank in CHF, Lagerorte auf einen Blick |
 | **Vorrat** | Kühlschrank, Tiefkühler, Vorrat, Notvorrat (bis 100 Jahre) |
 | **Erfassen** | Name genügt: Kategorie, Lagerort, Menge, Verpackung und Ablaufdatum werden vorgeschlagen; Eier im 6er/10er, Datumsfeld mit Schnellwahl und Eintippen; «Schnell erfassen»: die eigenen Standardartikel mit einem Tipp; Suche beim Tippen wie «Coop Weggli» (eigene Produkte und Open Food Facts Schweiz) |
 | **Bon hochladen** | PDF, Screenshot oder Foto des Kassenbons (Coop, Migros, Aldi, Lidl, Denner) auf dem Gerät auslesen: Produktname, Menge, bezahlter Preis mit Aktion, Summenprüfung; Lebensmittel angehakt, mit Preis in den Vorrat; derselbe Bon nie doppelt |
 | **Berichte als PDF** | Unter «Mehr»: «Kühlschrank jetzt», «Deine Wirkung» (gerettet und weggeworfen pro Monat, Gründe, «Was auffällt» mit Tipps), «Einkäufe» nach Laden oder alles zusammen, für diesen Monat, 3 Monate oder das Jahr; auf dem Gerät erzeugt, teilen oder speichern |
-| **Scannen** | Barcode, QR und GS1-DataMatrix (Datum aus dem Code); KI-Import: Foto in deiner KI, Liste in FridgeAI übernehmen |
+| **Barcode und eigene KI** | Unter ＋: Barcode, QR und GS1-DataMatrix (Datum aus dem Code); KI-Import: Foto in deiner KI, Liste in FridgeAI übernehmen |
 | **Abschliessen** | Gegessen, weitergegeben (an wen), weggeworfen (warum) – ganz oder in sinnvollen Portionen (⅛ Kuchen, ⅓ Käse, 2 von 4 Joghurts) |
 | **Öffnungsregel** | «Nach dem Öffnen innert 21 Tagen» verkürzt das Datum automatisch |
 | **Einfrieren** | Umlagern mit neu geschätztem Datum |
 | **Kühlschrank-Check** | Einmal pro Woche jeden Artikel kurz bestätigen: noch da, halb, gegessen oder weggeworfen |
-| **Korrigieren** | Rückgängig nach Gegessen/Weggeworfen; Name, Kategorie, Ort, Datum, Menge und Preis ändern; Artikel löschen |
+| **Korrigieren** | Rückgängig nach Gegessen/Weggeworfen, dazu «Nachkaufen» mit einem Tipp; Name, Kategorie, Ort, Datum, Menge und Preis ändern; Artikel löschen |
 | **Produktdaten** | Nach dem Scan: Bild, Marke, Nährwerte, Nutri-Score, Allergene (Open Food Facts, 30 Tage offline) |
-| **Rezeptideen** | Bis zu drei Rezepte, die retten, was bald abläuft; was fehlt, mit einem Tipp auf die Einkaufsliste; nach dem Kochen abbuchen |
-| **Einkaufsliste** | «Du hast noch …» gegen Doppelkäufe, abhaken, «In den Vorrat legen» |
+| **Rezeptideen** | Bis zu drei Rezepte, die retten, was bald abläuft; was fehlt, mit einem Tipp zu «Nachkaufen»; nach dem Kochen abbuchen |
+| **Nachkaufen** | Unter «Mehr»: «Du hast noch …» gegen Doppelkäufe, abhaken, «In den Vorrat legen» |
 | **Wirkung** | Gerettet und weggeworfen diesen Monat in CHF und Gewicht |
-| **Haushalt** | App installieren, alles exportieren (JSON/CSV) oder löschen, Datenschutz in Kürze |
+| **Mehr** | Berichte, Nachkaufen, App installieren; Daten exportieren (JSON/CSV) oder löschen, Datenschutz in Kürze |
 
 Geplant: Teilen in WG und Familie, Kosten aufteilen, Push-Erinnerungen, Wirkungs-Dashboard, MCP-Connector für ChatGPT/Claude, Büro-Kühlschrank. Reihenfolge: [`docs/plan.md`](docs/plan.md).
 
@@ -82,7 +84,7 @@ Vor jedem Push: alles grün (`format:check`, `lint`, `typecheck`, `test`, `build
 ```mermaid
 flowchart LR
   subgraph Gerät
-    UI["PWA (React 19, Vite, Tailwind)"] -->|nur Commands und Queries| Contract["Vertrag v1 (Zod)"]
+    UI["PWA (React 19, Vite, Tailwind)"] -->|nur Commands und Queries| Contract["Schnittstelle v1 (Zod)"]
     Contract --> Handlers["Lokale Handler"]
     Handlers --> DB[("IndexedDB (Dexie)")]
     Handlers --> Core["@fridgeai/core (reines TypeScript)"]
@@ -94,7 +96,7 @@ flowchart LR
 ```
 
 - **Local-first:** Alles funktioniert ohne Konto und offline; Sync folgt mit dem Backend ([ADR-0003](docs/adr/0003-local-first-and-ids.md), [ADR-0009](docs/adr/0009-backend-stack.md)).
-- **Contract-first:** Die UI ruft nur Operationen des Vertrags auf; dieselben Zod-Schemas werden später zu REST-API und MCP-Werkzeugen ([ADR-0005](docs/adr/0005-contract-first-api-mcp.md)).
+- **Contract-first:** Die UI ruft nur Operationen der Schnittstelle auf; dieselben Zod-Schemas werden später zu REST-API und MCP-Werkzeugen ([ADR-0005](docs/adr/0005-contract-first-api-mcp.md)).
 - **Reiner Kern:** `packages/core` kennt kein DOM, kein IndexedDB und kein `fetch`; Äusseres nur über Ports.
 - **Geld in Rappen** (Integer), Ablaufdaten als Kalendertag in Europe/Zurich, IDs als UUIDv7.
 
@@ -102,7 +104,7 @@ flowchart LR
 
 ```
 apps/web/            PWA: Seiten (features/), Design-System (ui/), Datenhaltung (data/), E2E-Tests (e2e/)
-packages/core/       Domäne: Modell, Vertrag, Kategorien, Daten, Mengen, Ablauf, GS1, KI-Import
+packages/core/       Domäne: Modell, Schnittstelle, Kategorien, Daten, Mengen, Ablauf, GS1, KI-Import
 docs/                Plan, Use Cases, Architektur, Design, Strategie, Entscheide (adr/)
 scripts/             Hilfsskripte (z. B. Lizenzprüfung)
 .github/workflows/   CI: Format, Lint, Typen, Tests, Build, Cloudflare-Build, E2E

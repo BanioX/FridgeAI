@@ -221,7 +221,7 @@ Person ─ Haushalt ─ Haus ─ Quartier ─ Gemeinde ─ Kollektiv/Organisatio
 
 ## 7. Partner & Plattform: Monetarisierung über API und MCP
 
-Damit diese Fälle später ohne Umbau möglich sind, baut der MVP einen sauberen **Vertrag** (Commands, Queries, Events) mit Einwilligungsmodell. Details: [`plan.md`](./plan.md), Abschnitt 2.
+Damit diese Fälle später ohne Umbau möglich sind, baut der MVP eine saubere **Schnittstelle** (Commands, Queries, Events) mit Einwilligungsmodell. Details: [`plan.md`](./plan.md), Abschnitt 2.
 
 | Partner | Use Case | Was FridgeAI liefert | Erlösmodell | Phase |
 | --- | --- | --- | --- | --- |

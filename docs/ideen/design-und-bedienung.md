@@ -33,3 +33,11 @@ Ideen aus der Arbeit an der Apple-Designsprache (ADR-0021). Noch nicht beschloss
 
 - **Nutzen:** Ältere Menschen und Sehbehinderte stellen die Schrift gross. Die App nutzt schon `rem`, Zeilen und Reiter sollten dann umbrechen statt abschneiden.
 - **Aufwand:** S bis M. Vorschaubilder mit 200 % Schrift aufnehmen und Engstellen beheben.
+
+## Nachkaufen weiterdenken (nach ADR-0031)
+
+- **Im Kühlschrank-Check:** Was dort als gegessen oder weggeworfen markiert wird, am Ende gesammelt anbieten: «3 Sachen nachkaufen?». Aufwand S.
+- **Standardartikel:** Wenn ein Produkt aus «Schnell erfassen» aufgebraucht ist, «Nachkaufen» gleich vormerken (abschaltbar). Aufwand S.
+- **＋ als Sheet:** Das Menü «Erfassen» als Blatt von unten statt als eigene Seite, wie das ＋ in Apples Erinnerungen. Aufwand S. Braucht eine Prüfung mit Screenreader.
+- **Braucht:** nichts Neues, alles auf dem Gerät.
+

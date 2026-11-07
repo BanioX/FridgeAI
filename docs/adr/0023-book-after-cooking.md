@@ -16,7 +16,7 @@ Plan 11c und R-03 wollen, dass der Vorrat nach dem Kochen ohne Tippen stimmt. Di
   - «Alles» für Lebensmittel, die gerettet werden mussten: heute, innert drei Tagen oder nach dem MHD.
   - «Nichts» für frische Lebensmittel, damit ein Rezept mit 3 Eiern nicht eine ganze 10er-Schachtel abbucht.
 - **Gezählt als gegessen** über `inventory.recordOutcome`. Die Wirkungs-Karte zählt das mit, und «Rückgängig» nimmt alles mit `inventory.undoOutcome` zurück.
-- **Vertrag:** `recipes.get` liefert pro Zutat die passenden Artikel mit `itemId`, Menge, Einheit und Datum statt nur Namen. Die Operation war noch in keinem Release, deshalb ist die Änderung kein Bruch von v1.
+- **Schnittstelle:** `recipes.get` liefert pro Zutat die passenden Artikel mit `itemId`, Menge, Einheit und Datum statt nur Namen. Die Operation war noch in keinem Release, deshalb ist die Änderung kein Bruch von v1.
 
 ## Konsequenzen
 

@@ -14,7 +14,7 @@ Nach dem Scan (ADR-0014) soll die App Name, Kategorie, Packungsgrösse und Nähr
   - Gesendet wird nur die Barcode-Nummer, ohne Cookies, ohne Referrer und ohne Konto.
   - Angefragt werden nur die Felder, die FridgeAI braucht.
   - Nach 6 Sekunden oder offline gilt das Produkt als unbekannt. Das Erfassen geht immer weiter.
-- **Vertrag:** neue Abfrage `products.lookup` (Scope `inventory:read`). Später beantwortet der Server dieselbe Anfrage für API und MCP.
+- **Schnittstelle:** neue Abfrage `products.lookup` (Scope `inventory:read`). Später beantwortet der Server dieselbe Anfrage für API und MCP.
 - **Speichern:** Übernimmt die Person den Vorschlag, entsteht ein Produkt im Haushalt. Der nächste Scan desselben Barcodes braucht kein Netz mehr.
 - **Cache:** Antworten von Open Food Facts merkt sich das Gerät 30 Tage lang (Tabelle `catalogCache`, Dexie-Version 2). Die Tabelle enthält nur öffentliche Produktdaten, ist keine Haushaltsdaten und wird nie synchronisiert. Ein erneuter Scan funktioniert dadurch offline, und eine alte Antwort ist besser als keine. Unbekannte Barcodes werden nicht gemerkt.
 - **Beim Erfassen:** Das neue Produkt übernimmt Marke, Packungsgrösse, Nährwerte, Nutri-Score und Allergene aus dem Cache, mit `source: off`. Der Name bleibt der, den die Person gewählt hat.

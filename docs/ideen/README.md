@@ -11,6 +11,7 @@ Brainstorming, laufend gepflegt (CLAUDE.md: «Ideen unterwegs»). Hier steht, wa
 | [`design-und-bedienung.md`](./design-und-bedienung.md) | Wischgesten, Sheets, Dunkelmodus, schmale Handys, grosse Schrift |
 | [`technik.md`](./technik.md) | 404 für alte Dateien, Fehlerberichte ohne Personendaten, Lighthouse in der CI |
 | [`hilfe-und-konto.md`](./hilfe-und-konto.md) | FAQ, How-to- und Info-Seiten; Registrierung (geparkt) |
+| [`app-stores.md`](./app-stores.md) | Native App für iOS und Android: Weg, Kosten, Zeitplan |
 
 **Produkt-Prioritäten** (Alban, 6.11.2026):
 
