@@ -1,5 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { ChefHat, ChevronRight } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { Link } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
@@ -7,20 +8,34 @@ import { GROUPED_ROW_LINK, GroupedList, GroupedListItem } from '../../ui/Grouped
 
 const t = messages.recipes;
 
-/** «Rezeptideen» on «Start» (plan 11c): up to three recipes that rescue what expires. */
-export function RecipeIdeas() {
+/**
+ * Recipes that rescue what expires (plan 11c): three as «Rezeptideen» on «Start», up to ten as
+ * «Rette heute» on «Kochen». Without anything expiring, `empty` shows instead (or nothing).
+ */
+export function RecipeIdeas({
+  limit = 3,
+  title = t.ideasTitle,
+  empty = null,
+}: {
+  limit?: number;
+  title?: string;
+  empty?: ReactNode;
+}) {
   const { householdId, recipes } = useAppData();
   const ideas = useLiveQuery(
-    async () => (await recipes['recipes.suggest']({ householdId, limit: 3 })).recipes,
-    [householdId],
+    async () => (await recipes['recipes.suggest']({ householdId, limit })).recipes,
+    [householdId, limit],
   );
-  if (ideas === undefined || ideas.length === 0) {
+  if (ideas === undefined) {
     return null;
+  }
+  if (ideas.length === 0) {
+    return empty;
   }
   return (
     <section aria-labelledby="ideas-title" className="space-y-3">
       <h2 id="ideas-title" className="text-xl font-semibold">
-        {t.ideasTitle}
+        {title}
       </h2>
       <GroupedList>
         {ideas.map((idea) => (

@@ -167,7 +167,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 
 #### Schritt 3 – Lokaler Vorrat und Startseite (US-04, US-13, US-14, US-15)
 - 3a: Dexie-Schema, Repositories hinter Interfaces, Event-Log und Outbox lokal, Migrations-Tests (`fake-indexeddb`), automatischer lokaler Haushalt
-- 3b: App-Shell (Navigation seit 7.11.2026: **Start · Vorrat · ＋ Erfassen · Mehr**, ADR-0031; vorher fünf Tabs), Vorrat mit **vier Tabs** (Kühlschrank, Tiefkühler, Vorrat, Notvorrat), Sortierung nach Ablauf, Filter «Läuft bald ab»
+- 3b: App-Shell (Navigation seit 7.11.2026: **Start · Vorrat · ＋ Erfassen · Kochen · Mehr**, ADR-0031; vorher Heute · Vorrat · Scannen · Liste · Haushalt), Vorrat mit **vier Tabs** (Kühlschrank, Tiefkühler, Vorrat, Notvorrat), Sortierung nach Ablauf, Filter «Läuft bald ab»
 - 3c: **Startseite «Heute retten»** (UC-01): was heute/morgen abläuft, Wert im Kühlschrank in CHF (UC-03), Badge; Verbrauchsdatum-Warnungen
 - 3d: Manuelle Erfassung mit **sinnvollen Mengen** (g, kg, ml, dl, l, Stück, Becher, Packung, Flasche, Dose, Glas, Bund; Packungsgrösse wie «Becher à 180 g»), Autovervollständigung und Standardartikeln (UC-07; umgesetzt: «Schnell erfassen» mit `products.frequent`, ein Tipp speichert wie beim letzten Mal), Bearbeiten, Verschieben mit Neuberechnung; **Datumsfeld gemäss [`design.md`](./design.md#datumsfeld-ablaufdatum)**: Vorschlag vorausgewählt, Schnellwahl passend zum Zeithorizont (Tage bis 50 Jahre), Tippen `dd.mm.yyyy` mit automatischen Punkten und Live-Vorschau, nativer Kalender; Offline-Cache der App-Shell; E2E «Artikel erfassen» und «Offline neu laden»
 - **Delegation:** O für 3a (sync-kritisch), S für 3b bis 3d nach meinen Komponenten-Schnittstellen.

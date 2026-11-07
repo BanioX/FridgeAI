@@ -63,6 +63,12 @@ export const routes: RouteObject[] = [
         }),
       },
       {
+        path: 'cook',
+        lazy: async () => ({
+          Component: (await import('../features/recipes/CookPage')).CookPage,
+        }),
+      },
+      {
         path: 'recipes/:recipeId',
         lazy: async () => ({
           Component: (await import('../features/recipes/RecipePage')).RecipePage,

@@ -24,7 +24,7 @@ Local-first PWA für Schweizer Haushalte (WGs, Paare, Familien) gegen Food Waste
 
 ## Was die App heute kann
 
-Unten vier Tabs: **Start · Vorrat · ＋ Erfassen · Mehr** ([ADR-0031](docs/adr/0031-four-tab-navigation.md)). Hinter ＋ liegen alle Wege in den Vorrat, unter «Mehr» Berichte, Nachkaufen und deine Daten.
+Unten fünf Tabs: **Start · Vorrat · ＋ Erfassen · Kochen · Mehr** ([ADR-0031](docs/adr/0031-tab-navigation.md)). Hinter ＋ liegen alle Wege in den Vorrat, unter «Kochen» Rezepte, die retten, was bald abläuft, unter «Mehr» Berichte, Nachkaufen und deine Daten.
 
 | Bereich | Funktion |
 | --- | --- |
@@ -40,7 +40,7 @@ Unten vier Tabs: **Start · Vorrat · ＋ Erfassen · Mehr** ([ADR-0031](docs/ad
 | **Kühlschrank-Check** | Einmal pro Woche jeden Artikel kurz bestätigen: noch da, halb, gegessen oder weggeworfen |
 | **Korrigieren** | Rückgängig nach Gegessen/Weggeworfen, dazu «Nachkaufen» mit einem Tipp; Name, Kategorie, Ort, Datum, Menge und Preis ändern; Artikel löschen |
 | **Produktdaten** | Nach dem Scan: Bild, Marke, Nährwerte, Nutri-Score, Allergene (Open Food Facts, 30 Tage offline) |
-| **Rezeptideen** | Bis zu drei Rezepte, die retten, was bald abläuft; was fehlt, mit einem Tipp zu «Nachkaufen»; nach dem Kochen abbuchen |
+| **Kochen** | Bis zu zehn Rezepte, die retten, was bald abläuft (drei davon auf «Start»); was fehlt, mit einem Tipp zu «Nachkaufen»; nach dem Kochen abbuchen |
 | **Nachkaufen** | Unter «Mehr»: «Du hast noch …» gegen Doppelkäufe, abhaken, «In den Vorrat legen» |
 | **Wirkung** | Gerettet und weggeworfen diesen Monat in CHF und Gewicht |
 | **Mehr** | Berichte, Nachkaufen, App installieren; Daten exportieren (JSON/CSV) oder löschen, Datenschutz in Kürze |

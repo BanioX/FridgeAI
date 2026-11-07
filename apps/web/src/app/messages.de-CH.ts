@@ -5,6 +5,7 @@ export const messages = {
     start: 'Start',
     inventory: 'Vorrat',
     add: 'Erfassen',
+    cook: 'Kochen',
     more: 'Mehr',
   },
   pages: {
@@ -14,6 +15,7 @@ export const messages = {
     receipt: 'Bon hochladen',
     ai: 'Mit eigener KI',
     shopping: 'Nachkaufen',
+    cook: 'Kochen',
     more: 'Mehr',
     data: 'Daten und Datenschutz',
     addItem: 'Artikel erfassen',
@@ -118,9 +120,11 @@ export const messages = {
   },
   recipes: {
     ideasTitle: 'Rezeptideen',
+    rescueTitle: 'Rette heute',
+    nothingExpiring:
+      'In den nächsten 3 Tagen läuft nichts ab. Sobald etwas bald abläuft, findest du hier Rezepte, die es retten.',
     rescues: (food: string, minutes: number, missing: number) =>
       `Rettet ${food} · ${String(minutes)} Min.${missing === 0 ? ' · alles da' : ` · ${String(missing)} fehlt`}`,
-    back: 'Zurück zum Start',
     notFound: 'Dieses Rezept gibt es nicht (mehr).',
     minutes: (minutes: number) => `${String(minutes)} Min.`,
     servings: (servings: number) =>

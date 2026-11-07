@@ -58,7 +58,7 @@ Systemschrift nach Apples Human Interface Guidelines (ADR-0021): SF Pro auf Appl
 - **Listen** (Vorrat, «Heute retten», Einkaufsliste): Apples «inset grouped» Liste. Alle Zeilen liegen in einer weissen, abgerundeten Gruppe, getrennt durch Haarlinien ab dem Text, nicht als einzelne Karten.
 - **Artikelzeile:** Packungsbild oder Emoji, Name, darunter Menge · Lagerort, rechts Status-Chip («heute», «morgen», «in 3 Tagen») und «›», wenn die Zeile eine Detailseite öffnet. Der Status steht im Chip als Text, die Farbe unterstützt nur.
 - **Startseite «Heute retten»:** grosse Zahl (Wert im Kühlschrank in CHF), darunter die dringendsten Artikel, Lagerorte als drei Kacheln.
-- **Navigation:** weisse Leiste unten mit vier Zielen (Start, Vorrat, ＋ Erfassen, Mehr; ADR-0031), aktives Ziel mit Basilikum-Pill hinter dem Icon. ＋ steht als einziges Icon in einem gefüllten Kreis. Unterseiten haben oben links «‹ Titel der vorigen Seite».
+- **Navigation:** weisse Leiste unten mit fünf Zielen (Start, Vorrat, ＋ Erfassen, Kochen, Mehr; ADR-0031), aktives Ziel mit Basilikum-Pill hinter dem Icon. ＋ steht in der Mitte und als einziges Icon in einem gefüllten Kreis. Unterseiten haben oben links «‹ Titel der vorigen Seite».
 - **Segment-Auswahl** (2–4 kurze Optionen, z. B. «Wo ist es?»): eine graue Spur mit gleich breiten Segmenten, 13 px. Das gewählte Segment ist basilikumgrün mit weisser Schrift statt iOS-weiss, damit der Zustand 3:1 Kontrast hat. Sehr lange Wörter trennen auf schmalen Handys mit Bindestrich.
 - **Auswahl-Chips** (Portionen, Gründe): Pills, die umbrechen.
 - **Primärbutton:** `basil-700`, weisse Schrift (8:1), volle Breite auf Mobile.

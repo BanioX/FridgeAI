@@ -18,6 +18,14 @@ test('suggests a recipe for milk that expires tomorrow and puts the rest on the 
   await ideas.first().click();
   await expect(page.getByText('Da: Vollmilch')).toBeVisible();
 
+  // The «Kochen» tab: back from the recipe, the same rescue ideas, more of them.
+  await page.getByRole('main').getByRole('link', { name: 'Kochen' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Kochen' })).toBeVisible();
+  await expect(
+    page.getByRole('region', { name: 'Rette heute' }).getByRole('link').first(),
+  ).toContainText('Rettet Vollmilch');
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+
   await page.goto('/recipes/bananen-pancakes');
 
   await expect(page.getByRole('heading', { level: 1, name: 'Bananen-Pancakes' })).toBeVisible();
@@ -31,6 +39,12 @@ test('suggests a recipe for milk that expires tomorrow and puts the rest on the 
   await page.goto('/shopping');
   await expect(page.getByText('2 reife Bananen')).toBeVisible();
   await expect(page.getByText('2 Eier')).toBeVisible();
+});
+
+test('«Kochen» says so when nothing expires soon', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('navigation').getByRole('link', { name: 'Kochen' }).click();
+  await expect(page.getByText(/^In den nächsten 3 Tagen läuft nichts ab\./)).toBeVisible();
 });
 
 test('says so for a recipe that does not exist', async ({ page }) => {
