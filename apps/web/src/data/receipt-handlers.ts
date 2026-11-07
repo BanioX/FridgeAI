@@ -79,7 +79,9 @@ export function createReceiptHandlers(ctx: HandlerContext, addItem: Handler<'inv
           const { itemId } = await addItem({
             commandId: ids.next(),
             householdId,
-            name: line.name,
+            // A confirmed product (receipts.matchLine) names the item; the line keeps the print.
+            name: line.productName ?? line.name,
+            ...(line.gtin === undefined ? {} : { gtin: line.gtin }),
             location: line.location,
             quantity: line.quantity,
             unit: line.unit,
