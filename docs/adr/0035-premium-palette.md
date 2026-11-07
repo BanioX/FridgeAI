@@ -18,7 +18,7 @@ Drei Töne tragen die Marke:
 
 Die Tailwind-Namen `basil-*`, `oat`, `ink` bleiben, damit der Wechsel nur die Werte betrifft. Status- und Lagerort-Farben (bald, heute, Eis, Weizen, Oliv) bleiben, sie tragen Bedeutung. Alle Text-Paare erfüllen WCAG AA: Weiss auf Smaragd 7.8:1, Nebentext auf Silber 5.7:1, Silber auf Onyx 10.2:1.
 
-Das Logo bleibt vorerst im ersten Design. Varianten in Smaragd und Onyx liegen Alban vor. Ein neues Symbol hiesse auf iPhones: App vom Home-Bildschirm entfernen und neu hinzufügen (mit Export und Import).
+**Nachtrag 7.11.2026:** Alban hat Variante A gewählt: Das Logo behält seine Form und bekommt einen Grund in Smaragd. Auf iPhones bleibt das alte Symbol, bis die App neu zum Home-Bildschirm hinzugefügt wird (vorher exportieren, danach importieren).
 
 ## Konsequenzen
 
