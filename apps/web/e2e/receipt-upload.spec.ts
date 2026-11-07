@@ -10,9 +10,10 @@ const COOP = textPdf([
   'Semmeli 80G 2.0 0.70 1.40 0 A',
   'Coop Pouletbrust 2St. ca. 330g 0.307 10.40 8.30 8.30 0 A',
   'Shampoo Classic 1.0 2.95 2.95 1 A',
+  'Dreamies mit Lachs 1.0 2.50 2.50 0 A',
   'Oecoplan Papiertasche 1.0 0.40 0.40 1 # A',
-  'Total CHF 13.05',
-  'Mastercard 13.05',
+  'Total CHF 15.55',
+  'Mastercard 15.55',
   'GR MWST% TOTAL MWST',
   '1 8.10 3.35 0.25',
   '0 2.60 9.70 0.25',
@@ -27,7 +28,7 @@ test('uploads a receipt PDF, shows names and prices and takes the food over', as
   });
   const review = page.getByRole('region', { name: /Coop · Musterstadt Zentrum · 05\.11\.2026/ });
   await expect(review).toBeVisible();
-  await expect(review.getByText('Summe stimmt: CHF 13.05')).toBeVisible();
+  await expect(review.getByText('Summe stimmt: CHF 15.55')).toBeVisible();
   await expect(review.getByRole('checkbox', { name: /Semmeli 80G/ })).toBeChecked();
   await expect(
     review.getByRole('checkbox', { name: /Coop Pouletbrust.*statt 10\.40/ }),
@@ -37,6 +38,10 @@ test('uploads a receipt PDF, shows names and prices and takes the food over', as
   ).toBeVisible();
   await expect(
     review.getByRole('checkbox', { name: /Shampoo Classic.*kein Lebensmittel/ }),
+  ).not.toBeChecked();
+  // Pet food has the reduced VAT rate like food, but it does not belong in the fridge.
+  await expect(
+    review.getByRole('checkbox', { name: /Dreamies mit Lachs.*kein Lebensmittel/ }),
   ).not.toBeChecked();
   await expect(review.getByText('Dazu Tasche, Pfand und Rabatte: CHF 0.40')).toBeVisible();
   const results = await new AxeBuilder({ page }).analyze();
@@ -179,4 +184,17 @@ test('remembers prices: «zuletzt …» and «… % teurer als sonst» on the ne
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
   review = await upload(semmeli('06.11.26', 'Coop Semmeli 80G 1.0 0.95 0.95 0 A', '0.95'));
   await expect(review.getByText('22 % teurer als sonst')).toBeVisible();
+  await review.getByRole('button', { name: '1 Artikel übernehmen' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
+
+  // The item page and the add form remember too (dates in the text, the 120-day window aside).
+  await page.goto('/inventory?location=pantry');
+  await page
+    .getByRole('link', { name: /Coop Semmeli 80G/ })
+    .first()
+    .click();
+  await expect(page.getByText(/Zuletzt 0\.95 bei Coop \(06\.11\.2026\)/)).toBeVisible();
+  await page.goto('/inventory/new');
+  await page.getByLabel('Was ist es?').fill('Coop Semmeli 80G');
+  await expect(page.getByText(/Zuletzt 0\.95 bei Coop/)).toBeVisible();
 });

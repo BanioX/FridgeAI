@@ -19,6 +19,7 @@ import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
+import { PriceMemoryNote } from '../receipts/PriceMemoryNote';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { ChoiceChips } from '../../ui/ChoiceChips';
@@ -223,6 +224,7 @@ export function ItemDetailPage() {
             </p>
           )}
           <p className="text-ink-muted">{itemMeta(item)}</p>
+          <PriceMemoryNote name={item.name} />
           {image === undefined ? null : (
             <a
               href="https://world.openfoodfacts.org"
