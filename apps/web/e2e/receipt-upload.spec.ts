@@ -10,9 +10,10 @@ const COOP = textPdf([
   'Semmeli 80G 2.0 0.70 1.40 0 A',
   'Coop Pouletbrust 2St. ca. 330g 0.307 10.40 8.30 8.30 0 A',
   'Shampoo Classic 1.0 2.95 2.95 1 A',
+  'Dreamies mit Lachs 1.0 2.50 2.50 0 A',
   'Oecoplan Papiertasche 1.0 0.40 0.40 1 # A',
-  'Total CHF 13.05',
-  'Mastercard 13.05',
+  'Total CHF 15.55',
+  'Mastercard 15.55',
   'GR MWST% TOTAL MWST',
   '1 8.10 3.35 0.25',
   '0 2.60 9.70 0.25',
@@ -27,7 +28,7 @@ test('uploads a receipt PDF, shows names and prices and takes the food over', as
   });
   const review = page.getByRole('region', { name: /Coop · Musterstadt Zentrum · 05\.11\.2026/ });
   await expect(review).toBeVisible();
-  await expect(review.getByText('Summe stimmt: CHF 13.05')).toBeVisible();
+  await expect(review.getByText('Summe stimmt: CHF 15.55')).toBeVisible();
   await expect(review.getByRole('checkbox', { name: /Semmeli 80G/ })).toBeChecked();
   await expect(
     review.getByRole('checkbox', { name: /Coop Pouletbrust.*statt 10\.40/ }),
@@ -37,6 +38,10 @@ test('uploads a receipt PDF, shows names and prices and takes the food over', as
   ).toBeVisible();
   await expect(
     review.getByRole('checkbox', { name: /Shampoo Classic.*kein Lebensmittel/ }),
+  ).not.toBeChecked();
+  // Pet food has the reduced VAT rate like food, but it does not belong in the fridge.
+  await expect(
+    review.getByRole('checkbox', { name: /Dreamies mit Lachs.*kein Lebensmittel/ }),
   ).not.toBeChecked();
   await expect(review.getByText('Dazu Tasche, Pfand und Rabatte: CHF 0.40')).toBeVisible();
   const results = await new AxeBuilder({ page }).analyze();
