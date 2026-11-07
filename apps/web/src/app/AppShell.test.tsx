@@ -119,7 +119,10 @@ describe('AppShell', () => {
 
   it('opens Nachkaufen and the data from the «Mehr» menu', async () => {
     await renderAt('/more');
-    expect(await screen.findByText(`${messages.contractVersion} v1`)).toBeDefined();
+    expect(
+      await screen.findByRole('heading', { level: 1, name: messages.pages.more }),
+    ).toBeDefined();
+    expect(screen.queryByText(/Schnittstelle/)).toBeNull();
     await userEvent.click(screen.getByRole('link', { name: new RegExp(messages.pages.data) }));
     expect(
       await screen.findByRole('heading', { level: 1, name: messages.pages.data }),

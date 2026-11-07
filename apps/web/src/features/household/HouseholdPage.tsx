@@ -1,22 +1,22 @@
 import { HouseholdExportSchema, type HouseholdExport } from '@fridgeai/core';
-import { Download, FileSpreadsheet, ShieldCheck, Trash2, Upload } from 'lucide-react';
+import { Download, ShieldCheck, Trash2, Upload } from 'lucide-react';
 import { useRef, useState, type ChangeEvent } from 'react';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
 import { BackLink } from '../../ui/BackLink';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
-import { exportFileName, inventoryCsv, saveFile } from './export-files';
+import { exportFileName, saveFile } from './export-files';
 
 const t = messages.household;
 
 /**
- * «Daten und Datenschutz» under «Mehr»: the person's data (export as JSON or CSV, bring an export
+ * «Daten und Datenschutz» under «Mehr»: the person's data (export as JSON, bring an export
  * back, delete everything, ADR-0020) and privacy in plain words. Sharing with flatmates arrives with accounts
  * (step 7).
  */
 export function HouseholdPage() {
-  const { householdId, ids, inventory, household, today } = useAppData();
+  const { householdId, ids, household, today } = useAppData();
   const [status, setStatus] = useState('');
   const [confirming, setConfirming] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -43,14 +43,6 @@ export function HouseholdPage() {
       const data = await household['household.export']({ householdId });
       const name = exportFileName(today, 'json');
       saveFile(name, 'application/json', `${JSON.stringify(data, null, 2)}\n`);
-      return t.exported(name);
-    });
-
-  const exportCsv = () =>
-    run(async () => {
-      const { items } = await inventory['inventory.list']({ householdId });
-      const name = exportFileName(today, 'csv');
-      saveFile(name, 'text/csv;charset=utf-8', inventoryCsv(items));
       return t.exported(name);
     });
 
@@ -118,15 +110,6 @@ export function HouseholdPage() {
           onClick={() => void exportJson()}
         >
           {t.exportJson}
-        </Button>
-        <Button
-          variant="secondary"
-          icon={FileSpreadsheet}
-          fullWidth
-          disabled={busy}
-          onClick={() => void exportCsv()}
-        >
-          {t.exportCsv}
         </Button>
         <input
           ref={fileInput}

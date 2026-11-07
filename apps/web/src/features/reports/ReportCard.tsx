@@ -8,27 +8,21 @@ import { Card } from '../../ui/Card';
 import { ChoiceChips } from '../../ui/ChoiceChips';
 import { openReport } from './current-report';
 import { periodStart, type Period } from './period';
-import type { ReportKind } from './report-pdf';
 
 const t = messages.reports;
 
-const kindOptions = (Object.keys(t.kinds) as ReportKind[]).map((value) => ({
-  value,
-  label: t.kinds[value],
-}));
 const periodOptions = (Object.keys(t.periods) as Period[]).map((value) => ({
   value,
   label: t.periods[value],
 }));
 
 /**
- * «Berichte als PDF» (ADR-0030): choose a report and a period, rettich builds the PDF on the
+ * «Berichte als PDF» (ADR-0030): choose a period, rettich builds the PDF on the
  * device and opens it inside the app; sharing is a tap away there.
  */
 export function ReportCard() {
   const { householdId, inventory, today } = useAppData();
   const navigate = useNavigate();
-  const [kind, setKind] = useState<ReportKind>('all');
   const [period, setPeriod] = useState<Period>('month');
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState('');
@@ -44,14 +38,13 @@ export function ReportCard() {
       });
       const { reportPdf } = await import('./report-pdf');
       const blob = await reportPdf(report, {
-        kind,
         household: messages.defaults.householdName,
         period: t.periods[period],
         createdOn: today,
       });
       openReport({
-        file: new File([blob], `rettich-${kind}-${today}.pdf`, { type: 'application/pdf' }),
-        title: `${t.kinds[kind]} · ${t.periods[period]}`,
+        file: new File([blob], `rettich-bericht-${today}.pdf`, { type: 'application/pdf' }),
+        title: t.reportTitle(t.periods[period]),
       });
       void navigate('/more/reports/view');
     } catch {
@@ -63,7 +56,6 @@ export function ReportCard() {
   return (
     <Card className="space-y-4">
       <p className="text-ink-muted">{t.intro}</p>
-      <ChoiceChips legend={t.kindLegend} options={kindOptions} value={kind} onChange={setKind} />
       <ChoiceChips
         legend={t.periodLegend}
         options={periodOptions}

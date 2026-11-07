@@ -10,8 +10,6 @@ import { messages } from '../../app/messages.de-CH';
 import { formatQuantity } from '../../ui/quantity-text';
 import { reportInsights } from './report-insights';
 
-export type ReportKind = 'all' | 'fridge' | 'impact' | 'shopping';
-
 const t = messages.reports.pdf;
 const PAGE = { width: 210, height: 297, margin: 16 };
 const CONTENT = PAGE.width - 2 * PAGE.margin;
@@ -35,16 +33,15 @@ const kg = (grams: number) => `${(grams / 1000).toFixed(1)} kg`;
  */
 export async function reportPdf(
   report: Report,
-  options: { kind: ReportKind; household: string; period: string; createdOn: LocalDate },
+  options: { household: string; period: string; createdOn: LocalDate },
 ): Promise<Blob> {
   const [{ jsPDF }, { autoTable }] = await Promise.all([
     import('jspdf'),
     import('jspdf-autotable'),
   ]);
   const doc = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
-  const kindName = messages.reports.kinds[options.kind];
   doc.setProperties({
-    title: `rettich – ${kindName}`,
+    title: 'rettich – Bericht',
     subject: options.period,
     creator: 'rettich',
   });
@@ -99,7 +96,7 @@ export async function reportPdf(
   // Header band.
   doc.setFillColor(...COLOR.basil);
   doc.rect(0, 0, PAGE.width, 30, 'F');
-  text(t.heading(kindName), PAGE.margin, 15, 18, [255, 255, 255], true);
+  text(t.heading, PAGE.margin, 15, 18, [255, 255, 255], true);
   text(
     t.subtitle(options.household, options.period, formatSwissDate(options.createdOn)),
     PAGE.margin,
@@ -109,91 +106,83 @@ export async function reportPdf(
   );
   y = 40;
 
-  if (options.kind !== 'shopping') {
-    keyFigures(doc, report, y, text);
-    y += 30;
+  keyFigures(doc, report, y, text);
+  y += 30;
+  heading(t.insights);
+  for (const line of reportInsights(report)) {
+    const wrapped = doc.splitTextToSize(`•  ${line}`, CONTENT) as string[];
+    room(wrapped.length * 5 + 1);
+    text(wrapped.join('\n'), PAGE.margin, y, 10, COLOR.ink);
+    y += wrapped.length * 5 + 1;
   }
-  if (options.kind === 'all' || options.kind === 'impact') {
-    heading(t.insights);
-    for (const line of reportInsights(report)) {
-      const wrapped = doc.splitTextToSize(`•  ${line}`, CONTENT) as string[];
-      room(wrapped.length * 5 + 1);
-      text(wrapped.join('\n'), PAGE.margin, y, 10, COLOR.ink);
-      y += wrapped.length * 5 + 1;
-    }
-    heading(t.months);
-    room(60);
-    monthChart(doc, report, y, text);
-    y += 58;
-    heading(t.wasteTop);
-    if (report.impact.topWasted.length === 0) {
-      text(t.none, PAGE.margin, y, 10, COLOR.muted);
-      y += 8;
-    } else {
-      table(
-        [t.columns.category, t.columns.count, t.columns.value],
-        report.impact.topWasted.map((entry) => [
-          categoryById(entry.categoryId)?.name.de ?? entry.categoryId,
-          `${String(entry.count)}×`,
-          chf(entry.valueRappen),
-        ]),
-        [1, 2],
-      );
-      table(
-        [t.columns.reason, t.columns.count],
-        report.impact.reasons.map((entry) => [
-          messages.wasteReasons[entry.reason],
-          `${String(entry.count)}×`,
-        ]),
-        [1],
-      );
-    }
-  }
-  if (options.kind === 'all' || options.kind === 'fridge') {
-    heading(t.urgent);
-    if (report.fridge.urgent.length === 0) {
-      text(t.none, PAGE.margin, y, 10, COLOR.muted);
-      y += 8;
-    } else {
-      table(
-        [t.columns.name, t.columns.place, t.columns.until, t.columns.days],
-        report.fridge.urgent.map((item) => [
-          item.name,
-          messages.locations[item.location],
-          formatSwissDate(item.expiresOn),
-          String(item.daysLeft),
-        ]),
-        [3],
-      );
-    }
-    heading(t.inventory);
+  heading(t.months);
+  room(60);
+  monthChart(doc, report, y, text);
+  y += 58;
+  heading(t.wasteTop);
+  if (report.impact.topWasted.length === 0) {
+    text(t.none, PAGE.margin, y, 10, COLOR.muted);
+    y += 8;
+  } else {
     table(
-      [t.columns.name, t.columns.amount, t.columns.place, t.columns.until, t.columns.value],
-      report.fridge.items.map((item) => [
-        item.name,
-        formatQuantity(item.quantity, item.unit),
-        messages.locations[item.location],
-        formatSwissDate(item.expiresOn),
-        `${chf(item.valueRappen)}${item.valueEstimated ? ' *' : ''}`,
+      [t.columns.category, t.columns.count, t.columns.value],
+      report.impact.topWasted.map((entry) => [
+        categoryById(entry.categoryId)?.name.de ?? entry.categoryId,
+        `${String(entry.count)}×`,
+        chf(entry.valueRappen),
       ]),
-      [4],
-    );
-  }
-  if (options.kind === 'all' || options.kind === 'shopping') {
-    heading(t.shopping);
-    table(
-      [t.columns.shop, t.columns.receipts, t.columns.spent],
-      [
-        ...report.shopping.byRetailer.map((entry) => [
-          messages.priceMemory.shops[entry.retailer],
-          String(entry.receiptCount),
-          chf(entry.spentRappen),
-        ]),
-        [t.total, String(report.shopping.receiptCount), chf(report.shopping.spentRappen)],
-      ],
       [1, 2],
     );
+    table(
+      [t.columns.reason, t.columns.count],
+      report.impact.reasons.map((entry) => [
+        messages.wasteReasons[entry.reason],
+        `${String(entry.count)}×`,
+      ]),
+      [1],
+    );
   }
+  heading(t.urgent);
+  if (report.fridge.urgent.length === 0) {
+    text(t.none, PAGE.margin, y, 10, COLOR.muted);
+    y += 8;
+  } else {
+    table(
+      [t.columns.name, t.columns.place, t.columns.until, t.columns.days],
+      report.fridge.urgent.map((item) => [
+        item.name,
+        messages.locations[item.location],
+        formatSwissDate(item.expiresOn),
+        String(item.daysLeft),
+      ]),
+      [3],
+    );
+  }
+  heading(t.inventory);
+  table(
+    [t.columns.name, t.columns.amount, t.columns.place, t.columns.until, t.columns.value],
+    report.fridge.items.map((item) => [
+      item.name,
+      formatQuantity(item.quantity, item.unit),
+      messages.locations[item.location],
+      formatSwissDate(item.expiresOn),
+      `${chf(item.valueRappen)}${item.valueEstimated ? ' *' : ''}`,
+    ]),
+    [4],
+  );
+  heading(t.shopping);
+  table(
+    [t.columns.shop, t.columns.receipts, t.columns.spent],
+    [
+      ...report.shopping.byRetailer.map((entry) => [
+        messages.priceMemory.shops[entry.retailer],
+        String(entry.receiptCount),
+        chf(entry.spentRappen),
+      ]),
+      [t.total, String(report.shopping.receiptCount), chf(report.shopping.spentRappen)],
+    ],
+    [1, 2],
+  );
   if (report.fridge.valueEstimated || report.impact.estimated) {
     room(8);
     text(t.estimated, PAGE.margin, y, 8, COLOR.muted);
