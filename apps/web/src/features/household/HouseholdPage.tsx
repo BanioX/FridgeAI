@@ -5,6 +5,7 @@ import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
+import { ReportCard } from '../reports/ReportCard';
 import { exportFileName, inventoryCsv, saveFile } from './export-files';
 
 const t = messages.household;
@@ -84,6 +85,8 @@ export function HouseholdPage() {
           <p className="mt-1">{isIos() ? t.installIos : t.installOther}</p>
         </Card>
       )}
+
+      <ReportCard />
 
       <section aria-labelledby="data-title" className="space-y-3">
         <h2 id="data-title" className="font-display text-xl font-semibold">
