@@ -8,7 +8,7 @@
 - Beim Scannen geht **nur die Barcode-Nummer** an Open Food Facts, damit Name, Nährwerte und Packungsbild kommen. Suchst du ein Produkt nach Namen, gehen ab drei Buchstaben **nur die getippten Wörter** dorthin, sobald du kurz mit Tippen innehältst.
 - Fotos von Codes und Bons sowie Bon-PDFs werden auf dem Gerät gelesen und **nie gespeichert**.
 - **Kein Tracking, keine Werbung, keine Cookies.**
-- Du kannst jederzeit **alles exportieren** (JSON, CSV) und **alles löschen** («Haushalt»).
+- Du kannst jederzeit **alles exportieren** (JSON) und **alles löschen** («Haushalt»).
 
 ## Wer ist verantwortlich
 
@@ -60,7 +60,7 @@ Andere Verbindungen erlaubt die App nicht: Eine Content-Security-Policy lässt n
 
 ## Deine Rechte
 
-- **Auskunft und Herausgabe:** «Haushalt» → «Alles exportieren» gibt dir alle Daten als JSON, den Vorrat auch als CSV.
+- **Auskunft und Herausgabe:** «Haushalt» → «Alles exportieren» gibt dir alle Daten als JSON.
 - **Löschung:** «Haushalt» → «Alles löschen» entfernt die ganze lokale Datenbank. Einzelne Artikel löschst du auf ihrer Detailseite.
 - **Berichtigung:** Jeder Artikel lässt sich bearbeiten.
 - Bei Fragen oder Beschwerden: Kontakt oben, in der Schweiz auch der Eidgenössische Datenschutz- und Öffentlichkeitsbeauftragte (EDÖB).

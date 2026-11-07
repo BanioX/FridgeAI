@@ -21,7 +21,7 @@ FridgeAI ist local-first (ADR-0003). Es gibt keinen Server mit den Daten des Hau
 - **Das PDF entsteht auf dem Gerät** mit jsPDF (MIT, gepflegt) und jspdf-autotable (MIT).
   - Beide werden erst geladen, wenn ein Bericht erstellt wird.
   - Nichts verlässt das Gerät, bis die Person das PDF selbst teilt (Teilen-Menü oder Download).
-- **Drei Berichte zum Start:** «Kühlschrank jetzt», «Deine Wirkung», «Einkäufe & Preise», einzeln oder zusammen. Als Zeitraum gibt es diesen Monat, die letzten 3 Monate oder dieses Jahr.
+- **Ein Bericht:** Kühlschrank jetzt, Wirkung, Einkäufe & Preise in einem PDF; die Auswahl der Berichtsart entfiel am 7.11.2026 auf Wunsch des Product Owners. Als Zeitraum gibt es diesen Monat, die letzten 3 Monate oder dieses Jahr.
 - **Gestaltung:** im App-Stil, mit Kennzahl-Kacheln, Balken pro Monat und Tabellen.
   - Die Standardschrift Helvetica deckt Umlaute, «» und – ab. Emojis lässt das PDF weg.
   - Geschätzte Werte sind markiert («geschätzt»), wie in der App.
