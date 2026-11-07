@@ -11,7 +11,7 @@ Der Bon-Leser (ADR-0027) liefert Zeilen mit Name, Menge, Preis und Rabatt. Für 
 
 ## Entscheid
 
-- **Neuer Command `receipts.import`** (Vertrag v1, 25 Operationen).
+- **Neuer Command `receipts.import`** (Schnittstelle v1, 25 Operationen).
   - Die Oberfläche schickt den geprüften Bon: Händler, Filiale, Kaufzeit, Total und die Zeilen.
   - Jede Zeile trägt Name, Art, Menge, Stückpreis, Preis, Rabatt und «Lebensmittel ja/nein».
   - Eine Zeile mit `location` kommt in den Vorrat.

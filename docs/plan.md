@@ -21,8 +21,8 @@
 
 | Meilenstein | Schritte | Ergebnis |
 | --- | --- | --- |
-| **A – Fundament** | 1–2 | Monorepo, CI, Domänenmodell, Vertrag für API/MCP, Haltbarkeit |
-| **B – Lokaler Vorrat & Bon-Scan** | 3–6 | Offline-Vorrat ohne Konto mit Startseite «Heute retten», Bon-Foto → Review → Vorrat, Status und Wirkungs-Dashboard |
+| **A – Fundament** | 1–2 | Monorepo, CI, Domänenmodell, Schnittstelle für API/MCP, Haltbarkeit |
+| **B – Lokaler Vorrat & Bon-Scan** | 3–6 | Offline-Vorrat ohne Konto mit Startseite (was heute zu retten ist), Bon-Foto → Review → Vorrat, Status und Wirkungs-Dashboard |
 | **C – Haushalt, Push & USP** | 7–9 | Konto, Haushalt, Sync, Push-Erinnerungen, Kostenteilung, Rette-Kreis → **Pilot-Alpha** |
 | **D – Basis komplett** | 10–11 | Barcode, Migros-CSV/Coop-PDF, Einkaufsliste, Rezepte |
 | **E – Release-Reife** | 12 | Export/Löschen, Datenschutz, Entitlements, PWA-Feinschliff → **Pilot mit 3–5 WGs** |
@@ -50,13 +50,13 @@ Kleine bis mittlere Entscheide, die ich selbst treffe und als ADR festhalte. Wen
 
 **Ziel:** Partner und KI-Assistenten sollen später andocken können, ohne dass wir die App umbauen. Im MVP kostet das wenig, wenn wir den Code von Anfang an richtig schneiden. Nachträglich wäre es ein grosser Umbau.
 
-**Prinzip: ein Vertrag, viele Oberflächen.**
+**Prinzip: eine Schnittstelle, viele Oberflächen.**
 
 ```
                          packages/core
         ┌───────────────────────────────────────────────┐
         │  Domäne: Modelle, Regeln, Geld, Haltbarkeit    │
-        │  Vertrag v1: Commands und Queries (Zod-Schemas)│
+        │  Schnittstelle v1: Commands, Queries (Zod)     │
         │  Domain Events: item.expiring_soon, …          │
         └───────────────────────────────────────────────┘
              ▲              ▲              ▲             ▲
@@ -71,7 +71,7 @@ Kleine bis mittlere Entscheide, die ich selbst treffe und als ADR festhalte. Wen
 4. **Idempotenz:** Jeder Command trägt eine `commandId`. Das braucht der Offline-Sync ohnehin, die API bekommt es dadurch gratis.
 5. **Partnertaugliche Daten:** GTIN/EAN normalisiert, `externalRefs` pro Händler (Artikelnummern), Einheiten g/ml/Stk., eigene Kategorien mit Zuordnung zu Open-Food-Facts-Kategorien.
 6. **Zugriff nur mit Einwilligung:** Partner und KI-Assistenten bekommen Zugriff nur über OAuth mit klaren Rechten (z. B. `inventory:read`, `shopping_list:write`), pro Haushalt erteilt, jederzeit widerrufbar, protokolliert. Kein Verkauf von Einzeldaten.
-7. **Versionierung:** Vertrag und Events tragen eine Version (`v1`). Breaking Changes nur mit neuer Version.
+7. **Versionierung:** Schnittstelle und Events tragen eine Version (`v1`). Breaking Changes nur mit neuer Version.
 
 **Beispiele für spätere MCP-Tools:** `list_expiring_items`, `get_inventory`, `suggest_recipes`, `add_to_shopping_list`, `mark_item_eaten`. Damit geht dann: «Hey Claude, was muss ich heute essen, bevor es abläuft?» Die Smart-Home-Idee aus ATL1 (Alexa, Google Home) und das spätere Hardware-Modul nutzen dieselbe API, sie sind einfach weitere Clients.
 
@@ -147,18 +147,18 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 - **Delegation:** H für Konfiguration, O für tsconfig/ESLint-Regeln, CI-Review und das Design-System.
 - **Fertig, wenn:** `pnpm lint | typecheck | test | build | e2e` lokal und in CI grün.
 
-#### Schritt 2 – Core-Domäne und Vertrag
+#### Schritt 2 – Core-Domäne und Schnittstelle
 - 2a: **Geld und IDs**: Typ `Rappen` (Zod-Brand), `parseChf`/`formatChf` für alle Bon-Schreibweisen (`3.95`, `-.95`, `1'234.50`, `CHF 12.–`, `0.80-`), `allocate`/`splitEvenly` (Largest Remainder, rotierender Rest-Rappen), UUIDv7 ohne Dependency; Property-Tests; ADR-0003 (Local-first, IDs), ADR-0004 (Geld)
 - 2b: `model.ts` und Zod-Schemas für alle Entitäten (inkl. Abschnitt 3), `LocalDate`/`IsoDateTime`
 - 2c: Europe/Zurich, «Tage bis Ablauf»; **Kategorien-Katalog** (rund 40 Schweizer Alltagskategorien mit Haltbarkeit pro Lagerort, `dateKind`, `freezable`, Reste-/Lagertipps, Emoji, Durchschnittspreis und -gewicht, Quellen dokumentiert); `estimateExpiry()`
 - 2d: Ports (`ReceiptOcrEngine`, `BarcodeScanner`, `ProductCatalog`, `RecipeProvider`, `RebuyProvider`, `DeliveryProvider`, `RetailerReceiptSource`, `SyncAdapter`, `NotificationService`, `Clock`, `IdGenerator`), Mocks für die Partner-Ports
-- 2e: **Vertrag v1**: Command-/Query-Registry mit Zod-Ein-/Ausgabe, Domain Events, `commandId`; Test, der aus dem Vertrag JSON Schema erzeugt (Beweis für spätere OpenAPI/MCP-Tauglichkeit); ADR-0005 (Contract-first, API/MCP) — umgesetzt: 27 Operationen, 17 Event-Typen (inkl. `receipts.import`, `prices.memory`, `reports.build`, `inventory.open`/`item.opened`, `products.lookup`, `products.image`, `products.frequent`, `products.search`, `recipes.get`, `inventory.updateItem`/`item.updated`, `inventory.deleteItem`/`restoreItem`, `household.export`/`delete`, `inventory.undoOutcome`/`outcome.undone`, Gründe beim Abschliessen)
+- 2e: **Schnittstelle v1**: Command-/Query-Registry mit Zod-Ein-/Ausgabe, Domain Events, `commandId`; Test, der aus der Schnittstelle JSON Schema erzeugt (Beweis für spätere OpenAPI/MCP-Tauglichkeit); ADR-0005 (Contract-first, API/MCP) — umgesetzt: 27 Operationen, 17 Event-Typen (inkl. `receipts.import`, `prices.memory`, `reports.build`, `inventory.open`/`item.opened`, `products.lookup`, `products.image`, `products.frequent`, `products.search`, `recipes.get`, `inventory.updateItem`/`item.updated`, `inventory.deleteItem`/`restoreItem`, `household.export`/`delete`, `inventory.undoOutcome`/`outcome.undone`, Gründe beim Abschliessen)
 - 2f: **GS1-Codes lesen** (ADR-0006): EAN/UPC, GS1 DataMatrix und GS1 Digital Link (QR) mit Ablaufdatum (AI 17/15), Charge, Gewicht; vorausschauend für «GS1 Sunrise 2027»
 - 2h: **Notvorrat** als vierter Lagerort (ADR-0007): Haltbarkeit bis 100 Jahre, Warnung 90 Tage vorher, Schnellwahl passend zum Zeithorizont (`expiryPresets`), Monats-/Jahresrechnung, Kategorien für gefriergetrocknete Mahlzeiten, Notrationen und Trinkwasser
 - 2i: **Scan-Sitzung** für die Modi «Schnell» (erster sicherer Barcode) und «Gründlich» (Packung langsam drehen, bis Barcode und Ablaufdatum über mehrere Bilder bestätigt sind)
 - 2j: **Öffnungsregel:** `openedOn` und «nach dem Öffnen innert N Tagen» pro Kategorie oder vom Etikett; gültig ist das frühere Datum
 - 2g: Ablaufdatum aus Etikett-Text erkennen («zu verbrauchen bis», «mindestens haltbar bis», FR/IT) als Grundlage für «Datum fotografieren» (v1)
-- **Delegation:** O für Modell, Geld, Ports und Vertrag. S entwirft den Kategorien-Katalog, ich prüfe ihn (besonders Verbrauchsdatum-Kategorien). H für Tabellentests.
+- **Delegation:** O für Modell, Geld, Ports und Schnittstelle. S entwirft den Kategorien-Katalog, ich prüfe ihn (besonders Verbrauchsdatum-Kategorien). H für Tabellentests.
 - **Tests:** ≥ 95 % Abdeckung, Property-Tests für Rappen.
 
 ---
@@ -167,7 +167,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 
 #### Schritt 3 – Lokaler Vorrat und Startseite (US-04, US-13, US-14, US-15)
 - 3a: Dexie-Schema, Repositories hinter Interfaces, Event-Log und Outbox lokal, Migrations-Tests (`fake-indexeddb`), automatischer lokaler Haushalt
-- 3b: App-Shell (Navigation: Heute · Vorrat · Scannen · Liste · Haushalt), Vorrat mit **vier Tabs** (Kühlschrank, Tiefkühler, Vorrat, Notvorrat), Sortierung nach Ablauf, Filter «Läuft bald ab»
+- 3b: App-Shell (Navigation seit 7.11.2026: **Start · Vorrat · ＋ Erfassen · Mehr**, ADR-0031; vorher fünf Tabs), Vorrat mit **vier Tabs** (Kühlschrank, Tiefkühler, Vorrat, Notvorrat), Sortierung nach Ablauf, Filter «Läuft bald ab»
 - 3c: **Startseite «Heute retten»** (UC-01): was heute/morgen abläuft, Wert im Kühlschrank in CHF (UC-03), Badge; Verbrauchsdatum-Warnungen
 - 3d: Manuelle Erfassung mit **sinnvollen Mengen** (g, kg, ml, dl, l, Stück, Becher, Packung, Flasche, Dose, Glas, Bund; Packungsgrösse wie «Becher à 180 g»), Autovervollständigung und Standardartikeln (UC-07; umgesetzt: «Schnell erfassen» mit `products.frequent`, ein Tipp speichert wie beim letzten Mal), Bearbeiten, Verschieben mit Neuberechnung; **Datumsfeld gemäss [`design.md`](./design.md#datumsfeld-ablaufdatum)**: Vorschlag vorausgewählt, Schnellwahl passend zum Zeithorizont (Tage bis 50 Jahre), Tippen `dd.mm.yyyy` mit automatischen Punkten und Live-Vorschau, nativer Kalender; Offline-Cache der App-Shell; E2E «Artikel erfassen» und «Offline neu laden»
 - **Delegation:** O für 3a (sync-kritisch), S für 3b bis 3d nach meinen Komponenten-Schnittstellen.
@@ -266,7 +266,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 
 ## 6. Ausblick v1 (nach dem Pilot, Reihenfolge offen)
 
-- **Öffentliche API (REST, OpenAPI 3.1), MCP-Server und Webhooks** auf Basis des Vertrags aus Schritt 2d, mit Einwilligungs-Ansicht pro Haushalt
+- **Öffentliche API (REST, OpenAPI 3.1), MCP-Server und Webhooks** auf Basis der Schnittstelle aus Schritt 2d, mit Einwilligungs-Ansicht pro Haushalt
 - **Programm für Gemeinden/Arbeitgeber (Option C):** Challenge-Modus, aggregiertes Wirkungs-Dashboard
 - Native Apps mit Capacitor (lokale Benachrichtigungen ohne Server, App-Store-Präsenz)
 - Bezahl-Abo, Haushalts-Challenges, «Darf ich?»-Anfrage, Allergene-Filter, Französisch
@@ -341,7 +341,7 @@ Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ic
     - A) **MVP mit PWA-Push** und guter Installationsanleitung, native Apps in v1.
     - B) **Native App (Capacitor) schon im MVP**: Erinnerungen lokal auf dem Gerät, auch ohne Konto und Server. Kostet mehr Aufwand (2 bis 3 zusätzliche PRs plus Store-Prozess) und ein Apple-Entwicklerkonto (rund 100 Franken pro Jahr) für TestFlight.
     - *Empfehlung:* A. Wir messen im Pilot-Alpha, wie viele iPhone-Nutzer:innen die PWA installieren. Ist das zu wenig, ziehen wir B vor.
-12. **API und MCP: wann?** – *Empfehlung:* Im MVP nur der Vertrag (Schritt 2d), die Events und das Einwilligungsmodell. REST-API und MCP-Server in v1, sobald es echte Partner-Gespräche gibt. Ausnahme: Wenn ihr für die Schule eine Demo «Claude fragt FridgeAI» wollt, kann ich einen schreibgeschützten MCP-Server als Zusatzschritt nach Schritt 9 einplanen (2 bis 3 PRs).
+12. **API und MCP: wann?** – *Empfehlung:* Im MVP nur die Schnittstelle (Schritt 2d), die Events und das Einwilligungsmodell. REST-API und MCP-Server in v1, sobald es echte Partner-Gespräche gibt. Ausnahme: Wenn ihr für die Schule eine Demo «Claude fragt FridgeAI» wollt, kann ich einen schreibgeschützten MCP-Server als Zusatzschritt nach Schritt 9 einplanen (2 bis 3 PRs).
 13. **«Datenbasierte Insights (anonymisiert)» aus dem Businessplan vs. «kein Verkauf von Daten» aus dem Brief** – *Empfehlung:* Nie Einzeldaten verkaufen oder weitergeben. Erlaubt sind nur aggregierte Wirkungsberichte innerhalb eines Programms (Option C), bei dem Haushalte aktiv mitmachen (Opt-in), mit einer Mindestgruppengrösse, damit niemand erkennbar ist. Das passt zum Vertrauensversprechen und bleibt trotzdem monetarisierbar.
 14. **Rahmen**
     - a) ~~Coden weitere Personen mit?~~ **Beantwortet:** Nein, persönliches Projekt von Alban, vorerst One-Man-Show (6.11.2026). Folgen siehe Abschnitt 10.

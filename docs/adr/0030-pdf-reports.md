@@ -17,7 +17,7 @@ FridgeAI ist local-first (ADR-0003). Es gibt keinen Server mit den Daten des Hau
     - Gerettet und weggeworfen im Zeitraum: CHF, kg, Quote, pro Monat (höchstens zwölf).
     - Was am meisten im Abfall landet und warum.
     - Ausgaben pro Laden aus den Bons.
-  - Die App ruft das über eine Query im Vertrag ab. Dieselben Berichte gehen später über REST oder MCP, ohne Umbau.
+  - Die App ruft das über eine Query der Schnittstelle ab. Dieselben Berichte gehen später über REST oder MCP, ohne Umbau.
 - **Das PDF entsteht auf dem Gerät** mit jsPDF (MIT, gepflegt) und jspdf-autotable (MIT).
   - Beide werden erst geladen, wenn ein Bericht erstellt wird.
   - Nichts verlässt das Gerät, bis die Person das PDF selbst teilt (Teilen-Menü oder Download).
