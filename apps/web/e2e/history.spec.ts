@@ -36,6 +36,8 @@ test('deletes a wrong «Weggeworfen» from the history, the food comes back', as
 test('corrects a wrong «Weggeworfen» to «Gegessen», the impact follows', async ({ page }) => {
   await page.goto('/inventory/new');
   await page.getByLabel('Was ist es?').fill('Rahm');
+  // Expires tomorrow: eating it counts as a rescue (ADR-0033).
+  await page.getByRole('button', { name: 'morgen', exact: true }).click();
   await page.getByRole('button', { name: 'Speichern', exact: true }).click();
   await page.getByRole('link', { name: /Rahm/ }).click();
   await page.locator('label').filter({ hasText: 'Weggeworfen' }).click();
