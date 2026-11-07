@@ -1,5 +1,5 @@
 import { CONTRACT_VERSION } from '@fridgeai/core';
-import { ShieldCheck, ShoppingBasket, Smartphone } from 'lucide-react';
+import { FileChartColumn, ShieldCheck, ShoppingBasket, Smartphone } from 'lucide-react';
 import { messages } from '../../app/messages.de-CH';
 import { Card } from '../../ui/Card';
 import { MenuList } from '../../ui/MenuList';
@@ -20,8 +20,8 @@ function isInstalled(): boolean {
 const isIos = () => /iPhone|iPad|iPod/.test(navigator.userAgent);
 
 /**
- * «Mehr» (ADR-0031): everything that is not the daily fridge – Nachkaufen, the person's data and
- * privacy, the install hint – as one menu, so the tab bar keeps four clear places.
+ * «Mehr» (ADR-0031): everything that is not the daily fridge – reports, Nachkaufen, the person's
+ * data and privacy, the install hint – as one menu, so the tab bar keeps four clear places.
  */
 export function MorePage() {
   return (
@@ -40,6 +40,12 @@ export function MorePage() {
 
       <MenuList
         entries={[
+          {
+            to: '/more/reports',
+            icon: FileChartColumn,
+            title: messages.reports.title,
+            detail: t.reportsDetail,
+          },
           {
             to: '/shopping',
             icon: ShoppingBasket,
