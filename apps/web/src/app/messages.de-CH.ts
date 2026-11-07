@@ -133,8 +133,11 @@ export const messages = {
     rescueTitle: 'Rette heute',
     allTitle: 'Alle Rezepte',
     filterLegend: 'Rezepte zeigen',
+    feierabendEmpty:
+      'Für den Feierabend (höchstens 15 Minuten, nichts einkaufen) fehlt dir gerade bei jedem Rezept noch etwas.',
     filters: {
       all: 'Alle',
+      feierabend: 'Feierabend',
       schnell: 'Schnell',
       vegetarisch: 'Vegetarisch',
       vegan: 'Vegan',
