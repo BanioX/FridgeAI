@@ -32,6 +32,7 @@ describe('contract v1', () => {
       'recipes.get',
       'stats.waste',
       'prices.memory',
+      'reports.build',
       'rescue.offer',
       'receipts.import',
       'household.export',
