@@ -254,7 +254,7 @@ export function InventoryPage() {
               {visible.map((item) => (
                 <GroupedListItem key={item.id}>
                   <SwipeAction
-                    label={swipeLabel(item)}
+                    {...swipeLabel(item)}
                     onCommit={() => {
                       swipe.eat(item);
                     }}

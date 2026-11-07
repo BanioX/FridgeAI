@@ -44,8 +44,10 @@ interface Gesture {
 }
 
 interface SwipeActionProps {
-  /** Text next to the check in the strip behind the row, e.g. «Gegessen · −1». */
+  /** Text below the check in the strip behind the row, e.g. «Gegessen». */
   label: string;
+  /** Smaller second line, e.g. «−1». */
+  detail?: string;
   /** Called once when the swipe commits. */
   onCommit: () => void;
   /** The row; a function gets `sliced` for a short moment after the commit (for the picture). */
@@ -58,7 +60,7 @@ interface SwipeActionProps {
  * the action commits and the row springs back. A tap still reaches the link inside, a drag never
  * does. It is a shortcut only: the same action must exist as plain buttons elsewhere (WCAG 2.5.1).
  */
-export function SwipeAction({ label, onCommit, children }: SwipeActionProps) {
+export function SwipeAction({ label, detail, onCommit, children }: SwipeActionProps) {
   const gesture = useRef<Gesture | null>(null);
   const dragged = useRef(false);
   const timer = useRef<number | undefined>(undefined);
@@ -166,25 +168,40 @@ export function SwipeAction({ label, onCommit, children }: SwipeActionProps) {
     }
   };
 
-  const progress = Math.min(1, -offset / 80);
+  const revealed = Math.max(0, -offset);
+  const progress = Math.min(1, revealed / 80);
+  // The row's own content fades as it slides away, so its clipped edge never competes with the
+  // action (docs/design.md, «Immer sauber ausgerichtet»).
+  const contentOpacity = 1 - 0.7 * Math.min(1, Math.max(0, (revealed - 48) / 120));
+  const settle = dragging ? '' : 'duration-300';
 
   return (
     <div className="relative overflow-hidden">
-      {/* The label rides on the row's right edge, so it slides in with it. */}
+      {/*
+        Behind the row. Its content is always centred in the uncovered part, icon above text, and
+        the text only shows once it fits whole: never clipped, never off-centre (docs/design.md).
+      */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-basil-700 font-semibold text-white"
-        style={{ opacity: offset === 0 ? 0 : 1 }}
+        className={`absolute inset-0 bg-basil-700 text-white transition-opacity ${settle}`}
+        style={{ opacity: revealed > 0 ? 1 : 0 }}
       >
-        <span
-          style={{ transform: `translateX(${String(offset)}px)`, opacity: progress }}
-          className={`absolute top-0 bottom-0 left-full flex items-center gap-2 pl-4 whitespace-nowrap ${
-            dragging ? '' : 'transition-transform duration-300'
-          }`}
+        <div
+          className={`@container absolute inset-y-0 right-0 flex items-center justify-center overflow-hidden transition-[width] ${settle}`}
+          style={{ width: `${String(revealed)}px` }}
         >
-          <Check size={20} strokeWidth={3} />
-          {label}
-        </span>
+          <div className="flex flex-col items-center gap-0.5" style={{ opacity: progress }}>
+            <Check size={22} strokeWidth={3} />
+            <span className="hidden text-sm leading-tight font-semibold whitespace-nowrap @min-[6rem]:block">
+              {label}
+            </span>
+            {detail === undefined ? null : (
+              <span className="hidden text-xs leading-tight whitespace-nowrap @min-[6rem]:block">
+                {detail}
+              </span>
+            )}
+          </div>
+        </div>
       </div>
       <div
         onPointerDown={onPointerDown}
@@ -202,7 +219,9 @@ export function SwipeAction({ label, onCommit, children }: SwipeActionProps) {
             : 'transition-transform duration-300 ease-[cubic-bezier(0.2,0.9,0.3,1.15)]'
         }`}
       >
-        {typeof children === 'function' ? children({ sliced }) : children}
+        <div className={`transition-opacity ${settle}`} style={{ opacity: contentOpacity }}>
+          {typeof children === 'function' ? children({ sliced }) : children}
+        </div>
       </div>
     </div>
   );

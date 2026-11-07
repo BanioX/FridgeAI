@@ -36,9 +36,12 @@ interface Toast {
   eventId: Id | null;
 }
 
-/** Strip text for a row: «Gegessen · −1», «Gegessen · 1 Portion» or «Gegessen · alles». */
-export function swipeLabel(item: Pick<InventoryItemView, 'quantity' | 'unit'>): string {
-  return messages.swipe[swipePortion(item).kind];
+/** Strip text for a row: «Gegessen» with «−1», «1 Portion» or «alles» below. */
+export function swipeLabel(item: Pick<InventoryItemView, 'quantity' | 'unit'>): {
+  label: string;
+  detail: string;
+} {
+  return { label: messages.swipe.action, detail: messages.swipe[swipePortion(item).kind] };
 }
 
 /**

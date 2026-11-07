@@ -118,7 +118,7 @@ export function TodayPage() {
               {urgent.slice(0, URGENT_LIMIT).map((item) => (
                 <GroupedListItem key={item.id}>
                   <SwipeAction
-                    label={swipeLabel(item)}
+                    {...swipeLabel(item)}
                     onCommit={() => {
                       swipe.eat(item);
                     }}

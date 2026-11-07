@@ -10,7 +10,7 @@ function setup() {
   const onOpen = vi.fn();
   render(
     <MemoryRouter>
-      <SwipeAction label="Gegessen · −1" onCommit={onCommit}>
+      <SwipeAction label="Gegessen" detail="−1" onCommit={onCommit}>
         <Link
           to="/x"
           onClick={(event) => {
