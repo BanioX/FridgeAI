@@ -9,10 +9,12 @@ export function InventoryItemRow({
   item,
   status,
   chevron = false,
+  sliced = false,
 }: {
   item: InventoryItemView;
   status: { tone: Tone; label: string };
   chevron?: boolean;
+  sliced?: boolean;
 }) {
   const image = useProductImage(item.gtin);
   return (
@@ -23,6 +25,7 @@ export function InventoryItemRow({
       meta={itemMeta(item)}
       status={status}
       chevron={chevron}
+      sliced={sliced}
     />
   );
 }
