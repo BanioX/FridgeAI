@@ -68,7 +68,6 @@ describe('AppShell', () => {
       messages.pages.receipt,
       messages.scanner.open,
       messages.addHub.manualTitle,
-      messages.pages.ai,
     ]) {
       expect(main.getByRole('link', { name: new RegExp(`^${title}`) })).toBeDefined();
     }

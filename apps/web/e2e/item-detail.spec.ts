@@ -97,6 +97,7 @@ test('a free amount larger than what is left is refused', async ({ page }) => {
 test('corrects date, date kind, quantity and value of an item', async ({ page }) => {
   await page.goto('/inventory/new');
   await page.getByLabel('Was ist es?').fill('Freilandeier');
+  await page.getByText('Mehr Angaben').click();
   await page.getByRole('button', { name: '10er' }).click();
   await page.getByRole('button', { name: 'Speichern', exact: true }).click();
   await page.getByRole('link', { name: /Freilandeier/ }).click();

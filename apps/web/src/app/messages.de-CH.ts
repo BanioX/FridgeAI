@@ -13,7 +13,6 @@ export const messages = {
     inventory: 'Vorrat',
     add: 'Erfassen',
     receipt: 'Bon hochladen',
-    ai: 'Mit eigener KI',
     shopping: 'Nachkaufen',
     cook: 'Kochen',
     more: 'Mehr',
@@ -555,11 +554,13 @@ export const messages = {
     },
   },
   addHub: {
-    receipt: 'PDF, Screenshot oder Foto vom Kassenbon',
+    receipt: 'Alle Einkäufe auf einmal: PDF, Screenshot oder Foto vom Kassenbon',
     barcode: 'Packung vor die Kamera halten',
-    manualTitle: 'Von Hand erfassen',
+    manualTitle: 'Von Hand',
     manual: 'Name eintippen, den Rest schlägt rettich vor',
-    ai: 'Foto in ChatGPT, Claude oder Gemini, Liste hier übernehmen',
+    startTitle: 'Zum Start: einmal Bestand aufnehmen',
+    start:
+      'Hast du noch Bons der letzten Tage? Lade sie hoch, dann kennt rettich deinen Kühlschrank in wenigen Minuten. Was nicht auf einem Bon steht, scannst du einfach.',
   },
   receiptUpload: {
     match: {
@@ -627,38 +628,6 @@ export const messages = {
       count === 1 ? '1 Artikel übernehmen' : `${String(count)} Artikel übernehmen`,
     duplicate: 'Diesen Bon hast du schon übernommen.',
     saveFailed: 'Speichern hat nicht geklappt. Bitte versuch es nochmals.',
-  },
-  aiImport: {
-    intro:
-      'Mach ein Foto vom Kühlschrank, Einkauf oder Kassenbon mit deiner eigenen KI (ChatGPT, Claude, Gemini …) und übernimm die Liste hier.',
-    step1: '1. Auftrag kopieren',
-    copy: 'Auftrag kopieren',
-    copied: 'Kopiert. Jetzt in deine KI einfügen.',
-    copyFailed: 'Kopieren ging nicht. Markier den Auftrag unten und kopier ihn von Hand.',
-    showPrompt: 'Auftrag anzeigen',
-    step2: '2. In deiner KI: Foto machen und Auftrag einfügen',
-    step3: '3. Antwort hier einfügen',
-    answer: 'Antwort der KI',
-    answerHint: 'Den ganzen Code-Block kopieren, auch wenn Text drumherum steht.',
-    check: 'Prüfen',
-    privacy:
-      'Das Foto geht nur an die KI, die du selbst wählst. rettich bekommt nur die Liste und speichert erst, wenn du übernimmst.',
-    unreadable:
-      'In dieser Antwort hat rettich keine Artikel gefunden. Kopier den ganzen Code-Block.',
-    reviewTitle: (count: number) =>
-      count === 1 ? '1 Artikel erkannt' : `${String(count)} Artikel erkannt`,
-    skipped: (count: number) =>
-      count === 1
-        ? '1 Eintrag konnte rettich nicht lesen:'
-        : `${String(count)} Einträge konnte rettich nicht lesen:`,
-    take: (name: string) => `${name} übernehmen`,
-    location: (name: string) => `Lagerort für ${name}`,
-    estimated: 'Datum wird geschätzt',
-    until: (date: string) => `bis ${date}`,
-    save: (count: number) =>
-      count === 1 ? '1 Artikel übernehmen' : `${String(count)} Artikel übernehmen`,
-    failed: 'Übernehmen hat nicht geklappt. Bitte versuch es nochmals.',
-    manual: 'Lieber von Hand erfassen',
   },
   scanner: {
     open: 'Barcode scannen',
