@@ -22,7 +22,7 @@ export function MenuList({ entries }: { entries: readonly MenuEntry[] }) {
             to={to}
             className={`${GROUPED_ROW_LINK} flex min-h-14 items-center gap-3 py-2 pr-3 pl-4`}
           >
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-basil-100 text-basil-800">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-surface-muted text-basil-700">
               <Icon size={22} aria-hidden="true" />
             </span>
             <span className="min-w-0 flex-1">

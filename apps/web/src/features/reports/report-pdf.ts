@@ -15,11 +15,11 @@ const PAGE = { width: 210, height: 297, margin: 16 };
 const CONTENT = PAGE.width - 2 * PAGE.margin;
 type Rgb = [number, number, number];
 const COLOR: Record<'basil' | 'basilLight' | 'ink' | 'muted' | 'line' | 'today', Rgb> = {
-  basil: [44, 113, 73],
-  basilLight: [239, 250, 228],
-  ink: [28, 33, 30],
-  muted: [100, 108, 103],
-  line: [222, 224, 219],
+  basil: [19, 94, 66],
+  basilLight: [238, 249, 243],
+  ink: [20, 22, 26],
+  muted: [91, 97, 104],
+  line: [219, 222, 226],
   today: [176, 58, 46],
 };
 const MONTHS = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];

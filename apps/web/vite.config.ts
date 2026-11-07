@@ -53,8 +53,8 @@ export default defineConfig({
         display: 'standalone',
         start_url: '/',
         scope: '/',
-        theme_color: '#f4f5f1',
-        background_color: '#f4f5f1',
+        theme_color: '#f3f4f6',
+        background_color: '#f3f4f6',
         // PNGs from scripts/icons.ts: Android needs 192 and 512 px to offer «install».
         icons: [
           { src: 'icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
