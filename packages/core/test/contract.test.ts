@@ -31,6 +31,7 @@ describe('contract v1', () => {
       'recipes.suggest',
       'recipes.get',
       'stats.waste',
+      'prices.memory',
       'rescue.offer',
       'receipts.import',
       'household.export',
