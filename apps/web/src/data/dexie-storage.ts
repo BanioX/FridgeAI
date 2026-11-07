@@ -60,6 +60,8 @@ export function dexieStorage(db: FridgeDb): Storage {
         await db.commands.add(entry);
       },
     },
+    productFacts: { get: async (gtin) => (await db.catalogCache.get(gtin))?.info },
+    productImages: { get: (gtin) => db.productImages.get(gtin) },
     // All tables: IndexedDB locks them only for the length of one short local command.
     transaction: (work) => db.transaction('rw', db.tables, work),
   };

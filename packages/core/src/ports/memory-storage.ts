@@ -1,3 +1,5 @@
+import type { Gtin } from '../model/primitives';
+import type { ProductInfo } from './index';
 import type { DomainEvent } from '../contract/events';
 import type { Id } from '../ids';
 import type { Household } from '../model/household';
@@ -22,7 +24,12 @@ interface Row {
  * the storage ports. Rows are copied in and out, so callers cannot change stored data by accident;
  * a failing transaction restores every table.
  */
-export function createMemoryStorage(): Storage {
+export function createMemoryStorage(
+  caches: {
+    productFacts?: Partial<Record<Gtin, ProductInfo>>;
+    productImages?: Partial<Record<Gtin, string>>;
+  } = {},
+): Storage {
   const tables: Map<string, unknown>[] = [];
   const table = <TValue>() => {
     const map = new Map<string, TValue>();
@@ -130,6 +137,15 @@ export function createMemoryStorage(): Storage {
     receiptLines: recordStore(),
     events,
     commands,
+    productFacts: {
+      get: (gtin) => Promise.resolve(caches.productFacts?.[gtin]),
+    },
+    productImages: {
+      get: (gtin) => {
+        const dataUrl = caches.productImages?.[gtin];
+        return Promise.resolve(dataUrl === undefined ? undefined : { dataUrl, source: 'off' });
+      },
+    },
     transaction,
   };
 }
