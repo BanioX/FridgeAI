@@ -98,3 +98,23 @@
   font-weight: 700;
   letter-spacing: -0.02em;
 }
+
+/* «Fruit Ninja» after a swipe: the food picture falls into two halves that fly apart. */
+@keyframes slice-a {
+  to {
+    transform: translate(-14px, -10px) rotate(-14deg);
+    opacity: 0;
+  }
+}
+@keyframes slice-b {
+  to {
+    transform: translate(14px, 10px) rotate(14deg);
+    opacity: 0;
+  }
+}
+@utility slice-a {
+  animation: slice-a 350ms ease-out forwards;
+}
+@utility slice-b {
+  animation: slice-b 350ms ease-out forwards;
+}

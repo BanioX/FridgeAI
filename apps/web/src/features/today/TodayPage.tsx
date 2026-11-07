@@ -12,6 +12,8 @@ import { Card } from '../../ui/Card';
 import { expiryBadge } from '../../ui/expiry-badge';
 import { GROUPED_ROW_LINK, GroupedList, GroupedListItem } from '../../ui/GroupedList';
 import { InventoryItemRow } from '../inventory/InventoryItemRow';
+import { SWIPE_HINT_ID, swipeLabel, useSwipeEat } from '../inventory/swipe-eat';
+import { SwipeAction } from '../../ui/SwipeAction';
 import { checkDue, readLastCheck } from '../check/check-state';
 import { RecipeIdeas } from '../recipes/RecipeIdeas';
 import { ImpactCard } from './ImpactCard';
@@ -23,6 +25,7 @@ const MORE_LINK =
 export function TodayPage() {
   const { householdId, inventory, today } = useAppData();
   const money = useMoney();
+  const swipe = useSwipeEat();
   // Read once per visit; a finished check writes it before coming back here.
   const [lastCheck] = useState(readLastCheck);
   const all = useLiveQuery(
@@ -109,19 +112,36 @@ export function TodayPage() {
         {urgent.length === 0 ? (
           <Card variant="tip">{t.expiringEmpty}</Card>
         ) : (
-          <GroupedList>
-            {urgent.slice(0, URGENT_LIMIT).map((item) => (
-              <GroupedListItem key={item.id}>
-                <Link to={`/inventory/${item.id}`} className={GROUPED_ROW_LINK}>
-                  <InventoryItemRow
-                    chevron
-                    item={item}
-                    status={expiryBadge(item.status, item.expiresOn, today, item.location)}
-                  />
-                </Link>
-              </GroupedListItem>
-            ))}
-          </GroupedList>
+          <>
+            {swipe.tip}
+            <GroupedList>
+              {urgent.slice(0, URGENT_LIMIT).map((item) => (
+                <GroupedListItem key={item.id}>
+                  <SwipeAction
+                    label={swipeLabel(item)}
+                    onCommit={() => {
+                      swipe.eat(item);
+                    }}
+                  >
+                    {({ sliced }) => (
+                      <Link
+                        to={`/inventory/${item.id}`}
+                        aria-describedby={SWIPE_HINT_ID}
+                        className={GROUPED_ROW_LINK}
+                      >
+                        <InventoryItemRow
+                          chevron
+                          sliced={sliced}
+                          item={item}
+                          status={expiryBadge(item.status, item.expiresOn, today, item.location)}
+                        />
+                      </Link>
+                    )}
+                  </SwipeAction>
+                </GroupedListItem>
+              ))}
+            </GroupedList>
+          </>
         )}
         {urgent.length > URGENT_LIMIT ? (
           <Link to="/inventory" className={MORE_LINK}>
@@ -141,6 +161,7 @@ export function TodayPage() {
       />
 
       <ImpactCard from={startOfMonth(today)} to={today} />
+      {swipe.toast}
     </div>
   );
 }

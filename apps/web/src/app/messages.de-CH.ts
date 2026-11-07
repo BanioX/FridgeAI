@@ -211,6 +211,19 @@ export const messages = {
     undone: (name: string) => `${name} ist wieder im Vorrat.`,
     undoFailed: 'Rückgängig hat nicht geklappt. Bitte versuch es nochmals.',
   },
+  swipe: {
+    tip: 'Tipp: Wisch einen Artikel nach links, wenn du eins gegessen hast.',
+    /** Visually hidden, read after the row name (WCAG 2.5.1: the item page has the buttons). */
+    hint: 'Nach links wischen: eins gegessen. Oder öffne den Artikel für alle Optionen.',
+    piece: 'Gegessen · −1',
+    portion: 'Gegessen · 1 Portion',
+    rest: 'Gegessen · alles',
+    /** «1 Glace gegessen» for whole pieces. */
+    eatenPieces: (count: number, name: string) => `${String(count)} ${name} gegessen`,
+    /** «Reis: 250 g gegessen» for amounts and fractions. */
+    eatenAmount: (name: string, amount: string) => `${name}: ${amount} gegessen`,
+    failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
+  },
   addItem: {
     name: 'Was ist es?',
     namePlaceholder: 'z. B. Grana Padano',

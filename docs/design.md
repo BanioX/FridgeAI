@@ -79,6 +79,7 @@ Systemschrift nach Apples Human Interface Guidelines (ADR-0021): SF Pro auf Appl
 - Radien: 10 px (Segmente), 12 px (Segment-Spur), 12 px (Eingaben, Buttons), 16 px (Karten), 24 px (Sheets), Pill für Chips und Status.
 - Karten ohne Rahmen, nur mit weichem Schatten (`shadow-card`); schwebende Elemente (Sheets, Toast) etwas mehr.
 - Bewegung 150–200 ms, ease-out; `prefers-reduced-motion` schaltet Animationen ab.
+- **Wegwischen: eins gegessen** (7.11.2026, `SwipeAction`): In Vorrat und «Läuft bald ab» zieht ein Wisch nach links das Zeilen-Bild weg und zeigt einen basil-700-Streifen mit «Gegessen · −1». Ab 40 % der Zeilenbreite oder mit schnellem Wisch zählt es (Haptik 15 ms, das Bild fällt in zwei Hälften auseinander, 350 ms), sonst federt die Zeile zurück. Ein Tipp öffnet weiter den Artikel, ein Wisch nie. Stück: 1, Gramm und Milliliter: der Rest (bis es Portionsgrössen im Katalog gibt). Ein Toast über der Tab-Leiste bietet «Rückgängig» für 5 Sekunden. Der Wisch ist nur eine Abkürzung: Die Artikelseite behält die Knöpfe (WCAG 2.5.1), die Zeile bekommt keinen zusätzlichen Knopf. Mit `prefers-reduced-motion` entfallen Hälften und Federn.
 
 ## Icons und Lebensmittel
 
