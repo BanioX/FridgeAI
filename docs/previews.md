@@ -9,7 +9,7 @@ Tipp: Falls im Handy-Browser Menüpunkte fehlen, im Browser-Menü «Desktop-Webs
 1. **dash.cloudflare.com** öffnen und anmelden.
 2. **Workers & Pages** → **Erstellen** (Create application) → **Repository importieren** (Import a repository).
 3. **GitHub verbinden.** GitHub fragt, wo die App «Cloudflare Workers and Pages» installiert werden soll. Wähle **Only select repositories** → `BanioX/FridgeAI`. Damit sieht Cloudflare nur dieses Repo.
-4. Repo **Rettich** auswählen und so ausfüllen:
+4. Repo **rettich** auswählen und so ausfüllen:
 
    | Feld | Wert |
    | --- | --- |

@@ -44,9 +44,9 @@ export async function reportPdf(
   const doc = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
   const kindName = messages.reports.kinds[options.kind];
   doc.setProperties({
-    title: `Rettich – ${kindName}`,
+    title: `rettich – ${kindName}`,
     subject: options.period,
-    creator: 'Rettich',
+    creator: 'rettich',
   });
   let y = PAGE.margin;
 

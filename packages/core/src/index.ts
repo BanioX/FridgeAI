@@ -1,5 +1,5 @@
 /**
- * @fridgeai/core – pure domain logic for Rettich.
+ * @fridgeai/core – pure domain logic for rettich.
  *
  * Rules (see CLAUDE.md): no DOM, no IndexedDB, no fetch. Everything external goes through ports.
  * The tsconfig enforces this by compiling src without DOM and Node type definitions.

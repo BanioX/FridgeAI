@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { groupThousands } from './format';
 
 /**
- * Money in Rettich is always an integer number of Rappen (1 CHF = 100 Rappen).
+ * Money in rettich is always an integer number of Rappen (1 CHF = 100 Rappen).
  * Never use floats for amounts (see ADR-0004).
  */
 export const RappenSchema = z.int().brand<'Rappen'>();
