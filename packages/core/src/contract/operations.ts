@@ -64,6 +64,20 @@ const ReceiptImportLineSchema = z.object({
   discountRappen: RappenSchema.max(0),
   isFood: z.boolean(),
   location: StorageLocationSchema.optional(),
+  /** Confirmed product from the open database or the household (receipts.matchLine). */
+  gtin: GtinSchema.optional(),
+  /** Name of that product for the inventory; the receipt line keeps the printed name. */
+  productName: z.string().trim().min(1).max(120).optional(),
+});
+
+const ReceiptMatchSchema = z.object({
+  gtin: GtinSchema,
+  name: z.string().min(1).max(120),
+  brand: z.string().max(80).optional(),
+  packSize: z.string().max(30).optional(),
+  /** `household`: learned from an earlier receipt; `off`: Open Food Facts. */
+  source: z.enum(['household', 'off']),
+  confidence: z.enum(['sure', 'maybe']),
 });
 
 /** What a report shows (ADR-0030), as computed by `buildReport`. */
@@ -818,6 +832,20 @@ export const CONTRACT_V1 = {
       lines: z.array(ReceiptImportLineSchema).min(1).max(300),
     }),
     output: z.object({ receiptId: IdSchema, itemIds: z.array(IdSchema), duplicate: z.boolean() }),
+  }),
+  'receipts.matchLine': query({
+    name: 'receipts.matchLine',
+    summary: {
+      de: 'Zu einer Bon-Zeile das Produkt finden: zuerst frühere Bons, dann Open Food Facts.',
+      en: 'Find the product for a receipt line: earlier receipts first, then Open Food Facts.',
+    },
+    scopes: ['inventory:read'],
+    /** Only the printed product name; never price, shop, date or quantity. */
+    input: z.object({ ...queryBase, name: z.string().trim().min(1).max(120) }),
+    output: z.object({
+      match: ReceiptMatchSchema.optional(),
+      openDatabase: z.enum(['none', 'searched', 'unavailable']),
+    }),
   }),
   'household.export': query({
     name: 'household.export',
