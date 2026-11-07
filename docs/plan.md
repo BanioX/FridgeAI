@@ -190,7 +190,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 - 5d: Übernahme in den Vorrat, Bild sofort verwerfen, Korrekturen in `ProductAlias`; E2E mit gemocktem OCR, Kamera-Fake-Device und verweigerter Berechtigung
 - **Delegation:** S für 5a und 5c, O für 5b und 5d.
 
-#### Schritt 5b – KI-Import «mit eigener KI erfassen» (ADR-0012, Stufe 1; Priorität nach dem manuellen Prototyp)
+#### Schritt 5b – KI-Import «mit eigener KI erfassen» (ADR-0012, Stufe 1) – **am 7.11.2026 aus der App entfernt** (Alban: kaum genutzt, untergräbt Premium)
 - Auftrag (Prompt) zum Kopieren mit festem Antwortformat; Parser für die KI-Antwort (Zeilen oder JSON) in `core`, streng geprüft
 - «Einfügen» → Review-Liste → übernehmen; derselbe Posteingang wie später MCP und Bon-Scan
 - Kein Server, keine Kosten für rettich
