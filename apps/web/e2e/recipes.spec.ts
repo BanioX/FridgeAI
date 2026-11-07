@@ -11,9 +11,9 @@ test('suggests a recipe for milk that expires tomorrow and puts the rest on the 
   await expect(page.getByRole('link', { name: /Vollmilch/ })).toBeVisible();
 
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Rezeptideen' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Rette heute' })).toBeVisible();
   // Every idea rescues the milk; which recipes come first depends on the collection.
-  const ideas = page.getByRole('region', { name: 'Rezeptideen' }).getByRole('link');
+  const ideas = page.getByRole('region', { name: 'Rette heute' }).getByRole('link');
   await expect(ideas.first()).toContainText('Rettet Vollmilch');
   await ideas.first().click();
   await expect(page.getByText('Da: Vollmilch')).toBeVisible();

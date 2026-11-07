@@ -9,17 +9,20 @@ import { GROUPED_ROW_LINK, GroupedList, GroupedListItem } from '../../ui/Grouped
 const t = messages.recipes;
 
 /**
- * Recipes that rescue what expires (plan 11c): three as «Rezeptideen» on «Start», up to ten as
+ * Recipes that rescue what expires (plan 11c): one as «Rette heute» on «Start», up to ten as
  * «Rette heute» on «Kochen». Without anything expiring, `empty` shows instead (or nothing).
  */
 export function RecipeIdeas({
   limit = 3,
-  title = t.ideasTitle,
+  title = t.rescueTitle,
   empty = null,
+  footer = null,
 }: {
   limit?: number;
   title?: string;
   empty?: ReactNode;
+  /** Shown below the list, e.g. a link to more recipes. */
+  footer?: ReactNode;
 }) {
   const { householdId, recipes } = useAppData();
   const ideas = useLiveQuery(
@@ -47,6 +50,7 @@ export function RecipeIdeas({
           />
         ))}
       </GroupedList>
+      {footer}
     </section>
   );
 }
