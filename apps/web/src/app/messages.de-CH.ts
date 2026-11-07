@@ -388,6 +388,38 @@ export const messages = {
     donation: 'Spende',
     public_fridge: 'öffentlicher Kühlschrank',
   },
+  receiptUpload: {
+    title: 'Bon hochladen',
+    intro:
+      'Wähl das PDF deines Kassenbons, z. B. aus der Coop- oder Migros-App. FridgeAI liest es auf deinem Gerät, das PDF wird nicht gespeichert.',
+    choose: 'PDF wählen',
+    reading: 'Bon wird gelesen …',
+    tooLarge: 'Die Datei ist zu gross für einen Bon (höchstens 5 MB).',
+    noText:
+      'In diesem PDF steht kein lesbarer Text, es ist wohl ein Foto. Fotos kann FridgeAI bald lesen.',
+    noLines: 'Auf diesem Bon hat FridgeAI keine Artikel gefunden.',
+    failed: 'Das PDF liess sich nicht lesen. Versuch es nochmals oder mit einem anderen Bon.',
+    sumOk: (total: string) => `Summe stimmt: ${total}`,
+    sumMismatch: (read: string, total: string) =>
+      `Die Summe stimmt nicht: gelesen ${read}, auf dem Bon ${total}. Prüf die Preise.`,
+    noTotal: 'Kein Total gefunden. Prüf die Preise.',
+    retailers: {
+      coop: 'Coop',
+      migros: 'Migros',
+      aldi: 'Aldi',
+      lidl: 'Lidl',
+      denner: 'Denner',
+      other: 'Laden',
+    },
+    fallbackNames: { item: 'Artikel', discount: 'Rabatt', deposit: 'Pfand', bag: 'Tasche' },
+    instead: (regular: string) => `statt ${regular}`,
+    notFood: 'kein Lebensmittel',
+    extras: (amount: string) => `Dazu Tasche, Pfand und Rabatte: ${amount}`,
+    take: (count: number) =>
+      count === 1 ? '1 Artikel übernehmen' : `${String(count)} Artikel übernehmen`,
+    duplicate: 'Diesen Bon hast du schon übernommen.',
+    saveFailed: 'Speichern hat nicht geklappt. Bitte versuch es nochmals.',
+  },
   aiImport: {
     title: 'Mit deiner eigenen KI erfassen',
     intro:

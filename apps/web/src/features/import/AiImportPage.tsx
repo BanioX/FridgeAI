@@ -20,6 +20,7 @@ import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { formatAmount } from '../inventory/add-item';
 import { locationOrder } from '../inventory/item-meta';
+import { ReceiptUpload } from '../receipts/ReceiptUpload';
 
 const t = messages.aiImport;
 
@@ -116,6 +117,8 @@ export function AiImportPage() {
   return (
     <div className="space-y-6 pb-8">
       <h1 className="large-title">{messages.pages.scan}</h1>
+
+      <ReceiptUpload />
 
       <Link
         to="/inventory/new?scan=1"
