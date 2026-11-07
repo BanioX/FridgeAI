@@ -117,7 +117,7 @@ describe('parseReceiptText', () => {
   });
 });
 
-// Layouts of real Coop and Migros PDFs (ADR-0027), with invented content.
+// Layouts of real Coop and Migros PDFs and the Lidl app (ADR-0027), with invented content.
 const COOP_PDF = `
                                          Musterstadt Zentrum
                                07.11.26 17:12 00123 00456789 001 0001234
@@ -152,6 +152,29 @@ Visa                                            8.61
 Gr               Satz             Total             MWST
 1                2.60 %            8.56             0.22
 2                8.10 %            0.05             0.00
+`;
+
+const LIDL_APP = `
+Kundenhotline:
+www.lidl.ch/Service & Hilfe
+CHF
+Nashi Birnen                    3.16 A
+  4 x 0.79
+    Lidl Plus Rabatt           -0.80
+    Lidl Plus Rabatt           -0.10
+Fairtrade Bio Bananen           1.96 A
+  0.984 kg x 1.99  CHF/kg
+    Lidl Plus Rabatt           -0.39
+Chickpic                        6.90 A
+  2 x 3.45
+Wattestäbchen                   1.13 B
+------------
+Dein Lidl Preis                11.86
+=============
+Karte                          11.86
+A  2.6 % MwSt von     10.80     0.27
+B  8.1 % MwSt von      1.05     0.08
+29.10.2026                  18:55:31
 `;
 
 const rows = (receipt: ParsedReceipt) =>
@@ -201,6 +224,18 @@ describe('parseReceiptText with real layouts', () => {
       ['item', 'M-Budget Vollmilch', '1 pcs', 125, 125, 0, true],
       ['item', 'Rüebli', '860 g', 240, 206, 0, true],
       ['item', 'Volvic Bio Orange 75cl', '1 pcs', 195, 195, 0, true],
+    ]);
+  });
+
+  it('reads a Lidl receipt: quantity and «Lidl Plus Rabatt» below the item', () => {
+    const receipt = parseReceiptText(LIDL_APP);
+    expect(receipt).toMatchObject({ retailer: 'lidl', purchasedOn: '2026-10-29', sumCheck: 'ok' });
+    expect(receipt.storeName).toBeUndefined();
+    expect(rows(receipt)).toEqual([
+      ['item', 'Nashi Birnen', '4 pcs', 79, 316, -90, true],
+      ['item', 'Fairtrade Bio Bananen', '984 g', 199, 196, -39, true],
+      ['item', 'Chickpic', '2 pcs', 345, 690, 0, true],
+      ['item', 'Wattestäbchen', '1 pcs', undefined, 113, 0, false],
     ]);
   });
 
