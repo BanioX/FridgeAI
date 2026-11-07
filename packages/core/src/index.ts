@@ -36,3 +36,4 @@ export * from './recipes/recipes.de-CH';
 export * from './receipt/parse-receipt';
 export * from './receipt/pdf-lines';
 export * from './prices/price-memory';
+export * from './reports/report';
