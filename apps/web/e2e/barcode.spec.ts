@@ -126,6 +126,17 @@ test.describe('with camera permission', () => {
     await page.getByRole('button', { name: 'Kamera stoppen' }).click();
     await expect(page.getByRole('button', { name: 'Kamera starten' })).toBeVisible();
   });
+
+  test('always offers light; without a switchable torch the camera app opens', async ({ page }) => {
+    await page.goto('/inventory/new?scan=1');
+    await page.getByRole('button', { name: 'Kamera starten' }).click();
+    // The test camera has no torch, like Safari on iPhone.
+    const chooser = page.waitForEvent('filechooser');
+    await page.getByRole('button', { name: 'Licht' }).click();
+    expect((await chooser).isMultiple()).toBe(false);
+    await expect(page.getByText(/Blitz einschalten und den Code fotografieren/)).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Kamera starten' })).toBeVisible();
+  });
 });
 
 test('fills in the product from Open Food Facts and knows it offline next time', async ({
