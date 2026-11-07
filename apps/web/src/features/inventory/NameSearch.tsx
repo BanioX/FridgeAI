@@ -1,22 +1,32 @@
-import { categoryById, fallbackCategory, type OperationOutput } from '@fridgeai/core';
+import type { OperationOutput } from '@fridgeai/core';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { ChevronRight, Search } from 'lucide-react';
-import { useState } from 'react';
+import { ChevronRight } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
 import { Button } from '../../ui/Button';
 import { GroupedList, GroupedListItem } from '../../ui/GroupedList';
 
-export type FoundProduct = OperationOutput<'products.search'>['products'][number];
+type SearchResult = OperationOutput<'products.search'>;
+export type FoundProduct = SearchResult['products'][number];
 
 const t = messages.nameSearch;
+/** Open Food Facts is asked once the person pauses, not on every keystroke (ADR-0025). */
+const PAUSE_BEFORE_SEARCH_MS = 600;
+/** After a failed search (offline, more than 10 searches a minute) the app waits before asking again. */
+const WAIT_AFTER_FAILURE_MS = 30_000;
+const MIN_LETTERS_ONLINE = 3;
+const UNAVAILABLE: SearchResult = { products: [], openDatabase: 'unavailable' };
+
+/** «coop g» follows «coop»: earlier hits stay visible until the new ones arrive. */
+const related = (a: string, b: string) =>
+  a.toLowerCase().startsWith(b.toLowerCase()) || b.toLowerCase().startsWith(a.toLowerCase());
 
 /**
- * Product search under «Was ist es?» (ADR-0024):
- * - «Bereits verwendet»: products this household already entered, live while typing, on the
+ * Product search under «Was ist es?» (ADR-0024, ADR-0025):
+ * - «Bereits verwendet»: products this household already entered, live from two letters, on the
  *   device only;
- * - «… suchen»: also Open Food Facts (Switzerland), only on a tap (rate limit, nothing
- *   half-typed leaves the device).
+ * - «Gefundene Produkte»: Open Food Facts (Switzerland) from three letters, once typing pauses.
  */
 export function NameSearch({
   query,
@@ -26,10 +36,13 @@ export function NameSearch({
   onPick: (product: FoundProduct) => void;
 }) {
   const { householdId, inventory } = useAppData();
-  const [busy, setBusy] = useState(false);
-  const [result, setResult] = useState<OperationOutput<'products.search'> | null>(null);
-  const [searched, setSearched] = useState('');
   const words = query.trim().replace(/\s+/g, ' ');
+  const [results, setResults] = useState<Readonly<Record<string, SearchResult>>>({});
+  const [latest, setLatest] = useState<string | null>(null);
+  const [retries, setRetries] = useState(0);
+  const waitUntil = useRef(0);
+  const known = results[words];
+
   const used = useLiveQuery(
     async () =>
       words.length < 2
@@ -45,108 +58,120 @@ export function NameSearch({
     [householdId, words],
   );
 
+  useEffect(() => {
+    if (words.length < MIN_LETTERS_ONLINE || known !== undefined) {
+      return;
+    }
+    let current = true;
+    const timer = setTimeout(() => {
+      const ask =
+        Date.now() < waitUntil.current
+          ? Promise.resolve(UNAVAILABLE)
+          : inventory['products.search']({ householdId, query: words, limit: 10 }).catch(
+              () => UNAVAILABLE,
+            );
+      void ask.then((result) => {
+        if (result.openDatabase === 'unavailable') {
+          waitUntil.current = Math.max(waitUntil.current, Date.now() + WAIT_AFTER_FAILURE_MS);
+        }
+        setResults((all) => ({ ...all, [words]: result }));
+        if (current) {
+          setLatest(words);
+        }
+      });
+    }, PAUSE_BEFORE_SEARCH_MS);
+    return () => {
+      current = false;
+      clearTimeout(timer);
+    };
+  }, [householdId, inventory, words, known, retries]);
+
   if (words.length < 2) {
     return null;
   }
 
-  async function search() {
-    if (busy) {
-      return;
-    }
-    setBusy(true);
-    try {
-      setResult(await inventory['products.search']({ householdId, query: words }));
-    } catch {
-      setResult({ products: [], openDatabase: 'unavailable' });
-    } finally {
-      setSearched(words);
-      setBusy(false);
-    }
+  const online = words.length >= MIN_LETTERS_ONLINE;
+  const shown = known ?? (latest !== null && related(latest, words) ? results[latest] : undefined);
+  const more = online ? (shown?.products.filter((product) => product.source === 'off') ?? []) : [];
+  const ownCount = used?.length ?? 0;
+
+  function retry() {
+    waitUntil.current = 0;
+    setResults((all) => Object.fromEntries(Object.entries(all).filter(([key]) => key !== words)));
+    setRetries((count) => count + 1);
   }
 
-  const pick = (product: FoundProduct) => {
-    setResult(null);
-    onPick(product);
-  };
-  const current = result !== null && searched === words ? result : null;
-
   return (
-    <div className="space-y-2">
-      {current === null && used !== undefined && used.length > 0 ? (
-        <section aria-labelledby="used-title" className="space-y-1.5 pt-1">
-          <h3 id="used-title" className="text-sm font-semibold text-ink-muted">
-            {t.used}
-          </h3>
-          <FoundList products={used} onPick={pick} markOwn={false} />
-        </section>
+    <div className="space-y-3 pt-1">
+      {used !== undefined && used.length > 0 ? (
+        <FoundSection id="used-title" title={t.used} products={used} onPick={onPick} />
       ) : null}
-      <Button
-        variant="ghost"
-        icon={Search}
-        disabled={busy}
-        className="-ml-3"
-        onClick={() => void search()}
-      >
-        {busy ? t.searching : t.search(words)}
-      </Button>
-      {current === null ? null : (
-        <div className="space-y-2">
-          {current.products.length > 0 ? (
-            <FoundList products={current.products} onPick={pick} />
-          ) : null}
+      {more.length > 0 ? (
+        <FoundSection id="more-title" title={t.more} products={more} onPick={onPick} />
+      ) : null}
+      {online ? (
+        <div className="flex flex-wrap items-center gap-x-3">
           <p role="status" className="text-sm text-ink-muted">
-            {current.openDatabase === 'unavailable'
-              ? t.unavailable
-              : current.products.length === 0
-                ? t.none
-                : t.attribution}
+            {known === undefined
+              ? t.searching
+              : known.openDatabase === 'unavailable'
+                ? t.unavailable
+                : more.length === 0 && ownCount === 0
+                  ? t.none
+                  : more.length > 0
+                    ? t.attribution
+                    : ''}
           </p>
+          {known?.openDatabase === 'unavailable' ? (
+            <Button variant="ghost" className="-ml-3" onClick={retry}>
+              {t.retry}
+            </Button>
+          ) : null}
         </div>
-      )}
+      ) : null}
     </div>
   );
 }
 
-function FoundList({
+function FoundSection({
+  id,
+  title,
   products,
   onPick,
-  markOwn = true,
 }: {
+  id: string;
+  title: string;
   products: readonly FoundProduct[];
   onPick: (product: FoundProduct) => void;
-  /** «schon erfasst» next to own products; not needed in the «Bereits verwendet» list. */
-  markOwn?: boolean;
 }) {
   return (
-    <GroupedList>
-      {products.map((product) => (
-        <GroupedListItem key={`${product.source}-${product.gtin ?? product.name}`}>
-          <button
-            type="button"
-            onClick={() => {
-              onPick(product);
-            }}
-            className="flex min-h-14 w-full items-center gap-3 py-2 pr-3 pl-4 text-left hover:bg-surface-muted focus-visible:outline-2 focus-visible:-outline-offset-2"
-          >
-            <span aria-hidden="true" className="grid size-10 shrink-0 place-items-center text-2xl">
-              {(categoryById(product.categoryId) ?? fallbackCategory()).emoji}
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block truncate font-semibold">{product.name}</span>
-              <span className="block truncate text-sm text-ink-muted">
-                {[
-                  product.brand,
-                  product.packSize,
-                  markOwn && product.source === 'household' ? t.own : undefined,
-                ]
-                  .filter(Boolean)
-                  .join(' · ')}
+    <section aria-labelledby={id} className="space-y-1.5">
+      <h2 id={id} className="text-sm font-semibold text-ink-muted">
+        {title}
+      </h2>
+      <GroupedList>
+        {products.map((product) => (
+          <GroupedListItem key={`${product.source}-${product.gtin ?? product.name}`} inset="text">
+            <button
+              type="button"
+              onClick={() => {
+                onPick(product);
+              }}
+              className="flex min-h-14 w-full items-center gap-3 py-2 pr-3 pl-4 text-left hover:bg-surface-muted active:bg-surface-muted focus-visible:outline-2 focus-visible:-outline-offset-2"
+            >
+              <span className="min-w-0 flex-1">
+                <span className="block truncate font-semibold">{product.name}</span>
+                {product.brand === undefined && product.packSize === undefined ? null : (
+                  <span className="block truncate text-sm text-ink-muted">
+                    {[product.brand, product.packSize].filter(Boolean).join(' · ')}
+                  </span>
+                )}
               </span>
-            </span>
-            <ChevronRight size={18} aria-hidden="true" className="shrink-0 text-ink-muted/60" />
-          </button>
-        </GroupedListItem>
-      ))}
-    </GroupedList>
+              <ChevronRight size={18} aria-hidden="true" className="shrink-0 text-ink-muted/60" />
+            </button>
+          </GroupedListItem>
+        ))}
+      </GroupedList>
+    </section>
   );
 }

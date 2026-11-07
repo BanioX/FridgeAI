@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './test';
 
 // Open Food Facts is never called for real in tests.
 const SEARCH = 'https://world.openfoodfacts.org/cgi/search.pl**';
@@ -28,15 +28,20 @@ test('finds «Coop Gipfeli» by name and fills in the form like a scan', async (
   );
 
   await page.goto('/inventory/new');
-  await page.getByLabel('Was ist es?').fill('Coop Gipfeli');
-  // Nothing is sent while typing.
+  const field = page.getByLabel('Was ist es?');
+  // Two letters stay on the device.
+  await field.fill('Co');
+  await page.waitForTimeout(900);
   expect(searches).toEqual([]);
-  await page.getByRole('button', { name: '«Coop Gipfeli» suchen' }).click();
-  const hit = page.getByRole('button', { name: /Gipfeli.*Coop · 180 g/ });
+  // While typing nothing is sent; once typing pauses, one search goes out (ADR-0025).
+  await field.pressSequentially('op Gipfeli', { delay: 40 });
+  const more = page.getByRole('region', { name: 'Gefundene Produkte' });
+  const hit = more.getByRole('button', { name: /Gipfeli.*Coop · 180 g/ });
   await expect(hit).toBeVisible();
   expect(searches).toHaveLength(1);
   expect(searches[0]).toContain('search_terms=Coop%20Gipfeli');
   expect(searches[0]).toContain('tag_0=switzerland');
+  await expect(page.getByText('Daten: Open Food Facts (Schweiz).')).toBeVisible();
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations).toEqual([]);
 
@@ -48,22 +53,35 @@ test('finds «Coop Gipfeli» by name and fills in the form like a scan', async (
   await page.getByRole('button', { name: 'Speichern und nächsten erfassen' }).click();
   await expect(page.getByText('Gipfeli ist gespeichert.')).toBeVisible();
 
-  // Next time it shows up while typing under «Bereits verwendet», without asking the internet.
-  await page.getByLabel('Was ist es?').fill('gipf');
+  // Next time it shows up at once under «Bereits verwendet», and only there.
+  await field.fill('gipf');
   const used = page.getByRole('region', { name: 'Bereits verwendet' });
   await expect(used.getByRole('button', { name: /Gipfeli/ })).toBeVisible();
-  expect(searches).toHaveLength(1);
+  await expect.poll(() => searches.length).toBe(2);
+  await expect(page.getByRole('status').filter({ hasText: 'Suche' })).toHaveCount(0);
+  await expect(more).toHaveCount(0);
   await used.getByRole('button', { name: /Gipfeli/ }).click();
   await expect(page.getByLabel('Was ist es?')).toHaveValue('Gipfeli');
   await expect(page.getByRole('region', { name: 'Bereits verwendet' })).toHaveCount(0);
 });
 
 test('says so when the search is unavailable and keeps manual entry open', async ({ page }) => {
-  await page.route(SEARCH, (route) => route.fulfill({ status: 429, body: 'Too many requests' }));
+  const searches: string[] = [];
+  await page.route(SEARCH, (route) => {
+    searches.push(route.request().url());
+    return route.fulfill({ status: 429, body: 'Too many requests' });
+  });
   await page.goto('/inventory/new');
   await page.getByLabel('Was ist es?').fill('Weggli');
-  await page.getByRole('button', { name: '«Weggli» suchen' }).click();
+  await expect(page.getByText(/Die Produktsuche ist gerade nicht erreichbar/)).toBeVisible();
+  // Typing on does not keep asking; «Nochmals suchen» does.
+  await page.getByLabel('Was ist es?').fill('Weggli Coop');
+  await page.waitForTimeout(900);
+  await expect(page.getByText(/Die Produktsuche ist gerade nicht erreichbar/)).toBeVisible();
+  expect(searches).toHaveLength(1);
+  await page.getByRole('button', { name: 'Nochmals suchen' }).click();
+  await expect.poll(() => searches.length).toBe(2);
   await expect(page.getByText(/Die Produktsuche ist gerade nicht erreichbar/)).toBeVisible();
   await page.getByRole('button', { name: 'Speichern', exact: true }).click();
-  await expect(page.getByRole('link', { name: /Weggli/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Weggli Coop/ })).toBeVisible();
 });
