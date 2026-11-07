@@ -1,6 +1,6 @@
 import { LocalDateSchema, type LocalDate } from './model/primitives';
 
-/** All calendar logic in FridgeAI runs in Swiss local time. */
+/** All calendar logic in Rettich runs in Swiss local time. */
 export const HOME_TIME_ZONE = 'Europe/Zurich';
 
 const MS_PER_DAY = 86_400_000;

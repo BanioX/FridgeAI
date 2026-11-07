@@ -1,4 +1,4 @@
-# FridgeAI – Use Cases (Brainstorming)
+# Rettich – Use Cases (Brainstorming)
 
 > **Status:** Brainstorming zur Diskussion, Stand 6. November 2026.
 > **Quellen:** [`brief.md`](./brief.md), Blue-Ocean-Analyse (6.11.2026), ATL1 «Unternehmensführung» (Okt. 2025), Businessplan ATL2 (März 2026). Zusammenfassung in [`blue-ocean.md`](./blue-ocean.md).
@@ -165,7 +165,7 @@ Person ─ Haushalt ─ Haus ─ Quartier ─ Gemeinde ─ Kollektiv/Organisatio
 | A) Team-Stufe | ein Kühlschrank, bis ca. 10 Personen, Beschriften, «Wem gehört das?», Erinnerungen | mehr Personen und Kühlschränke |
 | B) Pro für Büros (pro Person/Monat) | wie A | Putztag-Regeln und Protokolle, Abwesenheits-Regel, Rollen, Berichte, mehrere Standorte, später SSO |
 | C) Lizenz für Facility Management, Coworking-Spaces, Kantinen-Betreiber | – | Pauschale pro Standort, Sticker-Rollen als Zubehör |
-| D) Büro als Einstieg (B2B2C) | Büro-Grundfunktionen gratis | Kolleg:innen lernen FridgeAI kennen und nutzen es zu Hause; Umsatz über Haushalts-Pro |
+| D) Büro als Einstieg (B2B2C) | Büro-Grundfunktionen gratis | Kolleg:innen lernen Rettich kennen und nutzen es zu Hause; Umsatz über Haushalts-Pro |
 
 **Phase:** nach dem Teilen im Haushalt (Schritt 7, Konto und Sync), frühestens v1. Bis dahin sorgt das Datenmodell dafür, dass nichts umgebaut werden muss.
 
@@ -223,7 +223,7 @@ Person ─ Haushalt ─ Haus ─ Quartier ─ Gemeinde ─ Kollektiv/Organisatio
 
 Damit diese Fälle später ohne Umbau möglich sind, baut der MVP eine saubere **Schnittstelle** (Commands, Queries, Events) mit Einwilligungsmodell. Details: [`plan.md`](./plan.md), Abschnitt 2.
 
-| Partner | Use Case | Was FridgeAI liefert | Erlösmodell | Phase |
+| Partner | Use Case | Was Rettich liefert | Erlösmodell | Phase |
 | --- | --- | --- | --- | --- |
 | **Gemeinden, Kantone, Arbeitgeber, Versicherer** | Food-Waste-Programm, 4-Wochen-Challenge | Aggregierte, anonymisierte Wirkung (kg, CHF) | Lizenz pro Programm (laut Analyse der realistischste Umsatz) | v1 |
 | **KI-Assistenten** (Claude, ChatGPT u. a.) via MCP | «Was muss ich heute essen?», «Was koche ich?», «Setz Milch auf die Liste» | MCP-Tools mit Haushalts-Einwilligung | Pro-Feature, Reichweite | v1 |

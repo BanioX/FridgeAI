@@ -11,7 +11,7 @@ import {
  *
  * - Classic EAN/UPC barcodes only carry the GTIN (article number).
  * - GS1 2D codes (GS1 DataMatrix, GS1 QR with Digital Link URIs) can also carry the expiry date,
- *   batch and weight. Retail is moving to them («GS1 Sunrise 2027»); FridgeAI reads them already.
+ *   batch and weight. Retail is moving to them («GS1 Sunrise 2027»); Rettich reads them already.
  */
 export interface Gs1Data {
   gtin?: Gtin;
@@ -39,7 +39,7 @@ export interface ScannedCode {
 const GROUP_SEPARATOR = '\u001d';
 const SYMBOLOGY_PREFIX = /^\][A-Za-z]\d/; // e.g. ]d2 (DataMatrix), ]Q3 (QR), ]C1 (GS1-128)
 
-/** Length rules of the application identifiers (AIs) FridgeAI understands, by their first digits. */
+/** Length rules of the application identifiers (AIs) Rettich understands, by their first digits. */
 interface AiRule {
   aiLength: number;
   /** Fixed data length, or undefined for variable length (terminated by GS or end). */

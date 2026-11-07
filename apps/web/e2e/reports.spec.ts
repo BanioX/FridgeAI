@@ -23,10 +23,10 @@ test('creates a PDF report on the device and hands it over', async ({ page }) =>
     page.waitForEvent('download'),
     page.getByRole('button', { name: 'PDF erstellen' }).click(),
   ]);
-  expect(download.suggestedFilename()).toMatch(/^FridgeAI-fridge-\d{4}-\d{2}-\d{2}\.pdf$/);
+  expect(download.suggestedFilename()).toMatch(/^Rettich-fridge-\d{4}-\d{2}-\d{2}\.pdf$/);
   const pdf = await readFile(await download.path());
   expect(pdf.subarray(0, 5).toString('latin1')).toBe('%PDF-');
-  expect(pdf.toString('latin1')).toContain('FridgeAI');
+  expect(pdf.toString('latin1')).toContain('Rettich');
   expect(pdf.length).toBeGreaterThan(2000);
   await expect(page.getByText('Das PDF ist bereit.')).toBeVisible();
 });

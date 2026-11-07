@@ -1,10 +1,10 @@
-# Datenschutz bei FridgeAI (Entwurf)
+# Datenschutz bei Rettich (Entwurf)
 
 > **Entwurf, keine Rechtsberatung.** Stand: v0.4.0, 6. November 2026. Vor einem öffentlichen Start prüfen Alban und eine Fachperson diesen Text (Plan 12d). Massstab: Schweizer Datenschutzgesetz (DSG), für Nutzer:innen in der EU die DSGVO.
 
 ## Kurz gesagt
 
-- Dein Vorrat, deine Einkaufsliste und deine Statistik bleiben **auf deinem Gerät**. Es gibt kein Konto und keinen FridgeAI-Server mit deinen Daten.
+- Dein Vorrat, deine Einkaufsliste und deine Statistik bleiben **auf deinem Gerät**. Es gibt kein Konto und keinen Rettich-Server mit deinen Daten.
 - Beim Scannen geht **nur die Barcode-Nummer** an Open Food Facts, damit Name, Nährwerte und Packungsbild kommen. Suchst du ein Produkt nach Namen, gehen ab drei Buchstaben **nur die getippten Wörter** dorthin, sobald du kurz mit Tippen innehältst.
 - Fotos von Codes und Bons sowie Bon-PDFs werden auf dem Gerät gelesen und **nie gespeichert**.
 - **Kein Tracking, keine Werbung, keine Cookies.**
@@ -14,13 +14,13 @@
 
 Alban Hyseni, Schweiz. Kontakt: _[E-Mail-Adresse vor dem Start eintragen]_.
 
-## Welche Daten FridgeAI speichert, und wo
+## Welche Daten Rettich speichert, und wo
 
 Alles liegt im Speicher deines Browsers auf diesem Gerät (IndexedDB). Ohne dein Zutun verlässt nichts davon das Gerät.
 
 | Was | Wozu |
 | --- | --- |
-| Artikel im Vorrat: Name, Kategorie, Ort, Menge, Ablaufdatum, Preis (falls erfasst) | Damit FridgeAI weiss, was du hast und was bald abläuft |
+| Artikel im Vorrat: Name, Kategorie, Ort, Menge, Ablaufdatum, Preis (falls erfasst) | Damit Rettich weiss, was du hast und was bald abläuft |
 | Abschlüsse: gegessen, weitergegeben, weggeworfen, mit Grund und Wert | Rückgängig, «Deine Wirkung diesen Monat» |
 | Einkaufsliste | «Du hast noch …» gegen Doppelkäufe |
 | Gelesene Bons: Laden, Datum, Total und pro Zeile Name, Menge, Preis, Rabatt (nie Foto, PDF oder Karten- und Kundennummern) | Echte Preise im Vorrat, später dein Preisgedächtnis |
@@ -36,11 +36,11 @@ Zusätzlich merkt sich der Browser zwei Kleinigkeiten ohne Personenbezug:
 
 | Empfänger | Was | Wann |
 | --- | --- | --- |
-| **Open Food Facts** (offene Produktdatenbank, Frankreich) | Die Barcode-Nummer, dazu technisch deine IP-Adresse | Wenn du einen Barcode scannst oder eintippst, den FridgeAI noch nicht kennt |
+| **Open Food Facts** (offene Produktdatenbank, Frankreich) | Die Barcode-Nummer, dazu technisch deine IP-Adresse | Wenn du einen Barcode scannst oder eintippst, den Rettich noch nicht kennt |
 | **Open Food Facts, Suche** | Die getippten Wörter (z. B. «Coop Gipfeli»), dazu technisch deine IP-Adresse | Wenn du im Feld «Was ist es?» mindestens drei Buchstaben tippst und kurz innehältst (wie bei Yazio) |
 | **Open Food Facts, Bildserver** | Abruf des Packungsbilds, dazu technisch deine IP-Adresse | Einmal pro Barcode, danach liegt das Bild auf dem Gerät |
-| **Cloudflare** (Hoster der App) | Abruf der App-Dateien, dazu technisch deine IP-Adresse und Browserdaten | Beim Öffnen und bei Updates; FridgeAI wertet das nicht aus |
-| **Deine eigene KI** (z. B. ChatGPT, Claude) | Nur was du selbst kopierst und einfügst | Beim KI-Import, auf deinen Wunsch; FridgeAI selbst sendet nichts |
+| **Cloudflare** (Hoster der App) | Abruf der App-Dateien, dazu technisch deine IP-Adresse und Browserdaten | Beim Öffnen und bei Updates; Rettich wertet das nicht aus |
+| **Deine eigene KI** (z. B. ChatGPT, Claude) | Nur was du selbst kopierst und einfügst | Beim KI-Import, auf deinen Wunsch; Rettich selbst sendet nichts |
 
 Andere Verbindungen erlaubt die App nicht: Eine Content-Security-Policy lässt nur die App selbst und die beiden Open-Food-Facts-Adressen zu.
 

@@ -6,7 +6,7 @@
  * - apple-touch-icon.png (180 px, full bleed: iOS rounds the corners itself, transparent corners
  *   would turn black)
  * - icon-192.png and icon-512.png (rounded, for Android and desktop installs)
- * - icon-maskable-512.png (full bleed; the fridge stays inside the 80 % safe zone)
+ * - icon-maskable-512.png (full bleed; the radish stays inside the 80 % safe zone)
  *
  * The PNGs are committed; run this again only when icon.svg changes.
  */

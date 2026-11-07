@@ -3,7 +3,7 @@ import { expect, test } from './test';
 
 test.use({ permissions: ['clipboard-read', 'clipboard-write'] });
 
-// What ChatGPT, Claude or Gemini typically answer to the FridgeAI prompt: chatter plus a fence.
+// What ChatGPT, Claude or Gemini typically answer to the Rettich prompt: chatter plus a fence.
 const answer = [
   'Hier ist die Liste aus deinem Foto:',
   '```json',
@@ -27,7 +27,7 @@ test('imports what the own AI recognised after a review', async ({ page }) => {
   await page.getByRole('button', { name: 'Prüfen' }).click();
 
   await expect(page.getByRole('heading', { name: '3 Artikel erkannt' })).toBeVisible();
-  await expect(page.getByText('1 Eintrag konnte FridgeAI nicht lesen:')).toBeVisible();
+  await expect(page.getByText('1 Eintrag konnte Rettich nicht lesen:')).toBeVisible();
   await expect(page.getByText('1 l · bis 15.01.2030')).toBeVisible();
   await expect(page.getByLabel('Lagerort für Erbsen')).toHaveValue('freezer');
 
