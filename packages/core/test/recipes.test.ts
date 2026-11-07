@@ -4,6 +4,7 @@ import { localDate } from '../src/dates';
 import type { DateKind } from '../src/model/primitives';
 import {
   ingredientsAtHome,
+  listRecipes,
   RecipeSchema,
   suggestRecipes,
   type FoodAtHome,
@@ -120,6 +121,64 @@ describe('suggestRecipes', () => {
     ];
     const ids = suggestRecipes(RECIPES, atHome, today, 3).map((entry) => entry.id);
     expect(ids[0]).toBe('bananen-pancakes');
+  });
+});
+
+describe('listRecipes', () => {
+  const quick = RecipeSchema.parse({
+    id: 'toast',
+    title: 'Toast',
+    minutes: 5,
+    servings: 1,
+    ingredients: [
+      { text: 'Brot', words: ['brot'] },
+      { text: 'Butter', staple: true },
+    ],
+    steps: ['Brot toasten.'],
+    tags: ['schnell', 'vegetarisch'],
+  });
+
+  it('lists every recipe, what can be cooked with the food at home first', () => {
+    const atHome = [
+      food('Bio Eier', 'dairy-eggs', '2026-11-20'),
+      food('Blattspinat', 'produce-salad', '2026-11-07'),
+    ];
+    expect(listRecipes([soup, quick, omelette], atHome, today)).toEqual([
+      {
+        id: 'omelette',
+        title: 'omelette',
+        minutes: 10,
+        tags: [],
+        usesExpiring: ['Blattspinat'],
+        missing: [],
+      },
+      {
+        id: 'toast',
+        title: 'Toast',
+        minutes: 5,
+        tags: ['schnell', 'vegetarisch'],
+        usesExpiring: [],
+        missing: ['Brot'],
+      },
+      {
+        id: 'suppe',
+        title: 'suppe',
+        minutes: 30,
+        tags: [],
+        usesExpiring: [],
+        missing: ['Karotten', 'Kartoffeln'],
+      },
+    ]);
+  });
+
+  it('keeps only the recipes with the chosen tag', () => {
+    expect(listRecipes([soup, quick, omelette], [], today, 'schnell').map((r) => r.id)).toEqual([
+      'toast',
+    ]);
+  });
+
+  it('lists the whole collection without food at home', () => {
+    expect(listRecipes(RECIPES, [], today)).toHaveLength(RECIPES.length);
   });
 });
 

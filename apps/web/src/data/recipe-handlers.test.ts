@@ -54,6 +54,22 @@ describe('recipes', () => {
     expect(suggested.some((recipe) => recipe.id === 'hackfleisch-teigwaren')).toBe(false);
   });
 
+  it('lists all recipes, those that need least first, and filters by tag', async () => {
+    const before = (await recipes['recipes.list']({ householdId })).recipes;
+    for (const name of ['Bananen', 'Vollmilch', 'Freilandeier']) {
+      await add(name, '2026-11-20');
+    }
+    const { recipes: all } = await recipes['recipes.list']({ householdId });
+    expect(all).toHaveLength(before.length);
+    const pancakes = all.findIndex((recipe) => recipe.id === 'bananen-pancakes');
+    expect(all[pancakes]?.missing).toEqual([]);
+    expect(all.slice(0, pancakes).every((recipe) => recipe.missing.length === 0)).toBe(true);
+
+    const { recipes: vegan } = await recipes['recipes.list']({ householdId, tag: 'vegan' });
+    expect(vegan.length).toBeGreaterThan(0);
+    expect(vegan.every((recipe) => recipe.tags.includes('vegan'))).toBe(true);
+  });
+
   it('shows a recipe with what is at home and says null for unknown ids', async () => {
     await add('Freilandeier', '2026-11-12');
     const { recipe } = await recipes['recipes.get']({ householdId, recipeId: 'bananen-pancakes' });

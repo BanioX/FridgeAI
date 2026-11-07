@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { IdSchema } from '../ids';
 import { RappenSchema } from '../money';
 import { DomainEventSchema } from './events';
+import { RecipeTagSchema } from '../recipes/recipe';
 import { HouseholdSchema, MemberSchema, type Scope } from '../model/household';
 import {
   ReceiptLineKindSchema,
@@ -565,6 +566,27 @@ export const CONTRACT_V1 = {
           id: z.string(),
           title: z.string(),
           minutes: z.int().positive(),
+          usesExpiring: z.array(z.string()),
+          missing: z.array(z.string()),
+        }),
+      ),
+    }),
+  }),
+  'recipes.list': query({
+    name: 'recipes.list',
+    summary: {
+      de: 'Alle Rezepte, zuerst die, für die am wenigsten fehlt; optional mit einem Merkmal.',
+      en: 'All recipes, those with the fewest missing ingredients first; optionally with one tag.',
+    },
+    scopes: ['recipes:read'],
+    input: z.object({ ...queryBase, tag: RecipeTagSchema.optional() }),
+    output: z.object({
+      recipes: z.array(
+        z.object({
+          id: z.string(),
+          title: z.string(),
+          minutes: z.int().positive(),
+          tags: z.array(RecipeTagSchema),
           usesExpiring: z.array(z.string()),
           missing: z.array(z.string()),
         }),
