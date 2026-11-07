@@ -178,6 +178,8 @@ export const messages = {
     namePlaceholder: 'z. B. Grana Padano',
     nameMissing: 'Bitte gib an, was es ist.',
     category: 'Kategorie',
+    categoryHint: 'Davon hängen der Lagerort und das geschätzte Ablaufdatum ab.',
+    more: 'Mehr Angaben',
     location: 'Wo lagerst du es?',
     amount: 'Menge',
     unit: 'Einheit',
