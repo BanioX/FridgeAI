@@ -193,3 +193,37 @@ test('offers «Nachkaufen» after an item is used up', async ({ page }) => {
   await page.getByRole('link', { name: /^Nachkaufen/ }).click();
   await expect(page.getByRole('checkbox', { name: 'Mozzarella' })).toBeVisible();
 });
+
+test('shows the other packs of the same product and which one to eat first', async ({ page }) => {
+  /** A day from now as the date field wants it (YYYY-MM-DD). */
+  const inDays = (days: number) =>
+    new Date(Date.now() + days * 86_400_000).toISOString().slice(0, 10);
+  for (const days of [20, 6]) {
+    await page.goto('/inventory/new');
+    await page.getByLabel('Was ist es?').fill('Joghurt Nature');
+    await page.getByLabel('Kalender öffnen').fill(inDays(days));
+    await page.getByRole('button', { name: 'Speichern', exact: true }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
+  }
+
+  await page.goto('/inventory');
+  await expect(page.getByRole('link', { name: /Joghurt Nature/ })).toHaveCount(2);
+  // The later pack: the earlier one is listed with the hint to eat it first.
+  await page.getByRole('link', { name: /Joghurt Nature.*20 Tage/ }).click();
+  const others = page.getByRole('region', { name: 'Weitere Packungen' });
+  await expect(others.getByRole('link')).toHaveCount(1);
+  await expect(others.getByRole('link', { name: /6 Tage/ })).toBeVisible();
+  await expect(
+    page.getByText('Eine andere Packung läuft früher ab.', { exact: false }),
+  ).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+
+  // On the earlier pack, the later one is listed without the hint.
+  await others.getByRole('link').click();
+  await expect(
+    page.getByRole('region', { name: 'Weitere Packungen' }).getByRole('link', { name: /20 Tage/ }),
+  ).toBeVisible();
+  await expect(
+    page.getByText('Eine andere Packung läuft früher ab.', { exact: false }),
+  ).toHaveCount(0);
+});

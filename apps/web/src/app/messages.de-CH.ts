@@ -280,6 +280,8 @@ export const messages = {
     useBy: 'Zu verbrauchen bis',
     estimated: '(geschätzt)',
     openedOn: (date: string) => `Geöffnet am ${date}`,
+    otherPacks: 'Weitere Packungen',
+    otherPacksEarlier: 'Eine andere Packung läuft früher ab. Die solltest du zuerst essen.',
     whatHappened: 'Was ist damit passiert?',
     outcomes: { eaten: 'Gegessen', wasted: 'Weggeworfen', shared_out: 'Weitergegeben' },
     howMuch: 'Wie viel?',
