@@ -7,7 +7,7 @@ import { GROUPED_ROW_LINK, GroupedList, GroupedListItem } from '../../ui/Grouped
 
 const t = messages.recipes;
 
-/** «Rezeptideen» on «Heute retten» (plan 11c): up to three recipes that rescue what expires. */
+/** «Rezeptideen» on «Start» (plan 11c): up to three recipes that rescue what expires. */
 export function RecipeIdeas() {
   const { householdId, recipes } = useAppData();
   const ideas = useLiveQuery(

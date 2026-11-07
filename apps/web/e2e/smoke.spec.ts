@@ -12,7 +12,7 @@ test('shell renders, navigates and has no a11y violations', async ({ page }) => 
 
   const response = await page.goto('/');
   expect(response?.headers()['content-security-policy']).toContain("default-src 'self'");
-  await expect(page.getByRole('heading', { level: 1, name: 'Heute retten' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Start' })).toBeVisible();
   await expect(page.locator('head link[rel="manifest"]')).toHaveCount(1);
 
   const home = await new AxeBuilder({ page }).analyze();

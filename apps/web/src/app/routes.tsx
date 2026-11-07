@@ -1,4 +1,4 @@
-import { createBrowserRouter, type RouteObject } from 'react-router';
+import { createBrowserRouter, Navigate, type RouteObject } from 'react-router';
 import { PlaceholderPage } from '../features/placeholder/PlaceholderPage';
 import { TodayPage } from '../features/today/TodayPage';
 import { AppShell } from './AppShell';
@@ -39,7 +39,7 @@ export const routes: RouteObject[] = [
         }),
       },
       {
-        path: 'scan',
+        path: 'add',
         lazy: async () => ({
           Component: (await import('../features/import/AiImportPage')).AiImportPage,
         }),
@@ -63,11 +63,20 @@ export const routes: RouteObject[] = [
         }),
       },
       {
-        path: 'household',
+        path: 'more',
+        lazy: async () => ({
+          Component: (await import('../features/more/MorePage')).MorePage,
+        }),
+      },
+      {
+        path: 'more/data',
         lazy: async () => ({
           Component: (await import('../features/household/HouseholdPage')).HouseholdPage,
         }),
       },
+      // Addresses before the four tabs (ADR-0031): bookmarks and installed apps keep working.
+      { path: 'scan', element: <Navigate to="/add" replace /> },
+      { path: 'household', element: <Navigate to="/more" replace /> },
       // Demo data and design-system reference: dev and demo builds only (dead code in production).
       // Inline on purpose: the bundler drops the lazy chunks only for a literal condition here.
       ...(import.meta.env.DEV || import.meta.env.MODE === 'demo'

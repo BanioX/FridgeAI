@@ -59,7 +59,7 @@ export function TodayPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="large-title">{messages.pages.today}</h1>
+      <h1 className="large-title">{messages.pages.start}</h1>
 
       {all.length === 0 ? (
         <Card>

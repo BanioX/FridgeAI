@@ -2,23 +2,23 @@ export const messages = {
   appName: 'FridgeAI',
   navLabel: 'Hauptnavigation',
   nav: {
-    today: 'Heute',
+    start: 'Start',
     inventory: 'Vorrat',
-    scan: 'Scannen',
-    shopping: 'Liste',
-    household: 'Haushalt',
+    add: 'Erfassen',
+    more: 'Mehr',
   },
   pages: {
-    today: 'Heute retten',
+    start: 'Start',
     inventory: 'Vorrat',
-    scan: 'Scannen',
-    shopping: 'Einkaufsliste',
-    household: 'Haushalt',
+    add: 'Erfassen',
+    shopping: 'Nachkaufen',
+    more: 'Mehr',
+    data: 'Daten und Datenschutz',
     addItem: 'Artikel erfassen',
     check: 'Kühlschrank-Check',
   },
   placeholder: 'Kommt bald.',
-  contractVersion: 'Datenvertrag',
+  contractVersion: 'Schnittstelle',
   loading: 'FridgeAI wird geladen …',
   errors: {
     title: 'Da ist etwas schiefgelaufen',
@@ -111,14 +111,14 @@ export const messages = {
       ].filter((part) => part !== '');
       return parts.join(', ');
     },
-    toToday: 'Zu «Heute retten»',
+    toToday: 'Zum Start',
     failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
   },
   recipes: {
     ideasTitle: 'Rezeptideen',
     rescues: (food: string, minutes: number, missing: number) =>
       `Rettet ${food} · ${String(minutes)} Min.${missing === 0 ? ' · alles da' : ` · ${String(missing)} fehlt`}`,
-    back: 'Zurück zu «Heute retten»',
+    back: 'Zurück zum Start',
     notFound: 'Dieses Rezept gibt es nicht (mehr).',
     minutes: (minutes: number) => `${String(minutes)} Min.`,
     servings: (servings: number) =>
@@ -129,13 +129,11 @@ export const messages = {
     optional: 'Wenn du es hast',
     missing: 'Fehlt',
     toList: (count: number) =>
-      count === 1
-        ? 'Fehlende Zutat auf die Liste'
-        : `${String(count)} fehlende Zutaten auf die Liste`,
+      count === 1 ? 'Fehlende Zutat nachkaufen' : `${String(count)} fehlende Zutaten nachkaufen`,
     onList: (count: number) =>
       count === 1
-        ? '1 Zutat ist auf der Einkaufsliste.'
-        : `${String(count)} Zutaten sind auf der Einkaufsliste.`,
+        ? '1 Zutat steht bei «Nachkaufen».'
+        : `${String(count)} Zutaten stehen bei «Nachkaufen».`,
     steps: 'So geht’s',
     cooked: {
       title: 'Gekocht?',
@@ -337,11 +335,15 @@ export const messages = {
     toInventory: 'In den Vorrat legen',
     failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
   },
-  household: {
+  more: {
     install: 'FridgeAI als App',
     installIos:
       'In Safari unten auf «Teilen» tippen, dann «Zum Home-Bildschirm». Danach startet FridgeAI wie eine App, auch offline.',
     installOther: 'Im Browser-Menü «App installieren» oder «Zum Startbildschirm» wählen.',
+    shoppingDetail: 'Was du wieder brauchst',
+    dataDetail: 'Exportieren, löschen, was mit deinen Daten passiert',
+  },
+  household: {
     data: 'Deine Daten',
     dataText:
       'Alles bleibt auf diesem Gerät. Ein Konto zum Teilen mit Mitbewohner:innen kommt später.',
