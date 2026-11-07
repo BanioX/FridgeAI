@@ -10,6 +10,7 @@ Brainstorming, laufend gepflegt (CLAUDE.md: «Ideen unterwegs»). Hier steht, wa
 | [`scan-und-produktdaten.md`](./scan-und-produktdaten.md) | Woher Produktdaten und Bilder kommen, der Vergleich mit Yazio, was eine native App bringt |
 | [`design-und-bedienung.md`](./design-und-bedienung.md) | Wischgesten, Sheets, Dunkelmodus, schmale Handys, grosse Schrift |
 | [`technik.md`](./technik.md) | 404 für alte Dateien, Fehlerberichte ohne Personendaten, Lighthouse in der CI |
+| [`hilfe-und-konto.md`](./hilfe-und-konto.md) | FAQ, How-to- und Info-Seiten; Registrierung (geparkt) |
 
 **Produkt-Prioritäten** (Alban, 6.11.2026):
 
