@@ -110,6 +110,7 @@ export function AddItemPage() {
 
   // What is set under «Mehr Angaben», so nothing optional stays hidden silently.
   const summary = moreSummary([
+    amount === null ? null : `${formatAmount(amount)} ${messages.inputUnits[unit]}`,
     messages.locations[location],
     unit === 'pcs' && containerChoice !== null && container !== ''
       ? messages.containers[container]
@@ -203,8 +204,8 @@ export function AddItemPage() {
   async function save() {
     setSubmitted(true);
     setStatus('');
-    if (errors.price !== null) {
-      // The price lives under «Mehr Angaben»: open it so the error is visible.
+    if (errors.price !== null || errors.amount !== null) {
+      // Amount and price live under «Mehr Angaben»: open it so the error is visible.
       setMoreOpen(true);
     }
     if (saving || amount === null || expiresOn === null || price === null) {
@@ -310,69 +311,6 @@ export function AddItemPage() {
         </div>
 
         <div className="space-y-1.5">
-          <label htmlFor={`${id}-amount`} className="font-semibold">
-            {t.amount}
-          </label>
-          <div className="flex gap-2">
-            <input
-              id={`${id}-amount`}
-              value={amountValue}
-              onChange={(event) => {
-                setAmountText(event.target.value);
-              }}
-              inputMode="decimal"
-              autoComplete="off"
-              aria-invalid={shown(errors.amount) !== null}
-              aria-describedby={`${id}-amount-error`}
-              className={`${fieldClass(shown(errors.amount) !== null, 'min-w-0 flex-1')} tabular-nums`}
-            />
-            <select
-              aria-label={t.unit}
-              value={unit}
-              onChange={(event) => {
-                const chosen = INPUT_UNITS.find((option) => option === event.target.value);
-                setUnitChoice(chosen ?? null);
-              }}
-              className={fieldClass(false, 'w-32 shrink-0')}
-            >
-              {INPUT_UNITS.map((option) => (
-                <option key={option} value={option}>
-                  {messages.inputUnits[option]}
-                </option>
-              ))}
-            </select>
-          </div>
-          <p id={`${id}-amount-error`} className="text-sm text-today">
-            {shown(errors.amount)}
-          </p>
-          {portioning.packs === undefined ? null : (
-            <div role="group" aria-label={t.packsLabel} className="flex flex-wrap gap-2">
-              {portioning.packs.map((count) => {
-                const selected = unit === 'pcs' && amount === count;
-                return (
-                  <button
-                    key={count}
-                    type="button"
-                    aria-pressed={selected}
-                    onClick={() => {
-                      setAmountText(String(count));
-                      setUnitChoice('pcs');
-                    }}
-                    className={`min-h-10 rounded-full border px-4 text-sm font-semibold transition-colors ${
-                      selected
-                        ? 'border-basil-700 bg-basil-700 text-white'
-                        : 'border-line bg-surface text-ink hover:bg-surface-muted'
-                    }`}
-                  >
-                    {t.pack(count)}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        <div className="space-y-1.5">
           <DateField
             label={t.expiry}
             value={expiresOn}
@@ -404,6 +342,69 @@ export function AddItemPage() {
             />
           </summary>
           <div className="mt-2 space-y-6">
+            <div className="space-y-1.5">
+              <label htmlFor={`${id}-amount`} className="font-semibold">
+                {t.amount}
+              </label>
+              <div className="flex gap-2">
+                <input
+                  id={`${id}-amount`}
+                  value={amountValue}
+                  onChange={(event) => {
+                    setAmountText(event.target.value);
+                  }}
+                  inputMode="decimal"
+                  autoComplete="off"
+                  aria-invalid={shown(errors.amount) !== null}
+                  aria-describedby={`${id}-amount-error`}
+                  className={`${fieldClass(shown(errors.amount) !== null, 'min-w-0 flex-1')} tabular-nums`}
+                />
+                <select
+                  aria-label={t.unit}
+                  value={unit}
+                  onChange={(event) => {
+                    const chosen = INPUT_UNITS.find((option) => option === event.target.value);
+                    setUnitChoice(chosen ?? null);
+                  }}
+                  className={fieldClass(false, 'w-32 shrink-0')}
+                >
+                  {INPUT_UNITS.map((option) => (
+                    <option key={option} value={option}>
+                      {messages.inputUnits[option]}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <p id={`${id}-amount-error`} className="text-sm text-today">
+                {shown(errors.amount)}
+              </p>
+              {portioning.packs === undefined ? null : (
+                <div role="group" aria-label={t.packsLabel} className="flex flex-wrap gap-2">
+                  {portioning.packs.map((count) => {
+                    const selected = unit === 'pcs' && amount === count;
+                    return (
+                      <button
+                        key={count}
+                        type="button"
+                        aria-pressed={selected}
+                        onClick={() => {
+                          setAmountText(String(count));
+                          setUnitChoice('pcs');
+                        }}
+                        className={`min-h-10 rounded-full border px-4 text-sm font-semibold transition-colors ${
+                          selected
+                            ? 'border-basil-700 bg-basil-700 text-white'
+                            : 'border-line bg-surface text-ink hover:bg-surface-muted'
+                        }`}
+                      >
+                        {t.pack(count)}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
             <fieldset className="space-y-1.5">
               <legend className="font-semibold">{t.location}</legend>
               <div className="grid grid-cols-4 gap-1 rounded-2xl bg-surface-muted p-1">
@@ -412,8 +413,8 @@ export function AddItemPage() {
                     key={option}
                     className={`flex min-h-12 cursor-pointer items-center justify-center rounded-xl px-1 text-center text-sm transition-colors has-focus-visible:outline-2 has-focus-visible:outline-basil-600 ${
                       option === location
-                        ? 'bg-surface font-semibold text-basil-800 shadow-card'
-                        : 'font-medium text-ink-muted'
+                        ? 'bg-basil-700 font-semibold text-white shadow-card'
+                        : 'font-medium text-ink hover:bg-surface'
                     }`}
                   >
                     <input

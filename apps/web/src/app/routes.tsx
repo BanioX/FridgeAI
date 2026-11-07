@@ -51,12 +51,6 @@ export const routes: RouteObject[] = [
         }),
       },
       {
-        path: 'add/ai',
-        lazy: async () => ({
-          Component: (await import('../features/import/AiImportPage')).AiImportPage,
-        }),
-      },
-      {
         path: 'check',
         lazy: async () => ({
           Component: (await import('../features/check/CheckPage')).CheckPage,
@@ -112,6 +106,8 @@ export const routes: RouteObject[] = [
       },
       // Addresses before the four tabs (ADR-0031): bookmarks and installed apps keep working.
       { path: 'scan', element: <Navigate to="/add" replace /> },
+      // «Mit eigener KI» was removed on 7.11.2026 (ADR-0012): old links land on «Erfassen».
+      { path: 'add/ai', element: <Navigate to="/add" replace /> },
       { path: 'household', element: <Navigate to="/more" replace /> },
       // Demo data and design-system reference: dev and demo builds only (dead code in production).
       // Inline on purpose: the bundler drops the lazy chunks only for a literal condition here.
