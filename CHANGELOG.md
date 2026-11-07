@@ -2,6 +2,62 @@
 
 Alle Änderungen an FridgeAI, neueste zuerst. Wird mit `pnpm release` erzeugt (ADR-0017).
 
+## [0.6.0] – 2026-11-07
+
+**rettich: Wirf kein Geld in den Kübel.** Die App heisst jetzt rettich, klein geschrieben wie «rett' ich», mit dem aufrechten weissen Rettich als Symbol und fünf Grüntönen aus dem Garten (Broccoli, Rucola, Basilikum, Kopfsalat, Eisberg).
+- **Navigation:** Unten gibt es fünf Tabs (Start, Vorrat, ＋ Erfassen, Kochen, Mehr).
+- **Kochen:** «Rette heute», «Alle Rezepte» und ein Feierabend-Filter (höchstens 15 Minuten, nichts einkaufen).
+- **Ehrliche Zahlen:** «Gerettet» zählt nur noch, was kurz vor Ablauf gegessen oder weitergegeben wurde.
+- **Korrigieren:** Im Verlauf lassen sich falsche Einträge ändern oder löschen.
+- **Berichte:** PDF-Berichte zu Kühlschrank, Wirkung und Einkäufen öffnen sich direkt in der App.
+- **Bon:** Eine Preis-Erinnerung zeigt «12 % teurer als sonst».
+- **Artikelseite:** Sie zeigt «Weitere Packungen» desselben Produkts und welche zuerst weg muss.
+- **Daten mitnehmen:** «Daten importieren» holt einen Export zurück, etwa auf ein neues Gerät oder später nach rettich.app.
+
+### Neu
+
+- the PDF report opens inside the app, «Teilen» top right ([#129](https://github.com/BanioX/FridgeAI/pull/129))
+- «Daten importieren» – bring an export back under «Daten und Datenschutz» ([#134](https://github.com/BanioX/FridgeAI/pull/134))
+- «Weitere Packungen» – other packs of the same product on the item page ([#135](https://github.com/BanioX/FridgeAI/pull/135))
+- «Feierabend» filter on Kochen – at most 15 minutes, nothing to buy ([#128](https://github.com/BanioX/FridgeAI/pull/128))
+- «rettich», always lowercase – rett' ich, not the vegetable ([#126](https://github.com/BanioX/FridgeAI/pull/126))
+- «Ändern» in Verlauf – correct eaten, shared or wasted afterwards ([#124](https://github.com/BanioX/FridgeAI/pull/124))
+- five garden greens – Broccoli, Rucola, Basilikum, Kopfsalat, Eisberg ([#132](https://github.com/BanioX/FridgeAI/pull/132))
+- household.import – bring a JSON export back, replacing what is on the device ([#133](https://github.com/BanioX/FridgeAI/pull/133))
+- «Radish Pop» app icon – tilted radish, check leaf, deep green ([#127](https://github.com/BanioX/FridgeAI/pull/127))
+- «gerettet» means eaten or shared shortly before expiry (ADR-0033) ([#125](https://github.com/BanioX/FridgeAI/pull/125))
+- inventory.changeOutcome – correct eaten, shared or wasted afterwards ([#123](https://github.com/BanioX/FridgeAI/pull/123))
+- «Verlauf» – see and delete eaten or wasted entries ([#122](https://github.com/BanioX/FridgeAI/pull/122))
+- inventory.history – what was eaten, shared or wasted, to correct it ([#121](https://github.com/BanioX/FridgeAI/pull/121))
+- the app is called «Rettich» – name, icon and docs (ADR-0032) ([#120](https://github.com/BanioX/FridgeAI/pull/120))
+- «Alle Rezepte» on Kochen – recipes.list, what works with your food first ([#119](https://github.com/BanioX/FridgeAI/pull/119))
+- five tabs – «Kochen» next to ＋ in the middle (ADR-0031) ([#118](https://github.com/BanioX/FridgeAI/pull/118))
+- «Nachkaufen» with one tap once an item is used up or gone (ADR-0031) ([#116](https://github.com/BanioX/FridgeAI/pull/116))
+- «Erfassen» – every way to add food as one menu (ADR-0031) ([#115](https://github.com/BanioX/FridgeAI/pull/115))
+- «Berichte als PDF» under «Mehr» – choose, create, share (ADR-0030) ([#113](https://github.com/BanioX/FridgeAI/pull/113))
+- the PDF report itself – jsPDF on the device (ADR-0030) ([#112](https://github.com/BanioX/FridgeAI/pull/112))
+- four tabs – Start, Vorrat, ＋ Erfassen, Mehr (ADR-0031) ([#114](https://github.com/BanioX/FridgeAI/pull/114))
+- «Was auffällt» – report insights and texts (ADR-0030) ([#111](https://github.com/BanioX/FridgeAI/pull/111))
+- reports.build – the report query on the device (contract, ADR-0030) ([#110](https://github.com/BanioX/FridgeAI/pull/110))
+- report data – fridge now, saved and wasted per month, why, spending (ADR-0030) ([#109](https://github.com/BanioX/FridgeAI/pull/109))
+- price memory on the item page and the add form (ADR-0029) ([#107](https://github.com/BanioX/FridgeAI/pull/107))
+- «12 % teurer als sonst» on the receipt – prices.memory (ADR-0029) ([#106](https://github.com/BanioX/FridgeAI/pull/106))
+- price memory – last paid, usual price, cheapest shop (ADR-0029) ([#105](https://github.com/BanioX/FridgeAI/pull/105))
+
+### Behoben
+
+- back to the first app icon – upright white radish on app green ([#131](https://github.com/BanioX/FridgeAI/pull/131))
+- receipt products land in the right place – receipt words, pet food ([#108](https://github.com/BanioX/FridgeAI/pull/108))
+
+### Dokumentation
+
+- integrations, copy protection, garden design language, market and timing ([#136](https://github.com/BanioX/FridgeAI/pull/136))
+- four tabs (ADR-0031), «Schnittstelle» instead of «Vertrag», app store estimate ([#117](https://github.com/BanioX/FridgeAI/pull/117))
+
+### Wartung
+
+- skip the heavy steps when only docs change ([#130](https://github.com/BanioX/FridgeAI/pull/130))
+
 ## [0.5.0] – 2026-11-07
 
 **Bon hochladen, Preise kennen.** Kassenbon als PDF (Coop, Migros), Screenshot (Lidl Plus) oder Foto hochladen: FridgeAI liest ihn auf dem Gerät, zeigt jeden Artikel mit bezahltem Preis und Aktion, prüft die Summe auf den Rappen, ein falsch gelesener Preis lässt sich antippen und korrigieren, Lebensmittel kommen mit echtem Preis in den Vorrat. Dazu Produktsuche beim Tippen wie bei Yazio mit «Bereits verwendet», die Kategorie nur noch im Hintergrund und ein Kalender, der auf dem iPhone aufgeht.
