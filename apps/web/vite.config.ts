@@ -29,9 +29,10 @@ export default defineConfig({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
       workbox: {
-        // Precache fonts and the barcode reader (wasm) too, so the app works offline.
+        // Precache fonts, the barcode reader (wasm) and the PDF reader (mjs worker) too, so the app
+        // works offline.
         // Skip unused font subsets.
-        globPatterns: ['**/*.{js,css,html,svg,woff2,webmanifest,wasm}'],
+        globPatterns: ['**/*.{js,mjs,css,html,svg,woff2,webmanifest,wasm}'],
         globIgnores: ['**/*vietnamese*'],
       },
       manifest: {
