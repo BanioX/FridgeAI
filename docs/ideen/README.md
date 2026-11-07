@@ -20,6 +20,7 @@ Brainstorming, laufend gepflegt (CLAUDE.md: «Ideen unterwegs»). Hier steht, wa
 | [`produktdaten.md`](./produktdaten.md) | Bessere Produktdaten: Open Food Repo, Händler-Websites, Foto der Nährwerttabelle, gemeinsames Gedächtnis |
 | [`designsprache-garten.md`](./designsprache-garten.md) | Pflanzen als Bereiche, Reineclaude für Erfolg, Reifen statt Prozent |
 | [`markt-und-timing.md`](./markt-und-timing.md) | Food Waste in Zahlen, Ziele 2030, Konkurrenz, Abo-Kennzahlen |
+| [`mitbewerber-yazio.md`](./mitbewerber-yazio.md) | YAZIO geprüft: Zahlen, Datenquellen (Schweizer Nährwertdatenbank), Suche in Stufen, Wachstum ohne Werbebudget |
 | [`masterplan-bewertung.md`](./masterplan-bewertung.md) | Albans Masterplan: übernommen, später, Entscheide, Regeln |
 
 **Produkt-Prioritäten** (Alban, 6.11.2026):
