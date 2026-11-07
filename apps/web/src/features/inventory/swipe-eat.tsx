@@ -8,7 +8,7 @@ import { swipePortion } from './swipe-portion';
 
 /** The toast stays this long; a new swipe replaces it earlier. */
 const TOAST_MS = 5000;
-const SEEN_KEY = 'rettich.swipe-eat.seen';
+const SEEN_KEY = 'fridgeai:swipe-tip-seen';
 
 /** Id of the visually hidden hint that rows point to with `aria-describedby`. */
 export const SWIPE_HINT_ID = 'swipe-eat-hint';
