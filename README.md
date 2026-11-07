@@ -6,7 +6,7 @@ Bis 7.11.2026 hiess die App «FridgeAI». Repo, Paketnamen und Web-Adresse heiss
 
 **Wirf kein Geld in den Kübel.** rettich, klein geschrieben, wie «rett' ich».
 
-> **Scan deinen Bon – rettich weiss, was du hast, wem es gehört, wer was schuldet und was du heute retten musst.**
+> **Scan deine Quittung – rettich weiss, was du hast, wem es gehört, wer was schuldet und was du heute retten musst.**
 
 Local-first PWA für Schweizer Haushalte (WGs, Paare, Familien) gegen Food Waste. Alles funktioniert offline auf dem Gerät; KI-Erkennung läuft über die KI, die du ohnehin nutzt (ChatGPT, Claude, Gemini), ohne Kosten für rettich.
 

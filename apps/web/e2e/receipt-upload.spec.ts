@@ -61,7 +61,7 @@ test('uploads a receipt PDF, shows names and prices and takes the food over', as
     .getByLabel('PDF oder Foto wählen')
     .setInputFiles({ name: 'bon.pdf', mimeType: 'application/pdf', buffer: COOP });
   await page.getByRole('button', { name: '2 Artikel übernehmen' }).click();
-  await expect(page.getByText('Diesen Bon hast du schon übernommen.')).toBeVisible();
+  await expect(page.getByText('Diese Quittung hast du schon übernommen.')).toBeVisible();
 });
 
 test('explains a PDF without text and one without articles', async ({ page }) => {
@@ -71,7 +71,7 @@ test('explains a PDF without text and one without articles', async ({ page }) =>
     mimeType: 'application/pdf',
     buffer: textPdf(['Vielen Dank fuer Ihren Besuch']),
   });
-  await expect(page.getByText('Auf diesem Bon hat rettich keine Artikel gefunden.')).toBeVisible();
+  await expect(page.getByText('Auf dieser Quittung hat rettich keine Artikel gefunden.')).toBeVisible();
   await page.getByLabel('PDF oder Foto wählen').setInputFiles({
     name: 'bild.pdf',
     mimeType: 'application/pdf',
@@ -144,7 +144,7 @@ test('a misread price is corrected with a tap and the sum is checked again', asy
   });
   const review = page.getByRole('region', { name: /Coop/ });
   await expect(
-    review.getByText(/Die Summe stimmt nicht: gelesen CHF 10\.98, auf dem Bon CHF 1\.98/),
+    review.getByText(/Die Summe stimmt nicht: gelesen CHF 10\.98, auf der Quittung CHF 1\.98/),
   ).toBeVisible();
   await review.getByRole('button', { name: /Preis von Skyr Heidelbeere .*jetzt 9\.99/ }).click();
   const field = review.getByLabel('Preis von Skyr Heidelbeere in CHF');

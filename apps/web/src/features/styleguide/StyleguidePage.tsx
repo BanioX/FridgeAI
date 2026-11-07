@@ -143,7 +143,7 @@ export function StyleguidePage() {
       <section className="space-y-3">
         <h2 className="font-display text-xl font-semibold">Aktionen</h2>
         <Button icon={ScanLine} fullWidth>
-          Bon scannen
+          Quittung scannen
         </Button>
         <Button icon={PencilLine} variant="secondary" fullWidth>
           Manuell erfassen
