@@ -2,7 +2,7 @@ import { daysBetween, toLocalDate } from '../dates';
 import { isRescue, summarizeImpact, type ImpactSummary } from '../metrics';
 import { rappen, sumRappen, type Rappen } from '../money';
 import type { OutcomeEvent, WasteReason } from '../model/inventory';
-import type { LocalDate, Retailer, StorageLocation, Unit } from '../model/primitives';
+import type { DateKind, LocalDate, Retailer, StorageLocation, Unit } from '../model/primitives';
 
 /** An item in the inventory, with its value (receipt price or category estimate). */
 export interface ReportItem {
@@ -12,6 +12,8 @@ export interface ReportItem {
   quantity: number;
   unit: Unit;
   expiresOn: LocalDate;
+  /** Missing on reports from callers that do not know it; then «mindestens haltbar» is assumed. */
+  expiryKind?: DateKind;
   valueRappen: Rappen;
   valueEstimated: boolean;
 }

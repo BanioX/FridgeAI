@@ -88,6 +88,8 @@ const ReportItemSchema = z.object({
   quantity: QuantitySchema,
   unit: UnitSchema,
   expiresOn: LocalDateSchema,
+  /** «zu verbrauchen bis» or «mindestens haltbar bis», so a report can say «Nicht mehr essen». */
+  expiryKind: DateKindSchema.optional(),
   valueRappen: RappenSchema,
   valueEstimated: z.boolean(),
 });

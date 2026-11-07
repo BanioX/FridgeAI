@@ -1,18 +1,34 @@
-import { categoryById, formatSwissDate, rappen, type LocalDate, type Report } from '@fridgeai/core';
+import {
+  categoryById,
+  expiryStatus,
+  fallbackCategory,
+  formatSwissDate,
+  rappen,
+  type LocalDate,
+  type Report,
+  type ReportItem,
+} from '@fridgeai/core';
 import type { jsPDF } from 'jspdf';
 import { messages } from '../../app/messages.de-CH';
 import { CHF_MONEY, type Money } from '../../app/money-format';
+import { expiryBadge } from '../../ui/expiry-badge';
 import { formatQuantity } from '../../ui/quantity-text';
+import type { Tone } from '../../ui/tones';
 import {
   bars,
   card,
+  chip,
   columns,
+  emoji,
+  ground,
+  measure,
   PDF_COLOR as C,
-  pill,
   ring,
+  roundedPicture,
   stack,
   write,
   type BarRow,
+  type PdfPictures,
   type Rgb,
 } from './pdf-kit';
 import { reportInsights } from './report-insights';
@@ -20,10 +36,10 @@ import { reportInsights } from './report-insights';
 const t = messages.reports.pdf;
 const PAGE = { width: 210, height: 297, margin: 16 };
 const CONTENT = PAGE.width - 2 * PAGE.margin;
-/** Two columns on one grid: 86 + 6 + 86 mm. */
-const GUTTER = 6;
+const GUTTER = 5;
 const HALF = (CONTENT - GUTTER) / 2;
 const FOOTER = PAGE.height - 14;
+const TOP = 22;
 const MONTHS = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
 const LOCATION_COLOR: Record<'fridge' | 'freezer' | 'pantry' | 'reserve', Rgb> = {
   fridge: C.smaragd,
@@ -34,175 +50,148 @@ const LOCATION_COLOR: Record<'fridge' | 'freezer' | 'pantry' | 'reserve', Rgb> =
 
 type Amount = (value: number, options?: { currency?: boolean }) => string;
 const kg = (grams: number) => `${(grams / 1000).toFixed(1)} kg`;
+const emojiOf = (categoryId: string) => (categoryById(categoryId) ?? fallbackCategory()).emoji;
+
+interface Context {
+  doc: jsPDF;
+  report: Report;
+  amount: Amount;
+  pictures: PdfPictures;
+}
 
 /**
- * Draws a report as an A4 PDF on the device (ADR-0030). Page 1 is the overview: what was saved
- * (with the rescue rate as a ring), four key figures, «Was auffällt» and the months. Page 2 shows
- * where food and money go, as bar charts, and what to eat now. Then the full inventory as a table.
- * jsPDF and its table plugin load only now.
+ * Draws a report as an A4 PDF on the device (ADR-0030), in the design language of the app: the
+ * silver ground, white cards with a soft shadow, the large title, the onyx card with the money
+ * saved, and lists like «Vorrat» with the food emoji and the same status chips.
+ * Page 1: what was saved, three key figures, «Was auffällt», the months.
+ * Page 2: what to eat now, what is wasted and why, where the value and the money are.
+ * Then everything in stock. jsPDF and the pictures load only now.
  */
 export async function reportPdf(
   report: Report,
-  options: { household: string; period: string; createdOn: LocalDate; money?: Money },
+  options: {
+    household: string;
+    period: string;
+    createdOn: LocalDate;
+    money?: Money;
+    pictures?: PdfPictures;
+  },
 ): Promise<Blob> {
   const money = options.money ?? CHF_MONEY;
-  const amount: Amount = (value, format) => money.format(rappen(value), format);
-  const [{ jsPDF }, { autoTable }] = await Promise.all([
-    import('jspdf'),
-    import('jspdf-autotable'),
-  ]);
+  const { jsPDF } = await import('jspdf');
   const doc = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
   doc.setProperties({
     title: `rettich – ${t.heading}`,
     subject: options.period,
     creator: 'rettich',
   });
+  const ctx: Context = {
+    doc,
+    report,
+    amount: (value, format) => money.format(rappen(value), format),
+    pictures: options.pictures ?? {},
+  };
 
-  let y = header(doc, options);
-  y = hero(doc, report, y, amount);
-  y = keyFigures(doc, report, y + 6, amount);
-  y = insights(doc, report, y + 10, money);
-  months(doc, report, y + 10, amount);
+  ground(doc);
+  let y = header(ctx, options);
+  y = hero(ctx, y + 8);
+  y = keyFigures(ctx, y + 6);
+  y = insights(ctx, report, money, y + 6);
+  months(ctx, y + 12);
 
-  doc.addPage();
-  y = PAGE.margin + 4;
-  y = wasteAndPlaces(doc, report, y, amount);
-  y = urgent(doc, report, y + 10);
+  y = newPage(doc);
+  y = urgent(ctx, y);
+  y = waste(ctx, y + 12);
+  y = places(ctx, y + 12);
+  inventory(ctx, y + 12);
 
-  // The inventory table stays in one piece when it fits; otherwise it starts on its own page,
-  // so no page carries only a few orphaned rows.
-  const tableHeight = 15 + report.fridge.items.length * 7.9;
-  y = section(doc, t.inventory, y + 10 + tableHeight > FOOTER - 6 ? newPage(doc) : y + 10);
-  autoTable(doc, {
-    startY: y,
-    head: [[t.columns.name, t.columns.amount, t.columns.place, t.columns.until, t.columns.value]],
-    body: report.fridge.items.map((item) => [
-      item.name,
-      formatQuantity(item.quantity, item.unit),
-      messages.locations[item.location],
-      formatSwissDate(item.expiresOn),
-      `${amount(item.valueRappen)}${item.valueEstimated ? ' *' : ''}`,
-    ]),
-    margin: { left: PAGE.margin, right: PAGE.margin, bottom: PAGE.height - FOOTER + 6 },
-    theme: 'plain',
-    styles: {
-      font: 'helvetica',
-      fontSize: 9,
-      textColor: [...C.ink],
-      cellPadding: { top: 2.2, bottom: 2.2, left: 0, right: 2 },
-      lineColor: [...C.line],
-    },
-    headStyles: { fontSize: 7.5, fontStyle: 'bold', textColor: [...C.muted] },
-    // A hairline under every row instead of stripes; the value column ends on the right edge.
-    didParseCell: (data) => {
-      data.cell.styles.lineWidth = { bottom: data.section === 'head' ? 0.3 : 0.15 };
-      if (data.column.index === 4) {
-        data.cell.styles.halign = 'right';
-        data.cell.styles.cellPadding = { top: 2.2, bottom: 2.2, left: 2, right: 0 };
-      }
-    },
-  });
-  y = (doc as jsPDF & { lastAutoTable?: { finalY?: number } }).lastAutoTable?.finalY ?? y;
-  if (report.fridge.valueEstimated || report.impact.estimated) {
-    write(doc, t.estimated, PAGE.margin, y + 6, { size: 7.5, color: C.muted });
-  }
-
-  const pages = doc.getNumberOfPages();
-  for (let page = 1; page <= pages; page += 1) {
-    doc.setPage(page);
-    doc.setDrawColor(...C.line);
-    doc.setLineWidth(0.2);
-    doc.line(PAGE.margin, FOOTER, PAGE.margin + CONTENT, FOOTER);
-    const style = { size: 7.5, color: C.muted };
-    write(doc, t.footer, PAGE.margin, FOOTER + 5, style);
-    write(doc, t.page(page, pages), PAGE.margin + CONTENT, FOOTER + 5, {
-      ...style,
-      align: 'right',
-    });
-  }
+  footers(doc);
   return doc.output('blob');
 }
 
 function newPage(doc: jsPDF): number {
   doc.addPage();
-  return PAGE.margin + 4;
+  ground(doc);
+  return TOP;
 }
 
-/** A section title on the grid; returns where its content starts. */
-function section(doc: jsPDF, title: string, y: number, right?: () => void): number {
-  write(doc, title, PAGE.margin, y, { size: 12, color: C.ink, bold: true });
-  right?.();
+/** A section title like «Läuft bald ab» in the app; returns where its content starts. */
+function section(doc: jsPDF, title: string, y: number): number {
+  write(doc, title, PAGE.margin, y, { size: 15, color: C.ink, bold: true });
   return y + 5;
 }
 
-/** Logo mark and «rettich» on the left, report and household on the right, both 9 mm high. */
-function header(
-  doc: jsPDF,
-  options: { household: string; period: string; createdOn: LocalDate },
-): number {
-  const top = PAGE.margin;
-  card(doc, PAGE.margin, top, 9, 9, C.smaragd, 2.4);
-  write(doc, 'r', PAGE.margin + 4.5, top + 4.6, {
-    size: 13,
-    color: C.white,
-    bold: true,
-    align: 'center',
-    baseline: 'middle',
-  });
-  write(doc, 'rettich', PAGE.margin + 12, top + 4.6, {
-    size: 16,
-    color: C.onyx,
-    bold: true,
-    baseline: 'middle',
-  });
-  const right = PAGE.margin + CONTENT;
-  write(doc, `${t.heading} · ${options.period}`, right, top + 3.4, {
-    size: 10,
-    color: C.ink,
-    bold: true,
-    align: 'right',
-  });
-  write(doc, t.meta(options.household, formatSwissDate(options.createdOn)), right, top + 8.4, {
-    size: 8.5,
-    color: C.muted,
-    align: 'right',
-  });
-  return top + 15;
+/** Room for `height` mm on this page, else a new page; returns where to draw. */
+function room(doc: jsPDF, y: number, height: number): number {
+  return y + height > FOOTER - 6 ? newPage(doc) : y;
 }
 
-/** Onyx card: the money saved, big, and the rescue rate as a ring. */
-function hero(doc: jsPDF, report: Report, y: number, amount: Amount): number {
-  const height = 46;
-  card(doc, PAGE.margin, y, CONTENT, height, C.onyx, 4);
-  const left = PAGE.margin + 9;
-  write(doc, t.saved, left, y + 12, { size: 9, color: C.smaragdSoft, bold: true });
-  write(doc, amount(report.impact.savedRappen), left, y + 26, {
-    size: 30,
-    color: C.white,
-    bold: true,
-  });
-  write(doc, t.savedDetail(kg(report.impact.savedGrams), report.impact.savedCount), left, y + 35, {
-    size: 9,
-    color: C.silver,
-  });
-  const center = { x: PAGE.margin + CONTENT - 27, y: y + height / 2 };
-  const share = report.impact.savedShare;
-  ring(doc, center, 14, 4.2, share, C.onyxRaised, C.smaragdMid);
-  write(
-    doc,
-    share === null ? '–' : `${String(Math.round(share * 100))} %`,
-    center.x,
-    center.y - 1.2,
-    {
-      size: 15,
+/** App icon and «rettich», the date on the right, then the large title and the household. */
+function header(
+  { doc, pictures }: Context,
+  options: { household: string; period: string; createdOn: LocalDate },
+): number {
+  const size = 10;
+  const top = 14;
+  if (pictures.logo === undefined) {
+    card(doc, { x: PAGE.margin, y: top, width: size, height: size }, C.smaragd, 2.6);
+    write(doc, 'r', PAGE.margin + size / 2, top + size / 2, {
+      size: 14,
       color: C.white,
       bold: true,
       align: 'center',
       baseline: 'middle',
-    },
+    });
+  } else {
+    roundedPicture(doc, pictures.logo, { x: PAGE.margin, y: top, size }, 2.6);
+  }
+  write(doc, 'rettich', PAGE.margin + size + 3, top + size / 2, {
+    size: 14,
+    color: C.onyx,
+    bold: true,
+    baseline: 'middle',
+  });
+  write(doc, t.created(formatSwissDate(options.createdOn)), PAGE.margin + CONTENT, top + size / 2, {
+    size: 9,
+    color: C.muted,
+    align: 'right',
+    baseline: 'middle',
+  });
+  write(doc, t.heading, PAGE.margin, 41, { size: 30, color: C.onyx, bold: true });
+  write(doc, `${options.household} · ${options.period}`, PAGE.margin, 48.5, {
+    size: 11,
+    color: C.muted,
+  });
+  return 50;
+}
+
+/** The onyx card of the app: the money saved, a sentence, and the rescue rate as a ring. */
+function hero({ doc, report, amount }: Context, y: number): number {
+  const height = 48;
+  card(doc, { x: PAGE.margin, y, width: CONTENT, height }, C.onyx);
+  const left = PAGE.margin + 9;
+  write(doc, amount(report.impact.savedRappen), left, y + 21, {
+    size: 34,
+    color: C.white,
+    bold: true,
+  });
+  write(doc, t.heroSentence, left, y + 30.5, { size: 13, color: C.white });
+  write(doc, t.savedDetail(kg(report.impact.savedGrams), report.impact.savedCount), left, y + 39, {
+    size: 9.5,
+    color: C.silver,
+  });
+  const center = { x: PAGE.margin + CONTENT - 25, y: y + height / 2 };
+  const share = report.impact.savedShare;
+  ring(doc, center, 14, 3.8, share, C.onyxRaised, C.smaragdMid);
+  write(
+    doc,
+    share === null ? '–' : `${String(Math.round(share * 100))} %`,
+    center.x,
+    center.y - 1.4,
+    { size: 15, color: C.white, bold: true, align: 'center', baseline: 'middle' },
   );
-  write(doc, t.rateLabel, center.x, center.y + 5.2, {
-    size: 7.5,
+  write(doc, t.rateLabel, center.x, center.y + 5, {
+    size: 8,
     color: C.silver,
     align: 'center',
     baseline: 'middle',
@@ -210,73 +199,79 @@ function hero(doc: jsPDF, report: Report, y: number, amount: Amount): number {
   return y + height;
 }
 
-/** Four tiles of equal size: label, value and detail on the same lines in every tile. */
-function keyFigures(doc: jsPDF, report: Report, y: number, amount: Amount): number {
+/** Three white cards of equal size: label, value and detail on the same lines in each. */
+function keyFigures({ doc, report, amount }: Context, y: number): number {
   const tiles: [string, string, string, Rgb][] = [
     [t.inStock, amount(report.fridge.valueRappen), t.items(report.fridge.itemCount), C.ink],
     [t.wasted, amount(report.impact.wastedRappen), kg(report.impact.wastedGrams), C.today],
     [t.spent, amount(report.shopping.spentRappen), t.receipts(report.shopping.receiptCount), C.ink],
-    [t.urgentTile, t.items(report.fridge.urgent.length), t.urgentDetail, C.ink],
   ];
-  const gap = 4;
-  const width = (CONTENT - gap * (tiles.length - 1)) / tiles.length;
-  const height = 24;
+  const width = (CONTENT - GUTTER * (tiles.length - 1)) / tiles.length;
+  const height = 29.5;
   tiles.forEach(([label, value, detail, color], index) => {
-    const x = PAGE.margin + index * (width + gap);
-    card(doc, x, y, width, height, C.oat);
-    write(doc, label, x + 4, y + 7, { size: 7.5, color: C.muted, bold: true }, width - 8);
-    write(doc, value, x + 4, y + 15, { size: 13, color, bold: true }, width - 8);
-    write(doc, detail, x + 4, y + 20.5, { size: 7.5, color: C.muted }, width - 8);
+    const x = PAGE.margin + index * (width + GUTTER);
+    card(doc, { x, y, width, height });
+    write(doc, label, x + 6, y + 8.5, { size: 9, color: C.muted, bold: true }, width - 12);
+    write(doc, value, x + 6, y + 18.5, { size: 17, color, bold: true }, width - 12);
+    write(doc, detail, x + 6, y + 24.6, { size: 9, color: C.muted }, width - 12);
   });
   return y + height;
 }
 
-/** «Was auffällt»: one line per finding, each with a Smaragd dot, in a tinted card. */
-function insights(doc: jsPDF, report: Report, y: number, money: Money): number {
-  const start = section(doc, t.insights, y);
+/** «Was auffällt» as a tip card like «Kühlschrank-Check»: green title, one line per finding. */
+function insights({ doc }: Context, report: Report, money: Money, y: number): number {
   const lines = reportInsights(report, money);
-  const textWidth = CONTENT - 16;
+  const pad = 7;
+  const textX = PAGE.margin + pad + 4;
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9.5);
-  const wrapped = lines.map((line) => doc.splitTextToSize(line, textWidth) as string[]);
-  const lineHeight = 4.6;
-  const gap = 2.4;
-  // Same space above the first line and below the last: 6 mm plus the height of the letters.
-  const pad = 6;
+  doc.setFontSize(10.5);
+  const wrapped = lines.map(
+    (line) => doc.splitTextToSize(line, CONTENT - (textX - PAGE.margin) - pad) as string[],
+  );
+  const lineHeight = 5.1;
+  const gap = 2.2;
   const text = wrapped.reduce((sum, rows) => sum + rows.length * lineHeight + gap, -gap);
-  const height = 2 * pad + text;
-  card(doc, PAGE.margin, start, CONTENT, height, C.smaragdTint);
-  let at = start + pad + 3.3;
+  const height = pad + 4 + 5 + text + pad - 1.5;
+  card(doc, { x: PAGE.margin, y, width: CONTENT, height }, C.smaragdTint);
+  write(doc, t.insights, PAGE.margin + pad, y + pad + 4, {
+    size: 12,
+    color: C.smaragdDeep,
+    bold: true,
+  });
+  let at = y + pad + 4 + 8;
   for (const rows of wrapped) {
     doc.setFillColor(...C.smaragd);
-    doc.circle(PAGE.margin + 7, at - 1.1, 1.1, 'F');
+    doc.circle(PAGE.margin + pad + 1, at - 1.25, 1, 'F');
     rows.forEach((row, index) => {
-      write(doc, row, PAGE.margin + 11, at + index * lineHeight, { size: 9.5, color: C.ink });
+      write(doc, row, textX, at + index * lineHeight, { size: 10.5, color: C.ink });
     });
     at += rows.length * lineHeight + gap;
   }
-  return start + height;
+  return y + height;
 }
 
-/** Saved and wasted per month as columns, legend on the title line. */
-function months(doc: jsPDF, report: Report, y: number, amount: Amount): void {
+/** Saved and wasted per month as columns in a white card, legend in the card's top row. */
+function months({ doc, report, amount }: Context, y: number): void {
+  const start = section(doc, t.months, y);
+  const height = Math.min(80, FOOTER - 6 - start);
+  const box = { x: PAGE.margin, y: start, width: CONTENT, height };
+  card(doc, box);
   const legend: [string, Rgb][] = [
     [t.saved, C.smaragd],
     [t.wasted, C.today],
   ];
-  const start = section(doc, t.months, y, () => {
-    let right = PAGE.margin + CONTENT;
-    for (const [label, color] of [...legend].reverse()) {
-      write(doc, label, right, y, { size: 8, color: C.ink, align: 'right' });
-      doc.setFillColor(...color);
-      doc.circle(right - doc.getTextWidth(label) - 2.6, y - 1.1, 1.2, 'F');
-      right -= doc.getTextWidth(label) + 9;
-    }
-  });
-  const height = Math.min(70, FOOTER - 8 - start);
+  let right = box.x + box.width - 7;
+  for (const [label, color] of [...legend].reverse()) {
+    const style = { size: 8.5, color: C.ink, align: 'right' as const, baseline: 'middle' as const };
+    write(doc, label, right, box.y + 8, style);
+    const width = measure(doc, label, style);
+    doc.setFillColor(...color);
+    doc.circle(right - width - 2.6, box.y + 8, 1.3, 'F');
+    right -= width + 9;
+  }
   columns(
     doc,
-    { x: PAGE.margin, y: start, width: CONTENT, height },
+    { x: box.x + 7, y: box.y + 12, width: box.width - 14, height: box.height - 16 },
     report.impact.months.map((month) => ({
       label: MONTHS[Number(month.month.slice(5, 7)) - 1] ?? month.month,
       values: [
@@ -290,52 +285,174 @@ function months(doc: jsPDF, report: Report, y: number, amount: Amount): void {
   );
 }
 
-/** Two rows of two cards: what is wasted and why, where the value is and where you shop. */
-function wasteAndPlaces(doc: jsPDF, report: Report, y: number, amount: Amount): number {
-  const inner = HALF - 12;
-  const pad = 6;
-  const empty = (x: number, top: number, text: string) => {
-    write(doc, text, x + pad, top + 18, { size: 9, color: C.muted });
-  };
+interface ListRow {
+  icon: string;
+  name: string;
+  detail: string;
+  chip: { label: string; tone: Tone };
+  value?: string;
+}
 
-  // Row 1: what lands in the bin, and why.
-  const waste: BarRow[] = report.impact.topWasted.slice(0, 5).map((entry) => ({
+const ROW = 13.5;
+
+/**
+ * Rows like the app's item list: emoji, name, a grey detail line, the status chip and the value
+ * on the right, hairlines inset under the text. Long lists continue on the next page.
+ */
+function list({ doc, pictures }: Context, rows: readonly ListRow[], y: number): number {
+  let at = y;
+  let index = 0;
+  while (index < rows.length) {
+    const fits = Math.max(1, Math.floor((FOOTER - 6 - at) / ROW));
+    const chunk = rows.slice(index, index + fits);
+    const box = { x: PAGE.margin, y: at, width: CONTENT, height: chunk.length * ROW };
+    card(doc, box);
+    chunk.forEach((row, position) => {
+      const top = at + position * ROW;
+      const middle = top + ROW / 2;
+      if (pictures.emoji === undefined) {
+        doc.setFillColor(...C.oat);
+        doc.circle(box.x + 9, middle, 3.4, 'F');
+      } else {
+        emoji(doc, pictures, row.icon, { x: box.x + 9, y: middle }, 7);
+      }
+      const right = box.x + box.width - 6;
+      const valueWidth =
+        row.value === undefined
+          ? 0
+          : measure(doc, row.value, { size: 10, color: C.ink, bold: true });
+      if (row.value !== undefined) {
+        write(doc, row.value, right, middle, {
+          size: 10,
+          color: C.ink,
+          bold: true,
+          align: 'right',
+          baseline: 'middle',
+        });
+      }
+      const chipWidth = chip(
+        doc,
+        row.chip.label,
+        right - (valueWidth > 0 ? valueWidth + 4 : 0),
+        middle,
+        row.chip.tone,
+      );
+      const textX = box.x + 17;
+      const textWidth = right - (valueWidth > 0 ? valueWidth + 4 : 0) - chipWidth - 4 - textX;
+      write(
+        doc,
+        row.name,
+        textX,
+        middle - 2.4,
+        { size: 11, color: C.ink, bold: true, baseline: 'middle' },
+        textWidth,
+      );
+      write(
+        doc,
+        row.detail,
+        textX,
+        middle + 2.8,
+        { size: 9, color: C.muted, baseline: 'middle' },
+        textWidth,
+      );
+      if (position < chunk.length - 1) {
+        doc.setDrawColor(...C.line);
+        doc.setLineWidth(0.2);
+        doc.line(textX, top + ROW, box.x + box.width, top + ROW);
+      }
+    });
+    index += chunk.length;
+    at += chunk.length * ROW;
+    if (index < rows.length) {
+      at = newPage(doc);
+    }
+  }
+  return at;
+}
+
+function itemRow(report: Report, item: ReportItem, value?: string): ListRow {
+  const badge = expiryBadge(
+    expiryStatus(item.expiresOn, report.today, item.expiryKind ?? 'best_before'),
+    item.expiresOn,
+    report.today,
+    item.location,
+  );
+  return {
+    icon: emojiOf(item.categoryId),
+    name: item.name,
+    detail: `${formatQuantity(item.quantity, item.unit)} · ${messages.locations[item.location]}`,
+    chip: badge,
+    ...(value === undefined ? {} : { value }),
+  };
+}
+
+/** «Jetzt essen»: what expires within three days, as in «Läuft bald ab» on Start. */
+function urgent(ctx: Context, y: number): number {
+  const { doc, report } = ctx;
+  const start = section(doc, t.urgent, y);
+  if (report.fridge.urgent.length === 0) {
+    card(doc, { x: PAGE.margin, y: start, width: CONTENT, height: 14 });
+    write(doc, t.noUrgent, PAGE.margin + 7, start + 7, {
+      size: 10.5,
+      color: C.muted,
+      baseline: 'middle',
+    });
+    return start + 14;
+  }
+  return list(
+    ctx,
+    report.fridge.urgent.map((item) => itemRow(report, item)),
+    start,
+  );
+}
+
+/** Two cards: what lands in the bin (with the food emoji) and why. */
+function waste(ctx: Context, y: number): number {
+  const { doc, report, amount, pictures } = ctx;
+  const byCategory: BarRow[] = report.impact.topWasted.slice(0, 5).map((entry) => ({
     label: categoryById(entry.categoryId)?.name.de ?? entry.categoryId,
     value: entry.valueRappen,
     display: amount(entry.valueRappen),
     color: C.today,
+    icon: emojiOf(entry.categoryId),
   }));
   const reasons: BarRow[] = report.impact.reasons.slice(0, 5).map((entry) => ({
     label: messages.wasteReasons[entry.reason],
     value: entry.count,
     display: `${String(entry.count)}×`,
-    color: C.soon,
+    color: C.today,
   }));
-  const rowOne = 18 + Math.max(1, waste.length, reasons.length) * 8;
-  const left = PAGE.margin;
-  const right = PAGE.margin + HALF + GUTTER;
-  card(doc, left, y, HALF, rowOne, C.oat);
-  card(doc, right, y, HALF, rowOne, C.oat);
-  write(doc, t.wasteTop, left + pad, y + 9, { size: 10, color: C.ink, bold: true });
-  write(doc, t.reasons, right + pad, y + 9, { size: 10, color: C.ink, bold: true });
-  if (waste.length === 0) {
-    empty(left, y, t.noWaste);
+  const height = 20 + Math.max(1, byCategory.length, reasons.length) * 9;
+  const start = section(doc, t.wasteTop, room(doc, y, height + 6));
+  const left = { x: PAGE.margin, y: start, width: HALF, height };
+  const right = { x: PAGE.margin + HALF + GUTTER, y: start, width: HALF, height };
+  card(doc, left);
+  card(doc, right);
+  write(doc, t.byCategory, left.x + 6, start + 9, { size: 10.5, color: C.ink, bold: true });
+  write(doc, t.reasons, right.x + 6, start + 9, { size: 10.5, color: C.ink, bold: true });
+  if (byCategory.length === 0) {
+    write(doc, t.noWaste, left.x + 6, start + 18, { size: 10, color: C.muted });
   } else {
-    bars(doc, left + pad, y + 13, inner, waste, { labelWidth: 30, valueWidth: 18, track: C.white });
-  }
-  if (reasons.length === 0) {
-    empty(right, y, t.none);
-  } else {
-    bars(doc, right + pad, y + 13, inner, reasons, {
-      labelWidth: 30,
-      valueWidth: 8,
-      track: C.white,
+    bars(doc, pictures, { x: left.x + 6, y: start + 13, width: HALF - 12 }, byCategory, {
+      labelWidth: 33,
+      valueWidth: 17,
     });
   }
+  if (reasons.length === 0) {
+    write(doc, t.none, right.x + 6, start + 18, { size: 10, color: C.muted });
+  } else {
+    bars(doc, pictures, { x: right.x + 6, y: start + 13, width: HALF - 12 }, reasons, {
+      labelWidth: 26,
+      valueWidth: 8,
+    });
+  }
+  return start + height;
+}
 
-  // Row 2: where the value sits, and where the money went.
-  const top = y + rowOne + GUTTER;
-  const places: BarRow[] = report.fridge.byLocation
+/** Two cards: where the value in stock sits, and where the money was spent. */
+function places(ctx: Context, y: number): number {
+  const { doc, report, amount, pictures } = ctx;
+  const byPlace: BarRow[] = report.fridge.byLocation
     .filter((entry) => entry.itemCount > 0)
     .map((entry) => ({
       label: `${messages.locations[entry.location]} · ${t.items(entry.itemCount)}`,
@@ -349,78 +466,75 @@ function wasteAndPlaces(doc: jsPDF, report: Report, y: number, amount: Amount): 
     display: amount(entry.spentRappen),
     color: C.smaragd,
   }));
-  const rowTwo = 18 + Math.max(2, places.length + 1, shops.length + 1) * 7.6;
-  card(doc, left, top, HALF, rowTwo, C.oat);
-  card(doc, right, top, HALF, rowTwo, C.oat);
-  write(doc, t.places, left + pad, top + 9, { size: 10, color: C.ink, bold: true });
-  write(doc, t.shops, right + pad, top + 9, { size: 10, color: C.ink, bold: true });
-  if (places.length === 0) {
-    empty(left, top, t.none);
+  const height = 22 + Math.max(2, byPlace.length + 1, shops.length + 1) * 8.6;
+  const start = section(doc, t.money, room(doc, y, height + 6));
+  const left = { x: PAGE.margin, y: start, width: HALF, height };
+  const right = { x: PAGE.margin + HALF + GUTTER, y: start, width: HALF, height };
+  card(doc, left);
+  card(doc, right);
+  write(doc, t.byPlace, left.x + 6, start + 9, { size: 10.5, color: C.ink, bold: true });
+  write(doc, t.byShop, right.x + 6, start + 9, { size: 10.5, color: C.ink, bold: true });
+  if (byPlace.length === 0) {
+    write(doc, t.none, left.x + 6, start + 18, { size: 10, color: C.muted });
   } else {
-    stack(doc, left + pad, top + 14, inner, places);
+    stack(doc, { x: left.x + 6, y: start + 14, width: HALF - 12 }, byPlace);
   }
   if (shops.length === 0) {
-    empty(right, top, t.none);
+    write(doc, t.none, right.x + 6, start + 18, { size: 10, color: C.muted });
   } else {
-    const used = bars(doc, right + pad, top + 13, inner, shops, {
-      labelWidth: 22,
-      valueWidth: 20,
-      track: C.white,
+    const used = bars(doc, pictures, { x: right.x + 6, y: start + 13, width: HALF - 12 }, shops, {
+      labelWidth: 20,
+      valueWidth: 19,
     });
-    const total = top + 13 + used + 4;
-    write(doc, t.total, right + pad, total, { size: 8.5, color: C.muted, bold: true });
-    write(doc, amount(report.shopping.spentRappen), right + pad + inner, total, {
-      size: 8.5,
+    const total = start + 13 + used + 4.5;
+    write(doc, t.total, right.x + 6, total, { size: 9.5, color: C.muted, bold: true });
+    write(doc, amount(report.shopping.spentRappen), right.x + HALF - 6, total, {
+      size: 9.5,
       color: C.ink,
       bold: true,
       align: 'right',
     });
   }
-  return top + rowTwo;
+  return start + height;
 }
 
-/** «Jetzt essen»: one row per item, the deadline as a coloured pill on the right. */
-function urgent(doc: jsPDF, report: Report, y: number): number {
-  let start = section(doc, t.urgent, y);
-  const items = report.fridge.urgent;
+/** «Alles im Vorrat» as the app's list, on its own page when it would leave orphaned rows. */
+function inventory(ctx: Context, y: number): void {
+  const { doc, report, amount } = ctx;
+  const items = report.fridge.items;
+  const fitsHere = y + 5 + items.length * ROW <= FOOTER - 6;
+  const start = section(doc, t.inventory, fitsHere ? y : newPage(doc));
   if (items.length === 0) {
-    write(doc, t.noUrgent, PAGE.margin, start + 5, { size: 9, color: C.muted });
-    return start + 8;
+    write(doc, t.none, PAGE.margin, start + 6, { size: 10, color: C.muted });
+    return;
   }
-  const rowHeight = 11;
-  for (const item of items) {
-    if (start + rowHeight > FOOTER - 6) {
-      start = newPage(doc);
-    }
-    card(doc, PAGE.margin, start, CONTENT, rowHeight - 2, C.oat, 2.5);
-    const middle = start + (rowHeight - 2) / 2;
-    write(
-      doc,
-      item.name,
-      PAGE.margin + 5,
-      middle,
-      {
-        size: 9.5,
-        color: C.ink,
-        bold: true,
-        baseline: 'middle',
-      },
-      70,
-    );
-    write(
-      doc,
-      `${formatQuantity(item.quantity, item.unit)} · ${messages.locations[item.location]}`,
-      PAGE.margin + 80,
-      middle,
-      { size: 8.5, color: C.muted, baseline: 'middle' },
-      55,
-    );
-    const late = item.daysLeft <= 0;
-    pill(doc, t.due(item.daysLeft), PAGE.margin + CONTENT - 5, middle, {
-      text: late ? C.today : C.soon,
-      fill: late ? C.todayTint : C.soonTint,
+  const end = list(
+    ctx,
+    items.map((item) =>
+      itemRow(report, item, `${amount(item.valueRappen)}${item.valueEstimated ? ' *' : ''}`),
+    ),
+    start,
+  );
+  if (report.fridge.valueEstimated || report.impact.estimated) {
+    write(doc, t.estimated, PAGE.margin, Math.min(end + 6, FOOTER - 3), {
+      size: 8,
+      color: C.muted,
     });
-    start += rowHeight;
   }
-  return start;
+}
+
+function footers(doc: jsPDF): void {
+  const pages = doc.getNumberOfPages();
+  for (let page = 1; page <= pages; page += 1) {
+    doc.setPage(page);
+    doc.setDrawColor(...C.line);
+    doc.setLineWidth(0.2);
+    doc.line(PAGE.margin, FOOTER, PAGE.margin + CONTENT, FOOTER);
+    const style = { size: 8, color: C.muted };
+    write(doc, t.footer, PAGE.margin, FOOTER + 5, style);
+    write(doc, t.page(page, pages), PAGE.margin + CONTENT, FOOTER + 5, {
+      ...style,
+      align: 'right',
+    });
+  }
 }
