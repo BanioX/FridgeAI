@@ -10,7 +10,7 @@ Bis 7.11.2026 hiess die App «FridgeAI». Repo, Paketnamen und Web-Adresse heiss
 
 Local-first PWA für Schweizer Haushalte (WGs, Paare, Familien) gegen Food Waste. Alles funktioniert offline auf dem Gerät; KI-Erkennung läuft über die KI, die du ohnehin nutzt (ChatGPT, Claude, Gemini), ohne Kosten für rettich.
 
-**Product Owner:** Alban Hyseni · **Status:** bereit für den Pilot ([`docs/pilot.md`](docs/pilot.md)); Bon-Scan und Teilen im Haushalt folgen · **Lizenz:** proprietär, alle Rechte vorbehalten
+**Product Owner:** Alban Hyseni · **Stand:** Version 0.6.0 ([Release](https://github.com/BanioX/FridgeAI/releases/tag/v0.6.0), [Änderungen](CHANGELOG.md)), im Pilot ([`docs/pilot.md`](docs/pilot.md)); Teilen im Haushalt folgt · **Lizenz:** proprietär, alle Rechte vorbehalten
 
 ---
 
@@ -35,29 +35,33 @@ Unten fünf Tabs: **Start · Vorrat · ＋ Erfassen · Kochen · Mehr** ([ADR-00
 | **Start** | Was bald abläuft, Wert im Kühlschrank in CHF, Lagerorte auf einen Blick |
 | **Vorrat** | Kühlschrank, Tiefkühler, Vorrat, Notvorrat (bis 100 Jahre); auf der Artikelseite «Weitere Packungen» desselben Produkts mit Datum und dem Hinweis, welche zuerst weg muss |
 | **Erfassen** | Name genügt: Kategorie, Lagerort, Menge, Verpackung und Ablaufdatum werden vorgeschlagen; Eier im 6er/10er, Datumsfeld mit Schnellwahl und Eintippen; «Schnell erfassen»: die eigenen Standardartikel mit einem Tipp; Suche beim Tippen wie «Coop Weggli» (eigene Produkte und Open Food Facts Schweiz) |
-| **Bon hochladen** | PDF, Screenshot oder Foto des Kassenbons (Coop, Migros, Aldi, Lidl, Denner) auf dem Gerät auslesen: Produktname, Menge, bezahlter Preis mit Aktion, Summenprüfung; Lebensmittel angehakt, mit Preis in den Vorrat; derselbe Bon nie doppelt |
+| **Bon hochladen** | PDF, Screenshot oder Foto des Kassenbons (Coop, Migros, Aldi, Lidl, Denner) auf dem Gerät auslesen: Produktname, Menge, bezahlter Preis mit Aktion, Summenprüfung; Lebensmittel angehakt, mit Preis in den Vorrat; derselbe Bon nie doppelt; Preis-Erinnerung «12 % teurer als sonst» |
 | **Berichte als PDF** | Unter «Mehr»: «Kühlschrank jetzt», «Deine Wirkung» (gerettet und weggeworfen pro Monat, Gründe, «Was auffällt» mit Tipps), «Einkäufe» nach Laden oder alles zusammen, für diesen Monat, 3 Monate oder das Jahr; auf dem Gerät erzeugt und in der App geöffnet, von dort teilen oder speichern |
 | **Barcode und eigene KI** | Unter ＋: Barcode, QR und GS1-DataMatrix (Datum aus dem Code); KI-Import: Foto in deiner KI, Liste in rettich übernehmen |
 | **Abschliessen** | Gegessen, weitergegeben (an wen), weggeworfen (warum) – ganz oder in sinnvollen Portionen (⅛ Kuchen, ⅓ Käse, 2 von 4 Joghurts) |
 | **Öffnungsregel** | «Nach dem Öffnen innert 21 Tagen» verkürzt das Datum automatisch |
 | **Einfrieren** | Umlagern mit neu geschätztem Datum |
 | **Kühlschrank-Check** | Einmal pro Woche jeden Artikel kurz bestätigen: noch da, halb, gegessen oder weggeworfen |
-| **Korrigieren** | Rückgängig nach Gegessen/Weggeworfen, dazu «Nachkaufen» mit einem Tipp; Name, Kategorie, Ort, Datum, Menge und Preis ändern; Artikel löschen |
+| **Korrigieren** | Rückgängig nach Gegessen/Weggeworfen, dazu «Nachkaufen» mit einem Tipp; Name, Kategorie, Ort, Datum, Menge und Preis ändern; Artikel löschen; im «Verlauf» unter «Mehr» Gegessenes, Weitergegebenes und Weggeworfenes nachträglich ändern oder löschen |
 | **Produktdaten** | Nach dem Scan: Bild, Marke, Nährwerte, Nutri-Score, Allergene (Open Food Facts, 30 Tage offline) |
-| **Kochen** | Bis zu zehn Rezepte, die retten, was bald abläuft (drei davon auf «Start»); alle Rezepte, zuerst was mit deinem Vorrat geht, Filter Schnell, Vegetarisch, Vegan, Eiweissreich; was fehlt, mit einem Tipp zu «Nachkaufen»; nach dem Kochen abbuchen |
+| **Kochen** | Bis zu zehn Rezepte, die retten, was bald abläuft (drei davon auf «Start»); alle Rezepte, zuerst was mit deinem Vorrat geht, Filter Feierabend (höchstens 15 Minuten, nichts einkaufen), Schnell, Vegetarisch, Vegan, Eiweissreich; was fehlt, mit einem Tipp zu «Nachkaufen»; nach dem Kochen abbuchen |
 | **Nachkaufen** | Unter «Mehr»: «Du hast noch …» gegen Doppelkäufe, abhaken, «In den Vorrat legen» |
 | **Wirkung** | Gerettet (kurz vor Ablauf gegessen oder weitergegeben) und weggeworfen diesen Monat in CHF und Artikeln, «x % gerettet von allem, was knapp wurde» ([ADR-0033](docs/adr/0033-rescued-means-at-risk.md)) |
-| **Mehr** | Berichte, Nachkaufen, App installieren; Daten exportieren (JSON/CSV), wieder importieren oder löschen, Datenschutz in Kürze |
+| **Mehr** | Berichte, Verlauf, Nachkaufen, App installieren; Daten exportieren (JSON/CSV), wieder importieren oder löschen, Datenschutz in Kürze |
 
-Geplant: Teilen in WG und Familie, Kosten aufteilen, Push-Erinnerungen, Wirkungs-Dashboard, MCP-Connector für ChatGPT/Claude, Büro-Kühlschrank. Reihenfolge: [`docs/plan.md`](docs/plan.md).
+**Aussehen:** fünf Grüntöne aus dem Garten (Broccoli, Rucola, Basilikum, Kopfsalat, Eisberg) nach Apples Human Interface Guidelines, Symbol: ein aufrechter weisser Rettich ([`docs/design.md`](docs/design.md)).
+
+Geplant: Teilen in WG und Familie, Kosten aufteilen, Push-Erinnerungen, Wirkungs-Dashboard, MCP-Connector für ChatGPT/Claude, native App für iOS und Android (Capacitor), Büro-Kühlschrank. Reihenfolge: [`docs/plan.md`](docs/plan.md).
 
 ## Am Handy ausprobieren
 
-Jeder Pull Request bekommt automatisch einen eigenen **Vorschau-Link** (Cloudflare schreibt ihn als Kommentar in den PR). `main` läuft unter der festen Produktionsadresse. Einrichtung und Tipps: [`docs/previews.md`](docs/previews.md).
+Die App: **https://fridgeai.hyseni-alban.workers.dev** (Stand `main`). Jeder Pull Request bekommt zusätzlich einen eigenen **Vorschau-Link** (Cloudflare schreibt ihn als Kommentar in den PR). Einrichtung und Tipps: [`docs/previews.md`](docs/previews.md).
 
 1. Link öffnen (iPhone: Teilen → «Zum Home-Bildschirm» für App-Gefühl).
 2. **«Beispieldaten laden»** auf der Startseite tippen – ein typischer WG-Kühlschrank erscheint.
 3. Auf einen Artikel tippen, erfassen, scannen, ausprobieren. Daten bleiben nur auf deinem Gerät.
+
+Neues Symbol, neues Handy oder neue Adresse: Das iPhone übernimmt Symbol und Namen nur beim Hinzufügen. Vorher «Alles exportieren», dann neu hinzufügen und «Daten importieren» ([`docs/pilot.md`](docs/pilot.md#neues-symbol-neues-handy-oder-neue-adresse)).
 
 ## Am Rechner entwickeln
 
@@ -138,10 +142,14 @@ CLAUDE.md            Arbeitsregeln für die KI-Entwicklung
 | Dokument | Inhalt |
 | --- | --- |
 | [`docs/plan.md`](docs/plan.md) | Umsetzungsplan, Schritte, offene Fragen und Antworten |
+| [`docs/pilot.md`](docs/pilot.md) | Pilot: einrichten, was testen, Daten mitnehmen, bekannte Grenzen |
+| [`CHANGELOG.md`](CHANGELOG.md) | Was sich mit jeder Version geändert hat |
 | [`docs/use-cases.md`](docs/use-cases.md) | Use Cases, Ökosystem- und Büro-Brainstorming |
 | [`docs/architecture.md`](docs/architecture.md) | Architektur und Skalierung |
 | [`docs/design.md`](docs/design.md) | Design-Tokens, Komponenten, Datumsfeld |
 | [`docs/blue-ocean.md`](docs/blue-ocean.md) | Strategie und Monetarisierung |
+| [`docs/ideen/`](docs/ideen/) | Ideen mit Nutzen, Aufwand und Kosten: Markt und Timing, Integrationen, Schutz, App Stores |
+| [`docs/privacy.md`](docs/privacy.md) | Datenschutzerklärung (Entwurf) |
 | [`docs/data-sources.md`](docs/data-sources.md) | Produktdaten-Quellen |
 | [`docs/previews.md`](docs/previews.md) | Vorschau-Links auf Cloudflare |
 | [`docs/adr/`](docs/adr/) | Architektur-Entscheide (ADR-0001 bis heute) |

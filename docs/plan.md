@@ -1,5 +1,7 @@
 # rettich – MVP-Plan
 
+> **Stand 7.11.2026:** Version 0.6.0. Meilenstein B ist weitgehend umgesetzt, Teile von D und E sind vorgezogen (Bon-Scan, Barcode, Rezepte, Berichte, Export und Import). Der Pilot läuft.
+>
 > **Status: freigegeben durch Alban am 6. November 2026** («Du machst das, du bist die volle Pipeline. Ich sage, was wir machen, ausführen tust du.»).
 > Grundlagen: [`brief.md`](./brief.md) (Build-Brief), [`blue-ocean.md`](./blue-ocean.md) (Strategie), [`use-cases.md`](./use-cases.md) (Brainstorming), [`architecture.md`](./architecture.md) (Architektur und Skalierung). Offene Fragen: Abschnitt 9.
 >
@@ -152,7 +154,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 - 2b: `model.ts` und Zod-Schemas für alle Entitäten (inkl. Abschnitt 3), `LocalDate`/`IsoDateTime`
 - 2c: Europe/Zurich, «Tage bis Ablauf»; **Kategorien-Katalog** (rund 40 Schweizer Alltagskategorien mit Haltbarkeit pro Lagerort, `dateKind`, `freezable`, Reste-/Lagertipps, Emoji, Durchschnittspreis und -gewicht, Quellen dokumentiert); `estimateExpiry()`
 - 2d: Ports (`ReceiptOcrEngine`, `BarcodeScanner`, `ProductCatalog`, `RecipeProvider`, `RebuyProvider`, `DeliveryProvider`, `RetailerReceiptSource`, `SyncAdapter`, `NotificationService`, `Clock`, `IdGenerator`), Mocks für die Partner-Ports
-- 2e: **Schnittstelle v1**: Command-/Query-Registry mit Zod-Ein-/Ausgabe, Domain Events, `commandId`; Test, der aus der Schnittstelle JSON Schema erzeugt (Beweis für spätere OpenAPI/MCP-Tauglichkeit); ADR-0005 (Contract-first, API/MCP) — umgesetzt: 28 Operationen, 17 Event-Typen (inkl. `recipes.list`, `receipts.import`, `prices.memory`, `reports.build`, `inventory.open`/`item.opened`, `products.lookup`, `products.image`, `products.frequent`, `products.search`, `recipes.get`, `inventory.updateItem`/`item.updated`, `inventory.deleteItem`/`restoreItem`, `household.export`/`delete`, `inventory.undoOutcome`/`outcome.undone`, Gründe beim Abschliessen)
+- 2e: **Schnittstelle v1**: Command-/Query-Registry mit Zod-Ein-/Ausgabe, Domain Events, `commandId`; Test, der aus der Schnittstelle JSON Schema erzeugt (Beweis für spätere OpenAPI/MCP-Tauglichkeit); ADR-0005 (Contract-first, API/MCP) — umgesetzt: 31 Operationen, 19 Event-Typen (inkl. `inventory.history`, `inventory.changeOutcome`/`outcome.changed`, `household.import`/`household.imported`, `recipes.list`, `receipts.import`, `prices.memory`, `reports.build`, `inventory.open`/`item.opened`, `products.lookup`, `products.image`, `products.frequent`, `products.search`, `recipes.get`, `inventory.updateItem`/`item.updated`, `inventory.deleteItem`/`restoreItem`, `household.export`/`delete`, `inventory.undoOutcome`/`outcome.undone`, Gründe beim Abschliessen)
 - 2f: **GS1-Codes lesen** (ADR-0006): EAN/UPC, GS1 DataMatrix und GS1 Digital Link (QR) mit Ablaufdatum (AI 17/15), Charge, Gewicht; vorausschauend für «GS1 Sunrise 2027»
 - 2h: **Notvorrat** als vierter Lagerort (ADR-0007): Haltbarkeit bis 100 Jahre, Warnung 90 Tage vorher, Schnellwahl passend zum Zeithorizont (`expiryPresets`), Monats-/Jahresrechnung, Kategorien für gefriergetrocknete Mahlzeiten, Notrationen und Trinkwasser
 - 2i: **Scan-Sitzung** für die Modi «Schnell» (erster sicherer Barcode) und «Gründlich» (Packung langsam drehen, bis Barcode und Ablaufdatum über mehrere Bilder bestätigt sind)
@@ -195,8 +197,8 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 
 #### Schritt 6 – Abschliessen, Wirkungs-Dashboard, Kühlschrank-Check (US-06, US-20, US-22)
 - 6a: `core/metrics`: gerettet/weggeworfen in CHF und kg pro Person und Haushalt, Schätzwerte klar markiert
-- 6b: Aktionen gegessen/weitergegeben/weggeworfen mit **Grund beim Wegwerfen** (abgelaufen, verdorben, zu viel gekauft, vergessen, schmeckt nicht) und **Empfänger beim Weitergeben** (Haushalt, Nachbarschaft, Familie/Freunde, Spende, öffentlicher Kühlschrank), ganz oder teilweise: **Anteile ¼ · ½ · ¾ · alles** bei Gramm, Milliliter und einzelnen Stücken, **«1 von 4»** bei Packungen mit mehreren Stück; «Geöffnet» setzt die Öffnungsregel; Rückgängig
-- 6c: **Wirkungs-Dashboard** (D-01, D-02): Woche/Monat, Trend, pro Person, Vergleich mit dem Schweizer Durchschnitt (D-03); **Kühlschrank-Check** (UC-04) (umgesetzt: Kühlschrank-Check mit «Noch da · Halb · Gegessen · Weggeworfen» und «Zurück», ADR-0022; Dashboard bisher als Monatskarte auf «Heute»)
+- 6b: Aktionen gegessen/weitergegeben/weggeworfen mit **Grund beim Wegwerfen** (abgelaufen, verdorben, zu viel gekauft, vergessen, schmeckt nicht) und **Empfänger beim Weitergeben** (Haushalt, Nachbarschaft, Familie/Freunde, Spende, öffentlicher Kühlschrank), ganz oder teilweise: **Anteile ¼ · ½ · ¾ · alles** bei Gramm, Milliliter und einzelnen Stücken, **«1 von 4»** bei Packungen mit mehreren Stück; «Geöffnet» setzt die Öffnungsregel; Rückgängig (umgesetzt, dazu «Verlauf» unter «Mehr»: Einträge nachträglich ändern oder löschen)
+- 6c: **Wirkungs-Dashboard** (D-01, D-02): Woche/Monat, Trend, pro Person, Vergleich mit dem Schweizer Durchschnitt (D-03); **Kühlschrank-Check** (UC-04) (umgesetzt: Kühlschrank-Check mit «Noch da · Halb · Gegessen · Weggeworfen» und «Zurück», ADR-0022; Dashboard bisher als Monatskarte auf «Start»; «gerettet» zählt nur, was kurz vor Ablauf gegessen oder weitergegeben wurde, ADR-0033)
 - **Delegation:** O für 6a, S für 6b und 6c.
 
 **→ Statusmeldung an dich nach Meilenstein B.**
@@ -242,9 +244,9 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 - **Delegation:** S für Adapter und Parser, O für Hash-/Duplikatlogik und Datenschutz-Review (Frage 3a). *Hängt stark von echten Beispieldateien ab (Frage 7).*
 
 #### Schritt 11 – Einkaufsliste & Rezepte (US-07, US-08)
-- 11a: Geteilte Einkaufsliste; Abhaken → «In den Vorrat legen?»; **Doppelkauf-Warnung** (E-02) (umgesetzt: lokale Liste mit Abhaken, Löschen und Doppelkauf-Hinweis; Oberfläche folgt; «geteilt» mit Schritt 7)
+- 11a: Geteilte Einkaufsliste; Abhaken → «In den Vorrat legen?»; **Doppelkauf-Warnung** (E-02) (umgesetzt: lokale Liste «Nachkaufen» unter «Mehr» mit Abhaken, Löschen, Doppelkauf-Hinweis und «In den Vorrat legen»; «geteilt» mit Schritt 7)
 - 11b: `RecipeProvider` mit kuratierter JSON-Sammlung (rund 30 Schweizer Alltagsgerichte, selbst geschrieben), Ranking nach bald ablaufenden Zutaten; Rezeptidee im Digest (umgesetzt: Schema, Rangfolge nach Dringlichkeit, nie nach dem Verbrauchsdatum, `recipes.suggest`/`recipes.get`, erste Rezepte)
-- 11c: Rezept-Ansicht mit 3 Vorschlägen, fehlende Zutaten auf die Liste, **nach dem Kochen abbuchen** (R-03) (umgesetzt: «Rezeptideen» auf «Heute», Rezeptseite mit «Da» und «Fehlt», Fehlendes auf die Liste, nach dem Kochen abbuchen mit «Alles · Halb · Nichts», ADR-0023)
+- 11c: Rezept-Ansicht mit 3 Vorschlägen, fehlende Zutaten auf die Liste, **nach dem Kochen abbuchen** (R-03) (umgesetzt: «Rette heute» auf «Start» und im Tab «Kochen» mit «Alle Rezepte» und Feierabend-Filter, ADR-0031; Rezeptseite mit «Da» und «Fehlt», Fehlendes auf die Liste, nach dem Kochen abbuchen mit «Alles · Halb · Nichts», ADR-0023)
 - **Delegation:** S für 11a und 11c, O für das Ranking, H für Rezeptdaten nach Schema.
 
 **→ Statusmeldung an dich nach Meilenstein D.**

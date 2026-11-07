@@ -1,6 +1,6 @@
 # Pilot: rettich ausprobieren
 
-Für den ersten Pilot mit Alban und einer weiteren Person. Stand: v0.5.0. Claude gibt den Pilot frei (CLAUDE.md, Prioritäten).
+Für den ersten Pilot mit Alban und einer weiteren Person. Stand: v0.6.0. Claude gibt den Pilot frei (CLAUDE.md, Prioritäten).
 
 ## Einrichten (5 Minuten pro Person)
 
@@ -19,8 +19,20 @@ Für den ersten Pilot mit Alban und einer weiteren Person. Stand: v0.5.0. Claude
 | 2–6 | Vor dem Einkaufen **«Nachkaufen»** unter «Mehr» nutzen (füllt sich auch, wenn du nach dem Aufbrauchen «Nachkaufen» tippst), nach dem Einkauf «In den Vorrat legen» | Hilft «Du hast noch …»? |
 | 2–6 | Nach dem Einkauf den **Bon hochladen** (＋, dann «Bon hochladen»: PDF aus der Coop- oder Migros-App, Lidl-Screenshot oder Foto) | Stimmen Namen und Preise, stimmt die Summe? |
 | 2–6 | Nach dem Einkauf die Standardartikel mit **«Schnell erfassen»** eintragen | Reicht ein Tipp, stimmen Menge und Ort? |
-| 2–6 | Unter «Rezeptideen» etwas kochen, danach **«Zutaten abbuchen»** | Passen die Ideen zu dem, was weg muss? |
+| 2–6 | Im Tab **«Kochen»** etwas kochen (auch mit Filter «Feierabend»), danach **«Zutaten abbuchen»** | Passen die Ideen zu dem, was weg muss? |
+| 2–6 | Hast du etwas falsch eingetragen? Unter «Mehr» › **«Verlauf»** ändern oder löschen | Findest du den Eintrag schnell? |
 | 7 | Den **Kühlschrank-Check** auf «Start» machen, unter «Mehr» einen **Bericht als PDF** erstellen, «Deine Wirkung diesen Monat» ansehen, einmal «Alles exportieren» | Würdest du die App weiter nutzen? Was nervt? |
+
+## Neues Symbol, neues Handy oder neue Adresse
+
+Das iPhone übernimmt Symbol und Namen einer Web-App nur beim Hinzufügen zum Home-Bildschirm. Wer das alte «FridgeAI»-Symbol hat, legt rettich neu hin. **Wer das alte Symbol löscht, löscht meist auch dessen Daten.** Darum in dieser Reihenfolge:
+
+1. In der alten App: «Mehr» › «Daten und Datenschutz» › **«Alles exportieren (JSON)»**, die Datei in «Dateien» sichern.
+2. In Safari die Adresse öffnen, einmal neu laden, «Teilen» › «Zum Home-Bildschirm».
+3. Die neue App öffnen: «Mehr» › «Daten und Datenschutz» › **«Daten importieren (JSON)»**, die Datei wählen, «Ja, übernehmen».
+4. Erst wenn alles stimmt, das alte Symbol löschen.
+
+Genauso geht es beim Handywechsel und später beim Umzug auf rettich.app.
 
 ## Feedback
 
@@ -33,7 +45,7 @@ Für den ersten Pilot mit Alban und einer weiteren Person. Stand: v0.5.0. Claude
 - **Bons:** PDFs aus der Coop- und Migros-App werden am genauesten gelesen. Fotos und Screenshots können Ziffern verwechseln: Die Summenprüfung zeigt das, ein Tipp auf den Preis korrigiert ihn. Screenshots in voller Grösse hochladen, nicht über einen Chat verkleinert.
 - **Scan im Browser:** Ist es unscharf, das Handy etwas weiter weg halten oder «Code aus Foto lesen» nutzen. Die native App-Variante steht in [`ideen/scan-und-produktdaten.md`](./ideen/scan-und-produktdaten.md).
 - **Unbekannte Produkte:** Nicht jeder Barcode ist bei Open Food Facts. Einmal von Hand erfassen, beim nächsten Scan kennt rettich das Produkt.
-- **Handywechsel:** Vorher «Alles exportieren». Ein Import kommt mit den Konten.
+- **Handywechsel:** Export und Import wie oben. Ein laufender Abgleich zwischen Handys kommt mit den Konten.
 - **Keine Push-Mitteilungen:** Die App zeigt das Dringende beim Öffnen ([`ideen/benachrichtigungen.md`](./ideen/benachrichtigungen.md)).
 
 ## Daten und Datenschutz
