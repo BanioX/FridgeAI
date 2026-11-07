@@ -39,5 +39,7 @@ Ideen aus der Arbeit an der Apple-Designsprache (ADR-0021). Noch nicht beschloss
 - **Im Kühlschrank-Check:** Was dort als gegessen oder weggeworfen markiert wird, am Ende gesammelt anbieten: «3 Sachen nachkaufen?». Aufwand S.
 - **Standardartikel:** Wenn ein Produkt aus «Schnell erfassen» aufgebraucht ist, «Nachkaufen» gleich vormerken (abschaltbar). Aufwand S.
 - **＋ als Sheet:** Das Menü «Erfassen» als Blatt von unten statt als eigene Seite, wie das ＋ in Apples Erinnerungen. Aufwand S. Braucht eine Prüfung mit Screenreader.
+- **Portionsgrössen im Katalog:** Das Wegwischen isst bei Gramm und Millilitern heute den Rest. Mit einer Portionsgrösse pro Kategorie (z. B. 125 g Joghurt, 2 dl Milch) isst es eine Portion; `swipePortion` kann sie schon. Aufwand S, Kosten keine.
+- **Wegwischen auf Einkaufsliste und Kühlschrank-Check:** Dieselbe Geste zum Abhaken. Aufwand S.
 - **Braucht:** nichts Neues, alles auf dem Gerät.
 

@@ -9,6 +9,7 @@
 - **Funktion vor Dekor:** Farbe trägt Bedeutung. Grün = frisch/ok, Aprikose = bald, Tomate = heute, Rot = nicht mehr essen. Jede Farbaussage hat zusätzlich Text oder Symbol (nie nur Farbe, wegen Farbsehschwäche).
 - **Elegant durch Typografie:** Eine weiche Serifenschrift für Titel und grosse Zahlen (CHF gerettet), eine klare Sans für alles Bedienbare.
 - **Daumenfreundlich:** Wichtige Aktionen unten, Touch-Ziele mindestens 44 px, eine Hauptaktion pro Screen.
+- **Immer sauber ausgerichtet** (Alban, 7.11.2026: «Clean UI»): In einer Fläche steht alles auf derselben Achse, entweder mittig oder an einer gemeinsamen Kante, nie etwas mittig und etwas unten. Text wird nie angeschnitten: Was nicht ganz Platz hat, erscheint erst, wenn es passt (z. B. nur das Symbol). Das gilt auch in Bewegung, etwa beim Wischen. Jede Vorschau für Alban wird darauf geprüft.
 
 ## Farben
 
@@ -79,6 +80,7 @@ Systemschrift nach Apples Human Interface Guidelines (ADR-0021): SF Pro auf Appl
 - Radien: 10 px (Segmente), 12 px (Segment-Spur), 12 px (Eingaben, Buttons), 16 px (Karten), 24 px (Sheets), Pill für Chips und Status.
 - Karten ohne Rahmen, nur mit weichem Schatten (`shadow-card`); schwebende Elemente (Sheets, Toast) etwas mehr.
 - Bewegung 150–200 ms, ease-out; `prefers-reduced-motion` schaltet Animationen ab.
+- **Wegwischen: eins gegessen** (7.11.2026, `SwipeAction`): In Vorrat und «Läuft bald ab» zieht ein Wisch nach links das Zeilen-Bild weg und zeigt einen basil-700-Streifen. Darin stehen Häkchen, «Gegessen» und klein «−1» untereinander und immer mittig in der freien Fläche; unter 6 rem Breite steht nur das Häkchen, damit kein Text angeschnitten wird. Der Inhalt der Zeile blendet beim Wegziehen bis auf 30 % aus, damit sein angeschnittener Rand nicht mit der Aktion konkurriert. Ab 40 % der Zeilenbreite oder mit schnellem Wisch zählt es (Haptik 15 ms, das Bild fällt in zwei Hälften auseinander, 350 ms), sonst federt die Zeile zurück. Ein Tipp öffnet weiter den Artikel, ein Wisch nie. Stück: 1, Gramm und Milliliter: der Rest (bis es Portionsgrössen im Katalog gibt). Ein Toast über der Tab-Leiste bietet «Rückgängig» für 5 Sekunden. Der Wisch ist nur eine Abkürzung: Die Artikelseite behält die Knöpfe (WCAG 2.5.1), die Zeile bekommt keinen zusätzlichen Knopf. Mit `prefers-reduced-motion` entfallen Hälften und Federn.
 
 ## Icons und Lebensmittel
 

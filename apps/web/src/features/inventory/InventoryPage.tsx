@@ -12,12 +12,14 @@ import { Link, useLocation, useNavigate, useSearchParams } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
 import { Button } from '../../ui/Button';
+import { SwipeAction } from '../../ui/SwipeAction';
 import { Card } from '../../ui/Card';
 import { expiryBadge } from '../../ui/expiry-badge';
 import { closedItemFrom } from './closed-item';
 import { GROUPED_ROW_LINK, GroupedList, GroupedListItem } from '../../ui/GroupedList';
 import { InventoryItemRow } from './InventoryItemRow';
 import { locationOrder } from './item-meta';
+import { SWIPE_HINT_ID, swipeLabel, useSwipeEat } from './swipe-eat';
 
 const tabId = (location: StorageLocation) => `tab-${location}`;
 const panelId = (location: StorageLocation) => `panel-${location}`;
@@ -147,6 +149,8 @@ export function InventoryPage() {
   const parsed = StorageLocationSchema.safeParse(params.get('location'));
   const selected: StorageLocation = parsed.success ? parsed.data : 'fridge';
 
+  const swipe = useSwipeEat();
+
   const items = useLiveQuery(
     async () => (await inventory['inventory.list']({ householdId })).items,
     [householdId],
@@ -244,31 +248,49 @@ export function InventoryPage() {
             {selected === 'reserve' ? <Card variant="tip">{t.reserveTip}</Card> : null}
           </div>
         ) : (
-          <GroupedList>
-            {visible.map((item) => (
-              <GroupedListItem key={item.id}>
-                <Link to={`/inventory/${item.id}`} className={GROUPED_ROW_LINK}>
-                  <InventoryItemRow
-                    chevron
-                    item={item}
-                    status={expiryBadge(
-                      expiryStatus(
-                        item.expiresOn,
-                        today,
-                        item.expiryKind,
-                        soonThresholdFor(item.location),
-                      ),
-                      item.expiresOn,
-                      today,
-                      item.location,
+          <div className="space-y-2">
+            {swipe.tip}
+            <GroupedList>
+              {visible.map((item) => (
+                <GroupedListItem key={item.id}>
+                  <SwipeAction
+                    {...swipeLabel(item)}
+                    onCommit={() => {
+                      swipe.eat(item);
+                    }}
+                  >
+                    {({ sliced }) => (
+                      <Link
+                        to={`/inventory/${item.id}`}
+                        aria-describedby={SWIPE_HINT_ID}
+                        className={GROUPED_ROW_LINK}
+                      >
+                        <InventoryItemRow
+                          chevron
+                          sliced={sliced}
+                          item={item}
+                          status={expiryBadge(
+                            expiryStatus(
+                              item.expiresOn,
+                              today,
+                              item.expiryKind,
+                              soonThresholdFor(item.location),
+                            ),
+                            item.expiresOn,
+                            today,
+                            item.location,
+                          )}
+                        />
+                      </Link>
                     )}
-                  />
-                </Link>
-              </GroupedListItem>
-            ))}
-          </GroupedList>
+                  </SwipeAction>
+                </GroupedListItem>
+              ))}
+            </GroupedList>
+          </div>
         )}
       </div>
+      {swipe.toast}
     </div>
   );
 }
