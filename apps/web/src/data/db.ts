@@ -7,6 +7,8 @@ import type {
   OutcomeEvent,
   Product,
   ProductInfo,
+  Receipt,
+  ReceiptLine,
   ReminderPrefs,
   ShoppingListItem,
 } from '@fridgeai/core';
@@ -61,6 +63,8 @@ export class FridgeDb extends Dexie {
   catalogCache!: EntityTable<CatalogCacheEntry, 'gtin'>;
   shoppingItems!: EntityTable<ShoppingListItem, 'id'>;
   productImages!: EntityTable<ProductImageEntry, 'gtin'>;
+  receipts!: EntityTable<Receipt, 'id'>;
+  receiptLines!: EntityTable<ReceiptLine, 'id'>;
 
   constructor(name = 'fridgeai') {
     super(name);
@@ -79,5 +83,10 @@ export class FridgeDb extends Dexie {
     // Booleans cannot be indexed in IndexedDB: «checked» is filtered, not indexed.
     this.version(3).stores({ shoppingItems: 'id, householdId' });
     this.version(4).stores({ productImages: 'gtin' });
+    // Read receipts: lines with name and price, never the picture or PDF (ADR-0028).
+    this.version(5).stores({
+      receipts: 'id, householdId',
+      receiptLines: 'id, householdId, receiptId',
+    });
   }
 }

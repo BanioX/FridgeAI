@@ -23,6 +23,7 @@ Alles liegt im Speicher deines Browsers auf diesem Gerät (IndexedDB). Ohne dein
 | Artikel im Vorrat: Name, Kategorie, Ort, Menge, Ablaufdatum, Preis (falls erfasst) | Damit FridgeAI weiss, was du hast und was bald abläuft |
 | Abschlüsse: gegessen, weitergegeben, weggeworfen, mit Grund und Wert | Rückgängig, «Deine Wirkung diesen Monat» |
 | Einkaufsliste | «Du hast noch …» gegen Doppelkäufe |
+| Gelesene Bons: Laden, Datum, Total und pro Zeile Name, Menge, Preis, Rabatt (nie Foto, PDF oder Karten- und Kundennummern) | Echte Preise im Vorrat, später dein Preisgedächtnis |
 | Produkte, die du schon erfasst hast, und «Schnell erfassen» | Damit der nächste Scan oder Tipp schneller geht |
 | Antworten von Open Food Facts und Packungsbilder | Damit derselbe Barcode auch offline erkannt wird (30 Tage) |
 | Verlauf der Änderungen (Ereignisse) | Rückgängig, Export, später der Abgleich zwischen Geräten |

@@ -4,6 +4,12 @@ import { RappenSchema } from '../money';
 import { DomainEventSchema } from './events';
 import { HouseholdSchema, MemberSchema, type Scope } from '../model/household';
 import {
+  ReceiptLineKindSchema,
+  ReceiptLineSchema,
+  ReceiptSchema,
+  ReceiptSourceSchema,
+} from '../model/receipt';
+import {
   InventoryItemSchema,
   NutritionSchema,
   OutcomeEventSchema,
@@ -25,6 +31,7 @@ import {
   OwnerSchema,
   PackageSizeSchema,
   QuantitySchema,
+  RetailerSchema,
   StorageLocationSchema,
   UnitSchema,
 } from '../model/primitives';
@@ -44,6 +51,19 @@ export interface Operation<TInput extends z.ZodType, TOutput extends z.ZodType> 
   input: TInput;
   output: TOutput;
 }
+
+/** One reviewed receipt line (ADR-0028); `location` puts an item into the inventory. */
+const ReceiptImportLineSchema = z.object({
+  name: z.string().trim().min(1).max(120),
+  kind: ReceiptLineKindSchema.extract(['item', 'discount', 'deposit', 'bag']),
+  quantity: QuantitySchema,
+  unit: UnitSchema.extract(['pcs', 'g']),
+  unitPriceRappen: RappenSchema.optional(),
+  priceRappen: RappenSchema,
+  discountRappen: RappenSchema.max(0),
+  isFood: z.boolean(),
+  location: StorageLocationSchema.optional(),
+});
 
 /** «Nach dem Öffnen innert N Tagen» from the label; overrides the category value. */
 const AfterOpeningDaysSchema = z.int().min(0).max(3650);
@@ -547,6 +567,26 @@ export const CONTRACT_V1 = {
     input: z.object({ ...commandBase, itemId: IdSchema }),
     output: z.object({ offerId: IdSchema }),
   }),
+  'receipts.import': command({
+    name: 'receipts.import',
+    summary: {
+      de: 'Einen gelesenen Kassenbon speichern und gewählte Artikel mit Preis in den Vorrat legen.',
+      en: 'Store a read receipt and add the chosen items with their price to the inventory.',
+    },
+    scopes: ['inventory:write'],
+    input: z.object({
+      ...commandBase,
+      retailer: RetailerSchema,
+      storeName: z.string().trim().max(80).optional(),
+      purchasedAt: IsoDateTimeSchema,
+      totalRappen: RappenSchema,
+      source: ReceiptSourceSchema,
+      /** SHA-256 (hex) of the receipt text: the same receipt is never imported twice. */
+      hash: z.string().regex(/^[0-9a-f]{64}$/),
+      lines: z.array(ReceiptImportLineSchema).min(1).max(300),
+    }),
+    output: z.object({ receiptId: IdSchema, itemIds: z.array(IdSchema), duplicate: z.boolean() }),
+  }),
   'household.export': query({
     name: 'household.export',
     summary: {
@@ -565,6 +605,8 @@ export const CONTRACT_V1 = {
       items: z.array(InventoryItemSchema),
       outcomes: z.array(OutcomeEventSchema),
       shoppingItems: z.array(ShoppingListItemSchema),
+      receipts: z.array(ReceiptSchema),
+      receiptLines: z.array(ReceiptLineSchema),
       events: z.array(DomainEventSchema),
     }),
   }),
