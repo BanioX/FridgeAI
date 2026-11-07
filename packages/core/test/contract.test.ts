@@ -18,6 +18,7 @@ describe('contract v1', () => {
       'inventory.restoreItem',
       'inventory.recordOutcome',
       'inventory.undoOutcome',
+      'inventory.history',
       'inventory.open',
       'inventory.move',
       'products.lookup',
