@@ -6,6 +6,8 @@
 import type { DomainEvent } from '../contract/events';
 import type { OperationName } from '../contract/operations';
 import type { Id } from '../ids';
+import type { Gtin } from '../model/primitives';
+import type { ProductInfo } from './index';
 import type { Household, Member, ReminderPrefs } from '../model/household';
 import type { InventoryItem, OutcomeEvent, Product, ShoppingListItem } from '../model/inventory';
 import type { Receipt, ReceiptLine } from '../model/receipt';
@@ -52,7 +54,17 @@ export interface EventLog {
   ofHousehold: (householdId: Id) => Promise<DomainEvent[]>;
 }
 
-export interface Storage {
+/** What this device remembers about public barcodes. Read-only here: the data layer fills it. */
+export interface DeviceCaches {
+  /** Facts an open product database gave for a barcode. */
+  productFacts: { get: (gtin: Gtin) => Promise<ProductInfo | undefined> };
+  /** A pack picture as data URL. */
+  productImages: {
+    get: (gtin: Gtin) => Promise<{ dataUrl: string; source: 'off' } | undefined>;
+  };
+}
+
+export interface Storage extends DeviceCaches {
   households: HouseholdStore;
   members: RecordStore<Member>;
   reminderPrefs: RecordStore<ReminderPrefs>;
