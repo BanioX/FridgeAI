@@ -1,12 +1,18 @@
-import type { Id, IdGenerator, LocalDate } from '@fridgeai/core';
+import {
+  createShoppingUseCases,
+  type Id,
+  type IdGenerator,
+  type LocalDate,
+  type ShoppingUseCases,
+} from '@fridgeai/core';
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { browserClock, browserIds } from '../data/adapters';
 import { ensureLocalHousehold } from '../data/bootstrap';
+import { appContext } from '../data/command';
 import { FridgeDb } from '../data/db';
 import { createInventoryHandlers, type InventoryHandlers } from '../data/handlers';
 import { createHouseholdHandlers, type HouseholdHandlers } from '../data/household-handlers';
 import { createRecipeHandlers, type RecipeHandlers } from '../data/recipe-handlers';
-import { createShoppingHandlers, type ShoppingHandlers } from '../data/shopping-handlers';
 import { cachedCatalog } from '../data/catalog-cache';
 import { openFoodFactsCatalog, openFoodFactsSearch } from '../data/open-food-facts';
 import { requestPersistentStorage } from '../data/persistence';
@@ -21,7 +27,7 @@ export interface AppData {
   /** Swiss calendar day when the app was opened; refreshed when the app becomes visible again. */
   today: LocalDate;
   inventory: InventoryHandlers;
-  shopping: ShoppingHandlers;
+  shopping: ShoppingUseCases;
   household: HouseholdHandlers;
   recipes: RecipeHandlers;
 }
@@ -68,7 +74,7 @@ export function AppDataProvider({ children, db }: { children: ReactNode; db?: Fr
           ids: browserIds,
           today: browserClock.today(),
           inventory: createInventoryHandlers(context),
-          shopping: createShoppingHandlers(context),
+          shopping: createShoppingUseCases(appContext(context)),
           household: createHouseholdHandlers(context),
           recipes: createRecipeHandlers(context),
         });

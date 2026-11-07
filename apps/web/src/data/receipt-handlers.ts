@@ -15,16 +15,7 @@ import { createCommandKit, type Handler, type HandlerContext } from './command';
  */
 export function createReceiptHandlers(ctx: HandlerContext, addItem: Handler<'inventory.addItem'>) {
   const { db, clock, ids, actor } = ctx;
-  const { event, runCommand } = createCommandKit(ctx, [
-    db.receipts,
-    db.receiptLines,
-    db.items,
-    db.products,
-    db.outcomes,
-    db.events,
-    db.commands,
-    db.catalogCache,
-  ]);
+  const { event, runCommand } = createCommandKit(ctx);
 
   const importReceipt: Handler<'receipts.import'> = async (raw) => {
     const input = CONTRACT_V1['receipts.import'].input.parse(raw);
