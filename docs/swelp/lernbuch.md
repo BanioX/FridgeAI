@@ -18,3 +18,4 @@ Was wir aus Fehlern gelernt haben, mit Beleg. Claude trägt ein, Alban kann jede
 | L-12 | Unicode-Zeichen statt Escape-Sequenzen in Regex lösen `no-irregular-whitespace` aus | In Regex ` ` usw. schreiben, nie das Zeichen selbst | #152 |
 | L-13 | Ein unbekanntes Lebensmittel landete still im Vorrat statt im Kühlschrank | «Kühlschrank zuerst»: ohne bekannte Kategorie in den Kühlschrank | #142 |
 | L-14 | Open Food Facts kennt manche Produkte nur französisch («Viande séchée») | Offen: deutschen Namen von der Quittung behalten? (TD-14) | 7.11.2026, Albans Test |
+| L-16 | Ein E2E-Test rechnete «in 20 Tagen» in UTC, die App rechnet in Europe/Zurich: nachts zwischen 0 und 1 Uhr (Sommer 2 Uhr) stimmte der Tag nicht | Daten in Tests immer vom Zürcher Kalendertag aus rechnen | 7.11.2026, `e2e/item-detail.spec.ts` |

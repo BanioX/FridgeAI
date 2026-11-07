@@ -196,9 +196,16 @@ test('offers «Nachkaufen» after an item is used up', async ({ page }) => {
 });
 
 test('shows the other packs of the same product and which one to eat first', async ({ page }) => {
-  /** A day from now as the date field wants it (YYYY-MM-DD). */
-  const inDays = (days: number) =>
-    new Date(Date.now() + days * 86_400_000).toISOString().slice(0, 10);
+  /**
+   * A day from now as the date field wants it (YYYY-MM-DD), counted from today in Zurich like the
+   * app: in UTC, the night from 0 to 1 o'clock (2 in summer) would be a day behind (L-16).
+   */
+  const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Zurich' }).format(new Date());
+  const inDays = (days: number) => {
+    const date = new Date(`${today}T00:00:00Z`);
+    date.setUTCDate(date.getUTCDate() + days);
+    return date.toISOString().slice(0, 10);
+  };
   for (const days of [20, 6]) {
     await page.goto('/inventory/new');
     await page.getByLabel('Was ist es?').fill('Joghurt Nature');
