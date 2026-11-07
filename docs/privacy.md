@@ -6,7 +6,7 @@
 
 - Dein Vorrat, deine Einkaufsliste und deine Statistik bleiben **auf deinem Gerät**. Es gibt kein Konto und keinen FridgeAI-Server mit deinen Daten.
 - Beim Scannen geht **nur die Barcode-Nummer** an Open Food Facts, damit Name, Nährwerte und Packungsbild kommen. Suchst du ein Produkt nach Namen, gehen ab drei Buchstaben **nur die getippten Wörter** dorthin, sobald du kurz mit Tippen innehältst.
-- Fotos von Codes werden auf dem Gerät gelesen und **nie gespeichert**.
+- Fotos von Codes und Bons sowie Bon-PDFs werden auf dem Gerät gelesen und **nie gespeichert**.
 - **Kein Tracking, keine Werbung, keine Cookies.**
 - Du kannst jederzeit **alles exportieren** (JSON, CSV) und **alles löschen** («Haushalt»).
 

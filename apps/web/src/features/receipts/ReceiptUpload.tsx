@@ -22,14 +22,18 @@ import { Card } from '../../ui/Card';
 import { GroupedList, GroupedListItem } from '../../ui/GroupedList';
 import { formatAmount } from '../inventory/add-item';
 import { sha256Hex } from './hash';
+import { readImageText } from './read-image';
 import { readPdfText } from './read-pdf';
 
 const t = messages.receiptUpload;
-const MAX_BYTES = 5 * 1024 * 1024;
+const MAX_BYTES = 15 * 1024 * 1024;
+
+const isPdf = (file: File) => file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
 
 interface Review {
   receipt: ParsedReceipt;
   hash: string;
+  source: 'pdf' | 'photo';
   /** Fixed per receipt: a retry after an error never imports twice. */
   commandId: Id;
   chosen: ReadonlySet<number>;
@@ -54,7 +58,7 @@ function purchasedAt(receipt: ParsedReceipt) {
 }
 
 /**
- * «Bon hochladen» (ADR-0028): a receipt PDF is read on the device, the lines show with name and
+ * «Bon hochladen» (ADR-0028): a receipt PDF, photo or screenshot is read on the device, the lines show with name and
  * price paid, food is ticked, and «übernehmen» stores the receipt and puts the ticked items into
  * the inventory with their price.
  */
@@ -71,13 +75,15 @@ export function ReceiptUpload() {
       setStatus(t.tooLarge);
       return;
     }
+    const source = isPdf(file) ? 'pdf' : 'photo';
     setBusy(true);
-    setStatus(t.reading);
+    setStatus(source === 'pdf' ? t.reading : t.readingPhoto);
     try {
-      const text = await readPdfText(await file.arrayBuffer());
+      const text =
+        source === 'pdf' ? await readPdfText(await file.arrayBuffer()) : await readImageText(file);
       const receipt = parseReceiptText(text);
       if (text.trim() === '' || !receipt.lines.some((line) => line.kind === 'item')) {
-        setStatus(text.trim() === '' ? t.noText : t.noLines);
+        setStatus(text.trim() === '' && source === 'pdf' ? t.noText : t.noLines);
         return;
       }
       const chosen = new Set(
@@ -85,7 +91,7 @@ export function ReceiptUpload() {
           line.kind === 'item' && line.isFood !== false ? [index] : [],
         ),
       );
-      setReview({ receipt, hash: await sha256Hex(text), commandId: ids.next(), chosen });
+      setReview({ receipt, hash: await sha256Hex(text), source, commandId: ids.next(), chosen });
       setStatus('');
     } catch {
       setStatus(t.failed);
@@ -106,7 +112,7 @@ export function ReceiptUpload() {
         ...(receipt.storeName === undefined ? {} : { storeName: receipt.storeName }),
         purchasedAt: purchasedAt(receipt),
         totalRappen: receipt.totalRappen ?? receipt.computedTotalRappen,
-        source: 'pdf',
+        source: current.source,
         hash: current.hash,
         lines: receipt.lines.map((line, index) => ({
           name: (line.name.trim() === '' ? t.fallbackNames[line.kind] : line.name).slice(0, 120),
@@ -149,7 +155,7 @@ export function ReceiptUpload() {
         {t.choose}
         <input
           type="file"
-          accept="application/pdf,.pdf"
+          accept="application/pdf,.pdf,image/*"
           disabled={busy}
           className="sr-only"
           onChange={(event) => {
