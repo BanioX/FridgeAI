@@ -20,7 +20,7 @@ const COOP = textPdf([
 ]);
 
 test('uploads a receipt PDF, shows names and prices and takes the food over', async ({ page }) => {
-  await page.goto('/scan');
+  await page.goto('/add/receipt');
   await page.getByLabel('PDF oder Foto wählen').setInputFiles({
     name: 'bon.pdf',
     mimeType: 'application/pdf',
@@ -56,7 +56,7 @@ test('uploads a receipt PDF, shows names and prices and takes the food over', as
   await expect(page.getByText('Semmeli 80G')).toBeVisible();
 
   // The same receipt again changes nothing.
-  await page.goto('/scan');
+  await page.goto('/add/receipt');
   await page
     .getByLabel('PDF oder Foto wählen')
     .setInputFiles({ name: 'bon.pdf', mimeType: 'application/pdf', buffer: COOP });
@@ -65,7 +65,7 @@ test('uploads a receipt PDF, shows names and prices and takes the food over', as
 });
 
 test('explains a PDF without text and one without articles', async ({ page }) => {
-  await page.goto('/scan');
+  await page.goto('/add/receipt');
   await page.getByLabel('PDF oder Foto wählen').setInputFiles({
     name: 'leer.pdf',
     mimeType: 'application/pdf',
@@ -82,7 +82,7 @@ test('explains a PDF without text and one without articles', async ({ page }) =>
 
 test('reads a receipt screenshot on the device', async ({ page }) => {
   test.setTimeout(90_000);
-  await page.goto('/scan');
+  await page.goto('/add/receipt');
   // An invented Lidl app receipt, drawn in the browser as a screenshot would look.
   const dataUrl = await page.evaluate(
     (lines) => {
@@ -130,7 +130,7 @@ test('reads a receipt screenshot on the device', async ({ page }) => {
 });
 
 test('a misread price is corrected with a tap and the sum is checked again', async ({ page }) => {
-  await page.goto('/scan');
+  await page.goto('/add/receipt');
   await page.getByLabel('PDF oder Foto wählen').setInputFiles({
     name: 'bon.pdf',
     mimeType: 'application/pdf',
@@ -168,7 +168,7 @@ test('remembers prices: «zuletzt …» and «… % teurer als sonst» on the ne
       '0 2.60 1.00 0.03',
     ]);
   const upload = async (buffer: Buffer) => {
-    await page.goto('/scan');
+    await page.goto('/add/receipt');
     await page
       .getByLabel('PDF oder Foto wählen')
       .setInputFiles({ name: 'bon.pdf', mimeType: 'application/pdf', buffer });

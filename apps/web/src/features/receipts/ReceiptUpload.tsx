@@ -209,8 +209,7 @@ export function ReceiptUpload() {
 
   return (
     <Card>
-      <h2 className="font-display text-xl font-semibold">{t.title}</h2>
-      <p className="mt-1 text-ink-muted">{t.intro}</p>
+      <p className="text-ink-muted">{t.intro}</p>
       <label className="mt-4 flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-xl bg-basil-700 px-5 font-semibold text-white transition-colors hover:bg-basil-800 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-basil-600">
         <FileText size={20} aria-hidden="true" />
         {t.choose}
@@ -234,7 +233,7 @@ export function ReceiptUpload() {
 
       {review === null || receipt === undefined ? null : (
         <section aria-labelledby="receipt-title" className="mt-4 space-y-3">
-          <h3 id="receipt-title" className="font-semibold">
+          <h2 id="receipt-title" className="font-semibold">
             {[
               t.retailers[receipt.retailer],
               receipt.storeName,
@@ -242,7 +241,7 @@ export function ReceiptUpload() {
             ]
               .filter(Boolean)
               .join(' · ')}
-          </h3>
+          </h2>
           <p className={`text-sm ${receipt.sumCheck === 'ok' ? 'text-basil-800' : 'text-today'}`}>
             {receipt.sumCheck === 'ok' || receipt.totalRappen === null
               ? receipt.totalRappen === null
