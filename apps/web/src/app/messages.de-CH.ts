@@ -653,6 +653,8 @@ export const messages = {
     starting: 'Kamera startet …',
     hint: 'Code in den Rahmen, Handy etwa 20 cm entfernt halten. Ist es unscharf: etwas weiter weg.',
     torch: 'Licht',
+    torchFallback:
+      'Hier kann rettich das Licht nicht selbst einschalten. Die Kamera öffnet sich: Blitz einschalten und den Code fotografieren.',
     denied:
       'Die Kamera ist blockiert. Erlaube sie in den Einstellungen deines Browsers, oder nimm ein Foto bzw. tipp die Nummer ein.',
     unavailable:
