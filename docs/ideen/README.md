@@ -13,6 +13,10 @@ Brainstorming, laufend gepflegt (CLAUDE.md: «Ideen unterwegs»). Hier steht, wa
 | [`hilfe-und-konto.md`](./hilfe-und-konto.md) | FAQ, How-to- und Info-Seiten; Registrierung (geparkt) |
 | [`app-stores.md`](./app-stores.md) | Native App für iOS und Android: Weg, Kosten, Zeitplan |
 | [`ausgaben-und-ernaehrung.md`](./ausgaben-und-ernaehrung.md) | Essensbudget aus den Bons, gesund und ungesund (später) |
+| [`integrationen.md`](./integrationen.md) | Thermomix, Kühlschränke (Samsung, LG, Matter), GS1-Codes und eine offene rettich-Schnittstelle |
+| [`schutz.md`](./schutz.md) | Marke, Urheberrecht, NDA, Source Maps: rettich vor Kopien schützen |
+| [`designsprache-garten.md`](./designsprache-garten.md) | Pflanzen als Bereiche, Reineclaude für Erfolg, Reifen statt Prozent |
+| [`markt-und-timing.md`](./markt-und-timing.md) | Food Waste in Zahlen, Ziele 2030, Konkurrenz, Abo-Kennzahlen |
 
 **Produkt-Prioritäten** (Alban, 6.11.2026):
 
