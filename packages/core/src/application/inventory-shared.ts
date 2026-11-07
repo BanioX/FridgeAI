@@ -1,0 +1,70 @@
+import { categoryById, fallbackCategory } from '../catalog/match';
+import type { Category } from '../catalog/category';
+import type { InventoryItemView } from '../contract/operations';
+import type { Id } from '../ids';
+import type { InventoryItem, Product } from '../model/inventory';
+import type { Storage } from '../ports/storage';
+import { CommandError } from './command';
+
+export const EPSILON = 1e-9;
+
+export function categoryOf(product: Product | undefined): Category {
+  return (product && categoryById(product.categoryId)) ?? fallbackCategory();
+}
+
+export type ProductFacts = Pick<
+  Product,
+  'brand' | 'packSize' | 'nutrition' | 'nutriScore' | 'allergens'
+>;
+
+/** Only the facts that are there (exactOptionalPropertyTypes: no `undefined` values). */
+export function factsOf(source: ProductFacts | undefined): ProductFacts {
+  return {
+    ...(source?.brand === undefined ? {} : { brand: source.brand }),
+    ...(source?.packSize === undefined ? {} : { packSize: source.packSize }),
+    ...(source?.nutrition === undefined ? {} : { nutrition: source.nutrition }),
+    ...(source?.nutriScore === undefined ? {} : { nutriScore: source.nutriScore }),
+    ...(source?.allergens === undefined ? {} : { allergens: source.allergens }),
+  };
+}
+
+export function toView(item: InventoryItem, product: Product | undefined): InventoryItemView {
+  const category = categoryOf(product);
+  return {
+    id: item.id,
+    productId: item.productId,
+    name: product?.name ?? category.name.de,
+    emoji: category.emoji,
+    categoryId: category.id,
+    location: item.location,
+    quantity: item.quantity,
+    unit: item.unit,
+    expiresOn: item.expiresOn,
+    expiryKind: item.expiryKind,
+    expirySource: item.expirySource,
+    owner: item.owner,
+    ...(item.priceRappen === undefined ? {} : { priceRappen: item.priceRappen }),
+    ...(item.container === undefined ? {} : { container: item.container }),
+    ...(item.packageSize === undefined ? {} : { packageSize: item.packageSize }),
+    ...(item.openedOn === undefined ? {} : { openedOn: item.openedOn }),
+    ...factsOf(product),
+    ...(product === undefined ? {} : { productSource: product.source }),
+    ...(product?.gtin === undefined ? {} : { gtin: product.gtin }),
+  };
+}
+
+/** The item if it is still at home and belongs to the household; else a `CommandError`. */
+export async function activeItem(
+  storage: Storage,
+  householdId: Id,
+  itemId: Id,
+): Promise<InventoryItem> {
+  const item = await storage.items.get(itemId);
+  if (item?.householdId !== householdId || item.deletedAt !== undefined) {
+    throw new CommandError('not_found', `Item ${itemId} not found`);
+  }
+  if (item.status !== 'active') {
+    throw new CommandError('not_active', `Item ${itemId} is already closed`);
+  }
+  return item;
+}

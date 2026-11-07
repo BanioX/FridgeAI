@@ -44,6 +44,8 @@ rettich hat drei Schichten. Jede spricht nur mit der darunter, und zwar über ei
    Die Handler in `src/data` werden zu dünnen Adaptern. Die bestehenden Tests sichern jeden Schritt ab.
 
 **Stand 7.11.2026:** Schritt 2 ist umgesetzt. Die Speicher-Ports (`ports/storage.ts`) und das Command-Gerüst mit Idempotenz und Ereignissen (`application/command.ts`) liegen in `packages/core`. Dazu gibt es zwei Adapter: `dexieStorage` im Browser und `createMemoryStorage` für Tests. Die Einkaufsliste läuft als erster Bereich in `application/shopping.ts`. Ihre Tests laufen ohne Browser gegen den Speicher im Arbeitsspeicher und mit Dexie (`shopping.dexie.test.ts`).
+
+**Stand 7.11.2026 (Vorrat):** Vorrat, Abschlüsse, Produktsuche per Barcode und die Abfallstatistik liegen in `application/inventory*.ts`, der Export in `application/household.ts`. Die Geräte-Zwischenspeicher für Produktdaten und Bilder sind lesende Ports (`productFacts`, `productImages`); beschrieben werden sie weiter in der Datenschicht. `household.delete` und `household.import` bleiben in `apps/web/src/data/household-handlers.ts`, weil sie die ganze Geräte-Datenbank verwalten (Zwischenspeicher, `meta`-Zeiger). Häufige Produkte, Produktsuche, Bon-Import, Preise, Bericht und Rezepte folgen im nächsten Schritt.
 4. Mit Schritt 7: `apps/server` (Hono, Node 24) verdrahtet dieselben Anwendungsfälle mit PostgreSQL-Adaptern. REST-API und MCP entstehen aus der Schnittstelle. Der Browser synchronisiert über einen HTTP-Adapter. Lokal bleibt Dexie (local-first).
 
 ## Konsequenzen
