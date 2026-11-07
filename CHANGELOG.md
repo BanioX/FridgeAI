@@ -2,6 +2,43 @@
 
 Alle Änderungen an FridgeAI, neueste zuerst. Wird mit `pnpm release` erzeugt (ADR-0017).
 
+## [0.7.0] – 2026-11-07
+
+**Schlanker, premium, und der Bon kennt Open Food Facts.**
+- **Premium-Look:** drei Töne statt fünf Grüns. Smaragd für Aktionen, Silber als Grund, Onyx für die Wert-Karte und den ＋-Knopf (ADR-0035).
+- **Schlanker:**
+  - Start zeigt nur, was heute wichtig ist.
+  - Erfassen fragt nur Name, Datum und Menge, der Rest steht unter «Mehr Angaben».
+  - Kochen ist eine Liste mit «Retten · Feierabend · Alle».
+  - Mehr hat einen Bericht und den Export als JSON.
+- **Bon mit Open Food Facts:** Ein Tipp gleicht die Zeilen ab, raus gehen nur die Produktnamen. Du bestätigst jeden Treffer mit «Passt», danach erkennt rettich die Zeile beim nächsten Bon ohne Netz (ADR-0036).
+- **Bereit für ein Backend:** drei Schichten (Präsentation, Logik, Daten), Speicher-Ports und die ersten Anwendungsfälle in der Logikschicht (ADR-0034).
+- **Behoben:** Die Seite Erfassen liess sich seitlich verschieben.
+
+### Neu
+
+- «Mit Open Food Facts abgleichen» on the receipt review ([#149](https://github.com/BanioX/FridgeAI/pull/149))
+- match receipt lines with Open Food Facts ([#148](https://github.com/BanioX/FridgeAI/pull/148))
+- premium palette – Smaragd, Silber, Onyx ([#147](https://github.com/BanioX/FridgeAI/pull/147))
+- modern surfaces – calm neutral ground, borderless cards, one segmented style ([#145](https://github.com/BanioX/FridgeAI/pull/145))
+- one recipe list on Kochen - Retten, Feierabend, Alle ([#143](https://github.com/BanioX/FridgeAI/pull/143))
+- leaner adding – name, date, amount; the rest under «Mehr Angaben» ([#142](https://github.com/BanioX/FridgeAI/pull/142))
+- leaner Start – only what needs you today ([#141](https://github.com/BanioX/FridgeAI/pull/141))
+- leaner Mehr – one report, JSON only, no developer label ([#140](https://github.com/BanioX/FridgeAI/pull/140))
+
+### Behoben
+
+- no sideways scrolling on Erfassen – the quick-add row keeps its chips inside ([#139](https://github.com/BanioX/FridgeAI/pull/139))
+
+### Dokumentation
+
+- three layers – presentation, logic, data (ADR-0034), enforced by ESLint ([#144](https://github.com/BanioX/FridgeAI/pull/144))
+- README, plan and pilot guide on the state of v0.6.0; releases titled «rettich» ([#138](https://github.com/BanioX/FridgeAI/pull/138))
+
+### Wartung
+
+- storage ports and the first use cases in the logic layer ([#146](https://github.com/BanioX/FridgeAI/pull/146))
+
 ## [0.6.0] – 2026-11-07
 
 **rettich: Wirf kein Geld in den Kübel.** Die App heisst jetzt rettich, klein geschrieben wie «rett' ich», mit dem aufrechten weissen Rettich als Symbol und fünf Grüntönen aus dem Garten (Broccoli, Rucola, Basilikum, Kopfsalat, Eisberg).
