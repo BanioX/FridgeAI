@@ -39,7 +39,7 @@ export interface ParsedReceipt {
 const RETAILERS: readonly string[] = ['migros', 'coop', 'aldi', 'lidl', 'denner'];
 
 const KEYWORDS = {
-  total: /^(total|summe|gesamttotal|gesamtbetrag|endbetrag|zu bezahlen)\b/,
+  total: /^(total|summe|gesamttotal|gesamtbetrag|endbetrag|zu bezahlen|dein lidl preis)\b/,
   subtotal: /\b(zwischensumme|zwischentotal|subtotal)\b/,
   // Before the total only; payment and VAT lines after it are never read as items.
   payment:
@@ -57,6 +57,8 @@ const CODE = /^(?:[0-9A-D#*]|S\d)$/;
 const PIECES = /^(\d{1,3})(?:\.0)?x?$/i;
 const WEIGHT_KG = /^(\d{1,3}\.\d{3})(?:kg)?$/;
 const DECOR = /^(?:x|×|à|@|chf|kg|\/kg|chf\/kg)$/i;
+/** A detail line under an item (Lidl): «4 x 0.79», «0.984 kg x 1.99 CHF/kg». */
+const DETAIL = /^(\d{1,3}(?:\.\d{1,3})?) ?(kg)? ?[x×à] ?(\d{1,4}\.\d{2})(?: ?(?:chf)? ?\/? ?kg)?$/i;
 const SEPARATOR = /^[-=_*~.:¦| ]+$/;
 const STORE_SKIP = /genossenschaft|hotline|www|artikel|lohnt sich|quittung|^chf$/i;
 
@@ -261,9 +263,30 @@ function detectDate(text: string): { purchasedOn?: LocalDate; purchasedTime?: st
   }
 }
 
+/** Lidl prints «4 x 0.79» or «0.984 kg x 1.99 CHF/kg» below the item; it must match its amount. */
+function applyDetail(item: ParsedReceiptLine | null, detail: RegExpExecArray) {
+  const [, amount = '', kg, price] = detail;
+  const unitPrice = amountOf(price);
+  if (item === null || unitPrice === null) {
+    return;
+  }
+  if (kg !== undefined || /\.\d{3}$/.test(amount)) {
+    const grams = Math.round(Number(amount) * 1000);
+    if (near(perKg(grams, unitPrice), item.priceRappen)) {
+      Object.assign(item, { quantity: grams, unit: 'g', unitPriceRappen: unitPrice });
+    }
+    return;
+  }
+  const count = Number(amount);
+  if (Number.isInteger(count) && count * unitPrice === item.priceRappen) {
+    Object.assign(item, { quantity: count, unitPriceRappen: unitPrice });
+  }
+}
+
 /**
  * Reads a receipt from OCR or PDF text (ADR-0027). Knows the layouts of Coop («Menge Preis Aktion
- * Total») and Migros («Gespart») and falls back to «name … amount». Checks the lines against the printed total to the Rappen; the VAT table
+ * Total»), Migros («Gespart») and Lidl (quantity and «Lidl Plus Rabatt» below the item) and falls
+ * back to «name … amount». Checks the lines against the printed total to the Rappen; the VAT table
  * below the total tells food (reduced rate) from everything else.
  */
 export function parseReceiptText(text: string): ParsedReceipt {
@@ -284,6 +307,11 @@ export function parseReceiptText(text: string): ParsedReceipt {
   let afterSubtotal = false;
 
   for (const row of body) {
+    const detail = DETAIL.exec(row);
+    if (detail !== null) {
+      applyDetail(lastItem, detail);
+      continue;
+    }
     const numbers = readNumbers(row);
     const words = plain(numbers.name);
     if (numbers.price === null) {

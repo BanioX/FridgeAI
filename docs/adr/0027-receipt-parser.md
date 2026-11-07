@@ -17,6 +17,7 @@ Die Händler bieten keine offene Preis-Schnittstelle. Ihre Websites automatisch 
   - Laden, Datum und Uhrzeit.
   - Artikel mit Menge und Stückpreis («2x 4.20»), Gewichtsartikel («0.734 kg x 2.90»), MWST-Codes am Zeilenende.
 - **Layouts echter Bons (Coop- und Migros-PDF, 7.11.2026):** Spalte «Aktion» (Coop) und «Gespart» (Migros), Mengen wie «2.0», gewogene Packungen («0.307» kg Pouletbrust zum Packungspreis), MWST-Gruppen wie «0 A» oder «S1». Die MWST-Tabelle unter dem Total sagt, was Lebensmittel sind: reduzierter Satz (2.6 %) = Lebensmittel und Getränke, Normalsatz = alles andere.
+- **Lidl (App-Bon):** Menge («4 x 0.79») oder Gewicht («0.984 kg x 1.99 CHF/kg») steht unter dem Artikel und muss zu dessen Betrag passen. «Lidl Plus Rabatt» gehört zum Artikel darüber, das Total heisst «Dein Lidl Preis», MWST-Codes A und B.
 - **Rabatte und Nebenposten:**
   - Rabatte direkt unter einem Artikel gehören zu diesem Artikel.
   - Rabatte nach der Zwischensumme oder auf den ganzen Einkauf («Einkaufsrabatt») bleiben eigene Zeilen.
