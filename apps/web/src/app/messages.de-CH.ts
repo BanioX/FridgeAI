@@ -340,6 +340,7 @@ export const messages = {
     installIos:
       'In Safari unten auf «Teilen» tippen, dann «Zum Home-Bildschirm». Danach startet FridgeAI wie eine App, auch offline.',
     installOther: 'Im Browser-Menü «App installieren» oder «Zum Startbildschirm» wählen.',
+    reportsDetail: 'Kühlschrank, Wirkung und Einkäufe zum Teilen',
     shoppingDetail: 'Was du wieder brauchst',
     dataDetail: 'Exportieren, löschen, was mit deinen Daten passiert',
   },

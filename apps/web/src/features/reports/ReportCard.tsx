@@ -94,10 +94,7 @@ export function ReportCard() {
 
   return (
     <Card className="space-y-4">
-      <div>
-        <h2 className="font-display text-xl font-semibold">{t.title}</h2>
-        <p className="mt-1 text-ink-muted">{t.intro}</p>
-      </div>
+      <p className="text-ink-muted">{t.intro}</p>
       <ChoiceChips legend={t.kindLegend} options={kindOptions} value={kind} onChange={setKind} />
       <ChoiceChips
         legend={t.periodLegend}

@@ -5,7 +5,6 @@ import { messages } from '../../app/messages.de-CH';
 import { BackLink } from '../../ui/BackLink';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
-import { ReportCard } from '../reports/ReportCard';
 import { exportFileName, inventoryCsv, saveFile } from './export-files';
 
 const t = messages.household;
@@ -66,8 +65,6 @@ export function HouseholdPage() {
         <BackLink to="/more" label={messages.pages.more} />
         <h1 className="large-title">{messages.pages.data}</h1>
       </div>
-
-      <ReportCard />
 
       <section aria-labelledby="data-title" className="space-y-3">
         <h2 id="data-title" className="font-display text-xl font-semibold">

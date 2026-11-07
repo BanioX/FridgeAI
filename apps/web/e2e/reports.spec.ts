@@ -10,9 +10,9 @@ test('creates a PDF report on the device and hands it over', async ({ page }) =>
     await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
   }
 
-  await page.goto('/household');
-  const card = page.getByRole('heading', { name: 'Berichte als PDF' });
-  await expect(card).toBeVisible();
+  await page.getByRole('navigation').getByRole('link', { name: 'Mehr' }).click();
+  await page.getByRole('link', { name: /^Berichte als PDF/ }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Berichte als PDF' })).toBeVisible();
   await page.getByRole('radio', { name: 'Kühlschrank jetzt' }).check({ force: true });
   await page.getByRole('radio', { name: 'Dieses Jahr' }).check({ force: true });
   const results = await new AxeBuilder({ page }).analyze();

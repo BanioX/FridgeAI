@@ -30,9 +30,7 @@ test('exports the data as JSON and CSV and deletes everything after asking', asy
   };
   expect(data.format).toBe('fridgeai-export');
   expect(data.items).toHaveLength(1);
-  await expect(page.getByRole('status').filter({ hasText: 'gespeichert' })).toHaveText(
-    `${json.suggestedFilename()} ist gespeichert.`,
-  );
+  await expect(page.getByRole('status')).toHaveText(`${json.suggestedFilename()} ist gespeichert.`);
 
   const [csv] = await Promise.all([
     page.waitForEvent('download'),
