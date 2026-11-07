@@ -3,20 +3,22 @@ import { parseChf, rappen, sumRappen, type Rappen } from '../money';
 import type { ReceiptLineKind } from '../model/receipt';
 import type { LocalDate, Retailer } from '../model/primitives';
 
-/** One line of a receipt as read from OCR text, before review (ADR-0027). */
+/** One line of a receipt as read from OCR or PDF text, before review (ADR-0027). */
 export interface ParsedReceiptLine {
   rawText: string;
   kind: Extract<ReceiptLineKind, 'item' | 'discount' | 'deposit' | 'bag'>;
   name: string;
-  /** Pieces for `pcs`, grams for `g` (weighed goods such as bananas). */
+  /** Pieces for `pcs`, grams for `g` (weighed goods such as bananas or a chicken pack). */
   quantity: number;
   unit: 'pcs' | 'g';
-  /** Price per piece, or per kilogram for weighed goods. */
+  /** Regular price per piece, or per kilogram for weighed goods. */
   unitPriceRappen?: Rappen;
-  /** Amount printed on the line, before discounts. Negative for receipt-wide discounts. */
+  /** Regular amount of the line, before discounts. Negative for receipt-wide discounts. */
   priceRappen: Rappen;
-  /** Discounts printed right below this line («Aktion», «Rabatt»), ≤ 0. */
+  /** Discounts on this line: «Aktion» or «Gespart» columns and «Rabatt» lines below it (≤ 0). */
   discountRappen: Rappen;
+  /** From the VAT rate: reduced rate = food and drinks. Absent when the receipt does not say. */
+  isFood?: boolean;
 }
 
 export interface ParsedReceipt {
@@ -28,35 +30,35 @@ export interface ParsedReceipt {
   lines: ParsedReceiptLine[];
   /** Total as printed on the receipt, if found. */
   totalRappen: Rappen | null;
-  /** Sum of the lines including discounts, deposit and bags. */
+  /** Sum of the lines after discounts, with deposit and bags. */
   computedTotalRappen: Rappen;
   /** Whether the lines add up to the printed total (OCR errors and missing lines show here). */
   sumCheck: 'ok' | 'mismatch' | 'no-total';
 }
 
-const RETAILERS: readonly Exclude<Retailer, 'other'>[] = [
-  'migros',
-  'coop',
-  'aldi',
-  'lidl',
-  'denner',
-];
+const RETAILERS: readonly string[] = ['migros', 'coop', 'aldi', 'lidl', 'denner'];
 
 const KEYWORDS = {
   total: /^(total|summe|gesamttotal|gesamtbetrag|endbetrag|zu bezahlen)\b/,
   subtotal: /\b(zwischensumme|zwischentotal|subtotal)\b/,
-  // Before the total only; payment and VAT lines after it are never read.
+  // Before the total only; payment and VAT lines after it are never read as items.
   payment:
     /\b(bezahlt|zahlung|kartenzahlung|mastercard|visa|maestro|twint|postfinance|rueckgeld)\b/,
-  other: /\b(mwst|mehrwertsteuer|tva|superpunkte|cumulus)\b/,
+  other:
+    /\b(mwst|mehrwertsteuer|tva|superpunkte|cumulus|sie sparen|gespart|ersparnis|preisvorteil)\b/,
   deposit: /\b(pfand|depot|consigne|mehrweg)\b/,
-  bag: /\b(tragtaschen?|einkaufstaschen?|papiertragtaschen?|papiersack|plastiksack|tragsack|tuete)\b/,
-  wideDiscount: /\b(einkauf|gutschein|alles|gesamt|treuerabatt|mitarbeiterrabatt|bonus)\b/,
+  bag: /\b(tragtaschen?|tragetaschen?|einkaufstaschen?|papiertaschen?|papiertragtaschen?|papiersack|plastiksack|tragsack|tuete)\b/,
+  wideDiscount: /\b(einkauf|gutschein|alles|gesamt|treuerabatt|mitarbeiterrabatt|bonus)/,
 };
 
 const AMOUNT = /^-?\d{1,4}\.\d{2}-?$/;
-const VAT_CODE = /^[0-9A-D]$/;
+/** VAT group and markers after the amount: Coop «0 A», «1 # A», Migros «S1», Lidl «B». */
+const CODE = /^(?:[0-9A-D#*]|S\d)$/;
+const PIECES = /^(\d{1,3})(?:\.0)?x?$/i;
 const WEIGHT_KG = /^(\d{1,3}\.\d{3})(?:kg)?$/;
+const DECOR = /^(?:x|×|à|@|chf|kg|\/kg|chf\/kg)$/i;
+const SEPARATOR = /^[-=_*~.:¦| ]+$/;
+const STORE_SKIP = /genossenschaft|hotline|www|artikel|lohnt sich|quittung|^chf$/i;
 
 function plain(text: string): string {
   return text
@@ -67,6 +69,9 @@ function plain(text: string): string {
     .replace(/[^a-z0-9%]+/g, ' ')
     .trim();
 }
+
+const amountOf = (token: string | undefined): Rappen | null =>
+  token !== undefined && AMOUNT.test(token) ? parseChf(token) : null;
 
 /**
  * Cleans one OCR line: one kind of minus, single spaces, and typical OCR slips inside amounts
@@ -86,103 +91,202 @@ export function normalizeReceiptLine(raw: string): string {
 
 interface LineNumbers {
   name: string;
-  total: Rappen | null;
+  /** Regular line amount; `null` when the line carries no amount. */
+  price: Rappen | null;
+  discount: Rappen;
   quantity?: number;
   unit?: 'pcs' | 'g';
   unitPrice?: Rappen;
+  vatCode?: string;
 }
 
-/** Splits «Butterweggli 2 x 1.40 2.80 1» into name, quantity, unit price and line total. */
-function readNumbers(line: string): LineNumbers {
-  const tokens = line.split(' ');
-  if (tokens.length > 1 && VAT_CODE.test(tokens.at(-1) ?? '') && AMOUNT.test(tokens.at(-2) ?? '')) {
-    tokens.pop();
+const perKg = (grams: number, price: Rappen) => rappen(Math.round((grams * price) / 1000));
+const near = (a: number, b: number) => Math.abs(a - b) <= 1;
+
+/**
+ * Explains the numbers before the line total: quantity × price, with an «Aktion» price (Coop) or
+ * a «Gespart» amount (Migros), for pieces, goods priced per kilogram and weighed packs.
+ */
+function explain(quantity: string, amounts: readonly Rappen[], total: Rappen) {
+  const [price, second] = amounts;
+  if (price === undefined) {
+    return null;
   }
-  const last = tokens.at(-1) ?? '';
-  if (!AMOUNT.test(last)) {
-    return { name: line, total: null };
-  }
-  tokens.pop();
-  const total = parseChf(last);
-  if (total === null) {
-    return { name: line, total: null };
-  }
-  const rest = tokens.filter((token) => !/^(x|×|à|@|chf|\/kg|kg)$/i.test(token));
-  const price = rest.at(-1);
-  const amount = rest.at(-2);
-  const unitPrice = price !== undefined && AMOUNT.test(price) ? parseChf(price) : null;
-  if (unitPrice !== null && amount !== undefined) {
-    const weight = WEIGHT_KG.exec(amount);
-    if (weight?.[1] !== undefined) {
-      const grams = Math.round(Number(weight[1]) * 1000);
-      if (Math.abs(Math.round((grams * unitPrice) / 1000) - total) <= 1) {
-        const name = rest.slice(0, -2).join(' ');
-        return { name, total, quantity: grams, unit: 'g', unitPrice };
+  const kg = WEIGHT_KG.exec(quantity)?.[1];
+  if (kg !== undefined) {
+    const grams = Math.round(Number(kg) * 1000);
+    // Priced per kilogram (bananas), or a weighed pack with its own price (chicken breast).
+    const options = [
+      { gross: perKg(grams, price), unitPrice: price, promotional: (p: Rappen) => perKg(grams, p) },
+      {
+        gross: price,
+        unitPrice: rappen(Math.round((price * 1000) / grams)),
+        promotional: (p: Rappen) => p,
+      },
+    ];
+    for (const { gross, unitPrice, promotional } of options) {
+      const fits =
+        second === undefined
+          ? near(gross, total)
+          : near(promotional(second), total) || near(gross - second, total);
+      if (fits) {
+        const exact = second === undefined ? total : gross;
+        return {
+          quantity: grams,
+          unit: 'g' as const,
+          unitPrice,
+          gross: exact,
+          discount: rappen(total - exact),
+        };
       }
     }
-    const pieces = /^(\d{1,2})x?$/i.exec(amount);
-    if (pieces?.[1] !== undefined && Number(pieces[1]) * unitPrice === total) {
-      const name = rest.slice(0, -2).join(' ');
-      return { name, total, quantity: Number(pieces[1]), unit: 'pcs', unitPrice };
-    }
+    return null;
   }
-  return { name: rest.join(' '), total };
+  const count = Number(PIECES.exec(quantity)?.[1] ?? Number.NaN);
+  if (!Number.isInteger(count) || count < 1) {
+    return null;
+  }
+  const gross = rappen(count * price);
+  const fits =
+    second === undefined ? gross === total : count * second === total || gross - second === total;
+  return fits
+    ? {
+        quantity: count,
+        unit: 'pcs' as const,
+        unitPrice: price,
+        gross,
+        discount: rappen(total - gross),
+      }
+    : null;
 }
 
-function detectRetailer(lines: readonly string[]): Retailer {
-  const head = lines.slice(0, 8).map(plain).join(' ');
-  const all = lines.map(plain).join(' ');
+/** Splits «Coop Skyr 150g 2.0 1.60 1.40 2.80 0 A» into name, quantity, prices and VAT code. */
+function readNumbers(line: string): LineNumbers {
+  const tokens = line.split(' ');
+  let end = tokens.length;
+  while (end > 1 && tokens.length - end < 3 && CODE.test(tokens[end - 1] ?? '')) {
+    end -= 1;
+  }
+  const total = amountOf(tokens[end - 1]);
+  if (total === null) {
+    return { name: line, price: null, discount: rappen(0) };
+  }
+  const vatCode = tokens[end]?.replace(/^S/, '');
+  const code = vatCode === undefined || vatCode === '#' ? {} : { vatCode };
+  const rest = tokens.slice(0, end - 1).filter((token) => !DECOR.test(token));
+  const amounts: Rappen[] = [];
+  let start = rest.length;
+  while (start > 0 && amounts.length < 2) {
+    const amount = amountOf(rest[start - 1]);
+    if (amount === null) {
+      break;
+    }
+    amounts.unshift(amount);
+    start -= 1;
+  }
+  const explained = start > 0 ? explain(rest[start - 1] ?? '', amounts, total) : null;
+  if (explained !== null) {
+    const { gross, discount, ...quantity } = explained;
+    const name = rest.slice(0, start - 1).join(' ');
+    return { name, price: gross, discount, ...quantity, ...code };
+  }
+  if (amounts.length === 1 && amounts[0] === total) {
+    const name = rest.slice(0, start).join(' ');
+    return {
+      name,
+      price: total,
+      discount: rappen(0),
+      quantity: 1,
+      unit: 'pcs',
+      unitPrice: total,
+      ...code,
+    };
+  }
+  return { name: rest.join(' '), price: total, discount: rappen(0), ...code };
+}
+
+/** «A 2.6 % MwSt», «0 2.60 41.15 1.04», «1 2.60 % 14.15 0.36»: VAT group → rate in percent. */
+function readVatRates(rows: readonly string[]): Map<string, number> {
+  const rates = new Map<string, number>();
+  for (const row of rows) {
+    const match = /^([0-9A-D]) (\d{1,2}\.\d{1,2}) ?%?(?: |$)/.exec(row);
+    if (match?.[1] !== undefined && match[2] !== undefined && !rates.has(match[1])) {
+      rates.set(match[1], Number(match[2]));
+    }
+  }
+  return rates;
+}
+
+function detectRetailer(rows: readonly string[]): Retailer {
+  const head = rows.slice(0, 8).map(plain).join(' ');
+  const all = rows.map(plain).join(' ');
   for (const text of [head, all]) {
     const found = RETAILERS.find((retailer) => new RegExp(`\\b${retailer}\\b`).test(text));
     if (found !== undefined) {
-      return found;
+      return found as Retailer;
     }
   }
   return 'other';
 }
 
+/** The branch on top of the receipt: «Schwerzenbach Chimli», «M Aarau Bahnhof». */
+function detectStore(rows: readonly string[]): string | undefined {
+  return rows
+    .slice(0, 3)
+    .find(
+      (row) =>
+        readNumbers(row).price === null &&
+        /\p{L}{3}/u.test(row) &&
+        !/[:+@]|\d{2}\.\d{2}\.\d{2}/.test(row) &&
+        !STORE_SKIP.test(row) &&
+        !RETAILERS.includes(plain(row)),
+    )
+    ?.slice(0, 80);
+}
+
 function detectDate(text: string): { purchasedOn?: LocalDate; purchasedTime?: string } {
-  const match = /\b(\d{2})\.(\d{2})\.(\d{4}|\d{2})\b(?:\s+(\d{2}):(\d{2}))?/.exec(text);
+  const date = /\b(\d{2})\.(\d{2})\.(\d{4}|\d{2})\b/;
+  const match = new RegExp(`${date.source} +(\\d{2}):(\\d{2})`).exec(text) ?? date.exec(text);
   if (match === null) {
     return {};
   }
   const [, day, month, year = '', hours, minutes] = match;
   try {
     const purchasedOn = localDate(`${year.length === 2 ? `20${year}` : year}-${month}-${day}`);
-    const time =
-      hours !== undefined && minutes !== undefined && Number(hours) < 24 && Number(minutes) < 60
-        ? `${hours}:${minutes}`
-        : undefined;
-    return { purchasedOn, ...(time === undefined ? {} : { purchasedTime: time }) };
+    const valid =
+      hours !== undefined && minutes !== undefined && Number(hours) < 24 && Number(minutes) < 60;
+    return { purchasedOn, ...(valid ? { purchasedTime: `${hours}:${minutes}` } : {}) };
   } catch {
     return {};
   }
 }
 
 /**
- * Reads a receipt from OCR text (ADR-0027): items with quantity, unit price and weight, discounts
- * folded into the item above them, deposit and bags, the printed total and a sum check. The
- * retailer-specific parsers refine this once real receipts are available; this one is the fallback.
+ * Reads a receipt from OCR or PDF text (ADR-0027). Knows the layouts of Coop («Menge Preis Aktion
+ * Total») and Migros («Gespart») and falls back to «name … amount». Checks the lines against the printed total to the Rappen; the VAT table
+ * below the total tells food (reduced rate) from everything else.
  */
 export function parseReceiptText(text: string): ParsedReceipt {
   const rows = text
     .split(/\r?\n/)
     .map(normalizeReceiptLine)
-    .filter((row) => row !== '');
+    .filter((row) => row !== '' && !SEPARATOR.test(row));
+  const totalIndex = rows.findIndex((row) => {
+    const numbers = readNumbers(row);
+    return numbers.price !== null && KEYWORDS.total.test(plain(numbers.name));
+  });
+  const body = totalIndex === -1 ? rows : rows.slice(0, totalIndex);
+  const totalRappen = totalIndex === -1 ? null : readNumbers(rows[totalIndex] ?? '').price;
+  const vatRates = readVatRates(totalIndex === -1 ? [] : rows.slice(totalIndex + 1));
   const lines: ParsedReceiptLine[] = [];
-  let totalRappen: Rappen | null = null;
   let pendingName = '';
   let lastItem: ParsedReceiptLine | null = null;
   let afterSubtotal = false;
 
-  for (const row of rows) {
+  for (const row of body) {
     const numbers = readNumbers(row);
     const words = plain(numbers.name);
-    if (KEYWORDS.total.test(words) && numbers.total !== null) {
-      totalRappen = numbers.total;
-      break;
-    }
-    if (numbers.total === null) {
+    if (numbers.price === null) {
       // A name on its own line belongs to the amount on the next line (weighed goods, multiples).
       pendingName = KEYWORDS.subtotal.test(words) || KEYWORDS.payment.test(words) ? '' : row;
       continue;
@@ -197,19 +301,20 @@ export function parseReceiptText(text: string): ParsedReceipt {
     }
     const name = numbers.name === '' ? pendingName : numbers.name;
     pendingName = '';
-    if (numbers.total < 0) {
+    if (numbers.price < 0) {
       if (lastItem !== null && !afterSubtotal && !KEYWORDS.wideDiscount.test(words)) {
-        lastItem.discountRappen = rappen(lastItem.discountRappen + numbers.total);
+        lastItem.discountRappen = rappen(lastItem.discountRappen + numbers.price);
         continue;
       }
+      const zero = rappen(0);
       lines.push({
         rawText: row,
         kind: 'discount',
         name,
         quantity: 1,
         unit: 'pcs',
-        priceRappen: numbers.total,
-        discountRappen: rappen(0),
+        priceRappen: numbers.price,
+        discountRappen: zero,
       });
       continue;
     }
@@ -218,6 +323,7 @@ export function parseReceiptText(text: string): ParsedReceipt {
       : KEYWORDS.bag.test(words)
         ? 'bag'
         : 'item';
+    const rate = numbers.vatCode === undefined ? undefined : vatRates.get(numbers.vatCode);
     const line: ParsedReceiptLine = {
       rawText: row,
       kind,
@@ -225,8 +331,9 @@ export function parseReceiptText(text: string): ParsedReceipt {
       quantity: numbers.quantity ?? 1,
       unit: numbers.unit ?? 'pcs',
       ...(numbers.unitPrice === undefined ? {} : { unitPriceRappen: numbers.unitPrice }),
-      priceRappen: numbers.total,
-      discountRappen: rappen(0),
+      priceRappen: numbers.price,
+      discountRappen: numbers.discount,
+      ...(rate === undefined || kind !== 'item' ? {} : { isFood: rate < 5 }),
     };
     lines.push(line);
     lastItem = kind === 'item' ? line : null;
@@ -235,12 +342,10 @@ export function parseReceiptText(text: string): ParsedReceipt {
   const computedTotalRappen = sumRappen(
     lines.map((line) => rappen(line.priceRappen + line.discountRappen)),
   );
-  const storeLine = rows
-    .slice(0, 6)
-    .find((row) => readNumbers(row).total === null && detectRetailer([row]) !== 'other');
+  const storeName = detectStore(rows);
   return {
     retailer: detectRetailer(rows),
-    ...(storeLine === undefined ? {} : { storeName: storeLine.slice(0, 80) }),
+    ...(storeName === undefined ? {} : { storeName }),
     ...detectDate(rows.join('\n')),
     lines,
     totalRappen,
