@@ -10,7 +10,7 @@ Alban (6.11.2026): Später soll es Konten geben, und die Daten müssen speicherb
 ## Entscheid
 
 - **Ohne Konto (heute):** Alles bleibt im Browser (ADR-0003).
-  - «Daten exportieren» liefert JSON (vollständig) und CSV (Vorrat, Abschlüsse).
+  - «Daten exportieren» liefert JSON (vollständig). Der CSV-Export wurde am 7.11.2026 auf Wunsch des Product Owners entfernt, damit die App schlank bleibt; der JSON-Export bleibt vollständig.
   - «Alles löschen» entfernt die lokale Datenbank samt Cache.
   - Beides kommt vor dem Pilot (Plan 12a).
 - **Mit Konto (Schritt 7):**

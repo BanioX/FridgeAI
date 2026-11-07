@@ -11,7 +11,7 @@ test('exports the data, deletes everything after asking and imports the export a
 
   await page.getByRole('navigation').getByRole('link', { name: 'Mehr' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Mehr' })).toBeVisible();
-  await expect(page.getByText('Schnittstelle v1')).toBeVisible();
+  await expect(page.getByText('Schnittstelle')).toHaveCount(0);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await page.getByRole('link', { name: /^Daten und Datenschutz/ }).click();
   await expect(
@@ -34,13 +34,7 @@ test('exports the data, deletes everything after asking and imports the export a
   expect(data.items).toHaveLength(1);
   await expect(page.getByRole('status')).toHaveText(`${json.suggestedFilename()} ist gespeichert.`);
 
-  const [csv] = await Promise.all([
-    page.waitForEvent('download'),
-    page.getByRole('button', { name: 'Vorrat als Tabelle (CSV)' }).click(),
-  ]);
-  const table = await readFile(await csv.path(), 'utf8');
-  expect(table).toContain('Name;Menge;Einheit;Lagerort;Haltbar bis');
-  expect(table).toMatch(/\r\nJoghurt;1;Stk\.;Kühlschrank;\d{2}\.\d{2}\.\d{4};/);
+  await expect(page.getByRole('button', { name: /CSV/ })).toHaveCount(0);
 
   await page.getByRole('button', { name: 'Alles löschen' }).click();
   await expect(page.getByText(/^Wirklich alles löschen\?/)).toBeVisible();

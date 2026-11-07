@@ -1,4 +1,3 @@
-import { CONTRACT_VERSION } from '@fridgeai/core';
 import {
   FileChartColumn,
   HistoryIcon,
@@ -67,10 +66,6 @@ export function MorePage() {
           { to: '/more/data', icon: ShieldCheck, title: messages.pages.data, detail: t.dataDetail },
         ]}
       />
-
-      <p className="text-sm text-ink-muted">
-        {messages.contractVersion} {CONTRACT_VERSION}
-      </p>
     </div>
   );
 }

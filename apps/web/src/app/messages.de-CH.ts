@@ -23,7 +23,6 @@ export const messages = {
     check: 'Kühlschrank-Check',
   },
   placeholder: 'Kommt bald.',
-  contractVersion: 'Schnittstelle',
   loading: 'rettich wird geladen …',
   errors: {
     title: 'Da ist etwas schiefgelaufen',
@@ -81,9 +80,7 @@ export const messages = {
     estimated: 'teilweise geschätzt',
     expiringTitle: 'Läuft bald ab',
     expiringEmpty: 'Nichts läuft in den nächsten 3 Tagen ab. Gut gemacht!',
-    locationsTitle: 'Lagerorte',
-    itemCount: (count: number) =>
-      count === 0 ? 'leer' : count === 1 ? '1 Artikel' : `${String(count)} Artikel`,
+    showAll: (count: number) => `Alle anzeigen (${String(count)})`,
     welcomeTitle: 'Willkommen bei rettich',
     welcomeText:
       'Wirf kein Geld in den Kübel: Erfasse, was du zu Hause hast, und rettich sagt dir, was du heute retten solltest.',
@@ -129,7 +126,8 @@ export const messages = {
     failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
   },
   recipes: {
-    ideasTitle: 'Rezeptideen',
+    moreRecipes: 'Mehr Rezepte',
+    rescueTitle: 'Rette heute',
     filterLegend: 'Rezepte zeigen',
     listLabel: 'Rezepte',
     filters: {
@@ -394,7 +392,6 @@ export const messages = {
     dataText:
       'Alles bleibt auf diesem Gerät. Mit einem Export nimmst du deine Daten auf ein neues Gerät mit. Ein Konto zum Teilen mit Mitbewohner:innen kommt später.',
     exportJson: 'Alles exportieren (JSON)',
-    exportCsv: 'Vorrat als Tabelle (CSV)',
     exported: (file: string) => `${file} ist gespeichert.`,
     importJson: 'Daten importieren (JSON)',
     importFile: 'Exportdatei wählen',
@@ -415,17 +412,6 @@ export const messages = {
       'Beim Scannen geht nur die Barcode-Nummer an Open Food Facts, damit Name, Nährwerte und Bild kommen.',
       'Fotos von Bons und Codes werden nur gelesen, nie gespeichert.',
       'Kein Konto, kein Tracking, keine Werbung.',
-    ],
-    csvHeader: [
-      'Name',
-      'Menge',
-      'Einheit',
-      'Lagerort',
-      'Haltbar bis',
-      'Datum',
-      'Wert CHF',
-      'Marke',
-      'Barcode',
     ],
   },
   history: {
@@ -465,15 +451,9 @@ export const messages = {
   reports: {
     title: 'Berichte als PDF',
     intro: 'rettich erstellt den Bericht auf deinem Gerät. Teilen oder speichern entscheidest du.',
-    kindLegend: 'Bericht',
     periodLegend: 'Zeitraum',
-    kinds: {
-      all: 'Alles',
-      fridge: 'Kühlschrank jetzt',
-      impact: 'Deine Wirkung',
-      shopping: 'Einkäufe',
-    },
     periods: { month: 'Dieser Monat', quarter: 'Letzte 3 Monate', year: 'Dieses Jahr' },
+    reportTitle: (period: string) => `Bericht · ${period}`,
     create: 'PDF erstellen',
     creating: 'PDF wird erstellt …',
     view: {
@@ -487,7 +467,7 @@ export const messages = {
     },
     failed: 'Das PDF liess sich nicht erstellen. Bitte versuch es nochmals.',
     pdf: {
-      heading: (kind: string) => `rettich · ${kind}`,
+      heading: 'rettich · Bericht',
       subtitle: (household: string, period: string, created: string) =>
         `${household} · ${period} · erstellt am ${created}`,
       glance: 'Auf einen Blick',
@@ -536,7 +516,7 @@ export const messages = {
         spoiled: 'Tipp: Den Kühlschrank auf 5 °C stellen und Offenes zuerst essen.',
         too_much: 'Tipp: Kleinere Packungen kaufen oder rechtzeitig einfrieren.',
         forgotten: 'Tipp: Der Kühlschrank-Check auf «Heute» erinnert dich jede Woche.',
-        did_not_like: 'Tipp: Unter «Rezeptideen» findest du andere Ideen für die Reste.',
+        did_not_like: 'Tipp: Unter «Kochen» findest du andere Ideen für die Reste.',
         other: 'Tipp: Ein Grund beim Wegwerfen hilft, das Muster zu erkennen.',
       },
       urgent: (count: number) =>
