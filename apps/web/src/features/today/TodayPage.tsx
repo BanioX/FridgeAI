@@ -5,7 +5,6 @@ import {
   itemValue,
   startOfMonth,
   sumRappen,
-  type StorageLocation,
 } from '@fridgeai/core';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { ClipboardCheck } from 'lucide-react';
@@ -16,14 +15,16 @@ import { DEV_TOOLS } from '../../app/dev-tools';
 import { messages } from '../../app/messages.de-CH';
 import { BigNumber } from '../../ui/BigNumber';
 import { Card } from '../../ui/Card';
-import { LocationTile } from '../../ui/LocationTile';
 import { expiryBadge } from '../../ui/expiry-badge';
 import { GROUPED_ROW_LINK, GroupedList, GroupedListItem } from '../../ui/GroupedList';
 import { InventoryItemRow } from '../inventory/InventoryItemRow';
-import { locationOrder } from '../inventory/item-meta';
 import { checkDue, readLastCheck } from '../check/check-state';
 import { RecipeIdeas } from '../recipes/RecipeIdeas';
 import { ImpactCard } from './ImpactCard';
+import { URGENT_LIMIT, urgentItems } from './urgent-items';
+
+const MORE_LINK =
+  'inline-flex min-h-11 items-center font-semibold text-basil-800 underline-offset-4 hover:underline';
 
 export function TodayPage() {
   const { householdId, inventory, today } = useAppData();
@@ -34,7 +35,7 @@ export function TodayPage() {
     [householdId],
   );
   const expiring = useLiveQuery(
-    async () => (await inventory['inventory.listExpiring']({ householdId })).items,
+    async () => (await inventory['inventory.listExpiring']({ householdId, withinDays: 30 })).items,
     [householdId],
   );
 
@@ -52,9 +53,8 @@ export function TodayPage() {
     );
   const total = sumRappen(fridgeValues.map((value) => value.valueRappen));
   const estimated = fridgeValues.some((value) => value.estimated);
-  const countOf = (location: StorageLocation) =>
-    all.filter((item) => item.location === location).length;
-  const showCheck = countOf('fridge') > 0 && checkDue(lastCheck, today);
+  const showCheck = fridgeValues.length > 0 && checkDue(lastCheck, today);
+  const urgent = urgentItems(expiring);
   const t = messages.today;
 
   return (
@@ -111,11 +111,11 @@ export function TodayPage() {
         <h2 id="expiring-title" className="font-display text-xl font-semibold">
           {t.expiringTitle}
         </h2>
-        {expiring.length === 0 ? (
+        {urgent.length === 0 ? (
           <Card variant="tip">{t.expiringEmpty}</Card>
         ) : (
           <GroupedList>
-            {expiring.map((item) => (
+            {urgent.slice(0, URGENT_LIMIT).map((item) => (
               <GroupedListItem key={item.id}>
                 <Link to={`/inventory/${item.id}`} className={GROUPED_ROW_LINK}>
                   <InventoryItemRow
@@ -128,33 +128,24 @@ export function TodayPage() {
             ))}
           </GroupedList>
         )}
+        {urgent.length > URGENT_LIMIT ? (
+          <Link to="/inventory" className={MORE_LINK}>
+            {t.showAll(urgent.length)}
+          </Link>
+        ) : null}
       </section>
 
-      <RecipeIdeas />
+      <RecipeIdeas
+        limit={1}
+        title={messages.recipes.rescueTitle}
+        footer={
+          <Link to="/cook" className={MORE_LINK}>
+            {messages.recipes.moreRecipes}
+          </Link>
+        }
+      />
 
       <ImpactCard from={startOfMonth(today)} to={today} />
-
-      <section aria-labelledby="locations-title" className="space-y-3">
-        <h2 id="locations-title" className="font-display text-xl font-semibold">
-          {t.locationsTitle}
-        </h2>
-        <ul className="grid grid-cols-2 gap-3">
-          {locationOrder.map((location) => (
-            <li key={location}>
-              <Link
-                to={`/inventory?location=${location}`}
-                className="block rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2"
-              >
-                <LocationTile
-                  location={location}
-                  label={messages.locations[location]}
-                  countLabel={t.itemCount(countOf(location))}
-                />
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
     </div>
   );
 }

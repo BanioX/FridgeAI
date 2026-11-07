@@ -80,9 +80,7 @@ export const messages = {
     estimated: 'teilweise geschätzt',
     expiringTitle: 'Läuft bald ab',
     expiringEmpty: 'Nichts läuft in den nächsten 3 Tagen ab. Gut gemacht!',
-    locationsTitle: 'Lagerorte',
-    itemCount: (count: number) =>
-      count === 0 ? 'leer' : count === 1 ? '1 Artikel' : `${String(count)} Artikel`,
+    showAll: (count: number) => `Alle anzeigen (${String(count)})`,
     welcomeTitle: 'Willkommen bei rettich',
     welcomeText:
       'Wirf kein Geld in den Kübel: Erfasse, was du zu Hause hast, und rettich sagt dir, was du heute retten solltest.',
@@ -128,7 +126,7 @@ export const messages = {
     failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
   },
   recipes: {
-    ideasTitle: 'Rezeptideen',
+    moreRecipes: 'Mehr Rezepte',
     rescueTitle: 'Rette heute',
     allTitle: 'Alle Rezepte',
     filterLegend: 'Rezepte zeigen',
@@ -519,7 +517,7 @@ export const messages = {
         spoiled: 'Tipp: Den Kühlschrank auf 5 °C stellen und Offenes zuerst essen.',
         too_much: 'Tipp: Kleinere Packungen kaufen oder rechtzeitig einfrieren.',
         forgotten: 'Tipp: Der Kühlschrank-Check auf «Heute» erinnert dich jede Woche.',
-        did_not_like: 'Tipp: Unter «Rezeptideen» findest du andere Ideen für die Reste.',
+        did_not_like: 'Tipp: Unter «Kochen» findest du andere Ideen für die Reste.',
         other: 'Tipp: Ein Grund beim Wegwerfen hilft, das Muster zu erkennen.',
       },
       urgent: (count: number) =>
