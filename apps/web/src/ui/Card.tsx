@@ -5,8 +5,8 @@ type CardVariant = 'default' | 'tip';
 // Variants instead of className overrides: two Tailwind utilities for the same property
 // do not reliably override each other by order in the class attribute.
 const variantClasses: Record<CardVariant, string> = {
-  default: 'border-line bg-surface shadow-card',
-  tip: 'border-basil-200 bg-basil-50 text-basil-900',
+  default: 'border-transparent bg-surface shadow-card',
+  tip: 'border-transparent bg-basil-50 text-basil-900',
 };
 
 interface CardProps {
