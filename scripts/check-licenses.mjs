@@ -13,6 +13,7 @@ const PERMISSIVE = new Set([
   'BlueOak-1.0.0',
   'CC0-1.0',
   'Unlicense',
+  'Zlib',
   'OFL-1.1',
 ]);
 const STRONG_COPYLEFT = /\b(A?GPL|LGPL|SSPL|EUPL|OSL|CPAL)\b/i;
