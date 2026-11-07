@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './test';
 
 test('adds a usual product with one tap and takes it back', async ({ page }) => {
   await page.goto('/inventory/new');

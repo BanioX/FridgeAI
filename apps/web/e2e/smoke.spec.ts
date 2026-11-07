@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './test';
 
 test('shell renders, navigates and has no a11y violations', async ({ page }) => {
   // Fails the test on anything the Content-Security-Policy from public/_headers blocks.

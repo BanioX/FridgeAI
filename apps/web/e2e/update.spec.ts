@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './test';
 
 // The bug from the pilot: after an update the open app asks for an old page chunk; Cloudflare
 // answers with index.html ('text/html' is not a valid JavaScript MIME type). The app must load the

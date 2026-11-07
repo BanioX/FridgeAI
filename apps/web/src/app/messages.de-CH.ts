@@ -198,14 +198,14 @@ export const messages = {
   },
   nameSearch: {
     used: 'Bereits verwendet',
-    search: (words: string) => `«${words}» suchen`,
+    more: 'Gefundene Produkte',
     searching: 'Suche …',
-    own: 'schon erfasst',
     picked: (name: string) => `Übernommen: ${name}.`,
     none: 'Nichts gefunden. Erfasse es einfach von Hand, beim nächsten Mal kennt FridgeAI es.',
     unavailable:
-      'Die Produktsuche ist gerade nicht erreichbar (offline oder zu viele Suchen). Versuch es in einer Minute nochmals oder erfasse es von Hand.',
-    attribution: 'Gesucht in deinen Produkten und bei Open Food Facts (Schweiz).',
+      'Die Produktsuche ist gerade nicht erreichbar (offline oder zu viele Suchen). Erfasse es von Hand oder versuch es gleich nochmals.',
+    retry: 'Nochmals suchen',
+    attribution: 'Daten: Open Food Facts (Schweiz).',
   },
   quickAdd: {
     title: 'Schnell erfassen',

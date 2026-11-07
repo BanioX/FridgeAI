@@ -1,6 +1,6 @@
 # ADR-0024: Produkte nach Namen suchen («Coop Gipfeli»)
 
-- **Status:** angenommen
+- **Status:** angenommen, Suche beim Tippen geändert durch ADR-0025
 - **Datum:** 2026-11-06
 
 ## Kontext

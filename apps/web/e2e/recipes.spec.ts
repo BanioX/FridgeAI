@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './test';
 
 test('suggests a recipe for milk that expires tomorrow and puts the rest on the list', async ({
   page,

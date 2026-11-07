@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test } from './test';
 
 test('shopping list: hints at food at home, checks off and puts it into the inventory', async ({
   page,
