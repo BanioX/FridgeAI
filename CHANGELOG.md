@@ -2,6 +2,33 @@
 
 Alle Änderungen an FridgeAI, neueste zuerst. Wird mit `pnpm release` erzeugt (ADR-0017).
 
+## [0.5.0] – 2026-11-07
+
+**Bon hochladen, Preise kennen.** Kassenbon als PDF (Coop, Migros), Screenshot (Lidl Plus) oder Foto hochladen: FridgeAI liest ihn auf dem Gerät, zeigt jeden Artikel mit bezahltem Preis und Aktion, prüft die Summe auf den Rappen, ein falsch gelesener Preis lässt sich antippen und korrigieren, Lebensmittel kommen mit echtem Preis in den Vorrat. Dazu Produktsuche beim Tippen wie bei Yazio mit «Bereits verwendet», die Kategorie nur noch im Hintergrund und ein Kalender, der auf dem iPhone aufgeht.
+
+### Neu
+
+- correct a misread price on the receipt with a tap ([#103](https://github.com/BanioX/FridgeAI/pull/103))
+- read receipt photos and screenshots on the device (tesseract.js) ([#102](https://github.com/BanioX/FridgeAI/pull/102))
+- upload a receipt PDF – names and prices, food into the inventory (ADR-0028) ([#101](https://github.com/BanioX/FridgeAI/pull/101))
+- read receipt PDFs on the device – pdf.js, lines rebuilt from columns ([#100](https://github.com/BanioX/FridgeAI/pull/100))
+- receipts.import – store a read receipt, chosen items with the price paid (ADR-0028) ([#99](https://github.com/BanioX/FridgeAI/pull/99))
+- read Lidl receipts – quantity and «Lidl Plus Rabatt» below the item ([#98](https://github.com/BanioX/FridgeAI/pull/98))
+- receipt layouts of real Coop and Migros PDFs, food by VAT rate ([#97](https://github.com/BanioX/FridgeAI/pull/97))
+- read receipts – items, weights, discounts and sum check (ADR-0027) ([#96](https://github.com/BanioX/FridgeAI/pull/96))
+- category only in the background, under «Mehr Angaben» (ADR-0026) ([#95](https://github.com/BanioX/FridgeAI/pull/95))
+- search while typing, like Yazio (ADR-0025) ([#94](https://github.com/BanioX/FridgeAI/pull/94))
+- search products by name – «Bereits verwendet» while typing, Open Food Facts on tap (ADR-0024) ([#93](https://github.com/BanioX/FridgeAI/pull/93))
+- products.search – find products by name, household first, then Open Food Facts CH (contract) ([#92](https://github.com/BanioX/FridgeAI/pull/92))
+
+### Behoben
+
+- calendar opens on iPhone – the real date field lies on the calendar symbol ([#91](https://github.com/BanioX/FridgeAI/pull/91))
+
+### Dokumentation
+
+- privacy notice in plain words (draft, plan 12d) ([#90](https://github.com/BanioX/FridgeAI/pull/90))
+
 ## [0.4.0] – 2026-11-06
 
 **Kühlschrank aktuell halten und Gefährdetes verkochen.** Wöchentlicher 30-Sekunden-Kühlschrank-Check (noch da, halb, gegessen, weggeworfen); «Schnell erfassen» mit den eigenen Standardartikeln in einem Tipp; Rezeptideen auf «Heute» aus dem, was bald abläuft, mit 25 selbst geschriebenen Schweizer Rezepten, Fehlendem auf die Einkaufsliste und Abbuchen nach dem Kochen; Listen und Auswahl im Apple-Stil; auf kleinen Handys bleibt der Artikelname lesbar.
