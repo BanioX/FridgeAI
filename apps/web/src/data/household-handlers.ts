@@ -18,14 +18,17 @@ export function createHouseholdHandlers(ctx: HandlerContext) {
         throw new CommandError('not_found', `Household ${input.householdId} not found`);
       }
       const id = input.householdId;
-      const [members, products, items, outcomes, shoppingItems, events] = await Promise.all([
-        db.members.where('householdId').equals(id).toArray(),
-        db.products.where('householdId').equals(id).toArray(),
-        db.items.where('householdId').equals(id).toArray(),
-        db.outcomes.where('householdId').equals(id).toArray(),
-        db.shoppingItems.where('householdId').equals(id).toArray(),
-        db.events.where('householdId').equals(id).toArray(),
-      ]);
+      const [members, products, items, outcomes, shoppingItems, receipts, receiptLines, events] =
+        await Promise.all([
+          db.members.where('householdId').equals(id).toArray(),
+          db.products.where('householdId').equals(id).toArray(),
+          db.items.where('householdId').equals(id).toArray(),
+          db.outcomes.where('householdId').equals(id).toArray(),
+          db.shoppingItems.where('householdId').equals(id).toArray(),
+          db.receipts.where('householdId').equals(id).toArray(),
+          db.receiptLines.where('householdId').equals(id).toArray(),
+          db.events.where('householdId').equals(id).toArray(),
+        ]);
       return CONTRACT_V1['household.export'].output.parse({
         format: 'fridgeai-export',
         contractVersion: 'v1',
@@ -36,6 +39,8 @@ export function createHouseholdHandlers(ctx: HandlerContext) {
         items,
         outcomes,
         shoppingItems,
+        receipts,
+        receiptLines,
         events,
       });
     });
