@@ -46,8 +46,8 @@ export default defineConfig({
         ],
       },
       manifest: {
-        name: 'FridgeAI',
-        short_name: 'FridgeAI',
+        name: 'Rettich',
+        short_name: 'Rettich',
         description: 'Wissen, was im Kühlschrank ist, und nichts mehr wegwerfen.',
         lang: 'de-CH',
         display: 'standalone',

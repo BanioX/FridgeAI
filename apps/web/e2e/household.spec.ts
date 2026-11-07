@@ -23,7 +23,7 @@ test('exports the data as JSON and CSV and deletes everything after asking', asy
     page.waitForEvent('download'),
     page.getByRole('button', { name: 'Alles exportieren (JSON)' }).click(),
   ]);
-  expect(json.suggestedFilename()).toMatch(/^fridgeai-\d{4}-\d{2}-\d{2}\.json$/);
+  expect(json.suggestedFilename()).toMatch(/^rettich-\d{4}-\d{2}-\d{2}\.json$/);
   const data = JSON.parse(await readFile(await json.path(), 'utf8')) as {
     format: string;
     items: unknown[];

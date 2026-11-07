@@ -38,7 +38,7 @@ import {
 } from '../model/primitives';
 
 /**
- * Contract v1 (ADR-0005): every action of FridgeAI as a named command or query with Zod schemas
+ * Contract v1 (ADR-0005): every action of Rettich as a named command or query with Zod schemas
  * for input and output. The PWA calls exactly these. The same schemas later generate the REST
  * API (OpenAPI) and the MCP tools for AI assistants, and define the scopes a partner needs.
  */

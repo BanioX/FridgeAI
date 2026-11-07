@@ -35,7 +35,7 @@ const milk = {
 };
 
 describe('Open Food Facts', () => {
-  it('asks only for the fields FridgeAI uses', () => {
+  it('asks only for the fields Rettich uses', () => {
     expect(offProductUrl(gtin)).toBe(
       'https://world.openfoodfacts.org/api/v2/product/7610000000004.json?fields=product_name,product_name_de,generic_name_de,brands,quantity,categories_tags,nutriments,nutriscore_grade,allergens_tags,image_front_small_url',
     );

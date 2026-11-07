@@ -57,7 +57,7 @@ async function hand(file: File) {
 }
 
 /**
- * «Berichte als PDF» (ADR-0030): choose a report and a period, FridgeAI builds the PDF on the
+ * «Berichte als PDF» (ADR-0030): choose a report and a period, Rettich builds the PDF on the
  * device and hands it to the share sheet or the downloads.
  */
 export function ReportCard() {
@@ -83,7 +83,7 @@ export function ReportCard() {
         period: t.periods[period],
         createdOn: today,
       });
-      await hand(new File([blob], `FridgeAI-${kind}-${today}.pdf`, { type: 'application/pdf' }));
+      await hand(new File([blob], `Rettich-${kind}-${today}.pdf`, { type: 'application/pdf' }));
       setStatus(t.created);
     } catch {
       setStatus(t.failed);

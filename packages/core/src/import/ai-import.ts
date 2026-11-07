@@ -11,7 +11,7 @@ import {
 import { toBaseQuantity, type InputUnit } from '../quantity';
 
 /**
- * «Mit eigener KI erfassen» (ADR-0012, stage 1): FridgeAI hands out a prompt, the person's own AI
+ * «Mit eigener KI erfassen» (ADR-0012, stage 1): Rettich hands out a prompt, the person's own AI
  * (ChatGPT, Claude, Gemini …) reads a photo and answers in this format, the answer is pasted back
  * and parsed here. The pasted text is untrusted: everything is validated, nothing is stored without
  * the person confirming each item in the review list.
@@ -24,7 +24,7 @@ export const AI_IMPORT_MAX_ITEMS = 100;
 /** The prompt to copy into the AI, with today's date for reading short dates. */
 export function aiImportPrompt(today: LocalDate): string {
   return [
-    'Du hilfst mir, Lebensmittel in die App FridgeAI zu übertragen.',
+    'Du hilfst mir, Lebensmittel in die App Rettich zu übertragen.',
     'Schau dir das Foto an (Kühlschrank, Einkauf oder Kassenbon) und liste jedes Lebensmittel auf.',
     '',
     'Antworte NUR mit einem JSON-Codeblock in genau diesem Format, ohne weiteren Text:',
