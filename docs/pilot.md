@@ -1,6 +1,6 @@
 # Pilot: FridgeAI ausprobieren
 
-Für den ersten Pilot mit Alban und einer weiteren Person. Stand: v0.4.0. Claude gibt den Pilot frei (CLAUDE.md, Prioritäten).
+Für den ersten Pilot mit Alban und einer weiteren Person. Stand: v0.5.0. Claude gibt den Pilot frei (CLAUDE.md, Prioritäten).
 
 ## Einrichten (5 Minuten pro Person)
 
@@ -17,6 +17,7 @@ Für den ersten Pilot mit Alban und einer weiteren Person. Stand: v0.4.0. Claude
 | 1 | 5 bis 10 Sachen aus dem Kühlschrank erfassen: Barcode scannen, sonst den Namen tippen | Ist der Scan scharf und schnell? Stimmen Name, Bild, Menge und Datum? |
 | 2–6 | Jeden Tag kurz «Heute retten» öffnen. Gegessenes, Weggeworfenes oder Weitergegebenes eintragen, auch Teile («⅓») | Ist es schneller als im Kopf? Fehlt eine Portion oder ein Grund? |
 | 2–6 | Vor dem Einkaufen die **Einkaufsliste** nutzen, nach dem Einkauf «In den Vorrat legen» | Hilft «Du hast noch …»? |
+| 2–6 | Nach dem Einkauf den **Bon hochladen** («Scannen»: PDF aus der Coop- oder Migros-App, Lidl-Screenshot oder Foto) | Stimmen Namen und Preise, stimmt die Summe? |
 | 2–6 | Nach dem Einkauf die Standardartikel mit **«Schnell erfassen»** eintragen | Reicht ein Tipp, stimmen Menge und Ort? |
 | 2–6 | Unter «Rezeptideen» etwas kochen, danach **«Zutaten abbuchen»** | Passen die Ideen zu dem, was weg muss? |
 | 7 | Den **Kühlschrank-Check** auf «Heute» machen, «Deine Wirkung diesen Monat» ansehen, einmal «Alles exportieren» | Würdest du die App weiter nutzen? Was nervt? |
@@ -29,7 +30,7 @@ Für den ersten Pilot mit Alban und einer weiteren Person. Stand: v0.4.0. Claude
 ## Bekannte Grenzen
 
 - **Kein Teilen zwischen Handys:** Jede Person hat ihren eigenen Vorrat. Ein gemeinsamer Haushalt kommt mit Konten (Plan, Schritt 7).
-- **Bon-Scan fehlt noch:** Für gute Bon-Erkennung braucht es echte, anonymisierte Bons (Plan, Frage 7).
+- **Bons:** PDFs aus der Coop- und Migros-App werden am genauesten gelesen. Fotos und Screenshots können Ziffern verwechseln: Die Summenprüfung zeigt das, ein Tipp auf den Preis korrigiert ihn. Screenshots in voller Grösse hochladen, nicht über einen Chat verkleinert.
 - **Scan im Browser:** Ist es unscharf, das Handy etwas weiter weg halten oder «Code aus Foto lesen» nutzen. Die native App-Variante steht in [`ideen/scan-und-produktdaten.md`](./ideen/scan-und-produktdaten.md).
 - **Unbekannte Produkte:** Nicht jeder Barcode ist bei Open Food Facts. Einmal von Hand erfassen, beim nächsten Scan kennt FridgeAI das Produkt.
 - **Handywechsel:** Vorher «Alles exportieren». Ein Import kommt mit den Konten.
@@ -37,4 +38,4 @@ Für den ersten Pilot mit Alban und einer weiteren Person. Stand: v0.4.0. Claude
 
 ## Daten und Datenschutz
 
-Alles bleibt auf dem Gerät. Beim Scannen geht nur die Barcode-Nummer an Open Food Facts (Name, Nährwerte, Bild). Es gibt kein Tracking, keine Werbung und kein Konto. Mit «Alles löschen» auf «Haushalt» ist alles weg (ADR-0020).
+Alles bleibt auf dem Gerät. Bons werden auf dem Handy gelesen und nie gespeichert, nur Name, Menge und Preis jeder Zeile. Beim Scannen geht nur die Barcode-Nummer an Open Food Facts (Name, Nährwerte, Bild), bei der Suche nur die getippten Wörter. Es gibt kein Tracking, keine Werbung und kein Konto. Mit «Alles löschen» auf «Haushalt» ist alles weg (ADR-0020).
