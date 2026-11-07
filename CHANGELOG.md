@@ -2,6 +2,39 @@
 
 Alle Änderungen an FridgeAI, neueste zuerst. Wird mit `pnpm release` erzeugt (ADR-0017).
 
+## [0.8.0] – 2026-11-07
+
+**Eins wegwischen, die Quittung gleicht sich selbst ab, und weniger Schulden.**
+- **Wischen zum Essen:** Wisch einen Artikel nach links, und eins ist gegessen (6 Glace → 5), mit «Rückgängig». Der Streifen steht immer mittig, Text wird nie angeschnitten.
+- **Quittung und Open Food Facts:** Der Abgleich startet von selbst. Du sagst pro Artikel «Ist es das? Ja/Nein» und scannst bei Bedarf den Barcode.
+- **Nährwerte aus einem Foto oder Screenshot** der Packung, gelesen auf dem Gerät.
+- **Scanner mit Licht:** Wo der Browser die Lampe nicht schalten kann, öffnet sich die Kamera-App mit Blitz.
+- **Erfassen einfacher:** grosse Kacheln, Name und Datum zuerst. «Mit eigener KI» ist weg.
+- **Logo auf Smaragd** und eine Grundlage für jede Währung (CHF bleibt Standard).
+- **Weniger Schulden:** Inventar, häufige Produkte, Preis-Gedächtnis und Berichte liegen in der Logikschicht. Neu gibt es Register für Nebenwirkungen, Lektionen, Schulden und Begriffe (SWELP).
+
+### Neu
+
+- swipe a row left to eat one portion ([#160](https://github.com/BanioX/FridgeAI/pull/160))
+- simpler Erfassen – big tiles, name and date first, no «Mit eigener KI» ([#158](https://github.com/BanioX/FridgeAI/pull/158))
+- read nutrition from a photo or screenshot of the label ([#157](https://github.com/BanioX/FridgeAI/pull/157))
+- scanner light always there, camera app with flash where the browser cannot switch it ([#155](https://github.com/BanioX/FridgeAI/pull/155))
+- receipt matching v2 – automatic, «Ist es das?» Ja/Nein, barcode per line ([#154](https://github.com/BanioX/FridgeAI/pull/154))
+- currency foundation – household currency and formatMoney ([#152](https://github.com/BanioX/FridgeAI/pull/152))
+- logo on Smaragd (Alban's choice A) ([#151](https://github.com/BanioX/FridgeAI/pull/151))
+
+### Dokumentation
+
+- what rettich learns from the YAZIO analysis ([#163](https://github.com/BanioX/FridgeAI/pull/163))
+- park allergens, spaces, uneven discipline and self-capturing labels ([#162](https://github.com/BanioX/FridgeAI/pull/162))
+- add SWELP registers for side effects, lessons, debts and terms ([#159](https://github.com/BanioX/FridgeAI/pull/159))
+- Parkplatz for big levers that need clarification, with a business model draft ([#156](https://github.com/BanioX/FridgeAI/pull/156))
+
+### Wartung
+
+- move usual products, price memory and report into core ([#161](https://github.com/BanioX/FridgeAI/pull/161))
+- move inventory use cases and household export behind storage ports ([#153](https://github.com/BanioX/FridgeAI/pull/153))
+
 ## [0.7.0] – 2026-11-07
 
 **Schlanker, premium, und der Bon kennt Open Food Facts.**
