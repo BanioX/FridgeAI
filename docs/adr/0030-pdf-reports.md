@@ -40,3 +40,18 @@ Alban: «Wenn ich PDF erstellen klicke, kommt direkt das Feld, wo ich es hinspei
 - pdf.js (schon für die Bons da) zeichnet die Seiten auf dem Gerät, darunter steht jeweils «1 von 2».
 - Oben links steht «‹ Berichte», auch die Zurück-Geste des Handys führt zurück. Oben rechts steht «Teilen» (Teilen-Menü, sonst Download).
 - Der Bericht liegt nur im Arbeitsspeicher. Nach einem Neuladen bittet die Seite, ihn neu zu erstellen. Gespeichert wird nichts.
+
+## Nachtrag (7.11.2026): Neues Layout mit Diagrammen
+
+Alban: «Mit dem Layout nicht zufrieden, eventuell fancy Grafiken oder Diagramme.» Der Bericht folgt jetzt der Design-Sprache der App (ADR-0035) und der Regel «Immer sauber ausgerichtet» (`docs/design.md`).
+
+- **Seite 1, Überblick:**
+  - Kopf mit Logo und Zeitraum.
+  - Onyx-Karte mit dem geretteten Betrag gross und der Rettungsquote als Ring.
+  - Vier gleich gebaute Kacheln: im Vorrat, weggeworfen, eingekauft, bald fällig.
+  - «Was auffällt» und die Monate als Säulen mit Raster.
+- **Seite 2, wohin Essen und Geld gehen:** Vier Karten im Zwei-Spalten-Raster: was im Kübel landet, warum, wo der Wert liegt (gestapelter Balken), wo du einkaufst. Dazu «Jetzt essen» mit farbigen Fristen.
+- **Danach:** die Vorratstabelle mit Haarlinien statt Streifen. Passt sie nicht mehr auf die Seite, beginnt sie auf einer eigenen, damit keine Seite nur verwaiste Zeilen trägt.
+- **Technik:** Alles ist Vektor, gezeichnet mit jsPDF über einen kleinen Baukasten (`features/reports/pdf-kit.ts`), ohne neue Abhängigkeit. Lange Texte werden mit «…» gekürzt, nie angeschnitten.
+- **Test:** `report-pdf.test.ts` zeichnet einen erfundenen WG-Halbjahresbericht. Mit `REPORT_PDF_OUT=… pnpm vitest run report-pdf` liegt er als Datei vor, zum Ansehen und für Vorschauen.
+- Im Bericht heisst es «Quittungen» statt «Bons» (Glossar).

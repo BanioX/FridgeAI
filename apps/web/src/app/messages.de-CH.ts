@@ -495,39 +495,48 @@ export const messages = {
     },
     failed: 'Das PDF liess sich nicht erstellen. Bitte versuch es nochmals.',
     pdf: {
-      heading: 'rettich · Bericht',
-      subtitle: (household: string, period: string, created: string) =>
-        `${household} · ${period} · erstellt am ${created}`,
-      glance: 'Auf einen Blick',
-      inFridge: 'Im Vorrat',
+      heading: 'Bericht',
+      meta: (household: string, created: string) => `${household} · erstellt am ${created}`,
       saved: 'Gerettet',
+      savedDetail: (kg: string, count: number) =>
+        `${kg} Lebensmittel · ${String(count)}× vor dem Kübel bewahrt`,
+      rateLabel: 'gerettet',
+      inStock: 'Im Vorrat',
       wasted: 'Weggeworfen',
-      rate: 'Rettungsquote',
+      spent: 'Eingekauft',
+      urgentTile: 'Bald fällig',
+      urgentDetail: 'in den nächsten 3 Tagen',
       items: (count: number) => (count === 1 ? '1 Artikel' : `${String(count)} Artikel`),
+      receipts: (count: number) => (count === 1 ? '1 Quittung' : `${String(count)} Quittungen`),
       insights: 'Was auffällt',
       months: 'Gerettet und weggeworfen pro Monat',
-      wasteTop: 'Was im Abfall landet',
-      urgent: 'Jetzt essen: abgelaufen oder bald fällig',
+      wasteTop: 'Was im Kübel landet',
+      reasons: 'Warum',
+      places: 'Wo der Wert liegt',
+      shops: 'Wo du einkaufst',
+      urgent: 'Jetzt essen',
       inventory: 'Alles im Vorrat',
-      shopping: 'Einkäufe nach Laden',
+      due: (days: number) =>
+        days < 0
+          ? 'abgelaufen'
+          : days === 0
+            ? 'heute'
+            : days === 1
+              ? 'morgen'
+              : `in ${String(days)} Tagen`,
       columns: {
         name: 'Artikel',
         amount: 'Menge',
         place: 'Ort',
         until: 'Haltbar bis',
-        days: 'Tage',
         value: 'Wert',
-        category: 'Kategorie',
-        count: 'Anzahl',
-        shop: 'Laden',
-        receipts: 'Bons',
-        spent: 'Ausgaben',
-        reason: 'Grund',
       },
       total: 'Total',
       estimated: '* geschätzt aus dem Durchschnittspreis der Kategorie',
-      footer: (page: number, pages: number) =>
-        `Erstellt auf deinem Gerät mit rettich · Seite ${String(page)} von ${String(pages)}`,
+      footer: 'Erstellt auf deinem Gerät mit rettich · Wirf kein Geld in den Kübel.',
+      page: (page: number, pages: number) => `Seite ${String(page)} von ${String(pages)}`,
+      noWaste: 'Nichts weggeworfen. Stark!',
+      noUrgent: 'Nichts läuft in den nächsten Tagen ab.',
       none: 'Keine Daten in diesem Zeitraum.',
     },
     insights: {
