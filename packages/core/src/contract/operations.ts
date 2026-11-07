@@ -65,6 +65,63 @@ const ReceiptImportLineSchema = z.object({
   location: StorageLocationSchema.optional(),
 });
 
+/** What a report shows (ADR-0030), as computed by `buildReport`. */
+const ReportItemSchema = z.object({
+  name: z.string(),
+  categoryId: z.string(),
+  location: StorageLocationSchema,
+  quantity: QuantitySchema,
+  unit: UnitSchema,
+  expiresOn: LocalDateSchema,
+  valueRappen: RappenSchema,
+  valueEstimated: z.boolean(),
+});
+const ReportSchema = z.object({
+  today: LocalDateSchema,
+  from: LocalDateSchema,
+  to: LocalDateSchema,
+  fridge: z.object({
+    itemCount: z.int().min(0),
+    valueRappen: RappenSchema,
+    valueEstimated: z.boolean(),
+    byLocation: z.array(
+      z.object({
+        location: StorageLocationSchema,
+        itemCount: z.int().min(0),
+        valueRappen: RappenSchema,
+      }),
+    ),
+    urgent: z.array(ReportItemSchema.extend({ daysLeft: z.int() })),
+    items: z.array(ReportItemSchema),
+  }),
+  impact: z.object({
+    savedRappen: RappenSchema,
+    wastedRappen: RappenSchema,
+    savedGrams: z.number().min(0),
+    wastedGrams: z.number().min(0),
+    estimated: z.boolean(),
+    savedShare: z.number().min(0).max(1).nullable(),
+    months: z.array(
+      z.object({ month: z.string(), savedRappen: RappenSchema, wastedRappen: RappenSchema }),
+    ),
+    topWasted: z.array(
+      z.object({ categoryId: z.string(), count: z.int().min(0), valueRappen: RappenSchema }),
+    ),
+    reasons: z.array(z.object({ reason: WasteReasonSchema, count: z.int().min(0) })),
+  }),
+  shopping: z.object({
+    receiptCount: z.int().min(0),
+    spentRappen: RappenSchema,
+    byRetailer: z.array(
+      z.object({
+        retailer: RetailerSchema,
+        receiptCount: z.int().min(0),
+        spentRappen: RappenSchema,
+      }),
+    ),
+  }),
+});
+
 /** A price paid, per piece, kilogram or litre (ADR-0029). */
 const PricedObservationSchema = z.object({
   retailer: RetailerSchema,
@@ -592,6 +649,18 @@ export const CONTRACT_V1 = {
         }),
       ),
     }),
+  }),
+  'reports.build': query({
+    name: 'reports.build',
+    summary: {
+      de: 'Bericht: Kühlschrank jetzt, gerettet und weggeworfen pro Monat, Gründe, Einkäufe.',
+      en: 'Report: fridge now, saved and wasted per month, reasons, spending per shop.',
+    },
+    scopes: ['stats:read'],
+    input: z
+      .object({ ...queryBase, from: LocalDateSchema, to: LocalDateSchema })
+      .refine((input) => input.from <= input.to, { message: 'from must not be after to' }),
+    output: ReportSchema,
   }),
   'rescue.offer': command({
     name: 'rescue.offer',
