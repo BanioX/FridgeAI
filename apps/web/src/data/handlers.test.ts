@@ -488,7 +488,13 @@ describe('inventory.changeOutcome', () => {
     handlers['inventory.changeOutcome']({ commandId: ids.next(), householdId, eventId, ...fields });
 
   it('turns a wrong «weggeworfen» into «gegessen»: value and date stay, the item follows', async () => {
-    const { itemId } = await add({ name: 'Joghurt', quantity: 4, priceRappen: 400 });
+    // Expires in two days: at risk, so once it counts as eaten it is a rescue (ADR-0033).
+    const { itemId } = await add({
+      name: 'Joghurt',
+      quantity: 4,
+      priceRappen: 400,
+      expiresOn: '2026-11-08',
+    });
     const first = await handlers['inventory.recordOutcome']({
       commandId: ids.next(),
       householdId,
