@@ -1,14 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Rettich">
-  <rect width="512" height="512" rx="112" fill="#2c7149" />
-  <path d="M250 176C212 162 180 132 170 94c36 2 70 30 80 82z" fill="#5ca679" />
-  <path d="M262 176c38-14 70-44 80-82-36 2-70 30-80 82z" fill="#5ca679" />
-  <path d="M256 176c-22-40-22-86 0-120 22 34 22 80 0 120z" fill="#9fd8ae" />
-  <path d="M256 166c62 0 80 44 76 96-4 68-42 130-70 184-3 7-9 7-12 0-28-54-66-116-70-184-4-52 14-96 76-96z" fill="#f8f6f1" />
-  <path d="M190 214c8-34 32-48 66-48s58 14 66 48c-20-10-42-14-66-14s-46 4-66 14z" fill="#dcebc9" />
-  <g fill="none" stroke="#d9d3c4" stroke-width="7" stroke-linecap="round">
-    <path d="M206 262q14 6 28 3" />
-    <path d="M286 300q-12 6-26 4" />
-    <path d="M222 340q12 5 22 2" />
-    <path d="M270 382q-10 4-18 2" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="rettich">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b2e22" />
+      <stop offset="1" stop-color="#04120d" />
+    </linearGradient>
+    <linearGradient id="shoulder" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ff2a6d" />
+      <stop offset="0.22" stop-color="#ff2a6d" stop-opacity="0.75" />
+      <stop offset="0.45" stop-color="#faf9f5" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)" />
+  <g transform="translate(-12 -6) rotate(17 256 300)">
+    <path d="M256 170c58 0 76 42 72 92-4 66-40 126-66 178-3 7-9 7-12 0-26-52-62-112-66-178-4-50 14-92 72-92z" fill="#faf9f5" />
+    <path d="M256 170c58 0 76 42 72 92-4 66-40 126-66 178-3 7-9 7-12 0-26-52-62-112-66-178-4-50 14-92 72-92z" fill="url(#shoulder)" />
+    <g fill="none" stroke="#d9d4c7" stroke-width="7" stroke-linecap="round">
+      <path d="M210 300q14 6 28 3" />
+      <path d="M284 336q-12 6-24 4" />
+      <path d="M232 380q10 4 18 2" />
+    </g>
+    <path d="M206 128l46 44 70-86" fill="none" stroke="#00ff87" stroke-width="30" stroke-linecap="round" stroke-linejoin="round" />
   </g>
 </svg>
