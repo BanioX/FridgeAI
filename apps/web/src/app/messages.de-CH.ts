@@ -130,18 +130,18 @@ export const messages = {
   },
   recipes: {
     ideasTitle: 'Rezeptideen',
-    rescueTitle: 'Rette heute',
-    allTitle: 'Alle Rezepte',
     filterLegend: 'Rezepte zeigen',
-    feierabendEmpty:
-      'Für den Feierabend (höchstens 15 Minuten, nichts einkaufen) fehlt dir gerade bei jedem Rezept noch etwas.',
+    listLabel: 'Rezepte',
     filters: {
-      all: 'Alle',
+      rescue: 'Retten',
       feierabend: 'Feierabend',
-      schnell: 'Schnell',
-      vegetarisch: 'Vegetarisch',
-      vegan: 'Vegan',
-      eiweissreich: 'Eiweissreich',
+      all: 'Alle',
+    },
+    empty: {
+      rescue: 'Gerade läuft nichts bald ab. Schau bei «Alle» rein.',
+      feierabend:
+        'Für den Feierabend (höchstens 15 Minuten, nichts einkaufen) fehlt dir gerade bei jedem Rezept noch etwas. Schau bei «Alle» rein.',
+      all: 'Gerade gibt es keine Rezepte.',
     },
     listDetail: (minutes: number, missing: number, rescues: string) =>
       [
@@ -155,8 +155,6 @@ export const messages = {
       ]
         .filter(Boolean)
         .join(' · '),
-    nothingExpiring:
-      'In den nächsten 3 Tagen läuft nichts ab. Sobald etwas bald abläuft, findest du hier Rezepte, die es retten.',
     rescues: (food: string, minutes: number, missing: number) =>
       `Rettet ${food} · ${String(minutes)} Min.${missing === 0 ? ' · alles da' : ` · ${String(missing)} fehlt`}`,
     notFound: 'Dieses Rezept gibt es nicht (mehr).',

@@ -22,7 +22,7 @@ test('suggests a recipe for milk that expires tomorrow and puts the rest on the 
   await page.getByRole('main').getByRole('link', { name: 'Kochen' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Kochen' })).toBeVisible();
   await expect(
-    page.getByRole('region', { name: 'Rette heute' }).getByRole('link').first(),
+    page.getByRole('region', { name: 'Rezepte' }).getByRole('link').first(),
   ).toContainText('Rettet Vollmilch');
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 
@@ -41,22 +41,36 @@ test('suggests a recipe for milk that expires tomorrow and puts the rest on the 
   await expect(page.getByText('2 Eier')).toBeVisible();
 });
 
-test('«Kochen» says so when nothing expires soon and lists all recipes', async ({ page }) => {
+test('«Kochen» is one list: «Retten» says so when nothing expires, then «Feierabend» and «Alle»', async ({
+  page,
+}) => {
   await page.goto('/');
   await page.getByRole('navigation').getByRole('link', { name: 'Kochen' }).click();
-  await expect(page.getByText(/^In den nächsten 3 Tagen läuft nichts ab\./)).toBeVisible();
+  const list = page.getByRole('region', { name: 'Rezepte' });
+  await expect(page.getByText('Gerade läuft nichts bald ab. Schau bei «Alle» rein.')).toBeVisible();
+  await expect(list.getByRole('link')).toHaveCount(0);
+  // The old second list and the tag filters are gone.
+  await expect(page.getByRole('heading', { name: 'Alle Rezepte' })).toHaveCount(0);
+  await expect(page.locator('label').filter({ hasText: 'Vegan' })).toHaveCount(0);
 
-  // «Alle Rezepte» still lists the collection; «Vegan» leaves out the pancakes with egg and milk.
-  const all = page.getByRole('region', { name: 'Alle Rezepte' });
-  await expect(all.getByRole('link', { name: /Bananen-Pancakes/ })).toBeVisible();
-  await page.locator('label').filter({ hasText: 'Vegan' }).click();
-  await expect(all.getByRole('link', { name: /Bananen-Pancakes/ })).toHaveCount(0);
-  await expect(all.getByRole('link').first()).toBeVisible();
   // «Feierabend»: at most 15 minutes and nothing to buy – with an empty fridge, nothing fits.
   await page.locator('label').filter({ hasText: 'Feierabend' }).click();
-  await expect(all.getByRole('link')).toHaveCount(0);
+  await expect(page).toHaveURL(/\?filter=feierabend$/);
+  await expect(list.getByRole('link')).toHaveCount(0);
   await expect(page.getByText(/^Für den Feierabend/)).toBeVisible();
+
+  // «Alle» lists the whole collection.
+  await page
+    .locator('label')
+    .filter({ hasText: /^Alle$/ })
+    .click();
+  await expect(page).toHaveURL(/\?filter=alle$/);
+  await expect(list.getByRole('link', { name: /Bananen-Pancakes/ })).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+
+  // The choice survives a reload because it lives in the URL.
+  await page.reload();
+  await expect(list.getByRole('link', { name: /Bananen-Pancakes/ })).toBeVisible();
 });
 
 test('says so for a recipe that does not exist', async ({ page }) => {
