@@ -23,7 +23,6 @@ export const messages = {
     check: 'Kühlschrank-Check',
   },
   placeholder: 'Kommt bald.',
-  contractVersion: 'Schnittstelle',
   loading: 'rettich wird geladen …',
   errors: {
     title: 'Da ist etwas schiefgelaufen',
@@ -396,7 +395,6 @@ export const messages = {
     dataText:
       'Alles bleibt auf diesem Gerät. Mit einem Export nimmst du deine Daten auf ein neues Gerät mit. Ein Konto zum Teilen mit Mitbewohner:innen kommt später.',
     exportJson: 'Alles exportieren (JSON)',
-    exportCsv: 'Vorrat als Tabelle (CSV)',
     exported: (file: string) => `${file} ist gespeichert.`,
     importJson: 'Daten importieren (JSON)',
     importFile: 'Exportdatei wählen',
@@ -417,17 +415,6 @@ export const messages = {
       'Beim Scannen geht nur die Barcode-Nummer an Open Food Facts, damit Name, Nährwerte und Bild kommen.',
       'Fotos von Bons und Codes werden nur gelesen, nie gespeichert.',
       'Kein Konto, kein Tracking, keine Werbung.',
-    ],
-    csvHeader: [
-      'Name',
-      'Menge',
-      'Einheit',
-      'Lagerort',
-      'Haltbar bis',
-      'Datum',
-      'Wert CHF',
-      'Marke',
-      'Barcode',
     ],
   },
   history: {
@@ -467,15 +454,9 @@ export const messages = {
   reports: {
     title: 'Berichte als PDF',
     intro: 'rettich erstellt den Bericht auf deinem Gerät. Teilen oder speichern entscheidest du.',
-    kindLegend: 'Bericht',
     periodLegend: 'Zeitraum',
-    kinds: {
-      all: 'Alles',
-      fridge: 'Kühlschrank jetzt',
-      impact: 'Deine Wirkung',
-      shopping: 'Einkäufe',
-    },
     periods: { month: 'Dieser Monat', quarter: 'Letzte 3 Monate', year: 'Dieses Jahr' },
+    reportTitle: (period: string) => `Bericht · ${period}`,
     create: 'PDF erstellen',
     creating: 'PDF wird erstellt …',
     view: {
@@ -489,7 +470,7 @@ export const messages = {
     },
     failed: 'Das PDF liess sich nicht erstellen. Bitte versuch es nochmals.',
     pdf: {
-      heading: (kind: string) => `rettich · ${kind}`,
+      heading: 'rettich · Bericht',
       subtitle: (household: string, period: string, created: string) =>
         `${household} · ${period} · erstellt am ${created}`,
       glance: 'Auf einen Blick',
