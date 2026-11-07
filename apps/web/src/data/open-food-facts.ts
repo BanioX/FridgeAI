@@ -75,3 +75,42 @@ export function openFoodFactsSearch(
     },
   };
 }
+
+/**
+ * Open Food Facts allows about 10 searches a minute. Matching a receipt asks line by line, so
+ * the searches wait for a free slot instead of being refused (ADR-0036). Shared by the name
+ * search and the receipt matching.
+ */
+export function rateLimitedSearch(
+  search: ProductSearch,
+  { max = 8, windowMs = 60_000, now = () => Date.now(), sleep = wait } = {},
+): ProductSearch {
+  const recent: number[] = [];
+  let queue = Promise.resolve();
+  async function slot() {
+    for (;;) {
+      const time = now();
+      while (recent.length > 0 && time - (recent[0] ?? 0) >= windowMs) {
+        recent.shift();
+      }
+      if (recent.length < max) {
+        recent.push(time);
+        return;
+      }
+      await sleep(windowMs - (time - (recent[0] ?? time)));
+    }
+  }
+  return {
+    searchByName(query, limit) {
+      const turn = queue.then(slot);
+      queue = turn.catch(() => undefined);
+      return turn.then(() => search.searchByName(query, limit));
+    },
+  };
+}
+
+function wait(ms: number) {
+  return new Promise<void>((resolve) => {
+    setTimeout(resolve, Math.max(0, ms));
+  });
+}

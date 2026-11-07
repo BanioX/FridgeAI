@@ -409,6 +409,7 @@ export const messages = {
     privacyPoints: [
       'Dein Vorrat, deine Liste und deine Statistik bleiben auf diesem Gerät.',
       'Beim Scannen geht nur die Barcode-Nummer an Open Food Facts, damit Name, Nährwerte und Bild kommen.',
+      'Gleichst du einen Bon mit Open Food Facts ab, gehen nur die Produktnamen dorthin, ohne Preise, Laden und Datum.',
       'Fotos von Bons und Codes werden nur gelesen, nie gespeichert.',
       'Kein Konto, kein Tracking, keine Werbung.',
     ],
@@ -547,6 +548,23 @@ export const messages = {
     ai: 'Foto in ChatGPT, Claude oder Gemini, Liste hier übernehmen',
   },
   receiptUpload: {
+    match: {
+      button: 'Mit Open Food Facts abgleichen',
+      note: 'Nur die Produktnamen gehen an Open Food Facts, ohne Preise, Laden und Datum.',
+      progress: (done: number, total: number) =>
+        `Gleiche ab: ${String(done)} von ${String(total)} …`,
+      done: (found: number, total: number) =>
+        found === 0
+          ? 'Keine passenden Produkte gefunden.'
+          : `${String(found)} von ${String(total)} gefunden. Tippe «Passt» bei jedem Treffer, der stimmt.`,
+      unavailable:
+        'Open Food Facts ist gerade nicht erreichbar. Du kannst den Bon trotzdem übernehmen.',
+      known: 'Von früheren Bons',
+      sure: 'Open Food Facts',
+      maybe: 'Vorschlag · Open Food Facts',
+      fits: 'Passt',
+      fitsFor: (name: string) => `Passt: ${name}`,
+    },
     intro:
       'Wähl das PDF deines Kassenbons (Coop- oder Migros-App), einen Screenshot (z. B. Lidl Plus) oder ein Foto. rettich liest ihn auf deinem Gerät, die Datei wird nicht gespeichert.',
     choose: 'PDF oder Foto wählen',

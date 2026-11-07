@@ -27,8 +27,15 @@ import {
   type InventoryItemView,
   type OperationOutput,
   type Product,
+  createReceiptMatchUseCases,
 } from '@fridgeai/core';
-import { CommandError, createCommandKit, type Handler, type HandlerContext } from './command';
+import {
+  appContext,
+  CommandError,
+  createCommandKit,
+  type Handler,
+  type HandlerContext,
+} from './command';
 import { createFrequentProductsHandler } from './frequent-handler';
 import { createProductSearchHandler } from './product-search-handler';
 import { createPriceHandler } from './price-handler';
@@ -834,6 +841,7 @@ export function createInventoryHandlers(ctx: HandlerContext) {
     ...createFrequentProductsHandler(ctx),
     ...createProductSearchHandler(ctx),
     ...createReceiptHandlers(ctx, addItem),
+    ...createReceiptMatchUseCases(appContext(ctx)),
     ...createPriceHandler(ctx),
     ...createReportHandler(ctx),
     'stats.waste': wasteStats,
