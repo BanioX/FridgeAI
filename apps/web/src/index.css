@@ -12,27 +12,28 @@
     sans-serif;
   --font-display: var(--font-sans);
 
-  /* Brand: basil from Alban's palette (7.11.2026): Honeydew 50, Tea Green 100, Celadon 200, darker
-     steps in Celadon's hue; WCAG AA for text and buttons (docs/design.md). */
-  --color-basil-50: #f0fff0;
-  --color-basil-100: #d0f0c0;
-  --color-basil-200: #ace1af;
-  --color-basil-300: #7bc17f;
-  --color-basil-400: #57a85b;
-  --color-basil-500: #4e9752;
-  --color-basil-600: #458749;
-  --color-basil-700: #3d7640;
-  --color-basil-800: #326235;
-  --color-basil-900: #264a28;
-  --color-basil-950: #152816;
+  /* Brand: five greens from the garden (docs/design.md), anchored on the logo green «Rucola».
+     Light greens lean to yellow like sunlit lettuce, dark ones to blue like broccoli; in-between
+     steps are interpolated in OKLCH. WCAG AA for text and buttons. */
+  --color-basil-50: #effae4; /* Eisberg */
+  --color-basil-100: #ccecad; /* Kopfsalat */
+  --color-basil-200: #a7d492;
+  --color-basil-300: #82bc79;
+  --color-basil-400: #60a867;
+  --color-basil-500: #4a9c5c; /* Basilikum */
+  --color-basil-600: #3a8653;
+  --color-basil-700: #2c7149; /* Rucola, the logo green */
+  --color-basil-800: #1b593a;
+  --color-basil-900: #0c412a; /* Broccoli */
+  --color-basil-950: #032819;
 
-  /* Neutrals: a breath of Honeydew, so the palette runs through the whole app */
-  --color-oat: #f6fbf5;
+  /* Neutrals: a breath of Eisberg, so the greens run through the whole app */
+  --color-oat: #f7fcf2;
   --color-surface: #ffffff;
-  --color-surface-muted: #e9f2e7;
-  --color-line: #d6e4d4;
+  --color-surface-muted: #ebf2e4;
+  --color-line: #d9e4d4;
   --color-ink: #1c211e;
-  --color-ink-muted: #56615a;
+  --color-ink-muted: #525e56;
 
   /* Expiry status (always paired with text, never colour alone) */
   --color-soon: #8a4b0f;
