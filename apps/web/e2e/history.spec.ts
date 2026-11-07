@@ -9,7 +9,8 @@ test('deletes a wrong «Weggeworfen» from the history, the food comes back', as
   await page.locator('label').filter({ hasText: 'Weggeworfen' }).click();
   await page.locator('label').filter({ hasText: 'vergessen' }).click();
   await page.getByRole('button', { name: 'Als weggeworfen speichern' }).click();
-  await expect(page.getByRole('link', { name: /Joghurt/ })).toHaveCount(0);
+  // Wait until it is saved: the Vorrat page confirms it (a reload too early would lose it).
+  await expect(page.getByRole('status')).toHaveText('Joghurt: als weggeworfen gespeichert.');
 
   // From «Deine Wirkung» on Start to the history.
   await page.getByRole('navigation').getByRole('link', { name: 'Start' }).click();
@@ -43,7 +44,8 @@ test('corrects a wrong «Weggeworfen» to «Gegessen», the impact follows', asy
   await page.locator('label').filter({ hasText: 'Weggeworfen' }).click();
   await page.locator('label').filter({ hasText: 'verdorben' }).click();
   await page.getByRole('button', { name: 'Als weggeworfen speichern' }).click();
-  await expect(page.getByRole('link', { name: /Rahm/ })).toHaveCount(0);
+  // Wait until it is saved: the Vorrat page confirms it (a reload too early would lose it).
+  await expect(page.getByRole('status')).toHaveText('Rahm: als weggeworfen gespeichert.');
 
   await page.goto('/more/history');
   await page.getByRole('button', { name: 'Eintrag Rahm ändern' }).click();
