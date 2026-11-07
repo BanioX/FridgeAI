@@ -1,7 +1,11 @@
 import type { InventoryItemView } from '@fridgeai/core';
 import { cleanup, render, screen, within } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ProductFacts } from './ProductFacts';
+
+vi.mock('../../app/AppData', () => ({
+  useAppData: () => ({ householdId: 'h', ids: { next: () => 'c' }, inventory: {} }),
+}));
 
 const base = { id: 'x', name: 'Vollmilch' } as InventoryItemView;
 
@@ -32,11 +36,34 @@ describe('ProductFacts', () => {
     ).toBe('noopener noreferrer');
   });
 
-  it('shows nothing without facts and no attribution for other sources', () => {
-    const { container } = render(<ProductFacts item={base} />);
-    expect(container.innerHTML).toBe('');
+  it('offers the photo import when nutrition is missing, and no attribution for other sources', () => {
     render(<ProductFacts item={{ ...base, nutriScore: 'e', productSource: 'manual' }} />);
     expect(screen.getByText('Nutri-Score E')).toBeDefined();
+    expect(screen.getByText(/Nährwerte fehlen\. Fotografiere die Nährwerttabelle/)).toBeDefined();
+    expect(screen.getByLabelText('Foto oder Screenshot wählen')).toBeDefined();
     expect(screen.queryByRole('link')).toBeNull();
+    expect(screen.queryByRole('table')).toBeNull();
+  });
+
+  it('keeps the ODbL attribution for Open Food Facts and notes values read from a photo', () => {
+    const { container } = render(<ProductFacts item={{ ...base, productSource: 'off' }} />);
+    expect(screen.getByRole('link', { name: 'Daten: Open Food Facts (ODbL)' })).toBeDefined();
+    container.remove();
+    cleanup();
+    render(
+      <ProductFacts
+        item={{
+          ...base,
+          productSource: 'off',
+          nutrition: { basis: '100g', energyKcal: 250, fat: 8.5, source: 'manual' },
+        }}
+      />,
+    );
+    expect(
+      screen.getByText('Aus deinem Bild gelesen, ohne Gewähr. Massgebend ist die Packung.'),
+    ).toBeDefined();
+    expect(screen.queryByRole('link')).toBeNull();
+    expect(screen.queryByLabelText('Foto oder Screenshot wählen')).toBeNull();
+    expect(screen.getByText('250 kcal')).toBeDefined();
   });
 });

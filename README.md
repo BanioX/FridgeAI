@@ -37,13 +37,13 @@ Unten fünf Tabs: **Start · Vorrat · ＋ Erfassen · Kochen · Mehr** ([ADR-00
 | **Erfassen** | Name genügt: Kategorie, Lagerort, Menge, Verpackung und Ablaufdatum werden vorgeschlagen; Eier im 6er/10er, Datumsfeld mit Schnellwahl und Eintippen; «Schnell erfassen»: die eigenen Standardartikel mit einem Tipp; Suche beim Tippen wie «Coop Weggli» (eigene Produkte und Open Food Facts Schweiz) |
 | **Bon hochladen** | PDF, Screenshot oder Foto des Kassenbons (Coop, Migros, Aldi, Lidl, Denner) auf dem Gerät auslesen: Produktname, Menge, bezahlter Preis mit Aktion, Summenprüfung; Lebensmittel angehakt, mit Preis in den Vorrat; derselbe Bon nie doppelt; Preis-Erinnerung «12 % teurer als sonst» |
 | **Berichte als PDF** | Unter «Mehr»: ein vollständiger Bericht (Kühlschrank jetzt, gerettet und weggeworfen pro Monat, «Was auffällt» mit Tipps, Einkäufe nach Laden) für diesen Monat, 3 Monate oder das Jahr; auf dem Gerät erzeugt und in der App geöffnet, von dort teilen oder speichern |
-| **Barcode und eigene KI** | Unter ＋: Barcode, QR und GS1-DataMatrix (Datum aus dem Code); KI-Import: Foto in deiner KI, Liste in rettich übernehmen |
+| **Barcode** | Unter ＋: Barcode, QR und GS1-DataMatrix (Datum aus dem Code). Im Dunkeln hilft «Licht» |
 | **Abschliessen** | Gegessen, weitergegeben (an wen), weggeworfen (warum) – ganz oder in sinnvollen Portionen (⅛ Kuchen, ⅓ Käse, 2 von 4 Joghurts) |
 | **Öffnungsregel** | «Nach dem Öffnen innert 21 Tagen» verkürzt das Datum automatisch |
 | **Einfrieren** | Umlagern mit neu geschätztem Datum |
 | **Kühlschrank-Check** | Einmal pro Woche jeden Artikel kurz bestätigen: noch da, halb, gegessen oder weggeworfen |
 | **Korrigieren** | Rückgängig nach Gegessen/Weggeworfen, dazu «Nachkaufen» mit einem Tipp; Name, Kategorie, Ort, Datum, Menge und Preis ändern; Artikel löschen; im «Verlauf» unter «Mehr» Gegessenes, Weitergegebenes und Weggeworfenes nachträglich ändern oder löschen |
-| **Produktdaten** | Nach dem Scan: Bild, Marke, Nährwerte, Nutri-Score, Allergene (Open Food Facts, 30 Tage offline) |
+| **Produktdaten** | Nach dem Scan: Bild, Marke, Nährwerte, Nutri-Score, Allergene (Open Food Facts, 30 Tage offline); fehlen die Nährwerte, liest rettich sie aus einem Foto oder Screenshot der Nährwerttabelle, auf dem Gerät |
 | **Kochen** | Bis zu zehn Rezepte, die retten, was bald abläuft (drei davon auf «Start»); alle Rezepte, zuerst was mit deinem Vorrat geht, Filter Feierabend (höchstens 15 Minuten, nichts einkaufen), Schnell, Vegetarisch, Vegan, Eiweissreich; was fehlt, mit einem Tipp zu «Nachkaufen»; nach dem Kochen abbuchen |
 | **Nachkaufen** | Unter «Mehr»: «Du hast noch …» gegen Doppelkäufe, abhaken, «In den Vorrat legen» |
 | **Wirkung** | Gerettet (kurz vor Ablauf gegessen oder weitergegeben) und weggeworfen diesen Monat in CHF und Artikeln, «x % gerettet von allem, was knapp wurde» ([ADR-0033](docs/adr/0033-rescued-means-at-risk.md)) |
@@ -133,7 +133,7 @@ CLAUDE.md            Arbeitsregeln für die KI-Entwicklung
 
 - Daten bleiben auf dem Gerät, bis es Teilen im Haushalt gibt; danach nur innerhalb des Haushalts.
 - Bon- und Barcode-Fotos werden nur im Speicher gelesen, nie gespeichert.
-- KI-Erkennung über die KI deiner Wahl: rettich bekommt nur die erkannte Liste ([ADR-0012](docs/adr/0012-bring-your-own-ai.md)).
+- Keine KI auf rettich-Kosten. Der frühere «KI-Import» über die eigene KI ist seit 7.11.2026 aus der App entfernt ([ADR-0012](docs/adr/0012-bring-your-own-ai.md)).
 - Strenge Content-Security-Policy, alle Assets selbst gehostet, kein CDN; der E2E-Test schlägt bei jeder CSP-Verletzung fehl.
 - Partner- und KI-Zugriff auf Haushaltsdaten nur mit ausdrücklicher, widerrufbarer Einwilligung; kein Verkauf von Einzeldaten.
 - Datenschutzerklärung in einfacher Sprache als Entwurf: [`docs/privacy.md`](docs/privacy.md) (vor dem öffentlichen Start fachlich prüfen).

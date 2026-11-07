@@ -38,6 +38,7 @@ export * from './frequent-products';
 export * from './recipes/recipe';
 export * from './recipes/recipes.de-CH';
 export * from './receipt/parse-receipt';
+export * from './nutrition/label';
 export * from './receipt/pdf-lines';
 export * from './receipt/off-match';
 export * from './prices/price-memory';

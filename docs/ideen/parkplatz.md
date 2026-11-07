@@ -31,6 +31,7 @@ Hier parkt alles, was nachweislich einen USP hätte, aber vor dem Bau eine Abkl�
 | P15 | **Aggregierte Food-Waste-Kennzahlen** für Handel, Forschung, Gemeinden | Einnahmen ohne Werbung. Messbarer Beitrag zum Ziel 2030 | Genug Haushalte, Anonymisierung (k-Anonymität), Einwilligung. Nie Einzeldaten verkaufen | geparkt |
 | P16 | **Förderung** (z. B. Innosuisse, Aktionsplan des Bundes gegen Lebensmittelverschwendung, Stiftungen) | Geld ohne Anteile abzugeben, dazu Glaubwürdigkeit | Passende Programme, Firmenform, Gesuch | geparkt |
 | P17 | **Büro-Kühlschrank für Teams** | B2B-Einnahmen pro Team | Eigener Vertrieb, Konten (P6) ([`monetarisierung.md`](./monetarisierung.md)) | geparkt |
+| P18 | **Bestandesaufnahme per Foto** (Kühlschrank oder Einkauf fotografieren, rettich erkennt die Lebensmittel) | Ersetzt den entfernten Umweg «Mit eigener KI». Ein Foto genügt, das wäre ein starkes Premium-Argument | KI-Kosten pro Bild, neuer Datenfluss (das Bild verlässt das Gerät), Qualität. Der Parser für die Liste ist da (ADR-0012) | geparkt |
 
 ## P1 im Detail: Migros und Coop als Partner
 
@@ -88,4 +89,5 @@ Stand: 7.11.2026, aufbauend auf [`monetarisierung.md`](./monetarisierung.md) und
 
 | Datum | Änderung |
 | --- | --- |
+| 7.11.2026 | P18 (Bestandesaufnahme per Foto) nach dem Entfernen von «Mit eigener KI». |
 | 7.11.2026 | Parkplatz angelegt (Alban). Aus dem bisherigen Verlauf gesammelt: P1–P17, Geschäftsmodell-Entwurf. Quellen: Albans Wünsche vom 6. und 7.11.2026, `integrationen.md`, `produktdaten.md`, `schutz.md`, `monetarisierung.md`, `app-stores.md`, `designsprache-garten.md`, ADR-0019, ADR-0034 |

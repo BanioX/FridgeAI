@@ -31,10 +31,11 @@ test('adds an item: the name suggests category, amount and unit', async ({ page 
 test('adds eggs by pack size; the pack type sits under «Mehr Angaben»', async ({ page }) => {
   await page.goto('/inventory/new');
   await page.getByLabel('Was ist es?').fill('Freilandeier');
-  await page.getByRole('button', { name: '10er' }).click();
-  await expect(page.getByLabel('Menge')).toHaveValue('10');
+  // Amount and pack wait under «Mehr Angaben» (Alban, 7.11.2026: name and date first).
   await expect(page.getByLabel('Verpackung')).toBeHidden();
   await page.getByText('Mehr Angaben').click();
+  await page.getByRole('button', { name: '10er' }).click();
+  await expect(page.getByLabel('Menge')).toHaveValue('10');
   await expect(page.getByLabel('Verpackung')).toHaveValue('box');
 
   await page.getByRole('button', { name: 'Speichern', exact: true }).click();
@@ -50,11 +51,11 @@ test('the form is lean: no barcode button, no quick add, one save button', async
   // Location and price are folded away, but the disclosure says what is set.
   await expect(page.getByRole('radio', { name: 'Tiefkühler' })).toBeHidden();
   // «Kühlschrank zuerst»: without a known category the food goes to the fridge.
-  await expect(page.getByText('Mehr Angaben · Kühlschrank')).toBeVisible();
+  await expect(page.getByText('Mehr Angaben · 1 Stück, Kühlschrank')).toBeVisible();
   await page.getByText('Mehr Angaben').click();
   await page.getByText('Tiefkühler', { exact: true }).click();
   await page.getByLabel('Preis in CHF (freiwillig)').fill('3.95');
-  await expect(page.getByText('Mehr Angaben · Tiefkühler, CHF 3.95')).toBeVisible();
+  await expect(page.getByText('Mehr Angaben · 1 Stück, Tiefkühler, CHF 3.95')).toBeVisible();
 });
 
 test('a tap on the calendar symbol lands on the real date field (iPhone opens its wheel)', async ({

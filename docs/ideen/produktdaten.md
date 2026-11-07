@@ -19,6 +19,6 @@ Stand: 7.11.2026. Alban: «Gibt es eine bessere Datenquelle als Open Food Facts?
 
 1. **Bon automatisch abgleichen, Ja/Nein pro Treffer** (umgesetzt 7.11.2026, ADR-0036).
 2. **Barcode pro Bon-Zeile scannen**, wenn nichts gefunden wurde (umgesetzt 7.11.2026). Der Barcode ist eindeutig und funktioniert auch für Eigenmarken, sobald sie in einer offenen Datenbank stehen. rettich merkt sich die Zuordnung für den nächsten Bon.
-3. **Foto der Nährwerttabelle** wie bei MyFoodRepo, wenn auch der Barcode unbekannt ist. Die Schrift liest tesseract auf dem Gerät, ein Parser in `packages/core` macht daraus Energie, Fett, Zucker, Eiweiss und Salz. Nichts verlässt das Gerät. Aufwand M.
+3. **Foto der Nährwerttabelle** (umgesetzt 7.11.2026: Foto oder Screenshot, z. B. von Migipedia oder coop.ch, wird auf dem Gerät gelesen und nie gespeichert oder gesendet) wie bei MyFoodRepo, wenn auch der Barcode unbekannt ist. Die Schrift liest tesseract auf dem Gerät, ein Parser in `packages/core` macht daraus Energie, Fett, Zucker, Eiweiss und Salz. Nichts verlässt das Gerät. Aufwand M.
 4. **Beitragen an Open Food Facts** (optional, mit Konto der Person): Fotos und Werte hochladen, damit der nächste Haushalt das Produkt kennt. Neuer Datenfluss, **Alban entscheidet**.
 5. **Gemeinsames Gedächtnis über Haushalte** (mit Konten, Schritt 7): Wenn eine Bon-Zeile bei einem Haushalt bestätigt ist, kennen sie alle. Das wäre der eigentliche Vorsprung gegenüber allen anderen Apps. Datenschutz: nur die Zuordnung Bon-Text → Barcode, nie wer was gekauft hat. **Alban entscheidet.**

@@ -37,3 +37,13 @@ Eine in die App eingebaute KI-Erkennung gibt es nur, wenn sie über ein Pro-Abo 
 - Kosten für FridgeAI: Stufe 1 null, Stufe 2 nur Serveraufrufe (wenige Rappen pro Tausend), KI-Kosten trägt das Abo der Nutzer:innen.
 - Datenschutz: Das Foto geht an die KI, die die Person selbst gewählt hat (deren Bedingungen gelten); FridgeAI erhält nur die erkannte Liste. Darauf weist die App beim ersten Mal hin.
 - Ersetzt den bisherigen Plan einer Server-KI auf FridgeAI-Kosten (`architecture.md` 5.1, Frage 4).
+
+## Nachtrag 7.11.2026: Stufe 1 aus der App entfernt
+
+Alban: «Braucht es das mit eigener KI erfassen noch? Das KI-Auslesen an die eigene KI senden und zurück würden die wenigsten machen. Wenn wir eine Premium-App sind, kannibalisieren wir uns selber.»
+
+- **Entfernt:** der Eintrag «Mit eigener KI» unter Erfassen, die Seite `/add/ai` und ihr E2E-Test. Alte Links führen auf «Erfassen».
+- **Ersatz:** «Erfassen» gibt bei leerem Vorrat einen Hinweis für die erste Bestandesaufnahme mit den Bons der letzten Tage.
+- **Bleibt:** Der Parser in `packages/core/src/import/ai-import.ts` bleibt mit seinen Tests. Eine spätere eigene Bestandesaufnahme, etwa ein Foto des Kühlschranks als Premium-Funktion, kann ihn nutzen.
+- **Weiter offen:** Stufe 2 (MCP-Connector) und Stufe 3 bleiben Ideen ([`../ideen/parkplatz.md`](../ideen/parkplatz.md)).
+
