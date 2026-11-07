@@ -103,6 +103,7 @@ export const DomainEventSchema = z.discriminatedUnion('type', [
       shortened: z.boolean(),
     }),
   ),
+  envelope('product.nutrition_set', z.object({ productId: IdSchema, itemId: IdSchema })),
   envelope(
     'item.used_up',
     z.object({ itemId: IdSchema, productId: IdSchema, gtin: GtinSchema.optional() }),

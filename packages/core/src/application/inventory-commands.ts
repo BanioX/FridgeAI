@@ -579,6 +579,34 @@ export function createInventoryCommands(ctx: AppContext) {
     });
   };
 
+  /**
+   * Nutrition read from a photo of the label (on the device, step 10b): set on the product of the
+   * item. The item may be closed already (a product outlives its packs), but not deleted.
+   */
+  const setNutrition: UseCase<'products.setNutrition'> = async (raw) => {
+    const input = CONTRACT_V1['products.setNutrition'].input.parse(raw);
+    return runCommand('products.setNutrition', input.commandId, async () => {
+      const item = await storage.items.get(input.itemId);
+      const product =
+        item?.householdId === input.householdId && item.deletedAt === undefined
+          ? await storage.products.get(item.productId)
+          : undefined;
+      if (item === undefined || product === undefined || product.deletedAt !== undefined) {
+        throw new CommandError('not_found', `Item ${input.itemId} not found`);
+      }
+      await storage.products.put(
+        ProductSchema.parse({ ...product, nutrition: input.nutrition, updatedAt: clock.now() }),
+      );
+      await storage.events.append(
+        event(input.householdId, 'product.nutrition_set', {
+          productId: product.id,
+          itemId: item.id,
+        }),
+      );
+      return { productId: product.id };
+    });
+  };
+
   return {
     'inventory.addItem': addItem,
     'inventory.updateItem': updateItem,
@@ -589,5 +617,6 @@ export function createInventoryCommands(ctx: AppContext) {
     'inventory.changeOutcome': changeOutcome,
     'inventory.move': move,
     'inventory.open': open,
+    'products.setNutrition': setNutrition,
   };
 }
