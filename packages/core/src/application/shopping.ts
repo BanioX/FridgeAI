@@ -1,37 +1,25 @@
-import {
-  categoryById,
-  CONTRACT_V1,
-  matchCategoryByName,
-  normalizeFoodText,
-  ShoppingListItemSchema,
-  type CategoryId,
-  type Id,
-  type OperationOutput,
-  type ShoppingListItem,
-} from '@fridgeai/core';
-import { CommandError, createCommandKit, type Handler, type HandlerContext } from './command';
+import { categoryById, matchCategoryByName, normalizeFoodText } from '../catalog/match';
+import { CONTRACT_V1, type OperationOutput } from '../contract/operations';
+import type { Id } from '../ids';
+import type { CategoryId } from '../model/primitives';
+import { ShoppingListItemSchema, type ShoppingListItem } from '../model/inventory';
+import { CommandError, createCommandKit, type AppContext, type UseCase } from './command';
 
 type AtHome = NonNullable<OperationOutput<'shopping.addItem'>['atHome']>;
 
 /**
- * Local shopping list (step 11a, US-08) on IndexedDB. Adding warns about food of the same kind
- * still at home (E-02): same category, if the name names one, or the same product name.
+ * Shopping list «Nachkaufen» (step 11a, US-08). Adding warns about food of the same kind still at
+ * home (E-02): same category, if the name names one, or the same product name.
  */
-export function createShoppingHandlers(ctx: HandlerContext) {
-  const { db, clock, ids, actor } = ctx;
-  const { event, runCommand } = createCommandKit(ctx, [
-    db.shoppingItems,
-    db.items,
-    db.products,
-    db.events,
-    db.commands,
-  ]);
+export function createShoppingUseCases(ctx: AppContext) {
+  const { storage, clock, ids, actor } = ctx;
+  const { event, runCommand } = createCommandKit(ctx);
 
   /** Loads the active inventory once and answers «what of this is at home?» per name. */
   async function homeLookup(householdId: Id) {
     const [items, products] = await Promise.all([
-      db.items.where('[householdId+status]').equals([householdId, 'active']).toArray(),
-      db.products.where('householdId').equals(householdId).toArray(),
+      storage.items.activeOf(householdId),
+      storage.products.ofHousehold(householdId),
     ]);
     const productById = new Map(products.map((product) => [product.id, product]));
     const active = items
@@ -62,19 +50,19 @@ export function createShoppingHandlers(ctx: HandlerContext) {
   }
 
   async function rowsOf(householdId: Id): Promise<ShoppingListItem[]> {
-    const rows = await db.shoppingItems.where('householdId').equals(householdId).toArray();
+    const rows = await storage.shoppingItems.ofHousehold(householdId);
     return rows.filter((row) => row.deletedAt === undefined);
   }
 
   async function activeRow(householdId: Id, itemId: Id): Promise<ShoppingListItem> {
-    const row = await db.shoppingItems.get(itemId);
+    const row = await storage.shoppingItems.get(itemId);
     if (row?.householdId !== householdId || row.deletedAt !== undefined) {
       throw new CommandError('not_found', `Shopping list entry ${itemId} not found`);
     }
     return row;
   }
 
-  const list: Handler<'shopping.list'> = async (raw) => {
+  const list: UseCase<'shopping.list'> = async (raw) => {
     const input = CONTRACT_V1['shopping.list'].input.parse(raw);
     const rows = (await rowsOf(input.householdId)).filter(
       (row) => input.includeChecked || !row.checked,
@@ -102,7 +90,7 @@ export function createShoppingHandlers(ctx: HandlerContext) {
     };
   };
 
-  const addItem: Handler<'shopping.addItem'> = async (raw) => {
+  const addItem: UseCase<'shopping.addItem'> = async (raw) => {
     const input = CONTRACT_V1['shopping.addItem'].input.parse(raw);
     return runCommand('shopping.addItem', input.commandId, async () => {
       const category = matchCategoryByName(input.name) ?? undefined;
@@ -130,8 +118,8 @@ export function createShoppingHandlers(ctx: HandlerContext) {
         checked: false,
         addedBy: actor,
       });
-      await db.shoppingItems.add(row);
-      await db.events.add(
+      await storage.shoppingItems.add(row);
+      await storage.events.append(
         event(input.householdId, 'shopping_list.item_added', {
           shoppingItemId: row.id,
           name: row.name,
@@ -141,7 +129,7 @@ export function createShoppingHandlers(ctx: HandlerContext) {
     });
   };
 
-  const check: Handler<'shopping.check'> = async (raw) => {
+  const check: UseCase<'shopping.check'> = async (raw) => {
     const input = CONTRACT_V1['shopping.check'].input.parse(raw);
     return runCommand('shopping.check', input.commandId, async () => {
       const row = await activeRow(input.householdId, input.itemId);
@@ -153,8 +141,8 @@ export function createShoppingHandlers(ctx: HandlerContext) {
         } else {
           delete next.checkedAt;
         }
-        await db.shoppingItems.put(ShoppingListItemSchema.parse(next));
-        await db.events.add(
+        await storage.shoppingItems.put(ShoppingListItemSchema.parse(next));
+        await storage.events.append(
           event(
             input.householdId,
             input.checked ? 'shopping_list.item_checked' : 'shopping_list.item_unchecked',
@@ -166,15 +154,15 @@ export function createShoppingHandlers(ctx: HandlerContext) {
     });
   };
 
-  const remove: Handler<'shopping.remove'> = async (raw) => {
+  const remove: UseCase<'shopping.remove'> = async (raw) => {
     const input = CONTRACT_V1['shopping.remove'].input.parse(raw);
     return runCommand('shopping.remove', input.commandId, async () => {
       const row = await activeRow(input.householdId, input.itemId);
       const now = clock.now();
-      await db.shoppingItems.put(
+      await storage.shoppingItems.put(
         ShoppingListItemSchema.parse({ ...row, deletedAt: now, updatedAt: now }),
       );
-      await db.events.add(
+      await storage.events.append(
         event(input.householdId, 'shopping_list.item_removed', { shoppingItemId: row.id }),
       );
       return { removed: true };
@@ -189,4 +177,4 @@ export function createShoppingHandlers(ctx: HandlerContext) {
   };
 }
 
-export type ShoppingHandlers = ReturnType<typeof createShoppingHandlers>;
+export type ShoppingUseCases = ReturnType<typeof createShoppingUseCases>;

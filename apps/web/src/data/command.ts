@@ -1,18 +1,16 @@
 import {
-  CONTRACT_V1,
-  DomainEventSchema,
+  createCommandKit as createCoreCommandKit,
+  type AppContext,
   type Clock,
-  type DomainEvent,
   type Id,
   type IdGenerator,
-  type OperationInput,
   type OperationName,
-  type OperationOutput,
   type ProductCatalog,
   type ProductSearch,
+  type UseCase,
 } from '@fridgeai/core';
-import type { Table } from 'dexie';
 import type { FridgeDb } from './db';
+import { dexieStorage } from './dexie-storage';
 
 export interface HandlerContext {
   db: FridgeDb;
@@ -26,68 +24,19 @@ export interface HandlerContext {
   search?: ProductSearch;
 }
 
-export type Handler<TName extends OperationName> = (
-  input: OperationInput<TName>,
-) => Promise<OperationOutput<TName>>;
+export type Handler<TName extends OperationName> = UseCase<TName>;
 
-export type CommandErrorCode =
-  | 'not_found'
-  | 'not_active'
-  | 'invalid_quantity'
-  | 'unsuitable_location'
-  | 'already_open'
-  | 'already_undone'
-  | 'unknown_category';
+export { CommandError, type CommandErrorCode } from '@fridgeai/core';
 
-export class CommandError extends Error {
-  readonly code: CommandErrorCode;
-
-  constructor(code: CommandErrorCode, message: string) {
-    super(message);
-    this.name = 'CommandError';
-    this.code = code;
-  }
+/** The use-case context on this device: the storage ports on IndexedDB (ADR-0034). */
+export function appContext(ctx: HandlerContext): AppContext {
+  return { ...ctx, storage: dexieStorage(ctx.db) };
 }
 
 /**
- * What every local command needs (ADR-0005): one transaction over the given tables, idempotency
- * by commandId (a repeated command returns the stored result) and domain events with actor and
- * time. `tables` must include `db.events` and `db.commands`.
+ * Commands not yet moved to `packages/core/src/application` use the core command kit on Dexie:
+ * one transaction, idempotency by commandId and domain events (ADR-0005).
  */
-export function createCommandKit(ctx: HandlerContext, tables: Table[]) {
-  const { db, clock, ids, actor } = ctx;
-
-  function event<TType extends DomainEvent['type']>(
-    householdId: Id,
-    type: TType,
-    payload: Extract<DomainEvent, { type: TType }>['payload'],
-  ): DomainEvent {
-    return DomainEventSchema.parse({
-      id: ids.next(),
-      type,
-      version: 1,
-      householdId,
-      actor,
-      at: clock.now(),
-      payload,
-    });
-  }
-
-  async function runCommand<TName extends OperationName>(
-    name: TName,
-    commandId: Id,
-    execute: () => Promise<OperationOutput<TName>>,
-  ): Promise<OperationOutput<TName>> {
-    return db.transaction('rw', tables, async () => {
-      const done = await db.commands.get(commandId);
-      if (done !== undefined) {
-        return CONTRACT_V1[name].output.parse(done.result) as OperationOutput<TName>;
-      }
-      const result = await execute();
-      await db.commands.add({ commandId, operation: name, result, at: clock.now() });
-      return result;
-    });
-  }
-
-  return { event, runCommand };
+export function createCommandKit(ctx: HandlerContext) {
+  return createCoreCommandKit(appContext(ctx));
 }

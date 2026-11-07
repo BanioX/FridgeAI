@@ -1,15 +1,15 @@
 import 'fake-indexeddb/auto';
-import type { Id } from '@fridgeai/core';
+import { createShoppingUseCases, type Id, type ShoppingUseCases } from '@fridgeai/core';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { ensureLocalHousehold } from './bootstrap';
+import { appContext } from './command';
 import type { FridgeDb } from './db';
 import { createInventoryHandlers, type InventoryHandlers } from './handlers';
-import { createShoppingHandlers, type ShoppingHandlers } from './shopping-handlers';
 import { fixedClock, sequentialIds, testDb } from './test-helpers';
 
 let db: FridgeDb;
 let inventory: InventoryHandlers;
-let shopping: ShoppingHandlers;
+let shopping: ShoppingUseCases;
 let householdId: Id;
 let ids: ReturnType<typeof sequentialIds>;
 
@@ -21,7 +21,7 @@ beforeEach(async () => {
   householdId = profile.household.id;
   const ctx = { db, clock, ids, actor: profile.member.id };
   inventory = createInventoryHandlers(ctx);
-  shopping = createShoppingHandlers(ctx);
+  shopping = createShoppingUseCases(appContext(ctx));
 });
 
 const add = (name: string) =>
