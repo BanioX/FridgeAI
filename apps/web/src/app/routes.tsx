@@ -93,6 +93,12 @@ export const routes: RouteObject[] = [
         }),
       },
       {
+        path: 'more/history',
+        lazy: async () => ({
+          Component: (await import('../features/history/HistoryPage')).HistoryPage,
+        }),
+      },
+      {
         path: 'more/data',
         lazy: async () => ({
           Component: (await import('../features/household/HouseholdPage')).HouseholdPage,

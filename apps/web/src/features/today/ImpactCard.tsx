@@ -1,5 +1,7 @@
 import { formatChf, type LocalDate } from '@fridgeai/core';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { ChevronRight } from 'lucide-react';
+import { Link } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
 import { Card } from '../../ui/Card';
@@ -66,6 +68,13 @@ export function ImpactCard({ from, to }: { from: LocalDate; to: LocalDate }) {
         {t.savedShare(percent)}
         {stats.estimated ? ` · ${t.estimated}` : null}
       </p>
+      <Link
+        to="/more/history"
+        className="mt-2 -mb-1 inline-flex min-h-11 items-center gap-0.5 font-semibold text-basil-700"
+      >
+        {messages.history.link}
+        <ChevronRight size={18} aria-hidden="true" />
+      </Link>
     </Card>
   );
 }

@@ -1,4 +1,3 @@
-import { addMonths, localDate, startOfMonth, type LocalDate } from '@fridgeai/core';
 import { FileText } from 'lucide-react';
 import { useState } from 'react';
 import { useAppData } from '../../app/AppData';
@@ -6,10 +5,10 @@ import { messages } from '../../app/messages.de-CH';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { ChoiceChips } from '../../ui/ChoiceChips';
+import { periodStart, type Period } from './period';
 import type { ReportKind } from './report-pdf';
 
 const t = messages.reports;
-type Period = keyof typeof t.periods;
 
 const kindOptions = (Object.keys(t.kinds) as ReportKind[]).map((value) => ({
   value,
@@ -19,17 +18,6 @@ const periodOptions = (Object.keys(t.periods) as Period[]).map((value) => ({
   value,
   label: t.periods[value],
 }));
-
-function periodStart(period: Period, today: LocalDate): LocalDate {
-  switch (period) {
-    case 'month':
-      return startOfMonth(today);
-    case 'quarter':
-      return startOfMonth(addMonths(today, -2));
-    case 'year':
-      return localDate(`${today.slice(0, 4)}-01-01`);
-  }
-}
 
 /** Shares the PDF where the device can (iPhone: Files, Mail, WhatsApp), else downloads it. */
 async function hand(file: File) {

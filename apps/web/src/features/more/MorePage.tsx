@@ -1,5 +1,11 @@
 import { CONTRACT_VERSION } from '@fridgeai/core';
-import { FileChartColumn, ShieldCheck, ShoppingBasket, Smartphone } from 'lucide-react';
+import {
+  FileChartColumn,
+  HistoryIcon,
+  ShieldCheck,
+  ShoppingBasket,
+  Smartphone,
+} from 'lucide-react';
 import { messages } from '../../app/messages.de-CH';
 import { Card } from '../../ui/Card';
 import { MenuList } from '../../ui/MenuList';
@@ -45,6 +51,12 @@ export function MorePage() {
             icon: FileChartColumn,
             title: messages.reports.title,
             detail: t.reportsDetail,
+          },
+          {
+            to: '/more/history',
+            icon: HistoryIcon,
+            title: messages.pages.history,
+            detail: t.historyDetail,
           },
           {
             to: '/shopping',
