@@ -23,6 +23,12 @@ Der Bon-Leser (ADR-0027) liefert Zeilen mit Name, Menge, Preis und Rabatt. Für 
 - **Kein Bon doppelt:** Die Oberfläche schickt einen SHA-256-Hash des Bontexts mit. Ein zweiter Import desselben Bons ändert nichts und meldet `duplicate`.
 - **Export und Löschen** umfassen die Bons (ADR-0020).
 
+- **Fotos und Screenshots** (z. B. Lidl Plus) liest tesseract.js auf dem Gerät.
+  - Engine, Worker und das deutsche Modell (tessdata «best_int», Apache-2.0) liegen auf unserem eigenen Server (`/ocr/deu.traineddata`), nie auf einem CDN.
+  - Alles wird erst geladen, wenn ein Bild gewählt ist. Die Engine (etwa 4 MB) wird beim ersten Mal zwischengespeichert, nicht schon bei der Installation.
+  - Kleine Screenshots werden vergrössert. Das Bild wird nie gespeichert.
+  - Typische Fotofehler fängt der Leser ab: ein Rabatt ohne Minus, «-6.13» statt «-0.13» unter einem 2.95-Artikel, «6.99» über «2 x 3.45». Was bleibt, zeigt die Summenprüfung.
+
 ## Konsequenzen
 
 - Das Preisgedächtnis pro Produkt (zuletzt bezahlt, üblicher Preis, günstigster Laden) kann direkt aus `receiptLines` rechnen.

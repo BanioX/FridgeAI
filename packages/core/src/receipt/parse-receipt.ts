@@ -53,6 +53,7 @@ const KEYWORDS = {
   deposit: /\b(pfand|depot|consigne|mehrweg)\b/,
   bag: /\b(tragtaschen?|tragetaschen?|einkaufstaschen?|papiertaschen?|papiertragtaschen?|papiersack|plastiksack|tragsack|tuete)\b/,
   wideDiscount: /\b(einkauf|gutschein|alles|gesamt|treuerabatt|mitarbeiterrabatt|bonus)/,
+  discount: /\b(rabatt|aktion|reduktion|reduziert|coupon|gutschein)\b/,
 };
 
 const AMOUNT = /^-?\d{1,4}\.\d{2}-?$/;
@@ -81,13 +82,14 @@ const amountOf = (token: string | undefined): Rappen | null =>
 
 /**
  * Cleans one OCR line: one kind of minus, single spaces, and typical OCR slips inside amounts
- * («l.95» → «1.95», «3,95» → «3.95», «1O.50» → «10.50», «3 .95» → «3.95»).
+ * («l.95» → «1.95», «3,95» → «3.95», «1O.50» → «10.50», «3 .95» → «3.95», «0,.10» → «0.10»).
  */
 export function normalizeReceiptLine(raw: string): string {
   return raw
     .replace(/[−–—]/g, '-')
     .replace(/\s+/g, ' ')
     .trim()
+    .replace(/(\d)(?:,\.|\.,)(\d)/g, '$1.$2')
     .replace(/(\d) ?([.,]) ?(\d{2,3})(?![\d])/g, '$1$2$3')
     .replace(
       /(?<![\p{L}])[\dOolI|]*\d[\dOolI|]*[.,][\dOo]{2,3}-?(?![\p{L}])|(?<![\p{L}])[OolI|][.,]\d{2}-?(?![\p{L}])/gu,
@@ -242,7 +244,9 @@ function detectStore(rows: readonly string[]): string | undefined {
     .find(
       (row) =>
         readNumbers(row).price === null &&
-        /\p{L}{3}/u.test(row) &&
+        // Logos read by OCR come out as «® Comm ieh |»: only plain words count.
+        /^[\p{L}\d .,'’&-]+$/u.test(row) &&
+        /\p{L}{4}/u.test(row) &&
         !/[:+@]|\d{2}\.\d{2}\.\d{2}/.test(row) &&
         !STORE_SKIP.test(row) &&
         !RETAILERS.includes(plain(row)),
@@ -267,6 +271,31 @@ function detectDate(text: string): { purchasedOn?: LocalDate; purchasedTime?: st
   }
 }
 
+/**
+ * A discount cannot exceed what is left of the item: «-6.13» under a 2.95 item is a misread
+ * «-0.13» (photos read 0 as 6, 8 or 9), so the first digit becomes 0 if that fits.
+ */
+function plausibleDiscount(discount: Rappen, item: ParsedReceiptLine): Rappen {
+  const left = item.priceRappen + item.discountRappen;
+  const amount = Math.abs(discount);
+  if (amount <= left) {
+    return discount;
+  }
+  const digits = String(amount);
+  const fixed = Number(`0${digits.slice(1)}`);
+  return fixed <= left ? rappen(-fixed) : discount;
+}
+
+/** Same number of digits, exactly one of them different (OCR reads «0» as «9»). */
+function oneDigitApart(a: number, b: number): boolean {
+  const [x, y] = [String(a), String(b)];
+  let differences = 0;
+  for (let index = 0; index < x.length; index += 1) {
+    differences += x[index] === y[index] ? 0 : 1;
+  }
+  return x.length === y.length && differences === 1;
+}
+
 /** Lidl prints «4 x 0.79» or «0.984 kg x 1.99 CHF/kg» below the item; it must match its amount. */
 function applyDetail(item: ParsedReceiptLine | null, detail: RegExpExecArray) {
   const [, amount = '', kg, price] = detail;
@@ -282,8 +311,17 @@ function applyDetail(item: ParsedReceiptLine | null, detail: RegExpExecArray) {
     return;
   }
   const count = Number(amount);
-  if (Number.isInteger(count) && count * unitPrice === item.priceRappen) {
-    Object.assign(item, { quantity: count, unitPriceRappen: unitPrice });
+  const product = count * unitPrice;
+  // «6.99» above «2 x 3.45»: two numbers that agree beat one misread digit (photos, ADR-0027).
+  if (
+    Number.isInteger(count) &&
+    (product === item.priceRappen || oneDigitApart(product, item.priceRappen))
+  ) {
+    Object.assign(item, {
+      quantity: count,
+      unitPriceRappen: unitPrice,
+      priceRappen: rappen(product),
+    });
   }
 }
 
@@ -333,9 +371,15 @@ export function parseReceiptText(text: string): ParsedReceipt {
     }
     const name = numbers.name === '' ? pendingName : numbers.name;
     pendingName = '';
-    if (numbers.price < 0) {
+    // A photo can lose the minus: «Rabatt 0.50» right below an item is still a discount.
+    const price =
+      numbers.price > 0 && lastItem !== null && KEYWORDS.discount.test(words)
+        ? rappen(0 - numbers.price)
+        : numbers.price;
+    if (price < 0) {
       if (lastItem !== null && !afterSubtotal && !KEYWORDS.wideDiscount.test(words)) {
-        lastItem.discountRappen = rappen(lastItem.discountRappen + numbers.price);
+        const discount = plausibleDiscount(price, lastItem);
+        lastItem.discountRappen = rappen(lastItem.discountRappen + discount);
         continue;
       }
       const zero = rappen(0);
@@ -345,7 +389,7 @@ export function parseReceiptText(text: string): ParsedReceipt {
         name,
         quantity: 1,
         unit: 'pcs',
-        priceRappen: numbers.price,
+        priceRappen: price,
         discountRappen: zero,
       });
       continue;

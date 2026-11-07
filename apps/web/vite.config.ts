@@ -2,6 +2,7 @@ import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
+import { ocrLanguage } from './scripts/ocr-language.ts';
 import { staticHeaders } from './scripts/static-headers.ts';
 
 export default defineConfig({
@@ -25,6 +26,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
     staticHeaders(new URL('public/_headers', import.meta.url)),
+    ocrLanguage(),
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
@@ -33,7 +35,15 @@ export default defineConfig({
         // works offline.
         // Skip unused font subsets.
         globPatterns: ['**/*.{js,mjs,css,html,svg,woff2,webmanifest,wasm}'],
-        globIgnores: ['**/*vietnamese*'],
+        globIgnores: ['**/*vietnamese*', '**/tesseract-core*'],
+        // The photo reader (about 4 MB) is cached on first use, not at install (ADR-0028).
+        runtimeCaching: [
+          {
+            urlPattern: ({ url }) => url.pathname.includes('/tesseract-core'),
+            handler: 'CacheFirst',
+            options: { cacheName: 'ocr-engine', expiration: { maxEntries: 2 } },
+          },
+        ],
       },
       manifest: {
         name: 'FridgeAI',

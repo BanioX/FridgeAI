@@ -45,6 +45,7 @@ describe('normalizeReceiptLine', () => {
     expect(normalizeReceiptLine('Rabatt  0.80–')).toBe('Rabatt 0.80-');
     expect(normalizeReceiptLine('Brot 3 .95')).toBe('Brot 3.95');
     expect(normalizeReceiptLine('Olivenöl Bio 1.5l')).toBe('Olivenöl Bio 1.5l');
+    expect(normalizeReceiptLine('Lidl Plus Rabatt -0,.10')).toBe('Lidl Plus Rabatt -0.10');
   });
 });
 
@@ -245,5 +246,30 @@ describe('parseReceiptText with real layouts', () => {
     );
     expect(receipt.sumCheck).toBe('mismatch');
     expect(receipt.computedTotalRappen - (receipt.totalRappen ?? 0)).toBe(500);
+  });
+});
+
+describe('parseReceiptText on photos', () => {
+  it('trusts «2 x 3.45» over a misread «6.99» above it, but not a different amount', () => {
+    const misread = parseReceiptText(
+      'Lidl\nChickpic 6.99 A\n2 x 3.45\nKaese 4.49 A\n2 x 1.39\nDein Lidl Preis 11.39',
+    );
+    expect(misread.lines.map((line) => [line.name, line.quantity, line.priceRappen])).toEqual([
+      ['Chickpic', 2, 690],
+      ['Kaese', 1, 449],
+    ]);
+    expect(misread.sumCheck).toBe('ok');
+  });
+
+  it('keeps a discount that lost its minus and a misread «-6.13» from becoming wrong prices', () => {
+    const receipt = parseReceiptText(
+      '® Comm ieh |\nwww.lidl.ch\nGuacamole Chunky 2.49 A\nLidl Plus Rabatt 0.50\nAfter Shave 2.95 B\nLidl Plus Rabatt -6.13\nDein Lidl Preis 4.81',
+    );
+    expect(receipt.storeName).toBeUndefined();
+    expect(receipt.lines.map((line) => [line.name, line.discountRappen])).toEqual([
+      ['Guacamole Chunky', -50],
+      ['After Shave', -13],
+    ]);
+    expect(receipt.sumCheck).toBe('ok');
   });
 });
