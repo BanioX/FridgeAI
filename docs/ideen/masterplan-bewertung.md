@@ -9,7 +9,6 @@ Stand: 7.11.2026. Albans Masterplan (Brand, Tech, Business) gemessen an Plan, AD
 | Schreibweise **rettich** (Verb «rett' ich»), auf dem Home-Bildschirm «Rettich» | ADR-0032 (Nachtrag), überall in App, PDF und Doku |
 | Claim **«Wirf kein Geld in den Kübel.»** | Willkommenskarte auf Start, README |
 | Kein Moralapostel, Franken statt CO₂ | Schon so. «Gerettet» zählt seit ADR-0033 nur echte Rettungen und ist damit glaubwürdig. |
-| Symbol: Rettich gekippt, Magenta-Schulter, Blatt als Häkchen, auf Tiefgrün | Neues App-Symbol, eigener PR |
 | **Feierabend-Modus**: höchstens 15 Minuten, nichts einkaufen | Filter «Feierabend» auf Kochen, eigener PR |
 | Ampel grün, gelb, rot | Schon da (Status-Chips, «Läuft bald ab») |
 | Swipe-to-Cook | Schon da als Tab «Kochen» mit «Rette heute» |
@@ -23,7 +22,6 @@ Stand: 7.11.2026. Albans Masterplan (Brand, Tech, Business) gemessen an Plan, AD
 | 17-Uhr-Widget auf dem Home-Bildschirm | `app-stores.md` | Geht nur mit der nativen App |
 | Rett-Tacho mit Wochen-Streak | `design-und-bedienung.md` | Klein, sobald die Zahlen im Pilot stimmen |
 | `rettich+` (CHF 3.90/Monat): Wochenplaner, Makros, Fitness | `monetarisierung.md`, `ausgaben-und-ernaehrung.md` | Preis und Grenzen entscheidet Alban |
-| Visual Identity «Radish Pop» für die ganze App | `design.md` | Vorerst nur Symbol und Marketing. Neon-Minze auf Weiss erfüllt den Kontrast nach WCAG nicht. Die App bleibt hell nach Apple HIG (ADR-0021). Ein Dunkelmodus kann die Farben aufnehmen. |
 
 ## Braucht Albans Entscheid (kostet Geld oder neue Datenflüsse)
 
@@ -36,6 +34,10 @@ Stand: 7.11.2026. Albans Masterplan (Brand, Tech, Business) gemessen an Plan, AD
 | **1-Snap mit Vision-KI** (Foto vom Kühlschrank auf dem Server) | Kosten pro Bild, Fotos verlassen das Gerät | Heute: Bon auf dem Gerät lesen (ADR-0028) und Foto über die eigene KI (ADR-0012), ohne Kosten. Server-KI erst mit `rettich+`. |
 | **bon@rettich.app** (Bons per Mail weiterleiten) | Bons gehen an einen Server | Spannend für Cumulus und Supercard, braucht Server, Datenschutz-Text und Löschfristen |
 | Lokale «Rett-Matches» (Bäckerei im Umkreis) | Standort, Partner | Nur mit Einwilligung, Partner nur über Interfaces mit Mocks (CLAUDE.md) |
+
+## Verworfen
+
+- **Symbol und Farben «Radish Pop»** (gekippter Rettich, Magenta, Neon-Minze, Tiefgrün): ausprobiert (#127) und verworfen. Alban: «Das vorherige Design war Welten besser, bleib dabei.» Es bleibt der aufrechte weisse Rettich auf App-Grün (`design.md`).
 
 ## Mit unseren Regeln abgleichen
 

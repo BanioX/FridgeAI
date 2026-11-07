@@ -1,4 +1,4 @@
-# rettich – Design-System
+# Rettich – Design-System
 
 > **Leitbild (Alban, 6.11.2026):** grün, food-freundlich, elegant und funktional.
 > Umsetzung: Tokens in `apps/web/src/index.css` (`@theme`), Komponenten in `apps/web/src/ui/`.
@@ -56,8 +56,6 @@ Systemschrift nach Apples Human Interface Guidelines (ADR-0021): SF Pro auf Appl
   - oben eine Schulter in Radish Magenta `#FF2A6D`;
   - das Blatt als Häkchen in Electric Mint `#00FF87`;
   - Grund Deep Emerald `#0B2E22` bis `#04120D`.
-
-  **Festgelegt** (Alban, 7.11.2026: «Dein Symbol finde ich top! Entwerfe vorerst nicht neu.»): nur auf Albans Auftrag neu entwerfen.
 
   Diese Markenfarben gelten für Symbol und Marketing, nicht für die App-Oberfläche. Mint und Magenta erreichen auf Hell keinen WCAG-Kontrast, die Oberfläche bleibt hell nach ADR-0021. Neu zeichnen mit `node apps/web/scripts/icons.ts`.
 - **Lebensmittel:** Emoji pro Kategorie (🥛 🧀 🥬 🍎 🥩 🐟 🍞 🥚) für schnelles Wiedererkennen in Listen, ohne Bild-Assets. Kommt mit dem Kategorien-Katalog (Schritt 2b).
