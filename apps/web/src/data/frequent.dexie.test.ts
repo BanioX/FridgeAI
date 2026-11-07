@@ -6,6 +6,11 @@ import type { FridgeDb } from './db';
 import { createInventoryHandlers, type InventoryHandlers } from './handlers';
 import { fixedClock, sequentialIds, testDb } from './test-helpers';
 
+/**
+ * `products.frequent` on IndexedDB (Dexie). The logic lives in
+ * packages/core/src/application/insights.ts.
+ */
+
 let db: FridgeDb;
 let inventory: InventoryHandlers;
 let householdId: Id;

@@ -5,6 +5,11 @@ import { ensureLocalHousehold } from './bootstrap';
 import { createInventoryHandlers, type InventoryHandlers } from './handlers';
 import { fixedClock, sequentialIds, testDb } from './test-helpers';
 
+/**
+ * `prices.memory` on IndexedDB (Dexie). The logic lives in
+ * packages/core/src/application/insights.ts.
+ */
+
 let inventory: InventoryHandlers;
 let householdId: Id;
 let ids: ReturnType<typeof sequentialIds>;

@@ -19,3 +19,4 @@ Was wir aus Fehlern gelernt haben, mit Beleg. Claude trägt ein, Alban kann jede
 | L-13 | Ein unbekanntes Lebensmittel landete still im Vorrat statt im Kühlschrank | «Kühlschrank zuerst»: ohne bekannte Kategorie in den Kühlschrank | #142 |
 | L-14 | Open Food Facts kennt manche Produkte nur französisch («Viande séchée») | Offen: deutschen Namen von der Quittung behalten? (TD-14) | 7.11.2026, Albans Test |
 | L-15 | Eine Prüfung mit einem Werkzeug, das fehlt (`ss` im Cloud-Container), meldet nichts und sieht aus wie bestanden | Prüfungen so bauen, dass ein fehlendes Werkzeug auffällt; Port mit `curl` prüfen | 7.11.2026, Branch `feat/swipe-eat` |
+| L-16 | Ein E2E-Test rechnete «in 20 Tagen» in UTC, die App rechnet in Europe/Zurich: nachts zwischen 0 und 1 Uhr (Sommer 2 Uhr) stimmte der Tag nicht | Daten in Tests immer vom Zürcher Kalendertag aus rechnen | 7.11.2026, `e2e/item-detail.spec.ts` |
