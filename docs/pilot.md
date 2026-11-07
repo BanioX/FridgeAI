@@ -1,4 +1,4 @@
-# Pilot: Rettich ausprobieren
+# Pilot: rettich ausprobieren
 
 Für den ersten Pilot mit Alban und einer weiteren Person. Stand: v0.5.0. Claude gibt den Pilot frei (CLAUDE.md, Prioritäten).
 
@@ -7,8 +7,8 @@ Für den ersten Pilot mit Alban und einer weiteren Person. Stand: v0.5.0. Claude
 1. Auf dem iPhone in **Safari** öffnen: `https://fridgeai.hyseni-alban.workers.dev`.
    - Voraussetzung: In Cloudflare ist unter Domains «Production» eingeschaltet ([`previews.md`](./previews.md)).
 2. **Auf den Home-Bildschirm legen:** unten «Teilen», dann «Zum Home-Bildschirm».
-   - Das ist wichtig: Nur so behält das iPhone die Daten dauerhaft und startet Rettich offline wie eine App.
-3. Rettich über das neue Symbol öffnen. Ein Konto gibt es noch nicht, alles bleibt auf dem Gerät.
+   - Das ist wichtig: Nur so behält das iPhone die Daten dauerhaft und startet rettich offline wie eine App.
+3. rettich über das neue Symbol öffnen. Ein Konto gibt es noch nicht, alles bleibt auf dem Gerät.
 
 ## Was testen (eine Woche, Kühlschrank zuerst)
 
@@ -32,7 +32,7 @@ Für den ersten Pilot mit Alban und einer weiteren Person. Stand: v0.5.0. Claude
 - **Kein Teilen zwischen Handys:** Jede Person hat ihren eigenen Vorrat. Ein gemeinsamer Haushalt kommt mit Konten (Plan, Schritt 7).
 - **Bons:** PDFs aus der Coop- und Migros-App werden am genauesten gelesen. Fotos und Screenshots können Ziffern verwechseln: Die Summenprüfung zeigt das, ein Tipp auf den Preis korrigiert ihn. Screenshots in voller Grösse hochladen, nicht über einen Chat verkleinert.
 - **Scan im Browser:** Ist es unscharf, das Handy etwas weiter weg halten oder «Code aus Foto lesen» nutzen. Die native App-Variante steht in [`ideen/scan-und-produktdaten.md`](./ideen/scan-und-produktdaten.md).
-- **Unbekannte Produkte:** Nicht jeder Barcode ist bei Open Food Facts. Einmal von Hand erfassen, beim nächsten Scan kennt Rettich das Produkt.
+- **Unbekannte Produkte:** Nicht jeder Barcode ist bei Open Food Facts. Einmal von Hand erfassen, beim nächsten Scan kennt rettich das Produkt.
 - **Handywechsel:** Vorher «Alles exportieren». Ein Import kommt mit den Konten.
 - **Keine Push-Mitteilungen:** Die App zeigt das Dringende beim Öffnen ([`ideen/benachrichtigungen.md`](./ideen/benachrichtigungen.md)).
 

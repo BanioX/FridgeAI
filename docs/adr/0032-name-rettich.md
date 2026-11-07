@@ -33,3 +33,13 @@ Alban hat **«Rettich»** gewählt: Rettich und retten in einem Wort.
 2. **Markeneintrag** beim IGE, falls gewünscht. Die Grundgebühr liegt im Bereich von einigen hundert Franken für bis zu drei Klassen. Den aktuellen Preis vor dem Entscheid auf ige.ch nachsehen.
 3. **Domain,** z. B. `rettich.app` oder `rettich.ch`, falls frei. Kostet jährlich. Ein Umzug der Web-Adresse braucht dann einen Export und Import für die Pilot-Daten.
 4. Das Repo später umbenennen (gratis, GitHub leitet weiter).
+
+## Nachtrag (7.11.2026): Schreibweise «rettich»
+
+Alban: «Ich will rettich statt Rettich. Das Framing ist retten, nicht das Gemüse. Das Gemüse kann aber unser Logo bleiben.» Grundlage ist sein Masterplan (`docs/ideen/masterplan-bewertung.md`).
+
+- **rettich, immer klein,** in der App, in PDFs, Dateinamen, Doku und Kommunikation. Klein liest man das Verb («rett' ich») und eine Tech-Marke, nicht das Substantiv.
+- **Ausnahme Home-Bildschirm:** Unter dem Symbol steht «Rettich», gross geschrieben, damit es neben «Kalender» und «Fotos» ruhig wirkt (`apple-mobile-web-app-title`, `short_name` im Manifest).
+- **Claim:** «Wirf kein Geld in den Kübel.»
+- **Logo:** Der Rettich bleibt das Symbol.
+

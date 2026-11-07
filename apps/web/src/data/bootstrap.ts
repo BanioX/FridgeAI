@@ -18,7 +18,7 @@ export interface LocalProfile {
 }
 
 /**
- * Without an account, Rettich quietly creates a local household with one member on first start
+ * Without an account, rettich quietly creates a local household with one member on first start
  * (US-15, ADR-0003). Safe to call on every start: it returns the existing profile if there is one.
  */
 export async function ensureLocalHousehold(

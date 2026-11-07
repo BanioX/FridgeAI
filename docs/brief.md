@@ -1,6 +1,6 @@
-# Rettich – Build-Prompt und Analyse-Brief für Claude Code
+# rettich – Build-Prompt und Analyse-Brief für Claude Code
 
-> Du bist **Claude (Opus, erhöhte Denktiefe)** und arbeitest in **Claude Code** in einem GitHub-Repository. Deine Aufgabe: das **MVP von Rettich** planen, architektonisch sauber aufsetzen und in kleinen, prüfbaren Schritten bauen. Auftraggeber und Product Owner ist **Alban Hyseni** (Wirtschaftsinformatik HF, HKV Aarau). Sprache in UI und Doku: **Deutsch (Schweiz)**, also «ss» statt «ß», Du-Form. Code, Bezeichner und Commit-Messages: Englisch.
+> Du bist **Claude (Opus, erhöhte Denktiefe)** und arbeitest in **Claude Code** in einem GitHub-Repository. Deine Aufgabe: das **MVP von rettich** planen, architektonisch sauber aufsetzen und in kleinen, prüfbaren Schritten bauen. Auftraggeber und Product Owner ist **Alban Hyseni** (Wirtschaftsinformatik HF, HKV Aarau). Sprache in UI und Doku: **Deutsch (Schweiz)**, also «ss» statt «ß», Du-Form. Code, Bezeichner und Commit-Messages: Englisch.
 
 ---
 
@@ -16,11 +16,11 @@
 
 ## 1. Produktvision und USP
 
-**Vision (langfristig):** Rettich wird das «TWINT des Food-Managements»: die eine zentrale Schweizer App, über die ein Haushalt weiss, was er hat, was er braucht, was bald abläuft und wer was bezahlt hat. Später: Nachkauf über Partner, Lieferdienste, Händler-Integration, und erst ganz am Schluss Hardware (Smart-Fridge-Modul).
+**Vision (langfristig):** rettich wird das «TWINT des Food-Managements»: die eine zentrale Schweizer App, über die ein Haushalt weiss, was er hat, was er braucht, was bald abläuft und wer was bezahlt hat. Später: Nachkauf über Partner, Lieferdienste, Händler-Integration, und erst ganz am Schluss Hardware (Smart-Fridge-Modul).
 
 **Problem:** Schweizer Haushalte verursachen rund 720'000 t vermeidbare Lebensmittelverluste pro Jahr (BAFU), das sind rund 80 kg bzw. CHF 600 pro Person und Jahr (Kanton Zürich, Facts & Figures 2026).
 
-**Ehrliche Marktlage (Blue-Ocean-Analyse, Stand Nov. 2026):** Die Basis (Vorrat in Kühlschrank/Tiefkühler/Vorrat, Ablauf-Warnungen, Rezepte aus Vorrat, Bon-Scan, Haushalt teilen) ist **Red Ocean**. In der Schweiz gibt es bereits ZWIMP (Migros-CSV- und Coop-PDF-Import) und Kühlbär (Spar-Zähler in CHF, WG-Sharing gratis), international KitchenPal, NoWaste, Fridgely, Samsung Food u. a. Diese Basis muss Rettich **mindestens gleich gut** können, gewinnt damit aber nicht.
+**Ehrliche Marktlage (Blue-Ocean-Analyse, Stand Nov. 2026):** Die Basis (Vorrat in Kühlschrank/Tiefkühler/Vorrat, Ablauf-Warnungen, Rezepte aus Vorrat, Bon-Scan, Haushalt teilen) ist **Red Ocean**. In der Schweiz gibt es bereits ZWIMP (Migros-CSV- und Coop-PDF-Import) und Kühlbär (Spar-Zähler in CHF, WG-Sharing gratis), international KitchenPal, NoWaste, Fridgely, Samsung Food u. a. Diese Basis muss rettich **mindestens gleich gut** können, gewinnt damit aber nicht.
 
 **Differenzierung (Blue Ocean, nach ERRC):**
 - **Kreieren:** Besitz pro Artikel («gehört Alban» / «gehört allen») und **automatische Kostenteilung direkt aus dem Kassenbon** (wer schuldet wem). **Rette-Kreis**: Artikel kurz vor Ablauf an Mitbewohner:innen freigeben. Haushalts-Challenges mit gemessener Wirkung (kg, CHF).
@@ -28,7 +28,7 @@
 - **Reduzieren:** manuelles Erfassen pro Artikel (Barcode nur ergänzend), Einstellungen, Rezeptvielfalt (3 gute «Rette-es»-Vorschläge statt Datenbank).
 - **Eliminieren (im MVP):** Hardware, Kalorien/Nährwerte, Prospekte/Angebote, eigene grosse Rezeptdatenbank, echte Partner-Integrationen.
 
-**USP in einem Satz:** «Scan deinen Bon – Rettich weiss, was ihr habt, wem es gehört, wer was schuldet und was ihr heute retten müsst.»
+**USP in einem Satz:** «Scan deinen Bon – rettich weiss, was ihr habt, wem es gehört, wer was schuldet und was ihr heute retten müsst.»
 
 **Primäre Zielgruppe MVP:** WGs, Paare und junge Haushalte in der Deutschschweiz. Sekundär: Familien.
 

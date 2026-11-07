@@ -1,5 +1,5 @@
 export const messages = {
-  appName: 'Rettich',
+  appName: 'rettich',
   navLabel: 'Hauptnavigation',
   nav: {
     start: 'Start',
@@ -24,16 +24,16 @@ export const messages = {
   },
   placeholder: 'Kommt bald.',
   contractVersion: 'Schnittstelle',
-  loading: 'Rettich wird geladen …',
+  loading: 'rettich wird geladen …',
   errors: {
     title: 'Da ist etwas schiefgelaufen',
-    text: 'Lade Rettich bitte neu. Deine Daten bleiben auf dem Gerät erhalten.',
+    text: 'Lade rettich bitte neu. Deine Daten bleiben auf dem Gerät erhalten.',
     updating: 'Neue Version',
-    updatingText: 'Rettich wurde aktualisiert und lädt neu. Einen Moment.',
+    updatingText: 'rettich wurde aktualisiert und lädt neu. Einen Moment.',
     reload: 'Neu laden',
     home: 'Zur Startseite',
     storage:
-      'Der lokale Speicher ist nicht verfügbar. Ist der private Modus aktiv? Rettich braucht ihn, um deinen Vorrat zu speichern.',
+      'Der lokale Speicher ist nicht verfügbar. Ist der private Modus aktiv? rettich braucht ihn, um deinen Vorrat zu speichern.',
   },
   defaults: { householdName: 'Mein Haushalt', memberName: 'Ich' },
   expiry: {
@@ -84,9 +84,9 @@ export const messages = {
     locationsTitle: 'Lagerorte',
     itemCount: (count: number) =>
       count === 0 ? 'leer' : count === 1 ? '1 Artikel' : `${String(count)} Artikel`,
-    welcomeTitle: 'Willkommen bei Rettich',
+    welcomeTitle: 'Willkommen bei rettich',
     welcomeText:
-      'Erfasse, was du zu Hause hast, und Rettich sagt dir, was du heute retten solltest.',
+      'Wirf kein Geld in den Kübel: Erfasse, was du zu Hause hast, und rettich sagt dir, was du heute retten solltest.',
     firstItem: 'Ersten Artikel erfassen',
     impactTitle: 'Deine Wirkung diesen Monat',
     saved: 'Gerettet',
@@ -106,7 +106,7 @@ export const messages = {
   check: {
     cardText: 'Ist alles noch da? Einmal pro Woche, in etwa 30 Sekunden.',
     cardStart: 'Check starten',
-    intro: 'Ein Tipp pro Artikel. Was weg ist, zählt Rettich mit.',
+    intro: 'Ein Tipp pro Artikel. Was weg ist, zählt rettich mit.',
     progress: (step: number, total: number) => `${String(step)} von ${String(total)}`,
     question: 'Ist das noch da?',
     still: 'Noch da',
@@ -242,7 +242,7 @@ export const messages = {
     more: 'Gefundene Produkte',
     searching: 'Suche …',
     picked: (name: string) => `Übernommen: ${name}.`,
-    none: 'Nichts gefunden. Erfasse es einfach von Hand, beim nächsten Mal kennt Rettich es.',
+    none: 'Nichts gefunden. Erfasse es einfach von Hand, beim nächsten Mal kennt rettich es.',
     unavailable:
       'Die Produktsuche ist gerade nicht erreichbar (offline oder zu viele Suchen). Erfasse es von Hand oder versuch es gleich nochmals.',
     retry: 'Nochmals suchen',
@@ -377,9 +377,9 @@ export const messages = {
     failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
   },
   more: {
-    install: 'Rettich als App',
+    install: 'rettich als App',
     installIos:
-      'In Safari unten auf «Teilen» tippen, dann «Zum Home-Bildschirm». Danach startet Rettich wie eine App, auch offline.',
+      'In Safari unten auf «Teilen» tippen, dann «Zum Home-Bildschirm». Danach startet rettich wie eine App, auch offline.',
     installOther: 'Im Browser-Menü «App installieren» oder «Zum Startbildschirm» wählen.',
     reportsDetail: 'Kühlschrank, Wirkung und Einkäufe zum Teilen',
     historyDetail: 'Gegessen und weggeworfen: ansehen, ändern, löschen',
@@ -454,7 +454,7 @@ export const messages = {
   },
   reports: {
     title: 'Berichte als PDF',
-    intro: 'Rettich erstellt den Bericht auf deinem Gerät. Teilen oder speichern entscheidest du.',
+    intro: 'rettich erstellt den Bericht auf deinem Gerät. Teilen oder speichern entscheidest du.',
     kindLegend: 'Bericht',
     periodLegend: 'Zeitraum',
     kinds: {
@@ -469,7 +469,7 @@ export const messages = {
     created: 'Das PDF ist bereit.',
     failed: 'Das PDF liess sich nicht erstellen. Bitte versuch es nochmals.',
     pdf: {
-      heading: (kind: string) => `Rettich · ${kind}`,
+      heading: (kind: string) => `rettich · ${kind}`,
       subtitle: (household: string, period: string, created: string) =>
         `${household} · ${period} · erstellt am ${created}`,
       glance: 'Auf einen Blick',
@@ -501,7 +501,7 @@ export const messages = {
       total: 'Total',
       estimated: '* geschätzt aus dem Durchschnittspreis der Kategorie',
       footer: (page: number, pages: number) =>
-        `Erstellt auf deinem Gerät mit Rettich · Seite ${String(page)} von ${String(pages)}`,
+        `Erstellt auf deinem Gerät mit rettich · Seite ${String(page)} von ${String(pages)}`,
       none: 'Keine Daten in diesem Zeitraum.',
     },
     insights: {
@@ -546,19 +546,19 @@ export const messages = {
     receipt: 'PDF, Screenshot oder Foto vom Kassenbon',
     barcode: 'Packung vor die Kamera halten',
     manualTitle: 'Von Hand erfassen',
-    manual: 'Name eintippen, den Rest schlägt Rettich vor',
+    manual: 'Name eintippen, den Rest schlägt rettich vor',
     ai: 'Foto in ChatGPT, Claude oder Gemini, Liste hier übernehmen',
   },
   receiptUpload: {
     intro:
-      'Wähl das PDF deines Kassenbons (Coop- oder Migros-App), einen Screenshot (z. B. Lidl Plus) oder ein Foto. Rettich liest ihn auf deinem Gerät, die Datei wird nicht gespeichert.',
+      'Wähl das PDF deines Kassenbons (Coop- oder Migros-App), einen Screenshot (z. B. Lidl Plus) oder ein Foto. rettich liest ihn auf deinem Gerät, die Datei wird nicht gespeichert.',
     choose: 'PDF oder Foto wählen',
     reading: 'Bon wird gelesen …',
     readingPhoto: 'Foto wird gelesen, das dauert ein paar Sekunden …',
     tooLarge: 'Die Datei ist zu gross für einen Bon (höchstens 15 MB).',
     noText:
       'In diesem PDF steht kein lesbarer Text, es ist wohl ein eingescanntes Bild. Mach stattdessen ein Foto oder einen Screenshot.',
-    noLines: 'Auf diesem Bon hat Rettich keine Artikel gefunden.',
+    noLines: 'Auf diesem Bon hat rettich keine Artikel gefunden.',
     failed: 'Die Datei liess sich nicht lesen. Versuch es nochmals oder mit einem anderen Bon.',
     sumOk: (total: string) => `Summe stimmt: ${total}`,
     sumMismatch: (read: string, total: string) =>
@@ -600,15 +600,15 @@ export const messages = {
     answerHint: 'Den ganzen Code-Block kopieren, auch wenn Text drumherum steht.',
     check: 'Prüfen',
     privacy:
-      'Das Foto geht nur an die KI, die du selbst wählst. Rettich bekommt nur die Liste und speichert erst, wenn du übernimmst.',
+      'Das Foto geht nur an die KI, die du selbst wählst. rettich bekommt nur die Liste und speichert erst, wenn du übernimmst.',
     unreadable:
-      'In dieser Antwort hat Rettich keine Artikel gefunden. Kopier den ganzen Code-Block.',
+      'In dieser Antwort hat rettich keine Artikel gefunden. Kopier den ganzen Code-Block.',
     reviewTitle: (count: number) =>
       count === 1 ? '1 Artikel erkannt' : `${String(count)} Artikel erkannt`,
     skipped: (count: number) =>
       count === 1
-        ? '1 Eintrag konnte Rettich nicht lesen:'
-        : `${String(count)} Einträge konnte Rettich nicht lesen:`,
+        ? '1 Eintrag konnte rettich nicht lesen:'
+        : `${String(count)} Einträge konnte rettich nicht lesen:`,
     take: (name: string) => `${name} übernehmen`,
     location: (name: string) => `Lagerort für ${name}`,
     estimated: 'Datum wird geschätzt',
@@ -630,15 +630,15 @@ export const messages = {
     unavailable:
       'Auf diesem Gerät gibt es keine Kamera für die App. Nimm ein Foto oder tipp die Nummer ein.',
     photo: 'Code aus Foto lesen',
-    noCode: 'Auf dem Foto hat Rettich keinen Code gefunden. Versuch es näher und schärfer.',
+    noCode: 'Auf dem Foto hat rettich keinen Code gefunden. Versuch es näher und schärfer.',
     manual: 'Nummer unter dem Strichcode',
     manualSubmit: 'Übernehmen',
-    unknownCode: 'Diesen Code kennt Rettich nicht. Bitte tipp die Nummer unter dem Strichcode ein.',
+    unknownCode: 'Diesen Code kennt rettich nicht. Bitte tipp die Nummer unter dem Strichcode ein.',
     found: (code: string) => `Barcode ${code} erkannt.`,
     looking: 'Suche Produktdaten …',
     product: (name: string, details: string) => `Gefunden: ${name}${details}.`,
     unknownProduct:
-      'Produkt noch unbekannt: Gib den Namen ein. Beim nächsten Scan kennt Rettich es.',
+      'Produkt noch unbekannt: Gib den Namen ein. Beim nächsten Scan kennt rettich es.',
     attribution: 'Daten: Open Food Facts (ODbL)',
     foundWithDate: (code: string, date: string) => `Barcode ${code} erkannt, haltbar bis ${date}.`,
   },

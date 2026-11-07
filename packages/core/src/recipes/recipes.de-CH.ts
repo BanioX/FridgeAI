@@ -1,9 +1,9 @@
 import { RecipeSchema, type Recipe } from './recipe';
 
 /**
- * Curated recipes (plan 11b): Swiss everyday dishes, written for Rettich in plain words and
+ * Curated recipes (plan 11b): Swiss everyday dishes, written for rettich in plain words and
  * addressing one person with «du». Ingredients point to categories so the ranking finds the food
- * at home; staples (salt, oil, spices) are assumed. New recipes: written for Rettich, never
+ * at home; staples (salt, oil, spices) are assumed. New recipes: written for rettich, never
  * copied, and checked by the test (schema, categories, «du»).
  */
 const RAW: unknown[] = [
