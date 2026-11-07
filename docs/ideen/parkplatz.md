@@ -5,10 +5,21 @@ Hier parkt alles, was nachweislich einen USP hätte, aber vor dem Bau eine Abkl�
 **Regeln**
 
 - Claude führt die Datei bei jedem Gespräch nach, in dem ein solcher Hebel auftaucht (CLAUDE.md, Arbeitsweise Punkt 6).
-- **Entscheiden tut Alban.** Ein Eintrag wandert erst in den [Plan](../plan.md), wenn er entschieden ist.
+- **Brainstorming:** Alban darf frei denken. Claude sortiert jede Idee ein (jetzt, später, Parkplatz) und sagt kurz, warum. Was zum aktuellen Stand passt, entscheidet Claude (Alban, 7.11.2026). Was Geld kostet, Daten neu vom Gerät schickt oder das Produkt stark ändert, entscheidet Alban (CLAUDE.md, Punkt 5).
+- Ein Eintrag wandert erst in den [Plan](../plan.md), wenn er entschieden ist.
 - **Status:** `geparkt` · `in Abklärung` · `entschieden → Plan` · `verworfen` (mit Grund).
 - Kleinere Ideen ohne Abklärungsbedarf stehen in den anderen Dateien dieses Ordners ([Übersicht](./README.md)).
 - Pitch und Businessplan liegen als Artifacts vor: [rettich Pitch](https://claude.ai/artifact/GCdjDPAGbtJLmXAoguBBLS), [rettich Businessplan](https://claude.ai/artifact/LUoSvobGNDrPYsc2453SNd).
+
+## Fokus jetzt: bis zum Pilot
+
+Alban, 7.11.2026: «Jetzt sind wir so weit am Anfang, dass ich mich verzetteln könnte.» Darum baut Claude bis zum Pilot (Alban und eine Person) nur, was den Kühlschrank-Alltag zu zweit trägt:
+
+1. **Quittung lesen und abgleichen:** vier Schritte pro Artikel, «Quittung» statt «Bon» in der App.
+2. **Wenig Aufwand im Alltag:** Wischen zum Essen, Kühlschrank-Check, Erinnerungen.
+3. **Schulden abbauen** ([`schulden.md`](../schulden.md)), damit Konten und Server später ohne Umbau kommen.
+
+Alles in diesem Parkplatz wartet auf den Pilot und seine Zahlen.
 
 ## Übersicht
 
@@ -32,6 +43,10 @@ Hier parkt alles, was nachweislich einen USP hätte, aber vor dem Bau eine Abkl�
 | P16 | **Förderung** (z. B. Innosuisse, Aktionsplan des Bundes gegen Lebensmittelverschwendung, Stiftungen) | Geld ohne Anteile abzugeben, dazu Glaubwürdigkeit | Passende Programme, Firmenform, Gesuch | geparkt |
 | P17 | **Büro-Kühlschrank für Teams** | B2B-Einnahmen pro Team | Eigener Vertrieb, Konten (P6) ([`monetarisierung.md`](./monetarisierung.md)) | geparkt |
 | P18 | **Bestandesaufnahme per Foto** (Kühlschrank oder Einkauf fotografieren, rettich erkennt die Lebensmittel) | Ersetzt den entfernten Umweg «Mit eigener KI». Ein Foto genügt, das wäre ein starkes Premium-Argument | KI-Kosten pro Bild, neuer Datenfluss (das Bild verlässt das Gerät), Qualität. Der Parser für die Liste ist da (ADR-0012) | geparkt |
+| P19 | **Allergene pro Person**: wer im Haushalt was nicht verträgt, Warnung beim Scannen, Rezepte ohne dieses Allergen | Für Menschen mit Allergien ein Grund, rettich jeden Tag zu öffnen, und ein starkes Pro-Argument. Die «Enthält»-Liste pro Produkt (Open Food Facts) zeigt rettich schon heute | Gesundheitsdaten sind besonders schützenswert (nDSG Art. 5 lit. c, DSGVO Art. 9): nur auf dem Gerät, ausdrückliche Einwilligung. Haftung: offene Daten können fehlen oder falsch sein, darum nie «allergenfrei» versprechen. Fachlich prüfen lassen (z. B. aha! Allergiezentrum Schweiz) | geparkt |
+| P20 | **Spaces**: Zuhause, Büro, Ferienwohnung, bei den Eltern; eine Person in mehreren Haushalten, oben umschalten | Ein Zugang für alle Kühlschränke im Leben; Brücke zum Büro-Kühlschrank (P17) | Auf einem Gerät ginge es ohne Server, das Datenmodell kennt Haushalte schon. Mit anderen teilen braucht Konten (P6). Gratis oder Pro? Darf das Erfassen nicht verkomplizieren | geparkt |
+| P21 | **Geteilter Haushalt, ungleich diszipliniert**: eine Person trägt alles nach, die andere nie | Gut gelöst ein Vorteil, an dem Vorrats-Apps sonst scheitern: Der Bestand bleibt brauchbar, auch wenn nicht alle mitmachen | Konten und Sync (P6, P3). Gestaltung: siehe «P21 im Detail» | geparkt, Teile gebaut |
+| P22 | **Von selbst erfasst**: Etiketten mit RFID oder NFC wie bei Decathlon, ein Kamera- oder Sensor-Modul, rettich als Anbieter oder Lizenzgeber | Kein Aufwand mehr für die Person | Hardware bindet viel Kapital und rechnet sich bei Lebensmitteln kaum. Günstigere Wege zum selben Ziel: P1 und P10. Siehe «P22 im Detail» | geparkt, Vision |
 
 ## P1 im Detail: Migros und Coop als Partner
 
@@ -62,6 +77,45 @@ Ein Partner-Adapter ist Arbeit von Tagen, nicht Monaten. Der Aufwand liegt beim 
 2. Pitch-Artifact um die Händler-Seite ergänzen.
 3. Kontakt über Innovations- und Nachhaltigkeitsteams (Migros: z. B. Generation M; Coop: Nachhaltigkeit) statt über den Kundendienst.
 
+## P21 im Detail: Der Bestand darf ungenau sein
+
+**Alban, 7.11.2026:** «Ein Partner kann diszipliniert sein, ein anderer nicht. Wenn einer das nicht konsequent nachführt, stimmt es nicht.»
+
+**Grundsatz:** rettich verlangt keine Disziplin, es rechnet mit Lücken. Je weniger Aufwand eine Änderung kostet, desto öfter stimmt der Bestand.
+
+**Schon gebaut:**
+
+- **Kühlschrank-Check:** Einmal pro Woche korrigiert er in einer Minute, was niemand nachgeführt hat.
+- **Wischen zum Essen** (#160, im Review): ein Wisch statt drei Tipps.
+- **Quittung scannen:** Wer einkauft, erfasst für alle.
+- **Besitz:** Jeder Artikel gehört einer Person oder allen (`owner`).
+
+**Wenn Teilen kommt (P3, P6), Claudes Vorschlag:**
+
+- **Ein Bestand mit «Mein Teil» und «Gemeinsam», nicht zwei Datenstände.** Zwei getrennte Stände wären zwei Wahrheiten: Welcher gilt dann für die Erinnerung? Mit dem Besitz kann die disziplinierte Person ihrem Teil trauen, ohne Widerspruch.
+- **Stand-Anzeige pro Lagerort:** «Kühlschrank zuletzt geprüft vor 9 Tagen.» So sieht man, wie sicher der Bestand ist.
+- **Nachfragen statt annehmen:** «Ist der Joghurt noch da?» bei Artikeln, die lange niemand angefasst hat.
+- **Keine Schuldzuweisung:** kein Ranking, wer weniger nachführt. Das schützt den WG-Frieden.
+
+## P22 im Detail: von selbst erfasst
+
+**Alban, 7.11.2026 (Idee aus dem Schulprojekt):** Wie bei C&A oder Decathlon wird der Artikel automatisch erkannt, wenn man ihn hinlegt. rettich könnte die Etiketten selbst anbieten oder das System lizenzieren, je nach Marge.
+
+**Claudes Einschätzung:**
+
+- **Warum es bei Kleidern geht:** Ein Pullover kostet 30 bis 100 Franken, ein Etikett einige Rappen. Bei einem Joghurt für 70 Rappen frisst das Etikett die Marge, denn der Detailhandel verdient netto nur wenige Prozent. Dazu kommt: Funk-Etiketten lesen sich durch Flüssigkeiten und Metall schlecht (Getränke, Dosen, Alu-Deckel), und sie landen im Abfall. Die Preise sind eine Grössenordnung, vor einem Pitch prüfen.
+- **Etiketten selbst herstellen** wäre ein anderes Unternehmen: mit Fabriken, in einem Markt grosser Spezialisten.
+- **Der Kern der Idee ist «erfasst sich beim Bezahlen von selbst».** Das geht ohne eigene Hardware:
+  1. **Digitaler Kassenzettel** vom Händler (P1): Die Kasse kennt jeden Artikel schon mit Barcode. Mit Einwilligung kommt der Einkauf von selbst in rettich, mit demselben Erlebnis und ohne Etikett.
+  2. **2D-Code mit Ablaufdatum** (P10): Bis 2027 sollen Kassen 2D-Codes lesen können («Sunrise 2027»). Diese Codes tragen das Ablaufdatum, und rettich liest sie schon.
+  3. **Kamera im Kühlschrank:** Das gehört den Geräteherstellern (P12); rettich wäre die Software darin.
+- **Lizenz statt Hardware:** Wertvoll ist die Logik, nicht das Etikett: was abläuft, was zu retten ist, wem was gehört, Rezepte. Sie liegt sauber getrennt in `packages/core`. Zwei Wege:
+  - ein Vorrats-Modul für die App eines Händlers, bezahlt pro aktivem Haushalt;
+  - die offene rettich-Schnittstelle (P11) für Gerätehersteller und Etiketten-Anbieter.
+
+  Software hat eine hohe Marge, Hardware eine tiefe. **Empfehlung:** Software lizenzieren, Hardware nur mit Partnern.
+- **Wann wieder prüfen:** wenn ein Händler Funk-Etiketten auf Lebensmitteln testet oder nach einem ersten Partner (P1).
+
 ## Geschäftsmodell-Entwurf (zu prüfen)
 
 Stand: 7.11.2026, aufbauend auf [`monetarisierung.md`](./monetarisierung.md) und dem Businessplan. **Nichts davon ist entschieden.**
@@ -73,6 +127,9 @@ Stand: 7.11.2026, aufbauend auf [`monetarisierung.md`](./monetarisierung.md) und
 | 3. **Partner-Daten statt Werbung** | Händler, Marken | anonyme, aggregierte Kennzahlen (P15) | Grösse, Einwilligung, Anonymisierung | spät |
 | 4. **Förderung und Impact** | öffentliche Hand, Stiftungen | messbar weniger Food Waste | Kennzahlen aus dem Pilot (P16) | parallel |
 | 5. **Team-Lizenz** | Firmen | Büro-Kühlschrank (P17) | Konten, Vertrieb | später |
+| 6. **Lizenz der rettich-Logik** | Händler, Gerätehersteller | Vorrats-Modul in deren App oder Gerät (P22) | Pilotzahlen, stabile Schnittstelle (P11), Vertrag | spät |
+
+**Kandidaten für Pro:** Allergene pro Person (P19), Spaces (P20), Berichte, mehrere Personen.
 
 **Kennzahlen, die das Modell prüfen:**
 
@@ -89,5 +146,6 @@ Stand: 7.11.2026, aufbauend auf [`monetarisierung.md`](./monetarisierung.md) und
 
 | Datum | Änderung |
 | --- | --- |
+| 7.11.2026 | Aus Albans Brainstorming: P19 (Allergene), P20 (Spaces), P21 (ungleiche Disziplin), P22 (von selbst erfasst, Etiketten, Lizenz). Dazu «Fokus jetzt», die Brainstorming-Regel und Säule 6 (Lizenz). |
 | 7.11.2026 | P18 (Bestandesaufnahme per Foto) nach dem Entfernen von «Mit eigener KI». |
 | 7.11.2026 | Parkplatz angelegt (Alban). Aus dem bisherigen Verlauf gesammelt: P1–P17, Geschäftsmodell-Entwurf. Quellen: Albans Wünsche vom 6. und 7.11.2026, `integrationen.md`, `produktdaten.md`, `schutz.md`, `monetarisierung.md`, `app-stores.md`, `designsprache-garten.md`, ADR-0019, ADR-0034 |
