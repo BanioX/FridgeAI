@@ -1,5 +1,4 @@
 import {
-  formatChf,
   formatSwissDate,
   toLocalDate,
   type Id,
@@ -12,6 +11,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { Pencil, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useAppData } from '../../app/AppData';
+import { useMoney, type Money } from '../../app/money';
 import { messages } from '../../app/messages.de-CH';
 import { BackLink } from '../../ui/BackLink';
 import { Button } from '../../ui/Button';
@@ -37,8 +37,8 @@ const periodOptions = (Object.keys(messages.reports.periods) as Period[]).map((v
 const TONES = { eaten: 'text-basil-800', shared_out: 'text-basil-800', wasted: 'text-today' };
 
 /** «Gegessen · 150 g · CHF 3.00» and «vergessen · 07.11.2026». */
-function details(entry: Entry): [string, string] {
-  const value = `${formatChf(entry.valueRappen)}${entry.valueEstimated ? ` (${t.estimated})` : ''}`;
+function details(entry: Entry, money: Money): [string, string] {
+  const value = `${money.format(entry.valueRappen)}${entry.valueEstimated ? ` (${t.estimated})` : ''}`;
   const why =
     entry.wasteReason === undefined
       ? entry.sharedWith === undefined
@@ -186,7 +186,8 @@ function HistoryRow({
   onRemove: () => void;
   onChange: (edit: Edit) => void;
 }) {
-  const [amount, why] = details(entry);
+  const money = useMoney();
+  const [amount, why] = details(entry, money);
   const cancel = (
     <Button
       variant="secondary"

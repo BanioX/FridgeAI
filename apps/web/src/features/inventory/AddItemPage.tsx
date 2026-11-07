@@ -4,10 +4,8 @@ import {
   ContainerSchema,
   expiryFromScan,
   fallbackCategory,
-  formatChf,
   formatSwissDate,
   matchCategoryByName,
-  parseChf,
   parseScannedCode,
   portioningOf,
   shelfLifeAt,
@@ -19,11 +17,13 @@ import {
   type InputUnit,
   type LocalDate,
   type StorageLocation,
+  rappen,
 } from '@fridgeai/core';
 import { useId, useRef, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { useAppData } from '../../app/AppData';
+import { useMoney } from '../../app/money';
 import { messages } from '../../app/messages.de-CH';
 import { BackLink } from '../../ui/BackLink';
 import { Button } from '../../ui/Button';
@@ -57,6 +57,8 @@ const fieldClass = (invalid: boolean, width = 'w-full') =>
  */
 export function AddItemPage() {
   const { householdId, ids, inventory, today } = useAppData();
+  const money = useMoney();
+  const example = money.format(rappen(395), { currency: false });
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const id = useId();
@@ -104,7 +106,7 @@ export function AddItemPage() {
   const expiresOn =
     dateChoice === null ? suggestedExpiry(category, location, today) : dateChoice.value;
   const amount = parseAmount(amountValue);
-  const price = priceText.trim() === '' ? undefined : parseChf(priceText);
+  const price = priceText.trim() === '' ? undefined : money.parse(priceText);
 
   // What is set under «Mehr Angaben», so nothing optional stays hidden silently.
   const summary = moreSummary([
@@ -112,7 +114,7 @@ export function AddItemPage() {
     unit === 'pcs' && containerChoice !== null && container !== ''
       ? messages.containers[container]
       : null,
-    price === undefined || price === null || price < 0 ? null : formatChf(price),
+    price === undefined || price === null || price < 0 ? null : money.format(price),
     categoryChoice === null ? null : category.name.de,
   ]);
 
@@ -120,7 +122,7 @@ export function AddItemPage() {
     name: name.trim() === '' ? t.nameMissing : null,
     amount: amount === null ? t.amountInvalid : null,
     date: expiresOn === null ? t.dateMissing : null,
-    price: price === null || (price !== undefined && price < 0) ? t.priceInvalid : null,
+    price: price === null || (price !== undefined && price < 0) ? t.priceInvalid(example) : null,
   };
   const shown = (error: string | null) => (submitted ? error : null);
   // The code's date counts as read from the pack only while the person keeps it.
@@ -456,7 +458,7 @@ export function AddItemPage() {
 
             <div className="space-y-1.5">
               <label htmlFor={`${id}-price`} className="font-semibold">
-                {t.price}
+                {t.price(money.symbol)}
               </label>
               <input
                 id={`${id}-price`}
@@ -466,7 +468,7 @@ export function AddItemPage() {
                 }}
                 inputMode="decimal"
                 autoComplete="off"
-                placeholder={t.pricePlaceholder}
+                placeholder={t.pricePlaceholder(example)}
                 aria-invalid={shown(errors.price) !== null}
                 aria-describedby={`${id}-price-error`}
                 className={`${fieldClass(shown(errors.price) !== null)} tabular-nums`}

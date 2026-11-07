@@ -17,6 +17,7 @@ export * from './format';
 export * from './ids';
 export * from './model';
 export * from './money';
+export * from './currency';
 export * from './scan/gs1';
 export * from './ports';
 export * from './ports/mocks';

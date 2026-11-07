@@ -1,6 +1,7 @@
-import { formatChf, parseChf, type Rappen } from '@fridgeai/core';
+import type { Rappen } from '@fridgeai/core';
 import { useState } from 'react';
 import { messages } from '../../app/messages.de-CH';
+import { useMoney } from '../../app/money';
 
 const t = messages.receiptUpload;
 
@@ -18,7 +19,8 @@ export function PriceField({
   onChange: (value: Rappen) => void;
 }) {
   const [text, setText] = useState<string | null>(null);
-  const shown = formatChf(value, { currency: false });
+  const money = useMoney();
+  const shown = money.format(value, { currency: false });
 
   if (text === null) {
     return (
@@ -36,7 +38,7 @@ export function PriceField({
   }
 
   const keep = () => {
-    const parsed = parseChf(text);
+    const parsed = money.parse(text);
     if (parsed !== null && parsed >= 0) {
       onChange(parsed);
     }
@@ -46,7 +48,7 @@ export function PriceField({
     <input
       // The field appears because the person tapped the price: focus belongs there.
       autoFocus
-      aria-label={t.priceLabel(name)}
+      aria-label={t.priceLabel(name, money.symbol)}
       value={text}
       inputMode="decimal"
       onChange={(event) => {

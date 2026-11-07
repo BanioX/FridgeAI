@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { CurrencyCodeSchema, DEFAULT_CURRENCY, type CurrencyCode } from '../currency';
 import { IdSchema } from '../ids';
 import { IsoDateTimeSchema, syncFields, TimeOfDaySchema } from './primitives';
 
@@ -9,11 +10,18 @@ export const HouseholdSchema = z.object({
   id: IdSchema,
   name: z.string().trim().min(1).max(60),
   plan: PlanSchema,
+  /** ISO 4217 (ADR-0019). Missing on households from before 7.11.2026: they count in CHF. */
+  currency: CurrencyCodeSchema.optional(),
   createdAt: IsoDateTimeSchema,
   updatedAt: IsoDateTimeSchema,
   deletedAt: IsoDateTimeSchema.optional(),
 });
 export type Household = z.infer<typeof HouseholdSchema>;
+
+/** The household's currency; CHF for households from before the field existed. */
+export function householdCurrency(household: Pick<Household, 'currency'>): CurrencyCode {
+  return household.currency ?? DEFAULT_CURRENCY;
+}
 
 export const RoleSchema = z.enum(['owner', 'member']);
 export type Role = z.infer<typeof RoleSchema>;
