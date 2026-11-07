@@ -43,7 +43,7 @@ export function swipeLabel(item: Pick<InventoryItemView, 'quantity' | 'unit'>): 
 
 /**
  * Swipe to eat one portion of an item: records it with `inventory.recordOutcome` and offers undo
- * in a short toast. `tip` is the one-line hint above a list until the first swipe worked.
+ * in a short toast. `tip` is the one-line hint above a list until a visit after the first swipe.
  */
 export function useSwipeEat(): {
   eat: (item: InventoryItemView) => void;
@@ -52,7 +52,9 @@ export function useSwipeEat(): {
 } {
   const { householdId, ids, inventory } = useAppData();
   const [toast, setToast] = useState<Toast | null>(null);
-  const [seen, setSeen] = useState(readSeen);
+  // Read once per visit: the tip stays until the page is opened again, so the list does not jump
+  // up under the finger right after the first swipe.
+  const [seen] = useState(readSeen);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -80,7 +82,6 @@ export function useSwipeEat(): {
             quantity: portion.quantity,
           });
           writeSeen();
-          setSeen(true);
           const text =
             portion.kind === 'piece'
               ? messages.swipe.eatenPieces(portion.quantity, item.name)
@@ -124,29 +125,33 @@ export function useSwipeEat(): {
         {seen ? null : <p className="text-sm text-ink-muted">{messages.swipe.tip}</p>}
       </>
     ),
-    toast:
-      toast === null ? null : (
-        <div className="pointer-events-none fixed inset-x-0 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-20 mx-auto max-w-xl px-4">
-          <div
-            role="status"
-            className="pointer-events-auto flex items-center justify-between gap-2 rounded-2xl bg-onyx py-2 pr-2 pl-4 text-white shadow-card"
-          >
-            <p className="font-semibold">{toast.text}</p>
-            {undoId === null ? null : (
-              <button
-                type="button"
-                disabled={busy}
-                className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl px-3 font-semibold text-white transition-colors hover:bg-white/10 disabled:opacity-50"
-                onClick={() => {
-                  void undo(undoId);
-                }}
-              >
-                <Undo2 size={20} aria-hidden="true" />
-                {messages.inventory.undo}
-              </button>
-            )}
-          </div>
+    // The live region stays mounted and only its content changes, so screen readers announce it.
+    toast: (
+      <div className="pointer-events-none fixed inset-x-0 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-20 mx-auto max-w-xl px-4">
+        <div
+          role="status"
+          className="pointer-events-auto flex items-center justify-between gap-2 rounded-2xl bg-onyx py-2 pr-2 pl-4 text-white shadow-card empty:hidden"
+        >
+          {toast === null ? null : (
+            <>
+              <p className="font-semibold">{toast.text}</p>
+              {undoId === null ? null : (
+                <button
+                  type="button"
+                  disabled={busy}
+                  className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl px-3 font-semibold text-white transition-colors hover:bg-white/10 disabled:opacity-50"
+                  onClick={() => {
+                    void undo(undoId);
+                  }}
+                >
+                  <Undo2 size={20} aria-hidden="true" />
+                  {messages.inventory.undo}
+                </button>
+              )}
+            </>
+          )}
         </div>
-      ),
+      </div>
+    ),
   };
 }

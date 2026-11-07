@@ -23,7 +23,7 @@ rettich ist eine local-first PWA gegen Food Waste für Schweizer Haushalte. Dies
 
 ```
 pnpm install && pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build
-PW_CHROMIUM_EXECUTABLE=<chrome> pnpm e2e -- --trace off      # vorher: Port 4173 frei? (L-02)
+PW_CHROMIUM_EXECUTABLE=<chrome> pnpm e2e -- --trace off      # vorher: curl -s localhost:4173 liefert nichts? (L-02, L-15)
 pnpm preview:shots <route …>                               # Bilder für Alban bei sichtbaren Änderungen
 ```
 
