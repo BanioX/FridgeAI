@@ -2,7 +2,9 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from './test';
 import { readFile } from 'node:fs/promises';
 
-test('exports the data as JSON and CSV and deletes everything after asking', async ({ page }) => {
+test('exports the data, deletes everything after asking and imports the export again', async ({
+  page,
+}) => {
   await page.goto('/inventory/new');
   await page.getByLabel('Was ist es?').fill('Joghurt');
   await page.getByRole('button', { name: 'Speichern', exact: true }).click();
@@ -49,4 +51,29 @@ test('exports the data as JSON and CSV and deletes everything after asking', asy
   await expect(page.getByRole('heading', { level: 1, name: 'Start' })).toBeVisible();
   await page.goto('/inventory');
   await expect(page.getByText('Hier liegt noch nichts.')).toBeVisible();
+
+  // On a new device or web address: bring the export back.
+  await page.goto('/more/data');
+  const picker = page.getByLabel('Exportdatei wählen');
+  await picker.setInputFiles({
+    name: 'notiz.json',
+    mimeType: 'application/json',
+    buffer: Buffer.from('{"format":"other"}'),
+  });
+  await expect(page.getByRole('status')).toHaveText(/^Diese Datei ist kein rettich-Export\./);
+  await picker.setInputFiles({
+    name: json.suggestedFilename(),
+    mimeType: 'application/json',
+    buffer: await readFile(await json.path()),
+  });
+  await expect(
+    page.getByText(`${json.suggestedFilename()} übernehmen? Darin sind 1 Artikel.`, {
+      exact: false,
+    }),
+  ).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await page.getByRole('button', { name: 'Ja, übernehmen' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Start' })).toBeVisible();
+  await page.goto('/inventory');
+  await expect(page.getByText('Joghurt')).toBeVisible();
 });
