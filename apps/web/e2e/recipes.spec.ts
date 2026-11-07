@@ -52,6 +52,10 @@ test('«Kochen» says so when nothing expires soon and lists all recipes', async
   await page.locator('label').filter({ hasText: 'Vegan' }).click();
   await expect(all.getByRole('link', { name: /Bananen-Pancakes/ })).toHaveCount(0);
   await expect(all.getByRole('link').first()).toBeVisible();
+  // «Feierabend»: at most 15 minutes and nothing to buy – with an empty fridge, nothing fits.
+  await page.locator('label').filter({ hasText: 'Feierabend' }).click();
+  await expect(all.getByRole('link')).toHaveCount(0);
+  await expect(page.getByText(/^Für den Feierabend/)).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 

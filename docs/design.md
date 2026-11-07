@@ -12,17 +12,49 @@
 
 ## Farben
 
-Alle Text-/Hintergrund-Paare erfüllen WCAG AA (mindestens 4.5:1), geprüft beim Festlegen.
+### Fünf Grüntöne aus dem Garten (7.11.2026)
+
+Alban: «frisch wie Salat, Broccoli, Kopfsalat, Rucola, einfach was Mutter Natur hergibt», mit dem ursprünglichen Logo-Grün als Hauptgrün. Die fünf Töne sind die Marke. Alles andere leitet sich aus ihnen ab.
+
+| Name | Wert | Stufe | Wofür |
+| --- | --- | --- | --- |
+| **Broccoli** | `#0C412A` | `basil-900` | Dunkelstes Grün: Überschriften in Grün, gedrückte Knöpfe, später Dunkelmodus. Weiss darauf 11.6:1 |
+| **Rucola** | `#2C7149` | `basil-700` | Das Logo-Grün und die Markenfarbe: Knöpfe, Links, aktiver Tab, ＋. Weiss darauf 5.9:1, auf Hintergrund 5.7:1 |
+| **Basilikum** | `#4A9C5C` | `basil-500` | Grafik: Balken, Ringe, Symbole. 3.3:1 auf Hintergrund (WCAG für Grafik: 3:1) |
+| **Kopfsalat** | `#CCECAD` | `basil-100` | Frische Flächen: gewählte Chips, Markierungen. Text darauf in `basil-800` (6.4:1) |
+| **Eisberg** | `#EFFAE4` | `basil-50` | Ganz helle Flächen: Tipps, Hinweise, ausgewählte Zeilen |
+
+**So sind sie gebaut:**
+
+- **Wie in der Natur:** Helle Töne kippen ins Gelbliche (Kopfsalat in der Sonne, Farbton 130°), dunkle ins Bläuliche (Broccoli im Schatten, 160°). So wirkt die Palette lebendig statt künstlich.
+- **Gleichmässige Schritte:** Gerechnet wird in OKLCH, damit die Helligkeitsstufen für das Auge gleichmässig sind. Die Sättigung ist in der Mitte am höchsten und zu den Enden hin tiefer. So gibt es kein Neon und kein Grau.
+- **Die Stufen dazwischen** (200, 300, 400, 600, 800, 950) sind aus den Nachbarn interpoliert:
+
+  | Stufe | 200 | 300 | 400 | 600 | 800 | 950 |
+  | --- | --- | --- | --- | --- | --- | --- |
+  | Wert | `#A7D492` | `#82BC79` | `#60A867` | `#3A8653` | `#1B593A` | `#032819` |
+
+  600 ist nur für Fokusring und Ränder (4.3:1), 800 für grünen Text.
+- **60–30–10:**
+  - 60 % ruhiger Hintergrund und Weiss.
+  - 30 % helle Grünflächen (Eisberg, Kopfsalat).
+  - 10 % Rucola für das, was man tippen soll.
+
+  Eine Hauptaktion pro Screen bleibt so sofort sichtbar.
+- **Das Logo** (erstes Design, Grund Rucola `#2C7149`) bleibt unverändert. Seine Blätter liegen zwischen Basilikum und Kopfsalat.
+
+Alle Text-/Hintergrund-Paare erfüllen WCAG AA (mindestens 4.5:1, Grafik 3:1), geprüft beim Festlegen.
+
+### Neutrale und Status
 
 | Token | Wert | Verwendung |
 | --- | --- | --- |
-| `basil-50 … 950` | `#F0F7F2` … `#0D2317` (500 = `#3B8A5A`, 600 = `#2C7149`, 700 = `#245B3C`) | Marke, Primäraktionen, «frisch» |
-| `oat` (Hintergrund) | `#F8F6F1` | App-Hintergrund |
+| `oat` (Hintergrund) | `#F7FCF2` (ein Hauch Eisberg) | App-Hintergrund, Statusleiste |
 | `surface` | `#FFFFFF` | Karten, Navigation |
-| `surface-muted` | `#F1EEE6` | Eingabefelder, Chips |
-| `line` | `#E4DFD3` | Trennlinien, Ränder |
+| `surface-muted` | `#EBF2E4` | Eingabefelder, Chips |
+| `line` | `#D9E4D4` | Trennlinien, Ränder |
 | `ink` | `#1C211E` | Haupttext (15:1) |
-| `ink-muted` | `#5B635D` | Nebentext (5.7:1) |
+| `ink-muted` | `#525E56` | Nebentext (6.5:1) |
 | `soon` | Text `#8A4B0F` auf `#FFF1DF`, Akzent `#E39A3B` | läuft in 1–3 Tagen ab |
 | `today` | Text `#A63A22` auf `#FDEBE6`, Akzent `#E0603F` | läuft heute ab / MHD abgelaufen |
 | `danger` | Weiss auf `#B3261E` | Verbrauchsdatum abgelaufen: «Nicht mehr essen» |
@@ -30,7 +62,7 @@ Alle Text-/Hintergrund-Paare erfüllen WCAG AA (mindestens 4.5:1), geprüft beim
 | `wheat` | Text `#8A5F14` auf `#F8F0DC` | Vorratsschrank |
 | `olive` | Text `#4F5D27` auf `#ECEEE0` | Notvorrat (6.1:1) |
 
-**Lagerorte haben je eine Akzentfarbe:** Kühlschrank = Basilikum, Tiefkühler = Eis, Vorratsschrank = Weizen, Notvorrat = Oliv.
+**Lagerorte haben je eine Akzentfarbe:** Kühlschrank = Rucola, Tiefkühler = Eis, Vorratsschrank = Weizen, Notvorrat = Oliv. Die PDF-Berichte nutzen dieselben Werte (Rucola, Eisberg, Linie).
 
 ## Schrift
 
@@ -51,13 +83,9 @@ Systemschrift nach Apples Human Interface Guidelines (ADR-0021): SF Pro auf Appl
 ## Icons und Lebensmittel
 
 - **Icons:** Lucide (ISC-Lizenz), Linienstärke 1.75, 22 px in der Navigation.
-- **App-Symbol «Radish Pop»** (Albans Masterplan, 7.11.2026, `apps/web/public/icon.svg`):
-  - ein weisser Rettich, um 17° gekippt;
-  - oben eine Schulter in Radish Magenta `#FF2A6D`;
-  - das Blatt als Häkchen in Electric Mint `#00FF87`;
-  - Grund Deep Emerald `#0B2E22` bis `#04120D`.
-
-  Diese Markenfarben gelten für Symbol und Marketing, nicht für die App-Oberfläche. Mint und Magenta erreichen auf Hell keinen WCAG-Kontrast, die Oberfläche bleibt hell nach ADR-0021. Neu zeichnen mit `node apps/web/scripts/icons.ts`.
+- **App-Symbol** (`apps/web/public/icon.svg`): ein aufrechter weisser Rettich mit grünem Kraut auf dem App-Grün `#2c7149`.
+  - **Festgelegt** (Alban, 7.11.2026): «Das vorherige Design war Welten besser, bleib dabei.» Der gekippte Entwurf «Radish Pop» aus dem Masterplan ist verworfen.
+  - Nur auf Albans Auftrag neu entwerfen. PNGs neu zeichnen mit `node apps/web/scripts/icons.ts`.
 - **Lebensmittel:** Emoji pro Kategorie (🥛 🧀 🥬 🍎 🥩 🐟 🍞 🥚) für schnelles Wiedererkennen in Listen, ohne Bild-Assets. Kommt mit dem Kategorien-Katalog (Schritt 2b).
 
 ## Muster (werden mit den Features gebaut)
