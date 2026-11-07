@@ -159,6 +159,8 @@ function query<TInput extends z.ZodType, TOutput extends z.ZodType>(
 /** An inventory item as shown to people and external clients (denormalised, no sync fields). */
 export const InventoryItemViewSchema = z.object({
   id: IdSchema,
+  /** Packs of the same product share it, e.g. two yoghurts with different dates. */
+  productId: IdSchema,
   name: z.string(),
   emoji: z.string().optional(),
   categoryId: CategoryIdSchema,
