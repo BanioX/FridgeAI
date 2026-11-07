@@ -25,8 +25,14 @@ export function BarcodeScanner({ onCode }: { onCode: (raw: string) => void }) {
   const [manual, setManual] = useState('');
   const [message, setMessage] = useState('');
   const [torch, setTorchState] = useState<'none' | 'off' | 'on'>('none');
+  /** The phone's own camera app, which has a flash where the browser may not switch the light. */
+  const cameraApp = useRef<HTMLInputElement>(null);
+
+  /** Counts camera sessions: a start that is overtaken by «stop» (or «Licht») gives up. */
+  const session = useRef(0);
 
   const stop = useCallback(() => {
+    session.current += 1;
     window.clearTimeout(timer.current);
     for (const track of stream.current?.getTracks() ?? []) {
       track.stop();
@@ -57,12 +63,24 @@ export function BarcodeScanner({ onCode }: { onCode: (raw: string) => void }) {
       return;
     }
     setState('starting');
+    session.current += 1;
+    const mine = session.current;
+    const overtaken = () => session.current !== mine;
     try {
       const media = await openScanCamera(navigator.mediaDevices);
+      if (overtaken()) {
+        for (const track of media.getTracks()) {
+          track.stop();
+        }
+        return;
+      }
       stream.current = media;
       const track = media.getVideoTracks()[0];
       if (track !== undefined) {
         const features = await tuneForCodes(track);
+        if (overtaken()) {
+          return;
+        }
         setTorchState(features.torch ? 'off' : 'none');
       }
       const element = video.current;
@@ -72,6 +90,9 @@ export function BarcodeScanner({ onCode }: { onCode: (raw: string) => void }) {
       }
       element.srcObject = media;
       await element.play();
+      if (overtaken()) {
+        return;
+      }
       setState('scanning');
       const reader = await loadCodeReader();
       const tick = async () => {
@@ -151,26 +172,31 @@ export function BarcodeScanner({ onCode }: { onCode: (raw: string) => void }) {
             >
               {t.stop}
             </Button>
-            {torch === 'none' ? null : (
-              <Button
-                variant="secondary"
-                icon={torch === 'on' ? FlashlightOff : Flashlight}
-                aria-pressed={torch === 'on'}
-                onClick={() => {
-                  const track = stream.current?.getVideoTracks()[0];
-                  const next = torch !== 'on';
-                  if (track !== undefined) {
-                    void setTorch(track, next).then((ok) => {
-                      if (ok) {
-                        setTorchState(next ? 'on' : 'off');
-                      }
-                    });
+            {/* Always there: in the dark the code is unreadable without light (Alban, 7.11.2026). */}
+            <Button
+              variant="secondary"
+              icon={torch === 'on' ? FlashlightOff : Flashlight}
+              aria-pressed={torch === 'on'}
+              onClick={() => {
+                const track = stream.current?.getVideoTracks()[0];
+                if (torch === 'none' || track === undefined) {
+                  // Safari on iPhone cannot switch the light from a web page: the camera app can.
+                  stop();
+                  setState('idle');
+                  setMessage(t.torchFallback);
+                  cameraApp.current?.click();
+                  return;
+                }
+                const next = torch !== 'on';
+                void setTorch(track, next).then((ok) => {
+                  if (ok) {
+                    setTorchState(next ? 'on' : 'off');
                   }
-                }}
-              >
-                {t.torch}
-              </Button>
-            )}
+                });
+              }}
+            >
+              {t.torch}
+            </Button>
           </div>
         </>
       ) : (
@@ -202,6 +228,19 @@ export function BarcodeScanner({ onCode }: { onCode: (raw: string) => void }) {
           }}
         />
       </label>
+      {/* Opened by «Licht» where the browser cannot switch it: straight into the camera app. */}
+      <input
+        ref={cameraApp}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        tabIndex={-1}
+        aria-hidden="true"
+        className="sr-only"
+        onChange={(event) => {
+          void readPhoto(event);
+        }}
+      />
 
       {/* No <form> here: the scanner sits inside the add form, and forms must not nest. */}
       <div className="flex items-end gap-2">
