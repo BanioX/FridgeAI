@@ -30,8 +30,11 @@ test('uploads a receipt PDF, shows names and prices and takes the food over', as
   await expect(review.getByText('Summe stimmt: CHF 13.05')).toBeVisible();
   await expect(review.getByRole('checkbox', { name: /Semmeli 80G/ })).toBeChecked();
   await expect(
-    review.getByRole('checkbox', { name: /Coop Pouletbrust.*statt 10\.40.*8\.30/ }),
+    review.getByRole('checkbox', { name: /Coop Pouletbrust.*statt 10\.40/ }),
   ).toBeChecked();
+  await expect(
+    review.getByRole('button', { name: /Preis von Coop Pouletbrust.*jetzt 8\.30/ }),
+  ).toBeVisible();
   await expect(
     review.getByRole('checkbox', { name: /Shampoo Classic.*kein Lebensmittel/ }),
   ).not.toBeChecked();
@@ -119,4 +122,31 @@ test('reads a receipt screenshot on the device', async ({ page }) => {
   await expect(review.getByRole('checkbox', { name: /Nashi Birnen.*4 Stück/ })).toBeChecked();
   await expect(review.getByRole('checkbox', { name: /Men Shampoo/ })).not.toBeChecked();
   await expect(review.getByRole('button', { name: '2 Artikel übernehmen' })).toBeEnabled();
+});
+
+test('a misread price is corrected with a tap and the sum is checked again', async ({ page }) => {
+  await page.goto('/scan');
+  await page.getByLabel('PDF oder Foto wählen').setInputFiles({
+    name: 'bon.pdf',
+    mimeType: 'application/pdf',
+    buffer: textPdf([
+      'Coop',
+      'Skyr Heidelbeere 1.0 0.99 9.99 0 A',
+      'Kraeuter-Baguette 1.0 0.99 0.99 0 A',
+      'Total CHF 1.98',
+      '0 2.60 1.98 0.05',
+    ]),
+  });
+  const review = page.getByRole('region', { name: /Coop/ });
+  await expect(
+    review.getByText(/Die Summe stimmt nicht: gelesen CHF 10\.98, auf dem Bon CHF 1\.98/),
+  ).toBeVisible();
+  await review.getByRole('button', { name: /Preis von Skyr Heidelbeere .*jetzt 9\.99/ }).click();
+  const field = review.getByLabel('Preis von Skyr Heidelbeere in CHF');
+  await field.fill('0.99');
+  await field.press('Enter');
+  await expect(review.getByText('Summe stimmt: CHF 1.98')).toBeVisible();
+  await expect(
+    review.getByRole('button', { name: /Preis von Skyr Heidelbeere .*jetzt 0\.99/ }),
+  ).toBeVisible();
 });

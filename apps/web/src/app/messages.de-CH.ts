@@ -402,7 +402,9 @@ export const messages = {
     failed: 'Die Datei liess sich nicht lesen. Versuch es nochmals oder mit einem anderen Bon.',
     sumOk: (total: string) => `Summe stimmt: ${total}`,
     sumMismatch: (read: string, total: string) =>
-      `Die Summe stimmt nicht: gelesen ${read}, auf dem Bon ${total}. Prüf die Preise.`,
+      `Die Summe stimmt nicht: gelesen ${read}, auf dem Bon ${total}. Tipp auf einen falschen Preis, um ihn zu korrigieren.`,
+    editPrice: (name: string, price: string) => `Preis von ${name} ändern, jetzt ${price}`,
+    priceLabel: (name: string) => `Preis von ${name} in CHF`,
     noTotal: 'Kein Total gefunden. Prüf die Preise.',
     retailers: {
       coop: 'Coop',

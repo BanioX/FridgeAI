@@ -272,4 +272,12 @@ describe('parseReceiptText on photos', () => {
     ]);
     expect(receipt.sumCheck).toBe('ok');
   });
+
+  it('keeps the name clean when quantity and price do not fit the amount', () => {
+    const receipt = parseReceiptText('Coop\nSkyr Heidelbeere 1.0 0.99 9.99 0 A\nTotal CHF 1.98');
+    expect(receipt.lines.map((line) => [line.name, line.quantity, line.priceRappen])).toEqual([
+      ['Skyr Heidelbeere', 1, 999],
+    ]);
+    expect(receipt.sumCheck).toBe('mismatch');
+  });
 });

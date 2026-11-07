@@ -198,6 +198,19 @@ function readNumbers(line: string): LineNumbers {
     const name = rest.slice(0, start - 1).join(' ');
     return { name, price: gross, discount, ...quantity, ...code };
   }
+  // Quantity and price that do not fit the amount (a misread digit): keep the name clean and the
+  // amount as printed; the sum check shows the slip, the review lets the person correct it.
+  const quantityToken = start > 0 ? (rest[start - 1] ?? '') : '';
+  const pieces = PIECES.exec(quantityToken)?.[1];
+  const kg = WEIGHT_KG.exec(quantityToken)?.[1];
+  if (amounts.length > 0 && (pieces !== undefined || kg !== undefined)) {
+    const name = rest.slice(0, start - 1).join(' ');
+    const quantity =
+      kg === undefined
+        ? { quantity: Number(pieces), unit: 'pcs' as const }
+        : { quantity: Math.round(Number(kg) * 1000), unit: 'g' as const };
+    return { name, price: total, discount: rappen(0), ...quantity, ...code };
+  }
   if (amounts.length === 1 && amounts[0] === total) {
     const name = rest.slice(0, start).join(' ');
     return {
