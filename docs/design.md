@@ -37,7 +37,7 @@ Alban: «ein Premium-Grün und Premium-Silber oder Premium-Schwarz, diese drei T
   - 60 % Silber und Weiss.
   - 30 % Onyx-Schrift und die eine dunkle Karte.
   - 10 % Smaragd für die Hauptaktion.
-- **Das Logo** (erstes Design, Grund Rucola `#2C7149`) bleibt vorerst. Varianten in Smaragd und Onyx liegen Alban zum Entscheid vor.
+- **Das Logo** behält die Form des ersten Designs. Sein Grund ist seit 7.11.2026 Smaragd `#135E42` (Albans Wahl «A»), das Kraut liegt in `basil-400` und `basil-200`.
 
 Alle Text-/Hintergrund-Paare erfüllen WCAG AA (mindestens 4.5:1, Grafik 3:1), geprüft beim Festlegen.
 
@@ -83,7 +83,7 @@ Systemschrift nach Apples Human Interface Guidelines (ADR-0021): SF Pro auf Appl
 ## Icons und Lebensmittel
 
 - **Icons:** Lucide (ISC-Lizenz), Linienstärke 1.75, 22 px in der Navigation.
-- **App-Symbol** (`apps/web/public/icon.svg`): ein aufrechter weisser Rettich mit grünem Kraut auf dem App-Grün `#2c7149`.
+- **App-Symbol** (`apps/web/public/icon.svg`): ein aufrechter weisser Rettich mit grünem Kraut auf Smaragd `#135e42`. Die PNG-Symbole entstehen mit `node scripts/icons.ts`.
   - **Festgelegt** (Alban, 7.11.2026): «Das vorherige Design war Welten besser, bleib dabei.» Der gekippte Entwurf «Radish Pop» aus dem Masterplan ist verworfen.
   - Nur auf Albans Auftrag neu entwerfen. PNGs neu zeichnen mit `node apps/web/scripts/icons.ts`.
 - **Lebensmittel:** Emoji pro Kategorie (🥛 🧀 🥬 🍎 🥩 🐟 🍞 🥚) für schnelles Wiedererkennen in Listen, ohne Bild-Assets. Kommt mit dem Kategorien-Katalog (Schritt 2b).
