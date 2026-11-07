@@ -68,7 +68,7 @@ export const ExpirySourceSchema = z.enum([
 ]);
 export type ExpirySource = z.infer<typeof ExpirySourceSchema>;
 
-export const RetailerSchema = z.enum(['migros', 'coop', 'other']);
+export const RetailerSchema = z.enum(['migros', 'coop', 'aldi', 'lidl', 'denner', 'other']);
 export type Retailer = z.infer<typeof RetailerSchema>;
 
 /** Stable slug of a built-in category, e.g. `dairy-milk`. */

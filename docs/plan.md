@@ -174,7 +174,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 - **Parallel möglich mit Schritt 4.**
 
 #### Schritt 4 – Bon-Pipeline in `core` (US-01, Logik)
-- 4a: Normalisierung (Umlaute, Abkürzungen, OCR-Verwechslungen `0/O`, `1/l`, `,/.`), Händlererkennung, Zeilenklassifikation, Rabatt einer Position zuordnen, Plausibilität «Summe der Positionen = Total»
+- 4a: Normalisierung (Umlaute, Abkürzungen, OCR-Verwechslungen `0/O`, `1/l`, `,/.`), Händlererkennung, Zeilenklassifikation, Rabatt einer Position zuordnen, Plausibilität «Summe der Positionen = Total» (umgesetzt: allgemeiner Leser `parseReceiptText` für Coop, Migros, Aldi, Lidl, Denner, ADR-0027)
 - 4b: Migros-Parser + 5 Fixtures
 - 4c: Coop-Parser + 5 Fixtures, generischer Fallback-Parser
 - 4d: Produkt-/Kategorie-Matching (Synonymliste, Trigram-Fuzzy-Match ohne Dependency, `ProductAlias`-Lerntabelle)
