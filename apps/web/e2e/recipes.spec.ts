@@ -26,8 +26,8 @@ test('suggests a recipe for milk that expires tomorrow and puts the rest on the 
   expect(recipe.violations).toEqual([]);
 
   // Bananas and eggs are missing; flour and salt are staples.
-  await page.getByRole('button', { name: '2 fehlende Zutaten auf die Liste' }).click();
-  await expect(page.getByText('2 Zutaten sind auf der Einkaufsliste.')).toBeVisible();
+  await page.getByRole('button', { name: '2 fehlende Zutaten nachkaufen' }).click();
+  await expect(page.getByText('2 Zutaten stehen bei «Nachkaufen».')).toBeVisible();
   await page.goto('/shopping');
   await expect(page.getByText('2 reife Bananen')).toBeVisible();
   await expect(page.getByText('2 Eier')).toBeVisible();

@@ -5,6 +5,7 @@ import { useId, useState } from 'react';
 import { Link } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
+import { BackLink } from '../../ui/BackLink';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { describeDate } from '../../ui/date-text';
@@ -143,7 +144,10 @@ export function ShoppingPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="large-title">{messages.pages.shopping}</h1>
+      <div>
+        <BackLink to="/more" label={messages.pages.more} />
+        <h1 className="large-title">{messages.pages.shopping}</h1>
+      </div>
 
       <form
         className="space-y-2"

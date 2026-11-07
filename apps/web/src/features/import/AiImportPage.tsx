@@ -116,7 +116,7 @@ export function AiImportPage() {
 
   return (
     <div className="space-y-6 pb-8">
-      <h1 className="large-title">{messages.pages.scan}</h1>
+      <h1 className="large-title">{messages.pages.add}</h1>
 
       <ReceiptUpload />
 

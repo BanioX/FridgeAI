@@ -38,7 +38,7 @@ test('weekly fridge check: half, thrown away, back, still there', async ({ page 
   await expect(page.getByText('1 noch da, 1 halb')).toBeVisible();
 
   // Half of 300 g cheese is left, the milk is untouched, and the card waits a week.
-  await page.getByRole('link', { name: 'Zu «Heute retten»' }).click();
+  await page.getByRole('link', { name: 'Zum Start' }).click();
   await expect(page.getByRole('link', { name: 'Check starten' })).toHaveCount(0);
   await page.goto('/inventory?location=fridge');
   await expect(page.getByRole('link', { name: /Grana Padano/ })).toContainText('150 g');
