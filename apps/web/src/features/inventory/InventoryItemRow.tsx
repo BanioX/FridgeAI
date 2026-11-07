@@ -4,7 +4,7 @@ import type { Tone } from '../../ui/tones';
 import { itemMeta } from './item-meta';
 import { useProductImage } from './use-product-image';
 
-/** An item in a list («Heute retten», Vorrat): with its pack picture when the device has one. */
+/** An item in a list (Start, Vorrat): with its pack picture when the device has one. */
 export function InventoryItemRow({
   item,
   status,

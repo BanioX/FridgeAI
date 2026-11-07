@@ -21,16 +21,49 @@ async function renderAt(path: string) {
 describe('AppShell', () => {
   afterEach(cleanup);
 
-  it('renders the Heute page with a five-link navigation', async () => {
+  it('renders the Start page with four tabs: Start, Vorrat, Erfassen, Mehr', async () => {
     await renderAt('/');
     expect((await screen.findByRole('heading', { level: 1 })).textContent).toBe(
-      messages.pages.today,
+      messages.pages.start,
     );
     const nav = screen.getByRole('navigation', { name: messages.navLabel });
-    expect(within(nav).getAllByRole('link')).toHaveLength(5);
     expect(
-      within(nav).getByRole('link', { name: messages.nav.today }).getAttribute('aria-current'),
+      within(nav)
+        .getAllByRole('link')
+        .map((link) => link.textContent),
+    ).toEqual([messages.nav.start, messages.nav.inventory, messages.nav.add, messages.nav.more]);
+    expect(
+      within(nav).getByRole('link', { name: messages.nav.start }).getAttribute('aria-current'),
     ).toBe('page');
+    expect(
+      within(nav).getByRole('link', { name: messages.nav.more }).hasAttribute('aria-current'),
+    ).toBe(false);
+  });
+
+  it('keeps «Mehr» highlighted on its subpages', async () => {
+    await renderAt('/shopping');
+    expect(
+      await screen.findByRole('heading', { level: 1, name: messages.pages.shopping }),
+    ).toBeDefined();
+    const nav = screen.getByRole('navigation', { name: messages.navLabel });
+    expect(
+      within(nav).getByRole('link', { name: messages.nav.more }).getAttribute('aria-current'),
+    ).toBe('page');
+    expect(
+      within(nav).getByRole('link', { name: messages.nav.start }).hasAttribute('aria-current'),
+    ).toBe(false);
+  });
+
+  it('sends the old addresses to the new places', async () => {
+    await renderAt('/scan');
+    expect(
+      await screen.findByRole('heading', { level: 1, name: messages.pages.add }),
+    ).toBeDefined();
+    cleanup();
+    await renderAt('/household');
+    expect(
+      await screen.findByRole('heading', { level: 1, name: messages.pages.more }),
+    ).toBeDefined();
   });
 
   it('navigates to Vorrat on click', async () => {
@@ -43,9 +76,23 @@ describe('AppShell', () => {
     expect(screen.getByRole('tablist')).toBeDefined();
   });
 
-  it('shows the contract version on the Haushalt page', async () => {
-    await renderAt('/household');
+  it('opens Nachkaufen and the data from the «Mehr» menu', async () => {
+    await renderAt('/more');
     expect(await screen.findByText(`${messages.contractVersion} v1`)).toBeDefined();
+    await userEvent.click(screen.getByRole('link', { name: new RegExp(messages.pages.data) }));
+    expect(
+      await screen.findByRole('heading', { level: 1, name: messages.pages.data }),
+    ).toBeDefined();
+    // The back link in the page, not the tab of the same name.
+    await userEvent.click(
+      within(screen.getByRole('main')).getByRole('link', { name: messages.pages.more }),
+    );
+    await userEvent.click(
+      await screen.findByRole('link', { name: new RegExp(messages.pages.shopping) }),
+    );
+    expect(
+      await screen.findByRole('heading', { level: 1, name: messages.pages.shopping }),
+    ).toBeDefined();
   });
 
   it('shows the not-found text for unknown paths', async () => {

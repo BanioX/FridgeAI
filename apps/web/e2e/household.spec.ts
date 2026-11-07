@@ -7,8 +7,14 @@ test('exports the data as JSON and CSV and deletes everything after asking', asy
   await page.getByLabel('Was ist es?').fill('Joghurt');
   await page.getByRole('button', { name: 'Speichern', exact: true }).click();
 
-  await page.getByRole('navigation').getByRole('link', { name: 'Haushalt' }).click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Haushalt' })).toBeVisible();
+  await page.getByRole('navigation').getByRole('link', { name: 'Mehr' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Mehr' })).toBeVisible();
+  await expect(page.getByText('Schnittstelle v1')).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await page.getByRole('link', { name: /^Daten und Datenschutz/ }).click();
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Daten und Datenschutz' }),
+  ).toBeVisible();
   await expect(page.getByText('Kein Konto, kein Tracking, keine Werbung.')).toBeVisible();
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations).toEqual([]);
@@ -42,7 +48,7 @@ test('exports the data as JSON and CSV and deletes everything after asking', asy
   await page.getByRole('button', { name: 'Alles löschen' }).click();
   await page.getByRole('button', { name: 'Ja, alles löschen' }).click();
 
-  await expect(page.getByRole('heading', { level: 1, name: 'Heute retten' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Start' })).toBeVisible();
   await page.goto('/inventory');
   await expect(page.getByText('Hier liegt noch nichts.')).toBeVisible();
 });

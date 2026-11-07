@@ -8,8 +8,9 @@ test('shopping list: hints at food at home, checks off and puts it into the inve
   await page.getByLabel('Was ist es?').fill('Bio Vollmilch');
   await page.getByRole('button', { name: 'Speichern', exact: true }).click();
 
-  await page.getByRole('navigation').getByRole('link', { name: 'Liste' }).click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Einkaufsliste' })).toBeVisible();
+  await page.getByRole('navigation').getByRole('link', { name: 'Mehr' }).click();
+  await page.getByRole('link', { name: /^Nachkaufen/ }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Nachkaufen' })).toBeVisible();
   await expect(page.getByText('Deine Liste ist leer. Was fehlt dir?')).toBeVisible();
 
   const what = page.getByLabel('Was brauchst du?');

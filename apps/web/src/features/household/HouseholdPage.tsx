@@ -1,8 +1,8 @@
-import { CONTRACT_VERSION } from '@fridgeai/core';
-import { Download, FileSpreadsheet, ShieldCheck, Smartphone, Trash2 } from 'lucide-react';
+import { Download, FileSpreadsheet, ShieldCheck, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
+import { BackLink } from '../../ui/BackLink';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { ReportCard } from '../reports/ReportCard';
@@ -10,22 +10,10 @@ import { exportFileName, inventoryCsv, saveFile } from './export-files';
 
 const t = messages.household;
 
-/** Already started from the home screen (iPhone: navigator.standalone, others: display mode). */
-function isInstalled(): boolean {
-  const iosStandalone = (navigator as Navigator & { standalone?: boolean }).standalone === true;
-  return (
-    iosStandalone ||
-    // Typed as always there, but missing in older WebViews and in test DOMs.
-    (typeof (window.matchMedia as unknown) === 'function' &&
-      window.matchMedia('(display-mode: standalone)').matches)
-  );
-}
-
-const isIos = () => /iPhone|iPad|iPod/.test(navigator.userAgent);
-
 /**
- * «Haushalt»: install hint, the person's data (export as JSON or CSV, delete everything, ADR-0020)
- * and privacy in plain words. Sharing with flatmates arrives with accounts (step 7).
+ * «Daten und Datenschutz» under «Mehr»: the person's data (export as JSON or CSV, delete
+ * everything, ADR-0020) and privacy in plain words. Sharing with flatmates arrives with accounts
+ * (step 7).
  */
 export function HouseholdPage() {
   const { householdId, ids, inventory, household, today } = useAppData();
@@ -74,17 +62,10 @@ export function HouseholdPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="large-title">{messages.pages.household}</h1>
-
-      {isInstalled() ? null : (
-        <Card variant="tip">
-          <h2 className="flex items-center gap-2 font-semibold">
-            <Smartphone size={20} aria-hidden="true" />
-            {t.install}
-          </h2>
-          <p className="mt-1">{isIos() ? t.installIos : t.installOther}</p>
-        </Card>
-      )}
+      <div>
+        <BackLink to="/more" label={messages.pages.more} />
+        <h1 className="large-title">{messages.pages.data}</h1>
+      </div>
 
       <ReportCard />
 
@@ -166,10 +147,6 @@ export function HouseholdPage() {
           ))}
         </ul>
       </section>
-
-      <p className="text-sm text-ink-muted">
-        {messages.contractVersion} {CONTRACT_VERSION}
-      </p>
     </div>
   );
 }

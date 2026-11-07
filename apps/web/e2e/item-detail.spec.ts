@@ -44,7 +44,7 @@ test('eats part of a cheese, opens it and throws the rest away with a reason', a
       cspErrors.push(message.text());
     }
   });
-  await page.getByRole('navigation').getByRole('link', { name: 'Heute' }).click();
+  await page.getByRole('navigation').getByRole('link', { name: 'Start' }).click();
   await expect(page.getByRole('heading', { name: 'Deine Wirkung diesen Monat' })).toBeVisible();
   await expect(page.getByRole('img', { name: '33 % gerettet' })).toBeVisible();
   const today = await new AxeBuilder({ page }).analyze();
@@ -168,7 +168,7 @@ test('deletes an item entered by mistake, with undo, without counting it as wast
   await page.getByRole('link', { name: /Testjoghurt/ }).click();
   await page.getByRole('button', { name: 'Artikel löschen' }).click();
   await expect(page.getByRole('status')).toHaveText('Testjoghurt gelöscht.');
-  await page.getByRole('navigation').getByRole('link', { name: 'Heute' }).click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Heute retten' })).toBeVisible();
+  await page.getByRole('navigation').getByRole('link', { name: 'Start' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Start' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Deine Wirkung diesen Monat' })).toHaveCount(0);
 });
