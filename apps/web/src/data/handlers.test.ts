@@ -475,6 +475,75 @@ describe('inventory.history', () => {
   });
 });
 
+describe('inventory.changeOutcome', () => {
+  const november = () => ({
+    householdId,
+    from: localDate('2026-11-01'),
+    to: localDate('2026-11-30'),
+  });
+  const change = (
+    eventId: Id,
+    fields: { outcome: 'eaten' | 'wasted'; wasteReason?: 'spoiled' | 'expired' },
+  ) =>
+    handlers['inventory.changeOutcome']({ commandId: ids.next(), householdId, eventId, ...fields });
+
+  it('turns a wrong «weggeworfen» into «gegessen»: value and date stay, the item follows', async () => {
+    const { itemId } = await add({ name: 'Joghurt', quantity: 4, priceRappen: 400 });
+    const first = await handlers['inventory.recordOutcome']({
+      commandId: ids.next(),
+      householdId,
+      itemId,
+      outcome: 'eaten',
+      quantity: 1,
+    });
+    const last = await handlers['inventory.recordOutcome']({
+      commandId: ids.next(),
+      householdId,
+      itemId,
+      outcome: 'wasted',
+      wasteReason: 'forgotten',
+    });
+    const before = await db.outcomes.get(last.eventId);
+
+    expect(await change(last.eventId, { outcome: 'eaten' })).toEqual({
+      eventId: last.eventId,
+      outcome: 'eaten',
+    });
+    const after = await db.outcomes.get(last.eventId);
+    expect(after).toMatchObject({ outcome: 'eaten', valueRappen: 300, at: before?.at });
+    expect(after?.wasteReason).toBeUndefined();
+    expect(await db.items.get(itemId)).toMatchObject({ status: 'eaten' });
+    expect(await handlers['stats.waste'](november())).toMatchObject({
+      savedRappen: 400,
+      wastedRappen: 0,
+    });
+
+    // An earlier entry does not change the status of the closed item.
+    await change(first.eventId, { outcome: 'wasted', wasteReason: 'spoiled' });
+    expect(await db.items.get(itemId)).toMatchObject({ status: 'eaten' });
+    expect((await db.outcomes.get(first.eventId))?.wasteReason).toBe('spoiled');
+    expect(await db.events.where('type').equals('outcome.changed').count()).toBe(2);
+  });
+
+  it('rejects unknown, undone and mismatched entries', async () => {
+    const { itemId } = await add({ name: 'Milch' });
+    const { eventId } = await handlers['inventory.recordOutcome']({
+      commandId: ids.next(),
+      householdId,
+      itemId,
+      outcome: 'wasted',
+    });
+    await expect(change(eventId, { outcome: 'eaten', wasteReason: 'expired' })).rejects.toThrow();
+    await handlers['inventory.undoOutcome']({ commandId: ids.next(), householdId, eventId });
+    await expect(change(eventId, { outcome: 'eaten' })).rejects.toMatchObject({
+      code: 'already_undone',
+    });
+    await expect(change(ids.next(), { outcome: 'eaten' })).rejects.toMatchObject({
+      code: 'not_found',
+    });
+  });
+});
+
 describe('packaging, opening and reasons', () => {
   it('stores how pieces are packed and shows it in the list', async () => {
     const { itemId } = await add({
