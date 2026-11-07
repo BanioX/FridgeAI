@@ -4,6 +4,7 @@ import {
   ContainerSchema,
   expiryFromScan,
   fallbackCategory,
+  formatChf,
   formatSwissDate,
   matchCategoryByName,
   parseChf,
@@ -20,7 +21,7 @@ import {
   type StorageLocation,
 } from '@fridgeai/core';
 import { useId, useRef, useState } from 'react';
-import { ChevronDown, ScanBarcode } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
@@ -32,6 +33,7 @@ import { BarcodeScanner } from '../scan/BarcodeScanner';
 import {
   formatAmount,
   INPUT_UNITS,
+  moreSummary,
   parseAmount,
   parsePackSize,
   suggestedAmount,
@@ -39,7 +41,6 @@ import {
 } from './add-item';
 import { locationOrder } from './item-meta';
 import { NameSearch, type FoundProduct } from './NameSearch';
-import { QuickAdd } from './QuickAdd';
 import { PriceMemoryNote } from '../receipts/PriceMemoryNote';
 
 const t = messages.addItem;
@@ -77,7 +78,7 @@ export function AddItemPage() {
   const [submitted, setSubmitted] = useState(false);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState('');
-  const [round, setRound] = useState(0);
+  const [moreOpen, setMoreOpen] = useState(false);
   const [scanOpen, setScanOpen] = useState(params.get('scan') === '1');
   const [scanned, setScanned] = useState<{
     gtin?: Gtin;
@@ -88,12 +89,14 @@ export function AddItemPage() {
   // The name taken from the search: no suggestions for it until the person types again.
   const [pickedName, setPickedName] = useState<string | null>(null);
 
-  const category =
+  const knownCategory =
     (categoryChoice === null ? undefined : categoryById(categoryChoice)) ??
-    matchCategoryByName(name) ??
-    fallbackCategory();
+    matchCategoryByName(name);
+  const category = knownCategory ?? fallbackCategory();
   const portioning = portioningOf(category);
-  const location = locationChoice ?? category.defaultLocation;
+  // «Kühlschrank zuerst»: an unknown food goes to the fridge, not to the fallback category's
+  // pantry – the location sits under «Mehr Angaben» and would otherwise change unseen.
+  const location = locationChoice ?? knownCategory?.defaultLocation ?? 'fridge';
   const suggestion = suggestedAmount(category);
   const unit = unitChoice ?? suggestion.unit;
   const amountValue = amountText ?? formatAmount(suggestion.amount);
@@ -102,6 +105,16 @@ export function AddItemPage() {
     dateChoice === null ? suggestedExpiry(category, location, today) : dateChoice.value;
   const amount = parseAmount(amountValue);
   const price = priceText.trim() === '' ? undefined : parseChf(priceText);
+
+  // What is set under «Mehr Angaben», so nothing optional stays hidden silently.
+  const summary = moreSummary([
+    messages.locations[location],
+    unit === 'pcs' && containerChoice !== null && container !== ''
+      ? messages.containers[container]
+      : null,
+    price === undefined || price === null || price < 0 ? null : formatChf(price),
+    categoryChoice === null ? null : category.name.de,
+  ]);
 
   const errors = {
     name: name.trim() === '' ? t.nameMissing : null,
@@ -185,9 +198,13 @@ export function AddItemPage() {
     void lookUp(product.gtin, picked);
   }
 
-  async function save(next: boolean) {
+  async function save() {
     setSubmitted(true);
     setStatus('');
+    if (errors.price !== null) {
+      // The price lives under «Mehr Angaben»: open it so the error is visible.
+      setMoreOpen(true);
+    }
     if (saving || amount === null || expiresOn === null || price === null) {
       return;
     }
@@ -214,24 +231,7 @@ export function AddItemPage() {
         ...(scanned?.gtin === undefined ? {} : { gtin: scanned.gtin }),
         ...(price === undefined ? {} : { priceRappen: price }),
       });
-      if (!next) {
-        void navigate(`/inventory?location=${location}`);
-        return;
-      }
-      setStatus(t.saved(name.trim()));
-      setName('');
-      setCategoryChoice(null);
-      setAmountText(null);
-      setUnitChoice(null);
-      setContainerChoice(null);
-      setDateChoice(null);
-      setScanned(null);
-      setScanStatus('');
-      setFromOpenFoodFacts(false);
-      setPriceText('');
-      setSubmitted(false);
-      setRound((value) => value + 1);
-      nameInput.current?.focus();
+      void navigate(`/inventory?location=${location}`);
     } catch {
       setStatus(t.failed);
     } finally {
@@ -246,24 +246,14 @@ export function AddItemPage() {
         <h1 className="large-title">{messages.pages.addItem}</h1>
       </div>
 
-      <div className="space-y-3">
-        <Button
-          variant="secondary"
-          icon={ScanBarcode}
-          fullWidth
-          aria-expanded={scanOpen}
-          onClick={() => {
-            setScanOpen(!scanOpen);
-          }}
-        >
-          {messages.scanner.open}
-        </Button>
+      {/* The scanner opens from the Erfassen hub (?scan=1); there is no button here any more. */}
+      <div className="contents">
         {scanOpen ? (
           <Card>
             <BarcodeScanner onCode={onCode} />
           </Card>
         ) : null}
-        <p aria-live="polite" className="font-semibold text-basil-800">
+        <p aria-live="polite" className="font-semibold text-basil-800 empty:hidden">
           {scanStatus}
         </p>
         {fromOpenFoodFacts ? (
@@ -280,14 +270,12 @@ export function AddItemPage() {
         ) : null}
       </div>
 
-      <QuickAdd />
-
       <form
         noValidate
         className="space-y-6"
         onSubmit={(event) => {
           event.preventDefault();
-          void save(false);
+          void save();
         }}
       >
         <div className="space-y-1.5">
@@ -318,34 +306,6 @@ export function AddItemPage() {
             onPick={pickFound}
           />
         </div>
-
-        <fieldset className="space-y-1.5">
-          <legend className="font-semibold">{t.location}</legend>
-          <div className="grid grid-cols-4 gap-1 rounded-2xl bg-surface-muted p-1">
-            {locationOrder.map((option) => (
-              <label
-                key={option}
-                className={`flex min-h-12 cursor-pointer items-center justify-center rounded-xl px-1 text-center text-sm transition-colors has-focus-visible:outline-2 has-focus-visible:outline-basil-600 ${
-                  option === location
-                    ? 'bg-surface font-semibold text-basil-800 shadow-card'
-                    : 'font-medium text-ink-muted'
-                }`}
-              >
-                <input
-                  type="radio"
-                  name={`${id}-location`}
-                  value={option}
-                  checked={option === location}
-                  onChange={() => {
-                    setLocationChoice(option);
-                  }}
-                  className="sr-only"
-                />
-                {messages.locations[option]}
-              </label>
-            ))}
-          </div>
-        </fieldset>
 
         <div className="space-y-1.5">
           <label htmlFor={`${id}-amount`} className="font-semibold">
@@ -410,33 +370,8 @@ export function AddItemPage() {
           )}
         </div>
 
-        {unit === 'pcs' ? (
-          <div className="space-y-1.5">
-            <label htmlFor={`${id}-container`} className="font-semibold">
-              {t.container}
-            </label>
-            <select
-              id={`${id}-container`}
-              value={container}
-              onChange={(event) => {
-                const parsed = ContainerSchema.safeParse(event.target.value);
-                setContainerChoice(parsed.success ? parsed.data : '');
-              }}
-              className={fieldClass(false)}
-            >
-              <option value="">{t.noContainer}</option>
-              {ContainerSchema.options.map((option) => (
-                <option key={option} value={option}>
-                  {messages.containers[option]}
-                </option>
-              ))}
-            </select>
-          </div>
-        ) : null}
-
         <div className="space-y-1.5">
           <DateField
-            key={round}
             label={t.expiry}
             value={expiresOn}
             onChange={(value) => {
@@ -450,61 +385,121 @@ export function AddItemPage() {
           <p className="text-sm text-today">{shown(errors.date)}</p>
         </div>
 
-        <div className="space-y-1.5">
-          <label htmlFor={`${id}-price`} className="font-semibold">
-            {t.price}
-          </label>
-          <input
-            id={`${id}-price`}
-            value={priceText}
-            onChange={(event) => {
-              setPriceText(event.target.value);
-            }}
-            inputMode="decimal"
-            autoComplete="off"
-            placeholder={t.pricePlaceholder}
-            aria-invalid={shown(errors.price) !== null}
-            aria-describedby={`${id}-price-error`}
-            className={`${fieldClass(shown(errors.price) !== null)} tabular-nums`}
-          />
-          <p id={`${id}-price-error`} className="text-sm text-today">
-            {shown(errors.price)}
-          </p>
-          <PriceMemoryNote name={name} />
-        </div>
-
         {/* The category only works in the background (ADR-0026); changing it is rarely needed. */}
-        <details className="group">
-          <summary className="flex min-h-11 w-fit cursor-pointer list-none items-center gap-2 font-semibold text-basil-800 focus-visible:outline-2 focus-visible:outline-offset-2">
-            {t.more}
+        <details
+          className="group"
+          open={moreOpen}
+          onToggle={(event) => {
+            setMoreOpen(event.currentTarget.open);
+          }}
+        >
+          <summary className="flex min-h-11 w-fit max-w-full cursor-pointer list-none items-center gap-2 font-semibold text-basil-800 focus-visible:outline-2 focus-visible:outline-offset-2">
+            <span>{summary === '' ? t.more : t.moreWith(summary)}</span>
             <ChevronDown
               size={20}
               aria-hidden="true"
               className="transition-transform group-open:rotate-180"
             />
           </summary>
-          <div className="mt-2 space-y-1.5">
-            <label htmlFor={`${id}-category`} className="font-semibold">
-              {t.category}
-            </label>
-            <select
-              id={`${id}-category`}
-              value={category.id}
-              aria-describedby={`${id}-category-hint`}
-              onChange={(event) => {
-                setCategoryChoice(event.target.value);
-              }}
-              className={fieldClass(false)}
-            >
-              {sortedCategories.map((option) => (
-                <option key={option.id} value={option.id}>
-                  {option.name.de}
-                </option>
-              ))}
-            </select>
-            <p id={`${id}-category-hint`} className="text-sm text-ink-muted">
-              {t.categoryHint}
-            </p>
+          <div className="mt-2 space-y-6">
+            <fieldset className="space-y-1.5">
+              <legend className="font-semibold">{t.location}</legend>
+              <div className="grid grid-cols-4 gap-1 rounded-2xl bg-surface-muted p-1">
+                {locationOrder.map((option) => (
+                  <label
+                    key={option}
+                    className={`flex min-h-12 cursor-pointer items-center justify-center rounded-xl px-1 text-center text-sm transition-colors has-focus-visible:outline-2 has-focus-visible:outline-basil-600 ${
+                      option === location
+                        ? 'bg-surface font-semibold text-basil-800 shadow-card'
+                        : 'font-medium text-ink-muted'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name={`${id}-location`}
+                      value={option}
+                      checked={option === location}
+                      onChange={() => {
+                        setLocationChoice(option);
+                      }}
+                      className="sr-only"
+                    />
+                    {messages.locations[option]}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+
+            {unit === 'pcs' ? (
+              <div className="space-y-1.5">
+                <label htmlFor={`${id}-container`} className="font-semibold">
+                  {t.container}
+                </label>
+                <select
+                  id={`${id}-container`}
+                  value={container}
+                  onChange={(event) => {
+                    const parsed = ContainerSchema.safeParse(event.target.value);
+                    setContainerChoice(parsed.success ? parsed.data : '');
+                  }}
+                  className={fieldClass(false)}
+                >
+                  <option value="">{t.noContainer}</option>
+                  {ContainerSchema.options.map((option) => (
+                    <option key={option} value={option}>
+                      {messages.containers[option]}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : null}
+
+            <div className="space-y-1.5">
+              <label htmlFor={`${id}-price`} className="font-semibold">
+                {t.price}
+              </label>
+              <input
+                id={`${id}-price`}
+                value={priceText}
+                onChange={(event) => {
+                  setPriceText(event.target.value);
+                }}
+                inputMode="decimal"
+                autoComplete="off"
+                placeholder={t.pricePlaceholder}
+                aria-invalid={shown(errors.price) !== null}
+                aria-describedby={`${id}-price-error`}
+                className={`${fieldClass(shown(errors.price) !== null)} tabular-nums`}
+              />
+              <p id={`${id}-price-error`} className="text-sm text-today">
+                {shown(errors.price)}
+              </p>
+              <PriceMemoryNote name={name} />
+            </div>
+
+            <div className="space-y-1.5">
+              <label htmlFor={`${id}-category`} className="font-semibold">
+                {t.category}
+              </label>
+              <select
+                id={`${id}-category`}
+                value={category.id}
+                aria-describedby={`${id}-category-hint`}
+                onChange={(event) => {
+                  setCategoryChoice(event.target.value);
+                }}
+                className={fieldClass(false)}
+              >
+                {sortedCategories.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.name.de}
+                  </option>
+                ))}
+              </select>
+              <p id={`${id}-category-hint`} className="text-sm text-ink-muted">
+                {t.categoryHint}
+              </p>
+            </div>
           </div>
         </details>
 
@@ -512,21 +507,9 @@ export function AddItemPage() {
           {status}
         </p>
 
-        <div className="space-y-2">
-          <Button type="submit" fullWidth disabled={saving}>
-            {t.save}
-          </Button>
-          <Button
-            variant="secondary"
-            fullWidth
-            disabled={saving}
-            onClick={() => {
-              void save(true);
-            }}
-          >
-            {t.saveAndNext}
-          </Button>
-        </div>
+        <Button type="submit" fullWidth disabled={saving}>
+          {t.save}
+        </Button>
       </form>
     </div>
   );

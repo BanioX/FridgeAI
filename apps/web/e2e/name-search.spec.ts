@@ -50,8 +50,9 @@ test('finds «Coop Gipfeli» by name and fills in the form like a scan', async (
   await expect(page.getByText(/Übernommen: Gipfeli\./)).toBeVisible();
   await expect(page.getByLabel('Menge')).toHaveValue('180');
   await expect(page.getByRole('link', { name: 'Daten: Open Food Facts (ODbL)' })).toBeVisible();
-  await page.getByRole('button', { name: 'Speichern und nächsten erfassen' }).click();
-  await expect(page.getByText('Gipfeli ist gespeichert.')).toBeVisible();
+  await page.getByRole('button', { name: 'Speichern', exact: true }).click();
+  await expect(page.getByRole('link', { name: /Gipfeli/ })).toBeVisible();
+  await page.goto('/inventory/new');
 
   // Next time it shows up at once under «Bereits verwendet», and only there.
   await field.fill('gipf');
