@@ -1,0 +1,246 @@
+import {
+  displayQuantity,
+  fallbackCategory,
+  formatChf,
+  formatSwissDate,
+  IsoDateTimeSchema,
+  matchCategoryByName,
+  parseReceiptText,
+  rappen,
+  sumRappen,
+  type Id,
+  type ParsedReceipt,
+  type ParsedReceiptLine,
+} from '@fridgeai/core';
+import { FileText } from 'lucide-react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router';
+import { useAppData } from '../../app/AppData';
+import { messages } from '../../app/messages.de-CH';
+import { Button } from '../../ui/Button';
+import { Card } from '../../ui/Card';
+import { GroupedList, GroupedListItem } from '../../ui/GroupedList';
+import { formatAmount } from '../inventory/add-item';
+import { sha256Hex } from './hash';
+import { readPdfText } from './read-pdf';
+
+const t = messages.receiptUpload;
+const MAX_BYTES = 5 * 1024 * 1024;
+
+interface Review {
+  receipt: ParsedReceipt;
+  hash: string;
+  /** Fixed per receipt: a retry after an error never imports twice. */
+  commandId: Id;
+  chosen: ReadonlySet<number>;
+}
+
+const paid = (line: ParsedReceiptLine) => rappen(line.priceRappen + line.discountRappen);
+
+function amountText(line: ParsedReceiptLine): string {
+  const shown = displayQuantity(line.quantity, line.unit);
+  return `${formatAmount(shown.amount)} ${messages.inputUnits[shown.unit]}`;
+}
+
+/** Purchase time as printed (local time of the device), else now. */
+function purchasedAt(receipt: ParsedReceipt) {
+  const printed =
+    receipt.purchasedOn === undefined
+      ? new Date()
+      : new Date(`${receipt.purchasedOn}T${receipt.purchasedTime ?? '12:00'}:00`);
+  return IsoDateTimeSchema.parse(
+    (Number.isNaN(printed.getTime()) ? new Date() : printed).toISOString(),
+  );
+}
+
+/**
+ * «Bon hochladen» (ADR-0028): a receipt PDF is read on the device, the lines show with name and
+ * price paid, food is ticked, and «übernehmen» stores the receipt and puts the ticked items into
+ * the inventory with their price.
+ */
+export function ReceiptUpload() {
+  const { householdId, ids, inventory } = useAppData();
+  const navigate = useNavigate();
+  const [status, setStatus] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [review, setReview] = useState<Review | null>(null);
+
+  async function read(file: File) {
+    setReview(null);
+    if (file.size > MAX_BYTES) {
+      setStatus(t.tooLarge);
+      return;
+    }
+    setBusy(true);
+    setStatus(t.reading);
+    try {
+      const text = await readPdfText(await file.arrayBuffer());
+      const receipt = parseReceiptText(text);
+      if (text.trim() === '' || !receipt.lines.some((line) => line.kind === 'item')) {
+        setStatus(text.trim() === '' ? t.noText : t.noLines);
+        return;
+      }
+      const chosen = new Set(
+        receipt.lines.flatMap((line, index) =>
+          line.kind === 'item' && line.isFood !== false ? [index] : [],
+        ),
+      );
+      setReview({ receipt, hash: await sha256Hex(text), commandId: ids.next(), chosen });
+      setStatus('');
+    } catch {
+      setStatus(t.failed);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function take(current: Review) {
+    setBusy(true);
+    setStatus('');
+    const { receipt } = current;
+    try {
+      const result = await inventory['receipts.import']({
+        commandId: current.commandId,
+        householdId,
+        retailer: receipt.retailer,
+        ...(receipt.storeName === undefined ? {} : { storeName: receipt.storeName }),
+        purchasedAt: purchasedAt(receipt),
+        totalRappen: receipt.totalRappen ?? receipt.computedTotalRappen,
+        source: 'pdf',
+        hash: current.hash,
+        lines: receipt.lines.map((line, index) => ({
+          name: (line.name.trim() === '' ? t.fallbackNames[line.kind] : line.name).slice(0, 120),
+          kind: line.kind,
+          quantity: line.quantity,
+          unit: line.unit,
+          ...(line.unitPriceRappen === undefined ? {} : { unitPriceRappen: line.unitPriceRappen }),
+          priceRappen: line.priceRappen,
+          discountRappen: line.discountRappen,
+          isFood: line.isFood ?? line.kind === 'item',
+          ...(current.chosen.has(index)
+            ? { location: (matchCategoryByName(line.name) ?? fallbackCategory()).defaultLocation }
+            : {}),
+        })),
+      });
+      if (result.duplicate) {
+        setStatus(t.duplicate);
+        return;
+      }
+      void navigate('/inventory');
+    } catch {
+      setStatus(t.saveFailed);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const receipt = review?.receipt;
+  const extras =
+    receipt === undefined
+      ? null
+      : sumRappen(receipt.lines.filter((line) => line.kind !== 'item').map(paid));
+
+  return (
+    <Card>
+      <h2 className="font-display text-xl font-semibold">{t.title}</h2>
+      <p className="mt-1 text-ink-muted">{t.intro}</p>
+      <label className="mt-4 flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-xl bg-basil-700 px-5 font-semibold text-white transition-colors hover:bg-basil-800 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-basil-600">
+        <FileText size={20} aria-hidden="true" />
+        {t.choose}
+        <input
+          type="file"
+          accept="application/pdf,.pdf"
+          disabled={busy}
+          className="sr-only"
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            event.target.value = '';
+            if (file !== undefined) {
+              void read(file);
+            }
+          }}
+        />
+      </label>
+      <p role="status" className="mt-2 text-sm font-semibold text-basil-800">
+        {status}
+      </p>
+
+      {review === null || receipt === undefined ? null : (
+        <section aria-labelledby="receipt-title" className="mt-4 space-y-3">
+          <h3 id="receipt-title" className="font-semibold">
+            {[
+              t.retailers[receipt.retailer],
+              receipt.storeName,
+              receipt.purchasedOn === undefined ? undefined : formatSwissDate(receipt.purchasedOn),
+            ]
+              .filter(Boolean)
+              .join(' · ')}
+          </h3>
+          <p className={`text-sm ${receipt.sumCheck === 'ok' ? 'text-basil-800' : 'text-today'}`}>
+            {receipt.sumCheck === 'ok' || receipt.totalRappen === null
+              ? receipt.totalRappen === null
+                ? t.noTotal
+                : t.sumOk(formatChf(receipt.totalRappen))
+              : t.sumMismatch(
+                  formatChf(receipt.computedTotalRappen),
+                  formatChf(receipt.totalRappen),
+                )}
+          </p>
+          <GroupedList>
+            {receipt.lines.map((line, index) =>
+              line.kind !== 'item' ? null : (
+                <GroupedListItem key={`${String(index)}-${line.name}`} inset="check">
+                  <label className="flex min-h-14 cursor-pointer items-center gap-3 py-2 pr-4 pl-4">
+                    <input
+                      type="checkbox"
+                      checked={review.chosen.has(index)}
+                      onChange={() => {
+                        const chosen = new Set(review.chosen);
+                        if (!chosen.delete(index)) {
+                          chosen.add(index);
+                        }
+                        setReview({ ...review, chosen });
+                      }}
+                      className="size-6 shrink-0 accent-basil-700"
+                    />
+                    <span className="min-w-0 flex-1">
+                      <span className="line-clamp-2 block font-semibold break-words">
+                        {line.name}
+                      </span>
+                      <span className="block truncate text-sm text-ink-muted">
+                        {[
+                          amountText(line),
+                          line.discountRappen < 0
+                            ? t.instead(formatChf(line.priceRappen, { currency: false }))
+                            : undefined,
+                          line.isFood === false ? t.notFood : undefined,
+                        ]
+                          .filter(Boolean)
+                          .join(' · ')}
+                      </span>
+                    </span>
+                    <span className="shrink-0 font-semibold tabular-nums">
+                      {formatChf(paid(line), { currency: false })}
+                    </span>
+                  </label>
+                </GroupedListItem>
+              ),
+            )}
+          </GroupedList>
+          {extras === null || extras === 0 ? null : (
+            <p className="text-sm text-ink-muted">{t.extras(formatChf(extras))}</p>
+          )}
+          <Button
+            fullWidth
+            disabled={busy || review.chosen.size === 0}
+            onClick={() => {
+              void take(review);
+            }}
+          >
+            {t.take(review.chosen.size)}
+          </Button>
+        </section>
+      )}
+    </Card>
+  );
+}
