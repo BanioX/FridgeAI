@@ -30,6 +30,7 @@ import {
 import { CommandError, createCommandKit, type Handler, type HandlerContext } from './command';
 import { createFrequentProductsHandler } from './frequent-handler';
 import { createProductSearchHandler } from './product-search-handler';
+import { createPriceHandler } from './price-handler';
 import { createReceiptHandlers } from './receipt-handlers';
 
 export { CommandError, type CommandErrorCode, type HandlerContext } from './command';
@@ -714,6 +715,7 @@ export function createInventoryHandlers(ctx: HandlerContext) {
     ...createFrequentProductsHandler(ctx),
     ...createProductSearchHandler(ctx),
     ...createReceiptHandlers(ctx, addItem),
+    ...createPriceHandler(ctx),
     'stats.waste': wasteStats,
   };
 }

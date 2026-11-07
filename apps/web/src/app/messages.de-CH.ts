@@ -416,6 +416,9 @@ export const messages = {
     },
     fallbackNames: { item: 'Artikel', discount: 'Rabatt', deposit: 'Pfand', bag: 'Tasche' },
     instead: (regular: string) => `statt ${regular}`,
+    dearer: (percent: number) => `${String(percent)} % teurer als sonst`,
+    cheaper: (percent: number) => `${String(percent)} % günstiger als sonst`,
+    lastPaid: (price: string, shop: string) => `zuletzt ${price} bei ${shop}`,
     notFood: 'kein Lebensmittel',
     extras: (amount: string) => `Dazu Tasche, Pfand und Rabatte: ${amount}`,
     take: (count: number) =>

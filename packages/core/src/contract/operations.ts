@@ -65,6 +65,18 @@ const ReceiptImportLineSchema = z.object({
   location: StorageLocationSchema.optional(),
 });
 
+/** A price paid, per piece, kilogram or litre (ADR-0029). */
+const PricedObservationSchema = z.object({
+  retailer: RetailerSchema,
+  storeName: z.string().optional(),
+  purchasedOn: LocalDateSchema,
+  quantity: QuantitySchema,
+  unit: UnitSchema,
+  paidRappen: RappenSchema,
+  promotion: z.boolean(),
+  unitPriceRappen: RappenSchema,
+});
+
 /** «Nach dem Öffnen innert N Tagen» from the label; overrides the category value. */
 const AfterOpeningDaysSchema = z.int().min(0).max(3650);
 
@@ -555,6 +567,30 @@ export const CONTRACT_V1 = {
       savedGrams: z.int().min(0),
       wastedGrams: z.int().min(0),
       estimated: z.boolean(),
+    }),
+  }),
+  'prices.memory': query({
+    name: 'prices.memory',
+    summary: {
+      de: 'Preisgedächtnis aus den eigenen Bons: zuletzt bezahlt, üblicher Preis, am günstigsten.',
+      en: 'Price memory from own receipts: last paid, usual price, cheapest shop.',
+    },
+    scopes: ['stats:read'],
+    input: z.object({
+      ...queryBase,
+      /** Product names as on the receipt; matched written the same way (ADR-0029). */
+      names: z.array(z.string().trim().min(1).max(120)).min(1).max(100),
+    }),
+    output: z.object({
+      products: z.array(
+        z.object({
+          name: z.string(),
+          count: z.int().min(0),
+          last: PricedObservationSchema.optional(),
+          usualUnitPriceRappen: RappenSchema.optional(),
+          cheapest: PricedObservationSchema.optional(),
+        }),
+      ),
     }),
   }),
   'rescue.offer': command({

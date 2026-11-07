@@ -155,3 +155,33 @@ test('a misread price is corrected with a tap and the sum is checked again', asy
     review.getByRole('button', { name: /Preis von Skyr Heidelbeere .*jetzt 0\.99/ }),
   ).toBeVisible();
 });
+
+test('remembers prices: «zuletzt …» and «… % teurer als sonst» on the next receipts', async ({
+  page,
+}) => {
+  const semmeli = (day: string, line: string, total: string) =>
+    textPdf([
+      'Musterstadt Zentrum',
+      `${day} 18:47 00123`,
+      line,
+      `Total CHF ${total}`,
+      '0 2.60 1.00 0.03',
+    ]);
+  const upload = async (buffer: Buffer) => {
+    await page.goto('/scan');
+    await page
+      .getByLabel('PDF oder Foto wählen')
+      .setInputFiles({ name: 'bon.pdf', mimeType: 'application/pdf', buffer });
+    return page.getByRole('region', { name: /Coop|Laden/ });
+  };
+  // Invented receipts; «Coop» is in the product name, so the shop is recognised.
+  let review = await upload(semmeli('01.11.26', 'Coop Semmeli 80G 2.0 0.70 1.40 0 A', '1.40'));
+  await review.getByRole('button', { name: '1 Artikel übernehmen' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
+  review = await upload(semmeli('03.11.26', 'Coop Semmeli 80G 2.0 0.85 1.70 0 A', '1.70'));
+  await expect(review.getByText('zuletzt 0.70/Stück bei Coop')).toBeVisible();
+  await review.getByRole('button', { name: '1 Artikel übernehmen' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
+  review = await upload(semmeli('06.11.26', 'Coop Semmeli 80G 1.0 0.95 0.95 0 A', '0.95'));
+  await expect(review.getByText('22 % teurer als sonst')).toBeVisible();
+});

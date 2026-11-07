@@ -23,6 +23,7 @@ import { Card } from '../../ui/Card';
 import { GroupedList, GroupedListItem } from '../../ui/GroupedList';
 import { formatAmount } from '../inventory/add-item';
 import { PriceField } from './PriceField';
+import { priceHint, type PriceMemory } from './price-hint';
 import { sha256Hex } from './hash';
 import { readImageText } from './read-image';
 import { readPdfText } from './read-pdf';
@@ -39,6 +40,8 @@ interface Review {
   /** Fixed per receipt: a retry after an error never imports twice. */
   commandId: Id;
   chosen: ReadonlySet<number>;
+  /** Earlier prices of the same products, by name on the receipt (ADR-0029). */
+  memory: ReadonlyMap<string, PriceMemory>;
 }
 
 const paid = (line: ParsedReceiptLine) => rappen(line.priceRappen + line.discountRappen);
@@ -129,7 +132,27 @@ export function ReceiptUpload() {
         return;
       }
       const chosen = new Set(receipt.lines.flatMap((line, index) => (isFood(line) ? [index] : [])));
-      setReview({ receipt, hash: await sha256Hex(text), source, commandId: ids.next(), chosen });
+      const names = [
+        ...new Set(
+          receipt.lines.flatMap((line) =>
+            line.kind === 'item' && line.name.trim() !== '' ? [line.name.slice(0, 120)] : [],
+          ),
+        ),
+      ].slice(0, 100);
+      const { products } =
+        names.length === 0
+          ? { products: [] }
+          : await inventory['prices.memory']({ householdId, names }).catch(() => ({
+              products: [],
+            }));
+      setReview({
+        receipt,
+        hash: await sha256Hex(text),
+        source,
+        commandId: ids.next(),
+        chosen,
+        memory: new Map(products.map((product) => [product.name, product])),
+      });
       setStatus('');
     } catch {
       setStatus(t.failed);
@@ -266,6 +289,7 @@ export function ReceiptUpload() {
                           .filter(Boolean)
                           .join(' · ')}
                       </span>
+                      <PriceHint hint={priceHint(line, review.memory.get(line.name))} />
                     </span>
                   </label>
                   <PriceField
@@ -294,5 +318,13 @@ export function ReceiptUpload() {
         </section>
       )}
     </Card>
+  );
+}
+
+const TONES = { dearer: 'text-today', cheaper: 'text-basil-800', info: 'text-ink-muted' } as const;
+
+function PriceHint({ hint }: { hint: ReturnType<typeof priceHint> }) {
+  return hint === null ? null : (
+    <span className={`block text-sm font-medium ${TONES[hint.tone]}`}>{hint.text}</span>
   );
 }
