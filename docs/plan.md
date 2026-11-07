@@ -1,4 +1,4 @@
-# Rettich – MVP-Plan
+# rettich – MVP-Plan
 
 > **Status: freigegeben durch Alban am 6. November 2026** («Du machst das, du bist die volle Pipeline. Ich sage, was wir machen, ausführen tust du.»).
 > Grundlagen: [`brief.md`](./brief.md) (Build-Brief), [`blue-ocean.md`](./blue-ocean.md) (Strategie), [`use-cases.md`](./use-cases.md) (Brainstorming), [`architecture.md`](./architecture.md) (Architektur und Skalierung). Offene Fragen: Abschnitt 9.
@@ -15,7 +15,7 @@
 - **Reihenfolge nach Risiko:** Haushalt, Sync und Push kommen vor Kostenteilung, Barcode, Import, Einkaufsliste und Rezepten. Begründung:
   1. Sync ist das grösste technische Risiko. Je früher er läuft, desto billiger sind Korrekturen am Datenmodell.
   2. Push braucht einen Server und ist eines deiner Hauptziele.
-  3. Die Basis-Features sind Red Ocean. Pilot-WGs sollen früh das testen, womit Rettich gewinnen will.
+  3. Die Basis-Features sind Red Ocean. Pilot-WGs sollen früh das testen, womit rettich gewinnen will.
   4. Nach Schritt 9 ist ein **Pilot-Alpha** mit 1 bis 2 WGs möglich: Vorrat, Bon-Scan, Haushalt, Push, Kostenteilung, Rette-Kreis.
   - *Bedingung:* Der Backend-Entscheid (Frage 1) fällt spätestens am Ende von Meilenstein B. Wenn nicht, ziehe ich Meilenstein D vor. Der Plan funktioniert in beiden Reihenfolgen.
 
@@ -191,7 +191,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 #### Schritt 5b – KI-Import «mit eigener KI erfassen» (ADR-0012, Stufe 1; Priorität nach dem manuellen Prototyp)
 - Auftrag (Prompt) zum Kopieren mit festem Antwortformat; Parser für die KI-Antwort (Zeilen oder JSON) in `core`, streng geprüft
 - «Einfügen» → Review-Liste → übernehmen; derselbe Posteingang wie später MCP und Bon-Scan
-- Kein Server, keine Kosten für Rettich
+- Kein Server, keine Kosten für rettich
 
 #### Schritt 6 – Abschliessen, Wirkungs-Dashboard, Kühlschrank-Check (US-06, US-20, US-22)
 - 6a: `core/metrics`: gerettet/weggeworfen in CHF und kg pro Person und Haushalt, Schätzwerte klar markiert
@@ -271,7 +271,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 - Native Apps mit Capacitor (lokale Benachrichtigungen ohne Server, App-Store-Präsenz)
 - Bezahl-Abo, Haushalts-Challenges, «Darf ich?»-Anfrage, Allergene-Filter, Französisch
 - Optional serverseitiges OCR/LLM (Opt-in)
-- **MCP-Connector für Claude und ChatGPT** (ADR-0012, Stufe 2): Foto in der KI-App → Vorschlag im Rettich-Posteingang → Link «In Rettich öffnen» → bestätigen; dazu Werkzeuge «Was läuft bald ab?», «Rezeptideen», «Auf die Einkaufsliste»
+- **MCP-Connector für Claude und ChatGPT** (ADR-0012, Stufe 2): Foto in der KI-App → Vorschlag im rettich-Posteingang → Link «In rettich öffnen» → bestätigen; dazu Werkzeuge «Was läuft bald ab?», «Rezeptideen», «Auf die Einkaufsliste»
 - **Native Apps (Capacitor):** iOS-/Android-Widgets «Heute retten», Kurzbefehle/Siri/Action-Button (App Intents), Haptik
 - **Übersetzungen** FR, IT, EN (ADR-0008)
 - **Kreise:** Rette-Kreis über den Haushalt hinaus (Haus, Nachbarschaft, Kollektiv), siehe `architecture.md` Abschnitt 6
@@ -322,7 +322,7 @@ Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ic
 3. **Daten, die das Gerät verlassen** (neben dem Sync selbst)
    - a) **Open Food Facts:** Barcode-Nummer und IP-Adresse gehen an Open Food Facts (Frankreich). *Empfehlung:* erlaubt, mit Hinweis beim ersten Scan und Schalter in den Einstellungen.
    - b) **Web Push:** Der Server muss wissen, wann was abläuft. *Empfehlung:* Push nur mit Konto (die Daten sind durch den Sync ohnehin dort). Ohne Konto: Digest beim Öffnen.
-4. **Serverseitiges OCR/LLM-Parsing** – **Beantwortet (6.11.2026):** keine KI auf Rettich-Kosten. Erkennung über die KI der Nutzer:innen: «KI-Import» per Kopieren/Einfügen im Prototyp, MCP-Connector in v1, eigene KI nur über ein Pro-Abo (ADR-0012).
+4. **Serverseitiges OCR/LLM-Parsing** – **Beantwortet (6.11.2026):** keine KI auf rettich-Kosten. Erkennung über die KI der Nutzer:innen: «KI-Import» per Kopieren/Einfügen im Prototyp, MCP-Connector in v1, eigene KI nur über ein Pro-Abo (ADR-0012).
 5. **Freemium im MVP** – *Empfehlung:* alles gratis, nur die Mechanik `free | pro` bauen, Preise nach dem Pilot. CHF 9/Monat liegt über ZWIMP (CHF 4.90) und Kühlbär (CHF 3); ein Haushalts-Abo, das auf alle Mitglieder verteilt wird, könnte das auffangen. Weitere Kandidaten für bezahlte Stufen: Büro-Kühlschrank für Teams ([`use-cases.md`](./use-cases.md), Abschnitt 2d), eigene KI (ADR-0012).
 6. **Dependency-Liste zur Freigabe** (alles Open Source, keine kostenpflichtigen Dienste):
    - Laufzeit: `react`, `react-dom`, `react-router`, `zod` (v4), `dexie`, `dexie-react-hooks`, `tailwindcss`, einzelne `@radix-ui/*`-Komponenten, `tesseract.js`, `barcode-detector` + `zxing-wasm` (statt `@zxing/browser`, ADR-0014), `pdfjs-dist`, `papaparse`; ab Schritt 7 `@tanstack/react-query` und der Client des gewählten Backends; ab Schritt 8 eine Web-Push-Bibliothek im Backend
@@ -341,7 +341,7 @@ Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ic
     - A) **MVP mit PWA-Push** und guter Installationsanleitung, native Apps in v1.
     - B) **Native App (Capacitor) schon im MVP**: Erinnerungen lokal auf dem Gerät, auch ohne Konto und Server. Kostet mehr Aufwand (2 bis 3 zusätzliche PRs plus Store-Prozess) und ein Apple-Entwicklerkonto (rund 100 Franken pro Jahr) für TestFlight.
     - *Empfehlung:* A. Wir messen im Pilot-Alpha, wie viele iPhone-Nutzer:innen die PWA installieren. Ist das zu wenig, ziehen wir B vor.
-12. **API und MCP: wann?** – *Empfehlung:* Im MVP nur die Schnittstelle (Schritt 2d), die Events und das Einwilligungsmodell. REST-API und MCP-Server in v1, sobald es echte Partner-Gespräche gibt. Ausnahme: Wenn ihr für die Schule eine Demo «Claude fragt Rettich» wollt, kann ich einen schreibgeschützten MCP-Server als Zusatzschritt nach Schritt 9 einplanen (2 bis 3 PRs).
+12. **API und MCP: wann?** – *Empfehlung:* Im MVP nur die Schnittstelle (Schritt 2d), die Events und das Einwilligungsmodell. REST-API und MCP-Server in v1, sobald es echte Partner-Gespräche gibt. Ausnahme: Wenn ihr für die Schule eine Demo «Claude fragt rettich» wollt, kann ich einen schreibgeschützten MCP-Server als Zusatzschritt nach Schritt 9 einplanen (2 bis 3 PRs).
 13. **«Datenbasierte Insights (anonymisiert)» aus dem Businessplan vs. «kein Verkauf von Daten» aus dem Brief** – *Empfehlung:* Nie Einzeldaten verkaufen oder weitergeben. Erlaubt sind nur aggregierte Wirkungsberichte innerhalb eines Programms (Option C), bei dem Haushalte aktiv mitmachen (Opt-in), mit einer Mindestgruppengrösse, damit niemand erkennbar ist. Das passt zum Vertrauensversprechen und bleibt trotzdem monetarisierbar.
 14. **Rahmen**
     - a) ~~Coden weitere Personen mit?~~ **Beantwortet:** Nein, persönliches Projekt von Alban, vorerst One-Man-Show (6.11.2026). Folgen siehe Abschnitt 10.

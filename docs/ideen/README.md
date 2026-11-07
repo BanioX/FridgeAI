@@ -1,6 +1,6 @@
 # Ideen und Erweiterungen
 
-Brainstorming, laufend gepflegt (CLAUDE.md: «Ideen unterwegs»). Hier steht, was Rettich später können könnte, nicht was beschlossen ist. Beschlüsse stehen in [`../plan.md`](../plan.md) und den [ADRs](../adr/).
+Brainstorming, laufend gepflegt (CLAUDE.md: «Ideen unterwegs»). Hier steht, was rettich später können könnte, nicht was beschlossen ist. Beschlüsse stehen in [`../plan.md`](../plan.md) und den [ADRs](../adr/).
 
 | Datei | Thema |
 | --- | --- |
@@ -13,6 +13,7 @@ Brainstorming, laufend gepflegt (CLAUDE.md: «Ideen unterwegs»). Hier steht, wa
 | [`hilfe-und-konto.md`](./hilfe-und-konto.md) | FAQ, How-to- und Info-Seiten; Registrierung (geparkt) |
 | [`app-stores.md`](./app-stores.md) | Native App für iOS und Android: Weg, Kosten, Zeitplan |
 | [`ausgaben-und-ernaehrung.md`](./ausgaben-und-ernaehrung.md) | Essensbudget aus den Bons, gesund und ungesund (später) |
+| [`masterplan-bewertung.md`](./masterplan-bewertung.md) | Albans Masterplan: übernommen, später, Entscheide, Regeln |
 
 **Produkt-Prioritäten** (Alban, 6.11.2026):
 

@@ -1,4 +1,4 @@
-# Rettich – Strategie in Kürze
+# rettich – Strategie in Kürze
 
 > Zusammenfassung der Blue-Ocean-Analyse (Stand 6.11.2026) und der Schularbeiten ATL1 (Okt. 2025) und Businessplan ATL2 (März 2026). Die Originale liegen nicht im Repo.
 
@@ -9,7 +9,7 @@
 
 ## Was die Blue-Ocean-Analyse daraus macht
 
-**Kernaussage:** Die Basis (Vorrat in 3 Orten, Ablaufdaten, Rezepte, Bon-Scan, Haushalt teilen) ist Red Ocean, auch in der Schweiz (ZWIMP, Kühlbär). Rettich gewinnt nicht mit mehr Funktionen, sondern mit einer anderen Nutzenkurve.
+**Kernaussage:** Die Basis (Vorrat in 3 Orten, Ablaufdaten, Rezepte, Bon-Scan, Haushalt teilen) ist Red Ocean, auch in der Schweiz (ZWIMP, Kühlbär). rettich gewinnt nicht mit mehr Funktionen, sondern mit einer anderen Nutzenkurve.
 
 **Problem in Zahlen:** 720'000 t vermeidbare Verluste in Haushalten pro Jahr, 35 % Anteil der Haushalte an der Umweltbelastung (BAFU); rund 80 kg und CHF 600 pro Person und Jahr (Kanton Zürich, 2026). 71 % der 18- bis 24-Jährigen prüfen nicht, ob ein Produkt noch gut ist (Too Good To Go, 2024).
 
