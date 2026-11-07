@@ -47,6 +47,7 @@ Alles in diesem Parkplatz wartet auf den Pilot und seine Zahlen.
 | P20 | **Spaces**: Zuhause, Büro, Ferienwohnung, bei den Eltern; eine Person in mehreren Haushalten, oben umschalten | Ein Zugang für alle Kühlschränke im Leben; Brücke zum Büro-Kühlschrank (P17) | Auf einem Gerät ginge es ohne Server, das Datenmodell kennt Haushalte schon. Mit anderen teilen braucht Konten (P6). Gratis oder Pro? Darf das Erfassen nicht verkomplizieren | geparkt |
 | P21 | **Geteilter Haushalt, ungleich diszipliniert**: eine Person trägt alles nach, die andere nie | Gut gelöst ein Vorteil, an dem Vorrats-Apps sonst scheitern: Der Bestand bleibt brauchbar, auch wenn nicht alle mitmachen | Konten und Sync (P6, P3). Gestaltung: siehe «P21 im Detail» | geparkt, Teile gebaut |
 | P22 | **Von selbst erfasst**: Etiketten mit RFID oder NFC wie bei Decathlon, ein Kamera- oder Sensor-Modul, rettich als Anbieter oder Lizenzgeber | Kein Aufwand mehr für die Person | Hardware bindet viel Kapital und rechnet sich bei Lebensmitteln kaum. Günstigere Wege zum selben Ziel: P1 und P10. Siehe «P22 im Detail» | geparkt, Vision |
+| P23 | **Stammdaten-Pools** der Hersteller (GDSN, GS1 Schweiz trustbox) | Geprüfte Produktdaten mit Bild, Nährwerten und Allergenen, auch für Eigenmarken; so baut YAZIO seine «verifizierten» Produkte ([`mitbewerber-yazio.md`](./mitbewerber-yazio.md)) | Mitgliedschaft und Vertrag bei GS1 Schweiz, Kosten, Nutzungsrechte für eine App | geparkt |
 
 ## P1 im Detail: Migros und Coop als Partner
 
@@ -146,6 +147,7 @@ Stand: 7.11.2026, aufbauend auf [`monetarisierung.md`](./monetarisierung.md) und
 
 | Datum | Änderung |
 | --- | --- |
+| 7.11.2026 | P23 (Stammdaten-Pools) aus der YAZIO-Analyse. |
 | 7.11.2026 | Aus Albans Brainstorming: P19 (Allergene), P20 (Spaces), P21 (ungleiche Disziplin), P22 (von selbst erfasst, Etiketten, Lizenz). Dazu «Fokus jetzt», die Brainstorming-Regel und Säule 6 (Lizenz). |
 | 7.11.2026 | P18 (Bestandesaufnahme per Foto) nach dem Entfernen von «Mit eigener KI». |
 | 7.11.2026 | Parkplatz angelegt (Alban). Aus dem bisherigen Verlauf gesammelt: P1–P17, Geschäftsmodell-Entwurf. Quellen: Albans Wünsche vom 6. und 7.11.2026, `integrationen.md`, `produktdaten.md`, `schutz.md`, `monetarisierung.md`, `app-stores.md`, `designsprache-garten.md`, ADR-0019, ADR-0034 |

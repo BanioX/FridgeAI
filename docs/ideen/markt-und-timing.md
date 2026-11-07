@@ -54,4 +54,6 @@ Eine Schweizer App, die Bon-Scan, Vorrat, Wert in CHF und geteilten Haushalt ver
 - **Abo-Form:** Jahresabos tragen bei Gesundheits-Apps 61 % des Umsatzes.
 - **Preis:** Tiefe Preise halten Nutzende besser.
 
+Eine YAZIO-Analyse nennt 5–7 % Umwandlung, widerspricht sich dabei aber selbst ([`mitbewerber-yazio.md`](./mitbewerber-yazio.md)). rettich rechnet weiter mit 2–5 %.
+
 Für rettich heisst das: Jahresabo zuerst und den Preis tief halten. Der Vorschlag CHF 29 pro Jahr liegt im unteren Mittelfeld (NoWaste $7, YAZIO EUR 30–84, Samsung Food+ $60).
