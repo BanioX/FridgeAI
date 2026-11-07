@@ -82,7 +82,9 @@ export function QuickAdd() {
       </h2>
       <p className="text-sm text-ink-muted">{t.hint}</p>
       {/* One row that scrolls sideways (iOS suggestions), so the form stays close. */}
-      <ul className="-mx-4 flex snap-x scroll-px-4 gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none]">
+      {/* relative: the screen-reader texts in the chips are positioned absolutely; without a
+          positioned scroller they escape it and make the whole page scroll sideways. */}
+      <ul className="relative -mx-4 flex snap-x scroll-px-4 gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none]">
         {products.map((product) => (
           <li key={`${product.name}-${product.categoryId}`} className="shrink-0 snap-start">
             <button
