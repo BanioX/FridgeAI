@@ -51,13 +51,9 @@ Systemschrift nach Apples Human Interface Guidelines (ADR-0021): SF Pro auf Appl
 ## Icons und Lebensmittel
 
 - **Icons:** Lucide (ISC-Lizenz), Linienstärke 1.75, 22 px in der Navigation.
-- **App-Symbol «Radish Pop»** (Albans Masterplan, 7.11.2026, `apps/web/public/icon.svg`):
-  - ein weisser Rettich, um 17° gekippt;
-  - oben eine Schulter in Radish Magenta `#FF2A6D`;
-  - das Blatt als Häkchen in Electric Mint `#00FF87`;
-  - Grund Deep Emerald `#0B2E22` bis `#04120D`.
-
-  Diese Markenfarben gelten für Symbol und Marketing, nicht für die App-Oberfläche. Mint und Magenta erreichen auf Hell keinen WCAG-Kontrast, die Oberfläche bleibt hell nach ADR-0021. Neu zeichnen mit `node apps/web/scripts/icons.ts`.
+- **App-Symbol** (`apps/web/public/icon.svg`): ein aufrechter weisser Rettich mit grünem Kraut auf dem App-Grün `#2c7149`.
+  - **Festgelegt** (Alban, 7.11.2026): «Das vorherige Design war Welten besser, bleib dabei.» Der gekippte Entwurf «Radish Pop» aus dem Masterplan ist verworfen.
+  - Nur auf Albans Auftrag neu entwerfen. PNGs neu zeichnen mit `node apps/web/scripts/icons.ts`.
 - **Lebensmittel:** Emoji pro Kategorie (🥛 🧀 🥬 🍎 🥩 🐟 🍞 🥚) für schnelles Wiedererkennen in Listen, ohne Bild-Assets. Kommt mit dem Kategorien-Katalog (Schritt 2b).
 
 ## Muster (werden mit den Features gebaut)
