@@ -17,7 +17,7 @@ interface LocationTileProps {
 export function LocationTile({ location, label, countLabel }: LocationTileProps) {
   const { icon: Icon, classes } = locationStyle[location];
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-line bg-surface p-4 shadow-card">
+    <div className="flex flex-col gap-3 rounded-2xl bg-surface p-4 shadow-card">
       <span className={`flex size-10 items-center justify-center rounded-xl ${classes}`}>
         <Icon size={22} aria-hidden="true" />
       </span>

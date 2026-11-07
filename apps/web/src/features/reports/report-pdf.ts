@@ -19,7 +19,7 @@ const COLOR: Record<'basil' | 'basilLight' | 'ink' | 'muted' | 'line' | 'today',
   basilLight: [239, 250, 228],
   ink: [28, 33, 30],
   muted: [100, 108, 103],
-  line: [217, 228, 212],
+  line: [222, 224, 219],
   today: [176, 58, 46],
 };
 const MONTHS = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
