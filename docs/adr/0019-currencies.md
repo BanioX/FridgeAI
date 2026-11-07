@@ -21,3 +21,19 @@ Alban (6.11.2026): «Es muss alle Währungen unterstützen können für einen we
 - Nichts im Pilot ändert sich sichtbar. Der Weg nach DACH ist ohne Datenmigration offen: neues Feld `currency` am Haushalt, Standard `CHF`.
 - Ein Test schützt die Regel: Beträge sind Ganzzahlen, Formatierung nach Währung.
 - CLAUDE.md «Geld immer als Integer-Rappen» wird zu «Ganzzahl in der kleinsten Einheit der Haushaltswährung (CHF: Rappen)».
+
+## Stand 7.11.2026: Grundlage gebaut
+
+- `packages/core/src/currency.ts`:
+  - `CurrencyCode` (ISO 4217) und `minorDigits` mit Tabelle (JPY 0, KWD 3, sonst 2).
+  - `formatMoney` und `parseMoney`. Für CHF sind sie identisch mit `formatChf` und `parseChf`, das prüft ein Test.
+  - Euro wird deutsch und österreichisch geschrieben: «1.234,50 €».
+  - Unbekannte Währungen bekommen den Code vorne: «USD 1.99».
+- **Haushalt:** Er hat das Feld `currency`. Alte Haushalte ohne Feld zählen in CHF (`householdCurrency`), neue werden mit `CHF` angelegt.
+- **Oberfläche:** Sie formatiert und liest alle Beträge über `useMoney()` in der Haushaltswährung. Das gilt für Start, Verlauf, Erfassen, Bearbeiten, Bon, Preis-Gedächtnis und PDF-Bericht. Labels zeigen das Symbol («Preis in CHF»).
+- **Noch offen, bevor ein Haushalt eine andere Währung wählen kann:**
+  - Ein Befehl, um die Währung zu setzen.
+  - Schätzwerte gibt es pro Land; ohne Werte für das Land zeigt die App keinen geschätzten Betrag.
+  - Bon-Parser für Deutschland und Österreich.
+  - Bis dahin bleibt jeder Haushalt in CHF, sichtbar ändert sich nichts.
+

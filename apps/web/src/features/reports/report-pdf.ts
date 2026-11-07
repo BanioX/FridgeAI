@@ -1,12 +1,7 @@
-import {
-  categoryById,
-  formatChf,
-  formatSwissDate,
-  type LocalDate,
-  type Report,
-} from '@fridgeai/core';
+import { categoryById, rappen, formatSwissDate, type LocalDate, type Report } from '@fridgeai/core';
 import type { jsPDF } from 'jspdf';
 import { messages } from '../../app/messages.de-CH';
+import { CHF_MONEY, type Money } from '../../app/money-format';
 import { formatQuantity } from '../../ui/quantity-text';
 import { reportInsights } from './report-insights';
 
@@ -24,7 +19,8 @@ const COLOR: Record<'basil' | 'basilLight' | 'ink' | 'muted' | 'line' | 'today',
 };
 const MONTHS = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
 
-const chf = (rappen: number) => formatChf(rappen as Parameters<typeof formatChf>[0]);
+/** An amount in the household currency (ADR-0019). */
+type Amount = (value: number, options?: { currency?: boolean }) => string;
 const kg = (grams: number) => `${(grams / 1000).toFixed(1)} kg`;
 
 /**
@@ -33,8 +29,10 @@ const kg = (grams: number) => `${(grams / 1000).toFixed(1)} kg`;
  */
 export async function reportPdf(
   report: Report,
-  options: { household: string; period: string; createdOn: LocalDate },
+  options: { household: string; period: string; createdOn: LocalDate; money?: Money },
 ): Promise<Blob> {
+  const money = options.money ?? CHF_MONEY;
+  const chf: Amount = (value, format) => money.format(rappen(value), format);
   const [{ jsPDF }, { autoTable }] = await Promise.all([
     import('jspdf'),
     import('jspdf-autotable'),
@@ -106,10 +104,10 @@ export async function reportPdf(
   );
   y = 40;
 
-  keyFigures(doc, report, y, text);
+  keyFigures(doc, report, y, text, chf);
   y += 30;
   heading(t.insights);
-  for (const line of reportInsights(report)) {
+  for (const line of reportInsights(report, money)) {
     const wrapped = doc.splitTextToSize(`•  ${line}`, CONTENT) as string[];
     room(wrapped.length * 5 + 1);
     text(wrapped.join('\n'), PAGE.margin, y, 10, COLOR.ink);
@@ -117,7 +115,7 @@ export async function reportPdf(
   }
   heading(t.months);
   room(60);
-  monthChart(doc, report, y, text);
+  monthChart(doc, report, y, text, chf);
   y += 58;
   heading(t.wasteTop);
   if (report.impact.topWasted.length === 0) {
@@ -206,7 +204,7 @@ type TextFn = (
 ) => void;
 
 /** Four tiles: value in stock, saved, wasted, rescue rate. */
-function keyFigures(doc: jsPDF, report: Report, y: number, text: TextFn) {
+function keyFigures(doc: jsPDF, report: Report, y: number, text: TextFn, chf: Amount) {
   const share = report.impact.savedShare;
   const tiles: [string, string, string, Rgb][] = [
     [t.inFridge, chf(report.fridge.valueRappen), t.items(report.fridge.itemCount), COLOR.basil],
@@ -227,7 +225,7 @@ function keyFigures(doc: jsPDF, report: Report, y: number, text: TextFn) {
 }
 
 /** Saved (green) and wasted (red) bars per month, scaled to the largest value. */
-function monthChart(doc: jsPDF, report: Report, y: number, text: TextFn) {
+function monthChart(doc: jsPDF, report: Report, y: number, text: TextFn, chf: Amount) {
   const months = report.impact.months;
   const height = 40;
   const max = Math.max(1, ...months.flatMap((m) => [m.savedRappen, m.wastedRappen]));
@@ -246,13 +244,7 @@ function monthChart(doc: jsPDF, report: Report, y: number, text: TextFn) {
       if (h > 0) {
         doc.setFillColor(...color);
         doc.rect(x + offset * bar, y + height - h, bar - 0.6, h, 'F');
-        text(
-          formatChf(value as Parameters<typeof formatChf>[0], { currency: false }),
-          x + offset * bar,
-          y + height - h - 1.5,
-          6,
-          color,
-        );
+        text(chf(value, { currency: false }), x + offset * bar, y + height - h - 1.5, 6, color);
       }
     });
     const name = MONTHS[Number(month.month.slice(5, 7)) - 1] ?? month.month;

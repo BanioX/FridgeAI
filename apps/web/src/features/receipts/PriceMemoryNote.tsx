@@ -1,6 +1,7 @@
-import { formatChf, formatSwissDate } from '@fridgeai/core';
+import { formatSwissDate } from '@fridgeai/core';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useAppData } from '../../app/AppData';
+import { useMoney } from '../../app/money';
 import { messages } from '../../app/messages.de-CH';
 
 const t = messages.priceMemory;
@@ -12,6 +13,7 @@ const PER = { pcs: '', g: '/kg', ml: '/l' } as const;
  */
 export function PriceMemoryNote({ name }: { name: string }) {
   const { householdId, inventory } = useAppData();
+  const money = useMoney();
   const words = name.trim().slice(0, 120);
   const memory = useLiveQuery(
     async () =>
@@ -25,7 +27,7 @@ export function PriceMemoryNote({ name }: { name: string }) {
     return null;
   }
   const price = (rappen: typeof last.unitPriceRappen) =>
-    `${formatChf(rappen, { currency: false })}${PER[last.unit]}`;
+    `${money.format(rappen, { currency: false })}${PER[last.unit]}`;
   const cheapest = memory.cheapest;
   const parts = [
     t.last(price(last.unitPriceRappen), t.shops[last.retailer], formatSwissDate(last.purchasedOn)),

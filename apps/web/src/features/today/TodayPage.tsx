@@ -1,16 +1,10 @@
-import {
-  categoryById,
-  fallbackCategory,
-  formatChf,
-  itemValue,
-  startOfMonth,
-  sumRappen,
-} from '@fridgeai/core';
+import { categoryById, fallbackCategory, itemValue, startOfMonth, sumRappen } from '@fridgeai/core';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { ClipboardCheck } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { useAppData } from '../../app/AppData';
+import { useMoney } from '../../app/money';
 import { DEV_TOOLS } from '../../app/dev-tools';
 import { messages } from '../../app/messages.de-CH';
 import { BigNumber } from '../../ui/BigNumber';
@@ -28,6 +22,7 @@ const MORE_LINK =
 
 export function TodayPage() {
   const { householdId, inventory, today } = useAppData();
+  const money = useMoney();
   // Read once per visit; a finished check writes it before coming back here.
   const [lastCheck] = useState(readLastCheck);
   const all = useLiveQuery(
@@ -86,7 +81,7 @@ export function TodayPage() {
 
       {all.length > 0 ? (
         <Card variant="premium">
-          <BigNumber value={formatChf(total)} label={t.valueLabel} onDark />
+          <BigNumber value={money.format(total)} label={t.valueLabel} onDark />
           {estimated ? <p className="mt-1 text-sm text-silver">{t.estimated}</p> : null}
         </Card>
       ) : null}
