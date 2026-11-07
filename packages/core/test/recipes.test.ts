@@ -3,6 +3,7 @@ import { CATEGORIES } from '../src/catalog/categories';
 import { localDate } from '../src/dates';
 import type { DateKind } from '../src/model/primitives';
 import {
+  fitsFeierabend,
   ingredientsAtHome,
   listRecipes,
   RecipeSchema,
@@ -175,6 +176,12 @@ describe('listRecipes', () => {
     expect(listRecipes([soup, quick, omelette], [], today, 'schnell').map((r) => r.id)).toEqual([
       'toast',
     ]);
+  });
+
+  it('calls quick recipes with nothing to buy «Feierabend»', () => {
+    expect(fitsFeierabend({ minutes: 15, missing: [] })).toBe(true);
+    expect(fitsFeierabend({ minutes: 16, missing: [] })).toBe(false);
+    expect(fitsFeierabend({ minutes: 5, missing: ['Brot'] })).toBe(false);
   });
 
   it('lists the whole collection without food at home', () => {
