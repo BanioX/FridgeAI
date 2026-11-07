@@ -196,5 +196,7 @@ test('remembers prices: «zuletzt …» and «… % teurer als sonst» on the ne
   await expect(page.getByText(/Zuletzt 0\.95 bei Coop \(06\.11\.2026\)/)).toBeVisible();
   await page.goto('/inventory/new');
   await page.getByLabel('Was ist es?').fill('Coop Semmeli 80G');
+  // The price memory sits with the price, under «Mehr Angaben».
+  await page.getByText('Mehr Angaben').click();
   await expect(page.getByText(/Zuletzt 0\.95 bei Coop/)).toBeVisible();
 });

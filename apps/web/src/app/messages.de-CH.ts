@@ -222,6 +222,7 @@ export const messages = {
     category: 'Kategorie',
     categoryHint: 'Davon hängen der Lagerort und das geschätzte Ablaufdatum ab.',
     more: 'Mehr Angaben',
+    moreWith: (summary: string) => `Mehr Angaben · ${summary}`,
     location: 'Wo lagerst du es?',
     amount: 'Menge',
     unit: 'Einheit',
@@ -236,8 +237,6 @@ export const messages = {
     pricePlaceholder: 'z. B. 3.95',
     priceInvalid: 'Kein gültiger Betrag, z. B. 3.95',
     save: 'Speichern',
-    saveAndNext: 'Speichern und nächsten erfassen',
-    saved: (name: string) => `${name} ist gespeichert.`,
     failed: 'Speichern hat nicht geklappt. Bitte versuch es nochmals.',
   },
   nameSearch: {

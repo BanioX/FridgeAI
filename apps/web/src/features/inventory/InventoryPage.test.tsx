@@ -47,9 +47,8 @@ describe('InventoryPage', () => {
     expect(fridge.getAttribute('aria-selected')).toBe('true');
     expect(fridge.textContent).toContain('1');
     expect(screen.getByRole('tabpanel')).toBeDefined();
-    expect(screen.getByRole('link', { name: messages.inventory.add }).getAttribute('href')).toBe(
-      '/inventory/new?location=fridge',
-    );
+    // The ＋ tab is the way to add; no floating button next to a filled list.
+    expect(screen.queryByRole('link', { name: messages.inventory.add })).toBeNull();
   });
 
   it('switches tabs by click and syncs ?location=', async () => {
@@ -87,5 +86,13 @@ describe('InventoryPage', () => {
     await userEvent.click(screen.getByRole('tab', { name: /Notvorrat/ }));
     expect(screen.getByText(messages.inventory.empty)).toBeDefined();
     expect(screen.getByText(messages.inventory.reserveTip)).toBeDefined();
+  });
+
+  it('offers an add link in the empty state, for the open tab', async () => {
+    renderPage(testDb(), '/inventory?location=freezer');
+    expect(await screen.findByText(messages.inventory.empty)).toBeDefined();
+    expect(screen.getByRole('link', { name: messages.inventory.add }).getAttribute('href')).toBe(
+      '/inventory/new?location=freezer',
+    );
   });
 });

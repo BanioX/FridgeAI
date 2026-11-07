@@ -2,6 +2,7 @@ import { categoryById, localDate, type Category } from '@fridgeai/core';
 import { describe, expect, it } from 'vitest';
 import {
   formatAmount,
+  moreSummary,
   parseAmount,
   parsePackSize,
   suggestedAmount,
@@ -75,5 +76,13 @@ describe('parsePackSize', () => {
     for (const text of ['6 x 125 g', '4 Stück', 'ca. 300 g', '']) {
       expect(parsePackSize(text), text).toBeNull();
     }
+  });
+});
+
+describe('moreSummary', () => {
+  it('joins what is set and skips empty parts', () => {
+    expect(moreSummary(['Kühlschrank'])).toBe('Kühlschrank');
+    expect(moreSummary(['Tiefkühler', null, 'CHF 3.95', ''])).toBe('Tiefkühler, CHF 3.95');
+    expect(moreSummary([null, undefined])).toBe('');
   });
 });

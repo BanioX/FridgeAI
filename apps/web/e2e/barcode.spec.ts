@@ -80,8 +80,7 @@ test('reads a barcode from a photo with the self-hosted reader', async ({ page }
       cspErrors.push(message.text());
     }
   });
-  await page.goto('/inventory/new');
-  await page.getByRole('button', { name: 'Barcode scannen' }).click();
+  await page.goto('/inventory/new?scan=1');
   await page.getByLabel('Code aus Foto lesen').setInputFiles({
     name: 'code.png',
     mimeType: 'image/png',
@@ -106,8 +105,7 @@ test('takes the date from a typed GS1 code', async ({ page }) => {
 });
 
 test('explains a blocked camera and keeps the other ways open', async ({ page }) => {
-  await page.goto('/inventory/new');
-  await page.getByRole('button', { name: 'Barcode scannen' }).click();
+  await page.goto('/inventory/new?scan=1');
   await page.getByRole('button', { name: 'Kamera starten' }).click();
   await expect(page.getByText(/Die Kamera ist blockiert/)).toBeVisible();
   await expect(page.getByLabel('Code aus Foto lesen')).toBeAttached();
@@ -120,8 +118,7 @@ test.describe('with camera permission', () => {
   test.use({ permissions: ['camera'] });
 
   test('starts the live camera and stops it again', async ({ page }) => {
-    await page.goto('/inventory/new');
-    await page.getByRole('button', { name: 'Barcode scannen' }).click();
+    await page.goto('/inventory/new?scan=1');
     await page.getByRole('button', { name: 'Kamera starten' }).click();
     await expect(
       page.getByText(/^Code in den Rahmen, Handy etwa 20 cm entfernt halten/),
@@ -166,12 +163,11 @@ test('fills in the product from Open Food Facts and knows it offline next time',
     });
   });
   const scan = async () => {
-    await page.getByRole('button', { name: 'Barcode scannen' }).click();
+    await page.goto('/inventory/new?scan=1');
     await page.getByLabel('Nummer unter dem Strichcode').fill('7610000000004');
     await page.getByRole('button', { name: 'Übernehmen' }).click();
   };
 
-  await page.goto('/inventory/new');
   await scan();
   await expect(page.getByText('Gefunden: Vollmilch (Alpenhof, 1 l).')).toBeVisible();
   await expect(page.getByLabel('Was ist es?')).toHaveValue('Vollmilch');
@@ -180,8 +176,8 @@ test('fills in the product from Open Food Facts and knows it offline next time',
   await expect(page.getByLabel('Menge')).toHaveValue('1');
   await expect(page.getByLabel('Einheit')).toHaveValue('l');
   await expect(page.getByRole('link', { name: 'Daten: Open Food Facts (ODbL)' })).toBeVisible();
-  await page.getByRole('button', { name: 'Speichern und nächsten erfassen' }).click();
-  await expect(page.getByText('Vollmilch ist gespeichert.')).toBeVisible();
+  await page.getByRole('button', { name: 'Speichern', exact: true }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
 
   // Second scan: the household knows the product with its facts, no request; the facts still
   // come from Open Food Facts, so the attribution stays (ODbL).
@@ -210,8 +206,7 @@ test('fills in the product from Open Food Facts and knows it offline next time',
 });
 
 test('asks for the name when nobody knows the product', async ({ page }) => {
-  await page.goto('/inventory/new');
-  await page.getByRole('button', { name: 'Barcode scannen' }).click();
+  await page.goto('/inventory/new?scan=1');
   await page.getByLabel('Nummer unter dem Strichcode').fill('7610000000004');
   await page.getByRole('button', { name: 'Übernehmen' }).click();
   await expect(page.getByText(/Produkt noch unbekannt/)).toBeVisible();
