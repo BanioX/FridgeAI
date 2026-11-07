@@ -49,7 +49,7 @@ Unten fünf Tabs: **Start · Vorrat · ＋ Erfassen · Kochen · Mehr** ([ADR-00
 | **Wirkung** | Gerettet (kurz vor Ablauf gegessen oder weitergegeben) und weggeworfen diesen Monat in CHF und Artikeln, «x % gerettet von allem, was knapp wurde» ([ADR-0033](docs/adr/0033-rescued-means-at-risk.md)) |
 | **Mehr** | Berichte, Verlauf, Nachkaufen, App installieren; Daten als JSON exportieren, wieder importieren oder löschen, Datenschutz in Kürze |
 
-**Aussehen:** fünf Grüntöne aus dem Garten (Broccoli, Rucola, Basilikum, Kopfsalat, Eisberg) nach Apples Human Interface Guidelines, Symbol: ein aufrechter weisser Rettich ([`docs/design.md`](docs/design.md)).
+**Aussehen:** drei Premium-Töne (Smaragd, Silber, Onyx) nach Apples Human Interface Guidelines, Symbol: ein aufrechter weisser Rettich ([`docs/design.md`](docs/design.md)).
 
 Geplant: Teilen in WG und Familie, Kosten aufteilen, Push-Erinnerungen, Wirkungs-Dashboard, MCP-Connector für ChatGPT/Claude, native App für iOS und Android (Capacitor), Büro-Kühlschrank. Reihenfolge: [`docs/plan.md`](docs/plan.md).
 

@@ -75,9 +75,7 @@ export function AppShell() {
                 >
                   <span
                     className={`flex h-8 items-center justify-center rounded-full transition-colors ${
-                      primary
-                        ? 'w-12 bg-basil-700 text-white'
-                        : `w-14 ${isActive ? 'bg-basil-100' : ''}`
+                      primary ? 'w-12 bg-onyx text-white' : `w-14 ${isActive ? 'bg-basil-100' : ''}`
                     }`}
                   >
                     <Icon

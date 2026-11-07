@@ -63,7 +63,7 @@ export function RecipeRow({ id, title, detail }: { id: string; title: string; de
         <div className="flex min-h-15 items-center gap-3 py-2.5 pr-3 pl-4">
           <span
             aria-hidden="true"
-            className="grid size-10 shrink-0 place-items-center rounded-xl bg-basil-50 text-basil-700"
+            className="grid size-10 shrink-0 place-items-center rounded-xl bg-surface-muted text-basil-700"
           >
             <ChefHat size={22} />
           </span>
