@@ -6,7 +6,7 @@
 
 - Dein Vorrat, deine Einkaufsliste und deine Statistik bleiben **auf deinem Gerät**. Es gibt kein Konto und keinen rettich-Server mit deinen Daten.
 - Beim Scannen geht **nur die Barcode-Nummer** an Open Food Facts, damit Name, Nährwerte und Packungsbild kommen. Suchst du ein Produkt nach Namen, gehen ab drei Buchstaben **nur die getippten Wörter** dorthin, sobald du kurz mit Tippen innehältst. Liest rettich einen Bon, gleicht es die gewählten verpackten Lebensmittel automatisch mit Open Food Facts ab. Dabei gehen **nur die Produktnamen** dorthin, ohne Preise, Laden und Datum.
-- Fotos von Codes und Bons sowie Bon-PDFs werden auf dem Gerät gelesen und **nie gespeichert**.
+- Fotos von Codes, Bons und Nährwerttabellen (auch Screenshots) sowie Bon-PDFs werden auf dem Gerät gelesen und **nie gespeichert**.
 - **Kein Tracking, keine Werbung, keine Cookies.**
 - Du kannst jederzeit **alles exportieren** (JSON) und **alles löschen** («Haushalt»).
 
@@ -48,7 +48,7 @@ Andere Verbindungen erlaubt die App nicht: Eine Content-Security-Policy lässt n
 ## Kamera und Fotos
 
 - Die Kamera startet nur, wenn du «Kamera starten» antippst. Du kannst sie verweigern und den Code als Foto wählen oder die Nummer eintippen.
-- Bilder werden auf dem Gerät nach einem Code durchsucht und danach verworfen. Es gibt keinen Upload.
+- Bilder werden auf dem Gerät nach einem Code oder einer Nährwerttabelle durchsucht und danach verworfen. Es gibt keinen Upload. Von einer Nährwerttabelle bleiben nur die Zahlen, die du mit «Speichern» bestätigst.
 
 ## Wie lange
 
@@ -57,7 +57,7 @@ Andere Verbindungen erlaubt die App nicht: Eine Content-Security-Policy lässt n
 | Aktiver Vorrat und Einkaufsliste | solange du sie brauchst |
 | Abschlüsse und Verlauf | auf dem Gerät, bis du sie löschst. Geplant (ADR-0020): nach 24 Monaten bleiben nur Monatssummen |
 | Antworten von Open Food Facts | 30 Tage, dann wird neu gefragt |
-| Fotos von Codes und Bons | nie gespeichert |
+| Fotos von Codes, Bons und Nährwerttabellen | nie gespeichert |
 
 ## Deine Rechte
 
