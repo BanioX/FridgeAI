@@ -461,7 +461,15 @@ export const messages = {
     periods: { month: 'Dieser Monat', quarter: 'Letzte 3 Monate', year: 'Dieses Jahr' },
     create: 'PDF erstellen',
     creating: 'PDF wird erstellt …',
-    created: 'Das PDF ist bereit.',
+    view: {
+      back: 'Berichte',
+      share: 'Teilen',
+      rendering: 'Bericht wird geöffnet …',
+      page: (page: number, pages: number) => `${String(page)} von ${String(pages)}`,
+      gone: 'Dieser Bericht ist nicht mehr offen. Erstell ihn einfach neu.',
+      failed:
+        'Der Bericht lässt sich hier nicht anzeigen. Über «Teilen» kannst du ihn trotzdem öffnen.',
+    },
     failed: 'Das PDF liess sich nicht erstellen. Bitte versuch es nochmals.',
     pdf: {
       heading: (kind: string) => `rettich · ${kind}`,
