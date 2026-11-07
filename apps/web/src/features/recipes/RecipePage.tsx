@@ -1,9 +1,10 @@
 import { useLiveQuery } from 'dexie-react-hooks';
-import { ArrowLeft, Check, ListPlus } from 'lucide-react';
+import { Check, ListPlus } from 'lucide-react';
 import { useState } from 'react';
-import { Link, useParams } from 'react-router';
+import { useParams } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
+import { BackLink } from '../../ui/BackLink';
 import { Button } from '../../ui/Button';
 import { GroupedList, GroupedListItem } from '../../ui/GroupedList';
 import { CookedBooking } from './CookedBooking';
@@ -22,12 +23,7 @@ export function RecipePage() {
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState('');
 
-  const back = (
-    <Link to="/" className="inline-flex min-h-12 items-center gap-2 font-semibold text-basil-700">
-      <ArrowLeft size={20} aria-hidden="true" />
-      {t.back}
-    </Link>
-  );
+  const back = <BackLink to="/cook" label={messages.pages.cook} />;
   if (recipe === undefined) {
     return <p className="sr-only">{messages.loading}</p>;
   }
