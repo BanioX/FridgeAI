@@ -1,25 +1,47 @@
 import { localDate, toLocalDate } from './dates';
+import { expiryStatus } from './expiry';
 import type { OutcomeEvent } from './model/inventory';
-import type { LocalDate } from './model/primitives';
+import type { DateKind, LocalDate } from './model/primitives';
 import { sumRappen, type Rappen } from './money';
 
-/** What a household saved and wasted in a period (step 6, US-06). Computed, never stored. */
+/** What a household rescued and wasted in a period (step 6, US-06). Computed, never stored. */
 export interface ImpactSummary {
-  /** Eaten or given away: counts as saved. */
+  /** Rescued: eaten or given away while at risk (ADR-0033). Ordinary eating is not counted. */
   savedRappen: Rappen;
   wastedRappen: Rappen;
   savedGrams: number;
   wastedGrams: number;
+  /** How many entries were rescued and thrown away. */
+  savedCount: number;
+  wastedCount: number;
   /** True if a value came from a category estimate instead of a receipt price. */
   estimated: boolean;
-  /** Saved share of everything closed in the period (by value), 0–1; null without outcomes. */
+  /** Rescued share of everything at risk (rescued + wasted, by value), 0–1; null without any. */
   savedShare: number | null;
 }
 
 type OutcomeLike = Pick<
   OutcomeEvent,
-  'outcome' | 'valueRappen' | 'grams' | 'valueEstimated' | 'at' | 'deletedAt'
+  'outcome' | 'valueRappen' | 'grams' | 'valueEstimated' | 'at' | 'deletedAt' | 'atRisk'
 >;
+
+/**
+ * At risk (ADR-0033): it expires within `soonThresholdDays` («läuft bald ab») or is past its
+ * best-before date. Past a use-by date it is not: eating that is no rescue.
+ */
+export function isAtRisk(
+  expiresOn: LocalDate,
+  expiryKind: DateKind,
+  today: LocalDate,
+  soonThresholdDays: number,
+): boolean {
+  const { kind } = expiryStatus(expiresOn, today, expiryKind, soonThresholdDays);
+  return kind === 'soon' || kind === 'today' || kind === 'past_best_before';
+}
+
+/** Rescued: eaten or shared while at risk. Ordinary eating is consumption, not a rescue. */
+export const isRescue = (outcome: Pick<OutcomeEvent, 'outcome' | 'atRisk'>): boolean =>
+  outcome.outcome !== 'wasted' && outcome.atRisk === true;
 
 /** The first day of the month `today` is in, e.g. 2026-11-06 → 2026-11-01. */
 export function startOfMonth(today: LocalDate): LocalDate {
@@ -28,7 +50,8 @@ export function startOfMonth(today: LocalDate): LocalDate {
 
 /**
  * Sums outcomes whose Swiss calendar day lies in [from, to]. Undone outcomes (soft-deleted) do
- * not count. Shared food counts as saved: it was eaten, just by someone else (A-02).
+ * not count. Rescued is food eaten or shared while at risk (ADR-0033); shared food counts like
+ * eaten food, just by someone else (A-02). Food eaten before it was at risk counts nowhere here.
  */
 export function summarizeImpact(
   outcomes: readonly OutcomeLike[],
@@ -42,7 +65,7 @@ export function summarizeImpact(
     const day = toLocalDate(outcome.at);
     return day >= from && day <= to;
   });
-  const saved = inPeriod.filter((outcome) => outcome.outcome !== 'wasted');
+  const saved = inPeriod.filter(isRescue);
   const wasted = inPeriod.filter((outcome) => outcome.outcome === 'wasted');
   const value = (list: readonly OutcomeLike[]) => sumRappen(list.map((item) => item.valueRappen));
   const grams = (list: readonly OutcomeLike[]) =>
@@ -55,12 +78,14 @@ export function summarizeImpact(
     wastedRappen,
     savedGrams: grams(saved),
     wastedGrams: grams(wasted),
-    estimated: inPeriod.some((outcome) => outcome.valueEstimated),
+    savedCount: saved.length,
+    wastedCount: wasted.length,
+    estimated: [...saved, ...wasted].some((outcome) => outcome.valueEstimated),
     savedShare:
-      inPeriod.length === 0
+      saved.length + wasted.length === 0
         ? null
         : total === 0
-          ? saved.length / inPeriod.length
+          ? saved.length / (saved.length + wasted.length)
           : savedRappen / total,
   };
 }

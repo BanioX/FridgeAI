@@ -37,7 +37,7 @@ test('eats part of a cheese, opens it and throws the rest away with a reason', a
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
   await expect(page.getByRole('link', { name: /Grana Padano/ })).toHaveCount(0);
 
-  // The start page now shows the month's impact: a third saved, the rest wasted.
+  // The start page now shows the month's impact: only what was thrown away.
   const cspErrors: string[] = [];
   page.on('console', (message) => {
     if (message.text().includes('Content Security Policy')) {
@@ -46,7 +46,10 @@ test('eats part of a cheese, opens it and throws the rest away with a reason', a
   });
   await page.getByRole('navigation').getByRole('link', { name: 'Start' }).click();
   await expect(page.getByRole('heading', { name: 'Deine Wirkung diesen Monat' })).toBeVisible();
-  await expect(page.getByRole('img', { name: '33 % gerettet' })).toBeVisible();
+  // The cheese was still fresh: eating a third is no rescue (ADR-0033), throwing the rest away
+  // is waste, so nothing of what was at risk was rescued.
+  await expect(page.getByRole('img', { name: '0 % gerettet' })).toBeVisible();
+  await expect(page.getByText('1 Artikel', { exact: true })).toBeVisible();
   const today = await new AxeBuilder({ page }).analyze();
   expect(today.violations).toEqual([]);
   expect(cspErrors).toEqual([]);

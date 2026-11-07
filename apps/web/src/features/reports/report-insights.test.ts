@@ -19,6 +19,8 @@ const empty: Report = {
     wastedRappen: rappen(0),
     savedGrams: 0,
     wastedGrams: 0,
+    savedCount: 0,
+    wastedCount: 0,
     estimated: false,
     savedShare: null,
     months: [],
