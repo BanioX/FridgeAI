@@ -391,14 +391,15 @@ export const messages = {
   receiptUpload: {
     title: 'Bon hochladen',
     intro:
-      'Wähl das PDF deines Kassenbons, z. B. aus der Coop- oder Migros-App. FridgeAI liest es auf deinem Gerät, das PDF wird nicht gespeichert.',
-    choose: 'PDF wählen',
+      'Wähl das PDF deines Kassenbons (Coop- oder Migros-App), einen Screenshot (z. B. Lidl Plus) oder ein Foto. FridgeAI liest ihn auf deinem Gerät, die Datei wird nicht gespeichert.',
+    choose: 'PDF oder Foto wählen',
     reading: 'Bon wird gelesen …',
-    tooLarge: 'Die Datei ist zu gross für einen Bon (höchstens 5 MB).',
+    readingPhoto: 'Foto wird gelesen, das dauert ein paar Sekunden …',
+    tooLarge: 'Die Datei ist zu gross für einen Bon (höchstens 15 MB).',
     noText:
-      'In diesem PDF steht kein lesbarer Text, es ist wohl ein Foto. Fotos kann FridgeAI bald lesen.',
+      'In diesem PDF steht kein lesbarer Text, es ist wohl ein eingescanntes Bild. Mach stattdessen ein Foto oder einen Screenshot.',
     noLines: 'Auf diesem Bon hat FridgeAI keine Artikel gefunden.',
-    failed: 'Das PDF liess sich nicht lesen. Versuch es nochmals oder mit einem anderen Bon.',
+    failed: 'Die Datei liess sich nicht lesen. Versuch es nochmals oder mit einem anderen Bon.',
     sumOk: (total: string) => `Summe stimmt: ${total}`,
     sumMismatch: (read: string, total: string) =>
       `Die Summe stimmt nicht: gelesen ${read}, auf dem Bon ${total}. Prüf die Preise.`,
