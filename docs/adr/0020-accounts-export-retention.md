@@ -36,3 +36,12 @@ Alban (6.11.2026): Später soll es Konten geben, und die Daten müssen speicherb
 
 - Das Datenmodell trennt Rohdaten und Monatssummen. Die Summen werden berechnet, nicht gepflegt (CLAUDE.md), und vor dem Löschen der Rohdaten einmal festgehalten.
 - Die Datenschutzerklärung (Plan 12d) nennt genau diese Fristen.
+
+## Nachtrag 7.11.2026: Export zurückholen
+
+- **Warum:** Wechselt die Web-Adresse (rettich.app statt workers.dev) oder das Gerät, sieht der Browser einen leeren Speicher. Ohne Import bliebe alles am alten Ort.
+- **Wie:** `household.import` nimmt die JSON-Datei von «Alles exportieren» und **ersetzt** alles auf dem Gerät. Zusammenführen gibt es bewusst nicht, sonst zählte derselbe Haushalt doppelt.
+  - Wie beim Löschen braucht es `confirm: true`. Die App fragt vorher mit dem Dateinamen und der Zahl der Artikel nach.
+  - Die Datei muss das Format `fridgeai-export` v1 haben, und jede Zeile muss zum selben Haushalt gehören. Sonst ändert sich nichts.
+  - Danach geht es als Besitzer:in des Haushalts weiter. Das Ereignis `household.imported` hält fest, wann der Export entstand und wie viel er enthielt.
+  - Die Datei wird nur auf dem Gerät gelesen. Es fliessen keine Daten neu ab.

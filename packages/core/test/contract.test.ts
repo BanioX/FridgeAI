@@ -39,6 +39,7 @@ describe('contract v1', () => {
       'rescue.offer',
       'receipts.import',
       'household.export',
+      'household.import',
       'household.delete',
     ]);
   });
