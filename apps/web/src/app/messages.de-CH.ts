@@ -121,6 +121,27 @@ export const messages = {
   recipes: {
     ideasTitle: 'Rezeptideen',
     rescueTitle: 'Rette heute',
+    allTitle: 'Alle Rezepte',
+    filterLegend: 'Rezepte zeigen',
+    filters: {
+      all: 'Alle',
+      schnell: 'Schnell',
+      vegetarisch: 'Vegetarisch',
+      vegan: 'Vegan',
+      eiweissreich: 'Eiweissreich',
+    },
+    listDetail: (minutes: number, missing: number, rescues: string) =>
+      [
+        `${String(minutes)} Min.`,
+        missing === 0
+          ? 'alles da'
+          : missing === 1
+            ? '1 Zutat fehlt'
+            : `${String(missing)} Zutaten fehlen`,
+        rescues === '' ? undefined : `rettet ${rescues}`,
+      ]
+        .filter(Boolean)
+        .join(' · '),
     nothingExpiring:
       'In den nächsten 3 Tagen läuft nichts ab. Sobald etwas bald abläuft, findest du hier Rezepte, die es retten.',
     rescues: (food: string, minutes: number, missing: number) =>
