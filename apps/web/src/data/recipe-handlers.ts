@@ -1,6 +1,7 @@
 import {
   CONTRACT_V1,
   ingredientsAtHome,
+  listRecipes,
   RECIPES,
   suggestRecipes,
   type Id,
@@ -31,6 +32,12 @@ export function createRecipeHandlers(ctx: HandlerContext, provider: RecipeProvid
     const input = CONTRACT_V1['recipes.suggest'].input.parse(raw);
     const [recipes, food] = await Promise.all([provider.recipes(), foodAtHome(input.householdId)]);
     return { recipes: suggestRecipes(recipes, food, clock.today(), input.limit) };
+  };
+
+  const list: Handler<'recipes.list'> = async (raw) => {
+    const input = CONTRACT_V1['recipes.list'].input.parse(raw);
+    const [recipes, food] = await Promise.all([provider.recipes(), foodAtHome(input.householdId)]);
+    return { recipes: listRecipes(recipes, food, clock.today(), input.tag) };
   };
 
   const get: Handler<'recipes.get'> = async (raw) => {
@@ -66,7 +73,7 @@ export function createRecipeHandlers(ctx: HandlerContext, provider: RecipeProvid
     };
   };
 
-  return { 'recipes.suggest': suggest, 'recipes.get': get };
+  return { 'recipes.suggest': suggest, 'recipes.list': list, 'recipes.get': get };
 }
 
 export type RecipeHandlers = ReturnType<typeof createRecipeHandlers>;

@@ -41,10 +41,18 @@ test('suggests a recipe for milk that expires tomorrow and puts the rest on the 
   await expect(page.getByText('2 Eier')).toBeVisible();
 });
 
-test('«Kochen» says so when nothing expires soon', async ({ page }) => {
+test('«Kochen» says so when nothing expires soon and lists all recipes', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('navigation').getByRole('link', { name: 'Kochen' }).click();
   await expect(page.getByText(/^In den nächsten 3 Tagen läuft nichts ab\./)).toBeVisible();
+
+  // «Alle Rezepte» still lists the collection; «Vegan» leaves out the pancakes with egg and milk.
+  const all = page.getByRole('region', { name: 'Alle Rezepte' });
+  await expect(all.getByRole('link', { name: /Bananen-Pancakes/ })).toBeVisible();
+  await page.locator('label').filter({ hasText: 'Vegan' }).click();
+  await expect(all.getByRole('link', { name: /Bananen-Pancakes/ })).toHaveCount(0);
+  await expect(all.getByRole('link').first()).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 
 test('says so for a recipe that does not exist', async ({ page }) => {

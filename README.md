@@ -40,7 +40,7 @@ Unten fünf Tabs: **Start · Vorrat · ＋ Erfassen · Kochen · Mehr** ([ADR-00
 | **Kühlschrank-Check** | Einmal pro Woche jeden Artikel kurz bestätigen: noch da, halb, gegessen oder weggeworfen |
 | **Korrigieren** | Rückgängig nach Gegessen/Weggeworfen, dazu «Nachkaufen» mit einem Tipp; Name, Kategorie, Ort, Datum, Menge und Preis ändern; Artikel löschen |
 | **Produktdaten** | Nach dem Scan: Bild, Marke, Nährwerte, Nutri-Score, Allergene (Open Food Facts, 30 Tage offline) |
-| **Kochen** | Bis zu zehn Rezepte, die retten, was bald abläuft (drei davon auf «Start»); was fehlt, mit einem Tipp zu «Nachkaufen»; nach dem Kochen abbuchen |
+| **Kochen** | Bis zu zehn Rezepte, die retten, was bald abläuft (drei davon auf «Start»); alle Rezepte, zuerst was mit deinem Vorrat geht, Filter Schnell, Vegetarisch, Vegan, Eiweissreich; was fehlt, mit einem Tipp zu «Nachkaufen»; nach dem Kochen abbuchen |
 | **Nachkaufen** | Unter «Mehr»: «Du hast noch …» gegen Doppelkäufe, abhaken, «In den Vorrat legen» |
 | **Wirkung** | Gerettet und weggeworfen diesen Monat in CHF und Gewicht |
 | **Mehr** | Berichte, Nachkaufen, App installieren; Daten exportieren (JSON/CSV) oder löschen, Datenschutz in Kürze |
