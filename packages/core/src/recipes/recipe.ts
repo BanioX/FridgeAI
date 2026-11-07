@@ -22,6 +22,7 @@ export const RecipeIngredientSchema = z.object({
 export type RecipeIngredient = z.infer<typeof RecipeIngredientSchema>;
 
 export const RecipeTagSchema = z.enum(['vegetarisch', 'vegan', 'schnell', 'eiweissreich']);
+export type RecipeTag = z.infer<typeof RecipeTagSchema>;
 
 /** A recipe of the curated collection (plan 11b): written for Rettich, no third-party texts. */
 export const RecipeSchema = z
@@ -85,24 +86,28 @@ function urgency(food: FoodAtHome, today: LocalDate): number {
   }
 }
 
-/**
- * Recipes that rescue the most urgent food (plan 11b, R-01): only recipes that use at least one
- * food expiring within three days, ranked by how urgent that food is, then by fewer missing
- * ingredients and fewer minutes. Food past its use-by date is never suggested (food safety).
- */
-export function suggestRecipes(
-  recipes: readonly Recipe[],
-  food: readonly FoodAtHome[],
-  today: LocalDate,
-  limit: number,
-): RecipeSuggestion[] {
+/** A recipe in «Alle Rezepte» on «Kochen»: as a suggestion, with its tags. */
+export interface RecipeListEntry extends RecipeSuggestion {
+  tags: RecipeTag[];
+}
+
+interface Ranked {
+  recipe: Recipe;
+  usesExpiring: string[];
+  missing: string[];
+  /** How much urgent food the recipe rescues. */
+  score: number;
+}
+
+/** What each recipe rescues and lacks. Food past its use-by date never counts (food safety). */
+function rank(recipes: readonly Recipe[], food: readonly FoodAtHome[], today: LocalDate): Ranked[] {
   const usable = food
     .filter(
       (entry) => expiryStatus(entry.expiresOn, today, entry.expiryKind).kind !== 'past_use_by',
     )
     .map((entry) => ({ entry, urgency: urgency(entry, today) }));
 
-  const ranked = recipes.map((recipe) => {
+  return recipes.map((recipe) => {
     const used = new Map<string, number>();
     const missing: string[] = [];
     for (const ingredient of recipe.ingredients) {
@@ -125,8 +130,28 @@ export function suggestRecipes(
     const score = [...used.values()].reduce((sum, weight) => sum + weight, 0);
     return { recipe, usesExpiring, missing, score };
   });
+}
 
-  return ranked
+const toSuggestion = ({ recipe, usesExpiring, missing }: Ranked): RecipeSuggestion => ({
+  id: recipe.id,
+  title: recipe.title,
+  minutes: recipe.minutes,
+  usesExpiring,
+  missing,
+});
+
+/**
+ * Recipes that rescue the most urgent food (plan 11b, R-01): only recipes that use at least one
+ * food expiring within three days, ranked by how urgent that food is, then by fewer missing
+ * ingredients and fewer minutes. Food past its use-by date is never suggested (food safety).
+ */
+export function suggestRecipes(
+  recipes: readonly Recipe[],
+  food: readonly FoodAtHome[],
+  today: LocalDate,
+  limit: number,
+): RecipeSuggestion[] {
+  return rank(recipes, food, today)
     .filter(({ usesExpiring }) => usesExpiring.length > 0)
     .sort(
       (a, b) =>
@@ -136,13 +161,29 @@ export function suggestRecipes(
         a.recipe.id.localeCompare(b.recipe.id),
     )
     .slice(0, Math.max(0, limit))
-    .map(({ recipe, usesExpiring, missing }) => ({
-      id: recipe.id,
-      title: recipe.title,
-      minutes: recipe.minutes,
-      usesExpiring,
-      missing,
-    }));
+    .map(toSuggestion);
+}
+
+/**
+ * «Alle Rezepte» (ADR-0031): every recipe, optionally with one tag, what can be cooked with the
+ * food at home first (fewest missing ingredients), then what rescues more, then the quickest.
+ */
+export function listRecipes(
+  recipes: readonly Recipe[],
+  food: readonly FoodAtHome[],
+  today: LocalDate,
+  tag?: RecipeTag,
+): RecipeListEntry[] {
+  return rank(recipes, food, today)
+    .filter(({ recipe }) => tag === undefined || recipe.tags.includes(tag))
+    .sort(
+      (a, b) =>
+        a.missing.length - b.missing.length ||
+        b.score - a.score ||
+        a.recipe.minutes - b.recipe.minutes ||
+        a.recipe.title.localeCompare(b.recipe.title, 'de-CH'),
+    )
+    .map((ranked) => ({ ...toSuggestion(ranked), tags: ranked.recipe.tags }));
 }
 
 export interface IngredientAtHome<TFood extends FoodAtHome = FoodAtHome> {

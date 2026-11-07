@@ -46,5 +46,5 @@ Alban, nach den Vorschaubildern: «Ich brauche 5 Menüs. ＋ ist in der Mitte, S
 - **«Kochen»** zeigt unter «Rette heute» bis zu zehn Rezepte, die retten, was in drei Tagen abläuft, das Dringendste zuerst. Läuft nichts ab, sagt die Seite das.
 - Rezepte (`/recipes/…`) gehören zum Tab «Kochen» und haben oben «‹ Kochen».
 - «Start» behält die drei Rezeptideen als Kurzfassung.
-- Es folgt «Alle Rezepte» mit dem, was du zu Hause hast.
+- **«Alle Rezepte»** darunter: die ganze Sammlung, zuerst was mit dem Vorrat geht (am wenigsten fehlt), dann was mehr rettet, dann das Schnellste. Ein Tipp filtert nach Schnell, Vegetarisch, Vegan oder Eiweissreich. Dafür gibt es die Abfrage `recipes.list` in der Schnittstelle.
 

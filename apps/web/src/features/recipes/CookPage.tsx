@@ -1,10 +1,14 @@
 import { messages } from '../../app/messages.de-CH';
 import { Card } from '../../ui/Card';
+import { AllRecipes } from './AllRecipes';
 import { RecipeIdeas } from './RecipeIdeas';
 
 const t = messages.recipes;
 
-/** «Kochen» (ADR-0031): recipes that rescue what expires soon, the most urgent first. */
+/**
+ * «Kochen» (ADR-0031): first the recipes that rescue what expires soon, the most urgent first, then
+ * all recipes, what can be cooked with the food at home first.
+ */
 export function CookPage() {
   return (
     <div className="space-y-6 pb-8">
@@ -18,6 +22,7 @@ export function CookPage() {
           </Card>
         }
       />
+      <AllRecipes />
     </div>
   );
 }
