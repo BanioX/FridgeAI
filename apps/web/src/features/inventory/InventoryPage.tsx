@@ -217,8 +217,8 @@ export function InventoryPage() {
               }}
               className={`flex min-h-12 min-w-0 flex-col items-center justify-center rounded-[0.625rem] px-1 text-center text-[0.8125rem] leading-tight hyphens-auto transition-colors ${
                 active
-                  ? 'bg-surface font-semibold text-basil-800 shadow-card'
-                  : 'font-medium text-ink-muted'
+                  ? 'bg-basil-700 font-semibold text-white shadow-card'
+                  : 'font-medium text-ink hover:bg-surface'
               }`}
             >
               <span>{messages.locations[location]}</span>
