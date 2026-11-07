@@ -10,6 +10,7 @@ import {
   expiryStatus,
   fallbackCategory,
   InventoryItemSchema,
+  isAtRisk,
   matchCategoryByName,
   normalizeFoodText,
   OutcomeEventSchema,
@@ -462,6 +463,12 @@ export function createInventoryHandlers(ctx: HandlerContext) {
         valueRappen,
         valueEstimated: item.priceRappen === undefined,
         ...(grams === undefined ? {} : { grams }),
+        atRisk: isAtRisk(
+          item.expiresOn,
+          item.expiryKind,
+          clock.today(),
+          soonThresholdFor(item.location),
+        ),
         owner: item.owner,
         at: now,
         by: actor,
@@ -798,12 +805,16 @@ export function createInventoryHandlers(ctx: HandlerContext) {
   const wasteStats: Handler<'stats.waste'> = async (raw) => {
     const input = CONTRACT_V1['stats.waste'].input.parse(raw);
     const outcomes = await db.outcomes.where('householdId').equals(input.householdId).toArray();
-    const { savedRappen, wastedRappen, savedGrams, wastedGrams, estimated } = summarizeImpact(
-      outcomes,
-      input.from,
-      input.to,
-    );
-    return { savedRappen, wastedRappen, savedGrams, wastedGrams, estimated };
+    const summary = summarizeImpact(outcomes, input.from, input.to);
+    return {
+      savedRappen: summary.savedRappen,
+      wastedRappen: summary.wastedRappen,
+      savedGrams: summary.savedGrams,
+      wastedGrams: summary.wastedGrams,
+      savedCount: summary.savedCount,
+      wastedCount: summary.wastedCount,
+      estimated: summary.estimated,
+    };
   };
 
   return {
