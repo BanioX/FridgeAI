@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 /*
- * Rettich design tokens – see docs/design.md.
+ * rettich design tokens – see docs/design.md.
  * Green, food-friendly, elegant and functional. Every text/background pair meets WCAG AA.
  */
 @theme {
@@ -12,26 +12,28 @@
     sans-serif;
   --font-display: var(--font-sans);
 
-  /* Brand: basil */
-  --color-basil-50: #f0f7f2;
-  --color-basil-100: #dceee2;
-  --color-basil-200: #b9dcc6;
-  --color-basil-300: #8cc3a1;
-  --color-basil-400: #5ca679;
-  --color-basil-500: #3b8a5a;
-  --color-basil-600: #2c7149;
-  --color-basil-700: #245b3c;
-  --color-basil-800: #1f4932;
-  --color-basil-900: #1b3d2b;
-  --color-basil-950: #0d2317;
+  /* Brand: five greens from the garden (docs/design.md), anchored on the logo green «Rucola».
+     Light greens lean to yellow like sunlit lettuce, dark ones to blue like broccoli; in-between
+     steps are interpolated in OKLCH. WCAG AA for text and buttons. */
+  --color-basil-50: #effae4; /* Eisberg */
+  --color-basil-100: #ccecad; /* Kopfsalat */
+  --color-basil-200: #a7d492;
+  --color-basil-300: #82bc79;
+  --color-basil-400: #60a867;
+  --color-basil-500: #4a9c5c; /* Basilikum */
+  --color-basil-600: #3a8653;
+  --color-basil-700: #2c7149; /* Rucola, the logo green */
+  --color-basil-800: #1b593a;
+  --color-basil-900: #0c412a; /* Broccoli */
+  --color-basil-950: #032819;
 
-  /* Neutrals: warm, like baking paper */
-  --color-oat: #f8f6f1;
+  /* Neutrals: a breath of Eisberg, so the greens run through the whole app */
+  --color-oat: #f7fcf2;
   --color-surface: #ffffff;
-  --color-surface-muted: #f1eee6;
-  --color-line: #e4dfd3;
+  --color-surface-muted: #ebf2e4;
+  --color-line: #d9e4d4;
   --color-ink: #1c211e;
-  --color-ink-muted: #5b635d;
+  --color-ink-muted: #525e56;
 
   /* Expiry status (always paired with text, never colour alone) */
   --color-soon: #8a4b0f;

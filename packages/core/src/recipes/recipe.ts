@@ -24,7 +24,7 @@ export type RecipeIngredient = z.infer<typeof RecipeIngredientSchema>;
 export const RecipeTagSchema = z.enum(['vegetarisch', 'vegan', 'schnell', 'eiweissreich']);
 export type RecipeTag = z.infer<typeof RecipeTagSchema>;
 
-/** A recipe of the curated collection (plan 11b): written for Rettich, no third-party texts. */
+/** A recipe of the curated collection (plan 11b): written for rettich, no third-party texts. */
 export const RecipeSchema = z
   .object({
     id: z.string().regex(/^[a-z][a-z0-9-]{2,60}$/),
@@ -85,6 +85,13 @@ function urgency(food: FoodAtHome, today: LocalDate): number {
       return 0;
   }
 }
+
+/** «Feierabend» (Albans Masterplan): at most this many minutes and nothing to buy. */
+export const FEIERABEND_MINUTES = 15;
+
+/** Cooked after work with what is at home: quick and nothing missing (staples are assumed). */
+export const fitsFeierabend = (recipe: { minutes: number; missing: readonly string[] }): boolean =>
+  recipe.minutes <= FEIERABEND_MINUTES && recipe.missing.length === 0;
 
 /** A recipe in «Alle Rezepte» on «Kochen»: as a suggestion, with its tags. */
 export interface RecipeListEntry extends RecipeSuggestion {

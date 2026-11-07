@@ -17,11 +17,11 @@ const PAGE = { width: 210, height: 297, margin: 16 };
 const CONTENT = PAGE.width - 2 * PAGE.margin;
 type Rgb = [number, number, number];
 const COLOR: Record<'basil' | 'basilLight' | 'ink' | 'muted' | 'line' | 'today', Rgb> = {
-  basil: [36, 91, 60],
-  basilLight: [240, 247, 242],
+  basil: [44, 113, 73],
+  basilLight: [239, 250, 228],
   ink: [28, 33, 30],
   muted: [100, 108, 103],
-  line: [222, 226, 222],
+  line: [217, 228, 212],
   today: [176, 58, 46],
 };
 const MONTHS = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
@@ -44,9 +44,9 @@ export async function reportPdf(
   const doc = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
   const kindName = messages.reports.kinds[options.kind];
   doc.setProperties({
-    title: `Rettich – ${kindName}`,
+    title: `rettich – ${kindName}`,
     subject: options.period,
-    creator: 'Rettich',
+    creator: 'rettich',
   });
   let y = PAGE.margin;
 

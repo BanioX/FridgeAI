@@ -1,4 +1,4 @@
-# Rettich – Architektur: heute bauen, morgen skalieren
+# rettich – Architektur: heute bauen, morgen skalieren
 
 > Stand: 6. November 2026. Auftrag von Alban: «Denke gross, erweiterbar, wartbar, state of the art, skalierbar bis Unicorn.»
 > Entscheide im Detail: [`adr/`](./adr/). Plan: [`plan.md`](./plan.md). Use Cases: [`use-cases.md`](./use-cases.md).
@@ -65,14 +65,14 @@ Das Datenmodell ist dafür vorbereitet: global eindeutige IDs (UUIDv7) ohne zent
 
 ### 5.1 Kühlschrank-Foto: mit der KI der Nutzer:innen (ADR-0012)
 
-Rettich trägt keine KI-Kosten pro Foto. Die Erkennung macht die KI, die die Person ohnehin nutzt (ChatGPT, Claude, Gemini …):
+rettich trägt keine KI-Kosten pro Foto. Die Erkennung macht die KI, die die Person ohnehin nutzt (ChatGPT, Claude, Gemini …):
 
 ```
-Foto in der KI-App ──► KI erkennt Inhalt ──► Vorschlag in Rettich ──► bestätigen ──► Vorrat
+Foto in der KI-App ──► KI erkennt Inhalt ──► Vorschlag in rettich ──► bestätigen ──► Vorrat
                          │                       ▲
                          ├─ Stufe 1: Antwort kopieren und einfügen (ohne Server, sofort)
                          └─ Stufe 2: MCP-Connector legt den Vorschlag direkt in den
-                                     Posteingang, Link «In Rettich öffnen» (v1)
+                                     Posteingang, Link «In rettich öffnen» (v1)
 ```
 
 - **Vorschläge statt direkter Änderungen:** Externe KI darf nur vorschlagen (`inventory:propose`), nie selbst ändern. Die Person bestätigt in derselben Review-Liste wie beim Bon.

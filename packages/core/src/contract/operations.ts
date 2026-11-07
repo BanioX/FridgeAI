@@ -38,7 +38,7 @@ import {
 } from '../model/primitives';
 
 /**
- * Contract v1 (ADR-0005): every action of Rettich as a named command or query with Zod schemas
+ * Contract v1 (ADR-0005): every action of rettich as a named command or query with Zod schemas
  * for input and output. The PWA calls exactly these. The same schemas later generate the REST
  * API (OpenAPI) and the MCP tools for AI assistants, and define the scopes a partner needs.
  */
@@ -159,6 +159,8 @@ function query<TInput extends z.ZodType, TOutput extends z.ZodType>(
 /** An inventory item as shown to people and external clients (denormalised, no sync fields). */
 export const InventoryItemViewSchema = z.object({
   id: IdSchema,
+  /** Packs of the same product share it, e.g. two yoghurts with different dates. */
+  productId: IdSchema,
   name: z.string(),
   emoji: z.string().optional(),
   categoryId: CategoryIdSchema,
@@ -234,6 +236,55 @@ export const AtHomeSchema = z.object({
   unit: UnitSchema,
   expiresOn: LocalDateSchema,
   count: z.int().min(1),
+});
+
+/**
+ * Everything of one household as a file (ADR-0020): what `household.export` hands out and
+ * `household.import` takes back. «fridgeai-export» stays the technical format name (ADR-0032).
+ */
+export const HouseholdExportSchema = z.object({
+  format: z.literal('fridgeai-export'),
+  contractVersion: z.literal('v1'),
+  exportedAt: IsoDateTimeSchema,
+  household: HouseholdSchema,
+  members: z.array(MemberSchema),
+  products: z.array(ProductSchema),
+  items: z.array(InventoryItemSchema),
+  outcomes: z.array(OutcomeEventSchema),
+  shoppingItems: z.array(ShoppingListItemSchema),
+  receipts: z.array(ReceiptSchema),
+  receiptLines: z.array(ReceiptLineSchema),
+  events: z.array(DomainEventSchema),
+});
+export type HouseholdExport = z.infer<typeof HouseholdExportSchema>;
+
+/** An import needs someone to act as, and nothing in it may belong to another household. */
+const ImportableExportSchema = HouseholdExportSchema.superRefine((data, check) => {
+  if (data.members.length === 0) {
+    check.addIssue({ code: 'custom', path: ['members'], message: 'No member to act as' });
+  }
+  const id = data.household.id;
+  const tables = [
+    'members',
+    'products',
+    'items',
+    'outcomes',
+    'shoppingItems',
+    'receipts',
+    'receiptLines',
+    'events',
+  ] as const;
+  for (const table of tables) {
+    data[table].forEach((row, index) => {
+      if (row.householdId !== id) {
+        check.addIssue({
+          code: 'custom',
+          path: [table, index, 'householdId'],
+          message: 'Row of another household',
+        });
+      }
+    });
+  }
 });
 
 export const CONTRACT_V1 = {
@@ -776,19 +827,25 @@ export const CONTRACT_V1 = {
     },
     scopes: ['household:read'],
     input: z.object({ ...queryBase }),
+    output: HouseholdExportSchema,
+  }),
+  'household.import': command({
+    name: 'household.import',
+    summary: {
+      de: 'Einen Export zurückholen; ersetzt alle Daten auf dem Gerät (ADR-0020).',
+      en: 'Bring an export back; replaces all data on the device (ADR-0020).',
+    },
+    scopes: ['household:write'],
+    /**
+     * `householdId` is the household being replaced. `confirm: true` on purpose: an import
+     * replaces everything, like deleting.
+     */
+    input: z.object({ ...commandBase, data: ImportableExportSchema, confirm: z.literal(true) }),
     output: z.object({
-      format: z.literal('fridgeai-export'),
-      contractVersion: z.literal('v1'),
-      exportedAt: IsoDateTimeSchema,
-      household: HouseholdSchema,
-      members: z.array(MemberSchema),
-      products: z.array(ProductSchema),
-      items: z.array(InventoryItemSchema),
-      outcomes: z.array(OutcomeEventSchema),
-      shoppingItems: z.array(ShoppingListItemSchema),
-      receipts: z.array(ReceiptSchema),
-      receiptLines: z.array(ReceiptLineSchema),
-      events: z.array(DomainEventSchema),
+      householdId: IdSchema,
+      memberId: IdSchema,
+      itemCount: z.int().min(0),
+      outcomeCount: z.int().min(0),
     }),
   }),
   'household.delete': command({

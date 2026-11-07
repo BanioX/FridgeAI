@@ -5,7 +5,7 @@ import type { ProductInfo, ProductSearchHit } from '../ports';
 
 /**
  * Open Food Facts (ODbL, ADR-0016): free product database, also strong on Swiss products. Only
- * the barcode number is sent; Rettich asks for the few fields it needs. The answer is untrusted
+ * the barcode number is sent; rettich asks for the few fields it needs. The answer is untrusted
  * and validated here; fetching happens in an adapter outside the core.
  */
 export const OFF_FIELDS = [
@@ -42,7 +42,7 @@ const OffResponseSchema = z.object({
     .optional(),
 });
 
-/** OFF nutriment keys per 100 g/ml → Rettich's nutrition fields. */
+/** OFF nutriment keys per 100 g/ml → rettich's nutrition fields. */
 const NUTRIMENTS = {
   energyKcal: 'energy-kcal_100g',
   fat: 'fat_100g',

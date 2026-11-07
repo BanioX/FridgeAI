@@ -120,6 +120,14 @@ export const DomainEventSchema = z.discriminatedUnion('type', [
       totalRappen: RappenSchema,
     }),
   ),
+  envelope(
+    'household.imported',
+    z.object({
+      exportedAt: IsoDateTimeSchema,
+      itemCount: z.int().min(0),
+      outcomeCount: z.int().min(0),
+    }),
+  ),
   envelope('rescue.offered', z.object({ offerId: IdSchema, itemId: IdSchema })),
   envelope(
     'rescue.claimed',

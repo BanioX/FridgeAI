@@ -93,7 +93,7 @@ export function StyleguidePage() {
   return (
     <div className="space-y-10">
       <header>
-        <p className="text-sm font-semibold tracking-wide text-basil-600 uppercase">Styleguide</p>
+        <p className="text-sm font-semibold tracking-wide text-basil-700 uppercase">Styleguide</p>
         <h1 className="mt-1 large-title">Heute retten</h1>
       </header>
 

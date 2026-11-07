@@ -1,6 +1,6 @@
 # Ideen und Erweiterungen
 
-Brainstorming, laufend gepflegt (CLAUDE.md: «Ideen unterwegs»). Hier steht, was Rettich später können könnte, nicht was beschlossen ist. Beschlüsse stehen in [`../plan.md`](../plan.md) und den [ADRs](../adr/).
+Brainstorming, laufend gepflegt (CLAUDE.md: «Ideen unterwegs»). Hier steht, was rettich später können könnte, nicht was beschlossen ist. Beschlüsse stehen in [`../plan.md`](../plan.md) und den [ADRs](../adr/).
 
 | Datei | Thema |
 | --- | --- |
@@ -17,6 +17,7 @@ Brainstorming, laufend gepflegt (CLAUDE.md: «Ideen unterwegs»). Hier steht, wa
 | [`schutz.md`](./schutz.md) | Marke, Urheberrecht, NDA, Source Maps: rettich vor Kopien schützen |
 | [`designsprache-garten.md`](./designsprache-garten.md) | Pflanzen als Bereiche, Reineclaude für Erfolg, Reifen statt Prozent |
 | [`markt-und-timing.md`](./markt-und-timing.md) | Food Waste in Zahlen, Ziele 2030, Konkurrenz, Abo-Kennzahlen |
+| [`masterplan-bewertung.md`](./masterplan-bewertung.md) | Albans Masterplan: übernommen, später, Entscheide, Regeln |
 
 **Produkt-Prioritäten** (Alban, 6.11.2026):
 
