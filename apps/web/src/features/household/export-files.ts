@@ -8,9 +8,9 @@ import {
 } from '@fridgeai/core';
 import { messages } from '../../app/messages.de-CH';
 
-/** «fridgeai-2026-11-06.json»: the date tells exports apart. */
+/** «rettich-2026-11-06.json»: the date tells exports apart. */
 export const exportFileName = (today: LocalDate, extension: 'json' | 'csv') =>
-  `fridgeai-${today}.${extension}`;
+  `rettich-${today}.${extension}`;
 
 /** The inventory as a spreadsheet: one row per item, numbers without units or currency. */
 export function inventoryCsv(items: readonly InventoryItemView[]): string {

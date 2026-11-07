@@ -1,4 +1,4 @@
-# FridgeAI – Design-System
+# Rettich – Design-System
 
 > **Leitbild (Alban, 6.11.2026):** grün, food-freundlich, elegant und funktional.
 > Umsetzung: Tokens in `apps/web/src/index.css` (`@theme`), Komponenten in `apps/web/src/ui/`.

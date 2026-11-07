@@ -1,8 +1,10 @@
-# CLAUDE.md – FridgeAI
+# CLAUDE.md – Rettich
 
 Kurzfassung der Regeln. Vollständiger Brief: [`docs/brief.md`](docs/brief.md) · Plan: [`docs/plan.md`](docs/plan.md) · Strategie: [`docs/blue-ocean.md`](docs/blue-ocean.md) · Use Cases: [`docs/use-cases.md`](docs/use-cases.md) · Entscheide: [`docs/adr/`](docs/adr/).
 
-**Produkt:** Local-first PWA für Schweizer Haushalte (WGs, Paare). «Scan deinen Bon – FridgeAI weiss, was du hast, wem es gehört, wer was schuldet und was du heute retten musst.» Product Owner: Alban Hyseni.
+**Name:** Rettich (bis 7.11.2026 «FridgeAI»; Repo, Pakete `@fridgeai/*`, Datenbank und Web-Adresse bleiben technisch so, ADR-0032).
+
+**Produkt:** Local-first PWA für Schweizer Haushalte (WGs, Paare). «Scan deinen Bon – Rettich weiss, was du hast, wem es gehört, wer was schuldet und was du heute retten musst.» Product Owner: Alban Hyseni.
 
 **Prioritäten** (Alban, 6.11.2026): Kühlschrank zuerst, Vorrat/Tiefkühler/Notvorrat zweitrangig. Design nach Apples Human Interface Guidelines (ADR-0021). Pilot Schweiz, dann DACH, gebaut für jede Währung (ADR-0019). Daten so kurz wie möglich, jederzeit exportier- und löschbar (ADR-0020). Den Pilot (Alban + 1 Person) gibt Claude frei, sobald er startklar ist. Ideen-Sammlung: [`docs/ideen/`](docs/ideen/).
 

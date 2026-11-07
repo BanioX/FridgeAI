@@ -23,7 +23,7 @@ export type RecipeIngredient = z.infer<typeof RecipeIngredientSchema>;
 
 export const RecipeTagSchema = z.enum(['vegetarisch', 'vegan', 'schnell', 'eiweissreich']);
 
-/** A recipe of the curated collection (plan 11b): written for FridgeAI, no third-party texts. */
+/** A recipe of the curated collection (plan 11b): written for Rettich, no third-party texts. */
 export const RecipeSchema = z
   .object({
     id: z.string().regex(/^[a-z][a-z0-9-]{2,60}$/),

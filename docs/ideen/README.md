@@ -1,6 +1,6 @@
 # Ideen und Erweiterungen
 
-Brainstorming, laufend gepflegt (CLAUDE.md: «Ideen unterwegs»). Hier steht, was FridgeAI später können könnte, nicht was beschlossen ist. Beschlüsse stehen in [`../plan.md`](../plan.md) und den [ADRs](../adr/).
+Brainstorming, laufend gepflegt (CLAUDE.md: «Ideen unterwegs»). Hier steht, was Rettich später können könnte, nicht was beschlossen ist. Beschlüsse stehen in [`../plan.md`](../plan.md) und den [ADRs](../adr/).
 
 | Datei | Thema |
 | --- | --- |

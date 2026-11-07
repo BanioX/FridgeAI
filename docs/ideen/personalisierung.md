@@ -1,6 +1,6 @@
 # Personalisierung: Rezepte, Menüplanung, Zielgruppen
 
-Ziel: FridgeAI soll für **alle ein No-Brainer** sein (scannen, essen, fertig) und für Leute mit Zielen **mehr können**. Die Personalisierung baut auf Daten auf, die schon da sind: Vorrat, Ablaufdaten, Nährwerte nach dem Scan (10b) und Preise vom Bon.
+Ziel: Rettich soll für **alle ein No-Brainer** sein (scannen, essen, fertig) und für Leute mit Zielen **mehr können**. Die Personalisierung baut auf Daten auf, die schon da sind: Vorrat, Ablaufdaten, Nährwerte nach dem Scan (10b) und Preise vom Bon.
 
 ## Bausteine
 

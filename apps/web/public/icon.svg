@@ -1,8 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="FridgeAI">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Rettich">
   <rect width="512" height="512" rx="112" fill="#2c7149" />
-  <rect x="160" y="80" width="192" height="352" rx="36" fill="#f8f6f1" />
-  <line x1="160" y1="200" x2="352" y2="200" stroke="#2c7149" stroke-width="14" />
-  <rect x="192" y="120" width="14" height="48" rx="7" fill="#2c7149" />
-  <rect x="192" y="236" width="14" height="80" rx="7" fill="#2c7149" />
-  <path d="M300 300c0-40 24-64 52-72-4 36-20 60-52 72z" fill="#5ca679" />
+  <path d="M250 176C212 162 180 132 170 94c36 2 70 30 80 82z" fill="#5ca679" />
+  <path d="M262 176c38-14 70-44 80-82-36 2-70 30-80 82z" fill="#5ca679" />
+  <path d="M256 176c-22-40-22-86 0-120 22 34 22 80 0 120z" fill="#9fd8ae" />
+  <path d="M256 166c62 0 80 44 76 96-4 68-42 130-70 184-3 7-9 7-12 0-28-54-66-116-70-184-4-52 14-96 76-96z" fill="#f8f6f1" />
+  <path d="M190 214c8-34 32-48 66-48s58 14 66 48c-20-10-42-14-66-14s-46 4-66 14z" fill="#dcebc9" />
+  <g fill="none" stroke="#d9d3c4" stroke-width="7" stroke-linecap="round">
+    <path d="M206 262q14 6 28 3" />
+    <path d="M286 300q-12 6-26 4" />
+    <path d="M222 340q12 5 22 2" />
+    <path d="M270 382q-10 4-18 2" />
+  </g>
 </svg>
