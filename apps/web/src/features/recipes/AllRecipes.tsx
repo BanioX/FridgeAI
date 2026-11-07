@@ -1,4 +1,4 @@
-import type { RecipeTag } from '@fridgeai/core';
+import { fitsFeierabend, type RecipeTag } from '@fridgeai/core';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useState } from 'react';
 import { useAppData } from '../../app/AppData';
@@ -8,29 +8,29 @@ import { GroupedList } from '../../ui/GroupedList';
 import { RecipeRow } from './RecipeIdeas';
 
 const t = messages.recipes;
-type Filter = 'all' | RecipeTag;
+type Filter = 'all' | 'feierabend' | RecipeTag;
 
 const filters: { value: Filter; label: string }[] = (
-  ['all', 'schnell', 'vegetarisch', 'vegan', 'eiweissreich'] as const
+  ['all', 'feierabend', 'schnell', 'vegetarisch', 'vegan', 'eiweissreich'] as const
 ).map((value) => ({ value, label: t.filters[value] }));
 
 /**
  * «Alle Rezepte» on «Kochen» (ADR-0031): the whole collection, what can be cooked with the food at
- * home first, with one tap on «Schnell», «Vegetarisch», «Vegan» or «Eiweissreich».
+ * home first, with one tap on «Feierabend» (at most 15 minutes, nothing to buy), «Schnell»,
+ * «Vegetarisch», «Vegan» or «Eiweissreich».
  */
 export function AllRecipes() {
   const { householdId, recipes } = useAppData();
   const [filter, setFilter] = useState<Filter>('all');
-  const list = useLiveQuery(
-    async () =>
-      (
-        await recipes['recipes.list']({
-          householdId,
-          ...(filter === 'all' ? {} : { tag: filter }),
-        })
-      ).recipes,
-    [householdId, filter],
-  );
+  const list = useLiveQuery(async () => {
+    const all = (
+      await recipes['recipes.list']({
+        householdId,
+        ...(filter === 'all' || filter === 'feierabend' ? {} : { tag: filter }),
+      })
+    ).recipes;
+    return filter === 'feierabend' ? all.filter(fitsFeierabend) : all;
+  }, [householdId, filter]);
   return (
     <section aria-labelledby="all-recipes-title" className="space-y-3">
       <h2 id="all-recipes-title" className="text-xl font-semibold">
@@ -43,6 +43,9 @@ export function AllRecipes() {
         value={filter}
         onChange={setFilter}
       />
+      {list?.length === 0 && filter === 'feierabend' ? (
+        <p className="text-ink-muted">{t.feierabendEmpty}</p>
+      ) : null}
       {list === undefined || list.length === 0 ? null : (
         <GroupedList>
           {list.map((recipe) => (
