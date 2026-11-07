@@ -15,6 +15,7 @@ Brainstorming, laufend gepflegt (CLAUDE.md: «Ideen unterwegs»). Hier steht, wa
 | [`ausgaben-und-ernaehrung.md`](./ausgaben-und-ernaehrung.md) | Essensbudget aus den Bons, gesund und ungesund (später) |
 | [`integrationen.md`](./integrationen.md) | Thermomix, Kühlschränke (Samsung, LG, Matter), GS1-Codes und eine offene rettich-Schnittstelle |
 | [`schutz.md`](./schutz.md) | Marke, Urheberrecht, NDA, Source Maps: rettich vor Kopien schützen |
+| [`produktdaten.md`](./produktdaten.md) | Bessere Produktdaten: Open Food Repo, Händler-Websites, Foto der Nährwerttabelle, gemeinsames Gedächtnis |
 | [`designsprache-garten.md`](./designsprache-garten.md) | Pflanzen als Bereiche, Reineclaude für Erfolg, Reifen statt Prozent |
 | [`markt-und-timing.md`](./markt-und-timing.md) | Food Waste in Zahlen, Ziele 2030, Konkurrenz, Abo-Kennzahlen |
 | [`masterplan-bewertung.md`](./masterplan-bewertung.md) | Albans Masterplan: übernommen, später, Entscheide, Regeln |

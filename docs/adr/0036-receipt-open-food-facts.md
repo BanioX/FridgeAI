@@ -33,3 +33,14 @@ Alban: «Der ausgelesene Bon soll zur Datenbank von Open Food Facts passen.» Ei
 - Bessere Namen, Barcodes und Bilder im Vorrat. Gleiche Produkte aus verschiedenen Bons landen beim selben Produkt, so wird das Preisgedächtnis genauer.
 - Die Datenschutzerklärung bekommt eine Zeile für den Abgleich, sobald der Knopf in der App ist.
 - Frische Ware ohne Barcode (Bananen, Rüebli) findet selten einen guten Treffer. Sie bleibt, wie sie ist.
+
+## Nachtrag 7.11.2026: automatisch, Ja/Nein, Barcode pro Zeile
+
+Alban hat den Abgleich am Handy getestet («Bon auslesen ist 10/10») und entschieden:
+
+- **Automatisch:** Der Abgleich startet direkt nach dem Auslesen, ohne Tipp. Es gehen weiterhin nur die Produktwörter der gewählten verpackten Lebensmittel raus. Die Zeile «Nur die Produktnamen gehen an Open Food Facts …» steht in der Bon-Ansicht, die Datenschutzerklärung ist angepasst.
+- **«Ist es das?» mit «Ja» und «Nein»** statt «Passt». Nur «Ja» übernimmt das Produkt. Bekannte Zeilen aus früheren Bons sind schon bestätigt.
+- **Klarer Fortschritt:** «Prüfe 8 von 10 … · 2 gefunden». Das Warten kommt von der Grenze bei Open Food Facts.
+- **Barcode pro Zeile:** Ohne Treffer oder nach «Nein» bietet die Zeile «Barcode scannen» an. Ein gescannter Barcode gilt als bestätigt, denn die Person hält genau diese Packung in der Hand. Ein Hinweis nach dem Abgleich lädt ein, die übrigen Produkte zu scannen.
+- **Weitere Datenquellen** (Open Food Repo, Händler, Foto der Nährwerttabelle): siehe [`../ideen/produktdaten.md`](../ideen/produktdaten.md).
+

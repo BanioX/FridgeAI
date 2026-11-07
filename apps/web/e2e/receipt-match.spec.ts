@@ -17,7 +17,7 @@ const COOP = textPdf([
   'Mastercard 4.45',
 ]);
 
-test('matches a receipt with Open Food Facts only after one tap and a «Passt»', async ({
+test('matches a receipt with Open Food Facts by itself; Ja takes a hit, Nein offers the barcode', async ({
   page,
 }) => {
   const searches: string[] = [];
@@ -41,14 +41,28 @@ test('matches a receipt with Open Food Facts only after one tap and a «Passt»'
       },
     });
   });
-  await page.route(PRODUCT, (route) =>
-    route.fulfill({
-      json: {
-        status: 1,
-        product: { product_name_de: 'Joghurt Mocca', brands: 'Naturaplan', quantity: '180 g' },
-      },
-    }),
-  );
+  await page.route(PRODUCT, (route) => {
+    const known = route.request().url().includes('7610000000004');
+    return route.fulfill(
+      known
+        ? {
+            json: {
+              status: 1,
+              product: {
+                product_name_de: 'Joghurt Mocca',
+                brands: 'Naturaplan',
+                quantity: '180 g',
+              },
+            },
+          }
+        : {
+            json: {
+              status: 1,
+              product: { product_name_de: 'Guacamole', brands: 'Anna’s Best', quantity: '200 g' },
+            },
+          },
+    );
+  });
 
   await page.goto('/add/receipt');
   await page.getByLabel('PDF oder Foto wählen').setInputFiles({
@@ -58,25 +72,42 @@ test('matches a receipt with Open Food Facts only after one tap and a «Passt»'
   });
   const review = page.getByRole('region', { name: /Musterstadt Zentrum/ });
   await expect(review.getByText('Summe stimmt: CHF 4.45')).toBeVisible();
-  // Reading a receipt sends nothing.
-  expect(searches).toEqual([]);
 
-  await review.getByRole('button', { name: 'Mit Open Food Facts abgleichen' }).click();
-  await expect(review.getByText(/1 von 2 gefunden/)).toBeVisible();
+  // The matching starts by itself and says what it found.
+  await expect(review.getByText('1 von 2 gefunden.')).toBeVisible();
   // Only the product words went out, no prices, sizes, shop or date.
   expect(searches[0]).toBe('Naturaplan Bio Joghurt Mocca');
   expect(searches.join(' ')).not.toMatch(/0\.95|180g|Musterstadt|06\.11/);
+  await expect(review.getByText(/Tippe auf «Barcode scannen»/)).toBeVisible();
 
-  const fits = review.getByRole('button', { name: 'Passt: Joghurt Mocca' });
-  await expect(fits).toHaveAttribute('aria-pressed', 'false');
+  const yes = review.getByRole('button', { name: 'Ja, das ist Joghurt Mocca' });
+  await expect(yes).toHaveAttribute('aria-pressed', 'false');
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations).toEqual([]);
-  await fits.click();
-  await expect(fits).toHaveAttribute('aria-pressed', 'true');
+  await yes.click();
+  await expect(yes).toHaveAttribute('aria-pressed', 'true');
+
+  // «Nein» drops a hit and offers the barcode instead.
+  await review.getByRole('button', { name: 'Nein, das ist nicht Joghurt Mocca' }).click();
+  await expect(review.getByText('Abgelehnt')).toBeVisible();
+  await review
+    .getByRole('button', { name: 'Barcode scannen für Naturaplan Bio Joghurt Mocca 180g' })
+    .click();
+  await review.getByLabel('Nummer unter dem Strichcode').fill('7610000000004');
+  await review.getByRole('button', { name: 'Übernehmen', exact: true }).click();
+  await expect(review.getByText('Per Barcode')).toBeVisible();
+
+  // Guacamole had no hit: its barcode is scanned and counts as confirmed.
+  await review.getByRole('button', { name: 'Barcode scannen für Guacamole Chunky' }).click();
+  await review.getByLabel('Nummer unter dem Strichcode').fill('7613404000007');
+  await review.getByRole('button', { name: 'Übernehmen', exact: true }).click();
+  await expect(review.getByRole('button', { name: 'Ja, das ist Guacamole' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
 
   await review.getByRole('button', { name: '2 Artikel übernehmen' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
-  // The confirmed product names the item; the other line keeps its printed name.
   await expect(page.getByText('Joghurt Mocca', { exact: true })).toBeVisible();
-  await expect(page.getByText('Guacamole Chunky')).toBeVisible();
+  await expect(page.getByText('Guacamole', { exact: true })).toBeVisible();
 });
