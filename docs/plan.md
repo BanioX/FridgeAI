@@ -177,7 +177,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 - 4a: Normalisierung (Umlaute, Abkürzungen, OCR-Verwechslungen `0/O`, `1/l`, `,/.`), Händlererkennung, Zeilenklassifikation, Rabatt einer Position zuordnen, Plausibilität «Summe der Positionen = Total» (umgesetzt: allgemeiner Leser `parseReceiptText` für Coop, Migros, Aldi, Lidl, Denner, ADR-0027)
 - 4b: Migros-Parser + 5 Fixtures
 - 4c: Coop-Parser + 5 Fixtures, generischer Fallback-Parser
-- 4d: Produkt-/Kategorie-Matching (Synonymliste, Trigram-Fuzzy-Match ohne Dependency, `ProductAlias`-Lerntabelle)
+- 4d: Produkt-/Kategorie-Matching (Synonymliste, Trigram-Fuzzy-Match ohne Dependency, `ProductAlias`-Lerntabelle) (teilweise umgesetzt: Bon-Wörter aus echten Coop-, Migros- und Lidl-Bons in `catalog/receipt-words.ts`, Kategorie «Tierfutter»)
 - **Fixtures:** synthetisch, OCR-Text statt Bilder, Randfälle Rabatt, Pfand, Gewichtsartikel, Mehrfachmenge, OCR-Fehler, Tragtasche. Keine echten Personendaten.
 - **Delegation:** O für Klassifikation und Matching, S für die Händler-Parser nach meinem Interface, H für Fixtures.
 

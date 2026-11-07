@@ -46,6 +46,12 @@ interface Review {
 
 const paid = (line: ParsedReceiptLine) => rappen(line.priceRappen + line.discountRappen);
 
+/** Food for the inventory: an article, not standard-rate VAT and not a non-food category (pet food). */
+const isFood = (line: ParsedReceiptLine) =>
+  line.kind === 'item' &&
+  line.isFood !== false &&
+  matchCategoryByName(line.name)?.group !== 'non_food';
+
 /** A corrected price replaces what was read: paid as typed, no discount left to explain it. */
 function withPrice(receipt: ParsedReceipt, index: number, price: Rappen): ParsedReceipt {
   const lines = receipt.lines.map((line, position) => {
@@ -125,11 +131,7 @@ export function ReceiptUpload() {
         setStatus(text.trim() === '' && source === 'pdf' ? t.noText : t.noLines);
         return;
       }
-      const chosen = new Set(
-        receipt.lines.flatMap((line, index) =>
-          line.kind === 'item' && line.isFood !== false ? [index] : [],
-        ),
-      );
+      const chosen = new Set(receipt.lines.flatMap((line, index) => (isFood(line) ? [index] : [])));
       const names = [
         ...new Set(
           receipt.lines.flatMap((line) =>
@@ -181,7 +183,7 @@ export function ReceiptUpload() {
           ...(line.unitPriceRappen === undefined ? {} : { unitPriceRappen: line.unitPriceRappen }),
           priceRappen: line.priceRappen,
           discountRappen: line.discountRappen,
-          isFood: line.isFood ?? line.kind === 'item',
+          isFood: isFood(line),
           ...(current.chosen.has(index)
             ? { location: (matchCategoryByName(line.name) ?? fallbackCategory()).defaultLocation }
             : {}),
@@ -282,7 +284,7 @@ export function ReceiptUpload() {
                           line.discountRappen < 0
                             ? t.instead(formatChf(line.priceRappen, { currency: false }))
                             : undefined,
-                          line.isFood === false ? t.notFood : undefined,
+                          isFood(line) ? undefined : t.notFood,
                         ]
                           .filter(Boolean)
                           .join(' · ')}

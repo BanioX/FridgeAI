@@ -24,6 +24,7 @@ export * from './contract/events';
 export * from './contract/operations';
 export * from './scan/label';
 export * from './catalog/match';
+export * from './catalog/receipt-words';
 export * from './value';
 export * from './quantity';
 export * from './import/ai-import';
