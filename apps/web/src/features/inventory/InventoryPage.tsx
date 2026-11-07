@@ -181,7 +181,7 @@ export function InventoryPage() {
   const t = messages.inventory;
 
   return (
-    <div className="space-y-5 pb-20">
+    <div className="space-y-5 pb-8">
       <h1 className="large-title">{messages.pages.inventory}</h1>
 
       <ClosedNotice />
@@ -234,6 +234,13 @@ export function InventoryPage() {
         ) : visible.length === 0 ? (
           <div className="space-y-4">
             <p className="text-ink-muted">{t.empty}</p>
+            <Link
+              to={`/inventory/new?location=${selected}`}
+              className="inline-flex min-h-12 items-center gap-2 rounded-full bg-basil-700 px-5 font-semibold text-white transition-colors hover:bg-basil-800 active:bg-basil-900"
+            >
+              <Plus size={20} aria-hidden="true" />
+              {t.add}
+            </Link>
             {selected === 'reserve' ? <Card variant="tip">{t.reserveTip}</Card> : null}
           </div>
         ) : (
@@ -262,14 +269,6 @@ export function InventoryPage() {
           </GroupedList>
         )}
       </div>
-
-      <Link
-        to={`/inventory/new?location=${selected}`}
-        className="fixed right-4 bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-10 inline-flex min-h-12 items-center gap-2 rounded-full bg-basil-700 px-5 font-semibold text-white shadow-lg transition-colors hover:bg-basil-800 active:bg-basil-900"
-      >
-        <Plus size={20} aria-hidden="true" />
-        {t.add}
-      </Link>
     </div>
   );
 }

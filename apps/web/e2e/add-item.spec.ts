@@ -28,23 +28,33 @@ test('adds an item: the name suggests category, amount and unit', async ({ page 
   await expect(page.getByText('300 g · Kühlschrank')).toBeVisible();
 });
 
-test('adds eggs by pack size and keeps the form open for the next item', async ({ page }) => {
+test('adds eggs by pack size; the pack type sits under «Mehr Angaben»', async ({ page }) => {
   await page.goto('/inventory/new');
   await page.getByLabel('Was ist es?').fill('Freilandeier');
   await page.getByRole('button', { name: '10er' }).click();
   await expect(page.getByLabel('Menge')).toHaveValue('10');
+  await expect(page.getByLabel('Verpackung')).toBeHidden();
+  await page.getByText('Mehr Angaben').click();
   await expect(page.getByLabel('Verpackung')).toHaveValue('box');
 
-  await page.getByRole('button', { name: 'Speichern und nächsten erfassen' }).click();
-  // The form's own status line (quick add has one too, once something was added).
-  await expect(page.getByRole('status').filter({ hasText: 'Freilandeier' })).toHaveText(
-    'Freilandeier ist gespeichert.',
-  );
-  await expect(page.getByLabel('Was ist es?')).toHaveValue('');
-  await expect(page.getByLabel('Was ist es?')).toBeFocused();
-
-  await page.goto('/inventory');
+  await page.getByRole('button', { name: 'Speichern', exact: true }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
   await expect(page.getByText('10 Stk. · Kühlschrank')).toBeVisible();
+});
+
+test('the form is lean: no barcode button, no quick add, one save button', async ({ page }) => {
+  await page.goto('/inventory/new');
+  await expect(page.getByRole('button', { name: 'Barcode scannen' })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'Schnell erfassen' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /nächsten erfassen/ })).toHaveCount(0);
+  // Location and price are folded away, but the disclosure says what is set.
+  await expect(page.getByRole('radio', { name: 'Tiefkühler' })).toBeHidden();
+  // «Kühlschrank zuerst»: without a known category the food goes to the fridge.
+  await expect(page.getByText('Mehr Angaben · Kühlschrank')).toBeVisible();
+  await page.getByText('Mehr Angaben').click();
+  await page.getByText('Tiefkühler', { exact: true }).click();
+  await page.getByLabel('Preis in CHF (freiwillig)').fill('3.95');
+  await expect(page.getByText('Mehr Angaben · Tiefkühler, CHF 3.95')).toBeVisible();
 });
 
 test('a tap on the calendar symbol lands on the real date field (iPhone opens its wheel)', async ({

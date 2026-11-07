@@ -62,3 +62,13 @@ export function parsePackSize(text: string): { amount: number; unit: InputUnit }
   const amount = match?.[1] === undefined ? null : parseAmount(match[1]);
   return amount === null || unit === undefined ? null : { amount, unit };
 }
+
+/**
+ * What is set under «Mehr Angaben», joined for the disclosure button (e.g. «Tiefkühler, CHF 3.95»),
+ * so nothing optional stays hidden silently. Empty parts are left out.
+ */
+export function moreSummary(parts: readonly (string | null | undefined)[]): string {
+  return parts
+    .filter((part): part is string => part !== undefined && part !== null && part !== '')
+    .join(', ');
+}
