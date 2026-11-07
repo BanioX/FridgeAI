@@ -32,3 +32,31 @@ test('deletes a wrong «Weggeworfen» from the history, the food comes back', as
   await page.getByRole('navigation').getByRole('link', { name: 'Vorrat' }).click();
   await expect(page.getByRole('link', { name: /Joghurt/ })).toBeVisible();
 });
+
+test('corrects a wrong «Weggeworfen» to «Gegessen», the impact follows', async ({ page }) => {
+  await page.goto('/inventory/new');
+  await page.getByLabel('Was ist es?').fill('Rahm');
+  await page.getByRole('button', { name: 'Speichern', exact: true }).click();
+  await page.getByRole('link', { name: /Rahm/ }).click();
+  await page.locator('label').filter({ hasText: 'Weggeworfen' }).click();
+  await page.locator('label').filter({ hasText: 'verdorben' }).click();
+  await page.getByRole('button', { name: 'Als weggeworfen speichern' }).click();
+  await expect(page.getByRole('link', { name: /Rahm/ })).toHaveCount(0);
+
+  await page.goto('/more/history');
+  await page.getByRole('button', { name: 'Eintrag Rahm ändern' }).click();
+  await page
+    .locator('label')
+    .filter({ hasText: /^Gegessen$/ })
+    .click();
+  await expect(page.getByRole('group', { name: 'Warum?' })).toHaveCount(0);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await page.getByRole('button', { name: 'Speichern' }).click();
+  await expect(page.getByRole('status')).toHaveText('Gespeichert: Rahm ist jetzt «Gegessen».');
+  const entry = page.getByRole('listitem').filter({ hasText: 'Rahm' });
+  await expect(entry).toContainText('Gegessen');
+  await expect(entry).not.toContainText('verdorben');
+
+  await page.getByRole('navigation').getByRole('link', { name: 'Start' }).click();
+  await expect(page.getByRole('img', { name: '100 % gerettet' })).toBeVisible();
+});
