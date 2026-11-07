@@ -31,3 +31,12 @@ FridgeAI ist local-first (ADR-0003). Es gibt keinen Server mit den Daten des Hau
 - Etwa 400 KB zusätzlicher Code, nur bei Bedarf geladen und danach offline verfügbar.
 - Die Zahlen im PDF und in der App stammen aus derselben Rechnung.
 - Später möglich: weitere Berichte (Jahresrückblick, pro Person), ein Vergleich mit dem Schweizer Durchschnitt (nur mit Quellenangabe) und ein Monatsbericht von selbst.
+
+## Nachtrag (7.11.2026): Der Bericht öffnet in der App
+
+Alban: «Wenn ich PDF erstellen klicke, kommt direkt das Feld, wo ich es hinspeichern will.» Er wünscht es wie bei einem Beleg in der Banking-App.
+
+- «PDF erstellen» öffnet den Bericht auf einer eigenen Seite in der App (`/more/reports/view`).
+- pdf.js (schon für die Bons da) zeichnet die Seiten auf dem Gerät, darunter steht jeweils «1 von 2».
+- Oben links steht «‹ Berichte», auch die Zurück-Geste des Handys führt zurück. Oben rechts steht «Teilen» (Teilen-Menü, sonst Download).
+- Der Bericht liegt nur im Arbeitsspeicher. Nach einem Neuladen bittet die Seite, ihn neu zu erstellen. Gespeichert wird nichts.
