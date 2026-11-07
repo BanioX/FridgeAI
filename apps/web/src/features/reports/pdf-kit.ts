@@ -283,7 +283,8 @@ export function columns(
   doc.setLineWidth(0.2);
   for (const tick of ticks) {
     const y = yOf(tick);
-    doc.setDrawColor(...(tick === 0 ? PDF_COLOR.silver : PDF_COLOR.line));
+    const grid: Rgb = tick === 0 ? PDF_COLOR.silver : PDF_COLOR.line;
+    doc.setDrawColor(...grid);
     doc.line(plot.x, y, plot.x + plot.width, y);
     write(doc, formatTick(tick), plot.x - 2.5, y, { ...small, align: 'right', baseline: 'middle' });
   }

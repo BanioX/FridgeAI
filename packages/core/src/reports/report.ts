@@ -13,7 +13,7 @@ export interface ReportItem {
   unit: Unit;
   expiresOn: LocalDate;
   /** Missing on reports from callers that do not know it; then «mindestens haltbar» is assumed. */
-  expiryKind?: DateKind;
+  expiryKind?: DateKind | undefined;
   valueRappen: Rappen;
   valueEstimated: boolean;
 }
