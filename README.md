@@ -33,7 +33,7 @@ Unten fünf Tabs: **Start · Vorrat · ＋ Erfassen · Kochen · Mehr** ([ADR-00
 | Bereich | Funktion |
 | --- | --- |
 | **Start** | Was bald abläuft, Wert im Kühlschrank in CHF, Lagerorte auf einen Blick |
-| **Vorrat** | Kühlschrank, Tiefkühler, Vorrat, Notvorrat (bis 100 Jahre) |
+| **Vorrat** | Kühlschrank, Tiefkühler, Vorrat, Notvorrat (bis 100 Jahre); auf der Artikelseite «Weitere Packungen» desselben Produkts mit Datum und dem Hinweis, welche zuerst weg muss |
 | **Erfassen** | Name genügt: Kategorie, Lagerort, Menge, Verpackung und Ablaufdatum werden vorgeschlagen; Eier im 6er/10er, Datumsfeld mit Schnellwahl und Eintippen; «Schnell erfassen»: die eigenen Standardartikel mit einem Tipp; Suche beim Tippen wie «Coop Weggli» (eigene Produkte und Open Food Facts Schweiz) |
 | **Bon hochladen** | PDF, Screenshot oder Foto des Kassenbons (Coop, Migros, Aldi, Lidl, Denner) auf dem Gerät auslesen: Produktname, Menge, bezahlter Preis mit Aktion, Summenprüfung; Lebensmittel angehakt, mit Preis in den Vorrat; derselbe Bon nie doppelt |
 | **Berichte als PDF** | Unter «Mehr»: «Kühlschrank jetzt», «Deine Wirkung» (gerettet und weggeworfen pro Monat, Gründe, «Was auffällt» mit Tipps), «Einkäufe» nach Laden oder alles zusammen, für diesen Monat, 3 Monate oder das Jahr; auf dem Gerät erzeugt und in der App geöffnet, von dort teilen oder speichern |

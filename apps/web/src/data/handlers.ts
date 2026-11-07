@@ -60,6 +60,7 @@ function toView(item: InventoryItem, product: Product | undefined): InventoryIte
   const category = categoryOf(product);
   return {
     id: item.id,
+    productId: item.productId,
     name: product?.name ?? category.name.de,
     emoji: category.emoji,
     categoryId: category.id,

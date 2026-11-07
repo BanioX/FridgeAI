@@ -32,6 +32,7 @@ import { FROM_DETAIL } from './edit-state';
 import { itemMeta } from './item-meta';
 import { formatQuantity } from '../../ui/quantity-text';
 import { portionLabel } from './portion-labels';
+import { OtherPacks } from './OtherPacks';
 import { ProductFacts } from './ProductFacts';
 import { useInventoryItem } from './use-item';
 import { useProductImage } from './use-product-image';
@@ -53,6 +54,11 @@ const recipientOptions = ShareRecipientSchema.options.map((value) => ({
  */
 export function ItemDetailPage() {
   const { itemId } = useParams();
+  // A fresh page per item: choices and undo never carry over to another pack.
+  return <ItemDetail key={itemId} itemId={itemId} />;
+}
+
+function ItemDetail({ itemId }: { itemId: string | undefined }) {
   const { householdId, ids, inventory, today } = useAppData();
   const navigate = useNavigate();
   const item = useInventoryItem(itemId);
@@ -257,6 +263,8 @@ export function ItemDetailPage() {
           <StatusChip tone={badge.tone}>{badge.label}</StatusChip>
         </div>
       </Card>
+
+      <OtherPacks item={item} />
 
       <ProductFacts item={item} />
 
