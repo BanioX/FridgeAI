@@ -36,7 +36,7 @@ Unten fünf Tabs: **Start · Vorrat · ＋ Erfassen · Kochen · Mehr** ([ADR-00
 | **Vorrat** | Kühlschrank, Tiefkühler, Vorrat, Notvorrat (bis 100 Jahre) |
 | **Erfassen** | Name genügt: Kategorie, Lagerort, Menge, Verpackung und Ablaufdatum werden vorgeschlagen; Eier im 6er/10er, Datumsfeld mit Schnellwahl und Eintippen; «Schnell erfassen»: die eigenen Standardartikel mit einem Tipp; Suche beim Tippen wie «Coop Weggli» (eigene Produkte und Open Food Facts Schweiz) |
 | **Bon hochladen** | PDF, Screenshot oder Foto des Kassenbons (Coop, Migros, Aldi, Lidl, Denner) auf dem Gerät auslesen: Produktname, Menge, bezahlter Preis mit Aktion, Summenprüfung; Lebensmittel angehakt, mit Preis in den Vorrat; derselbe Bon nie doppelt |
-| **Berichte als PDF** | Unter «Mehr»: «Kühlschrank jetzt», «Deine Wirkung» (gerettet und weggeworfen pro Monat, Gründe, «Was auffällt» mit Tipps), «Einkäufe» nach Laden oder alles zusammen, für diesen Monat, 3 Monate oder das Jahr; auf dem Gerät erzeugt, teilen oder speichern |
+| **Berichte als PDF** | Unter «Mehr»: «Kühlschrank jetzt», «Deine Wirkung» (gerettet und weggeworfen pro Monat, Gründe, «Was auffällt» mit Tipps), «Einkäufe» nach Laden oder alles zusammen, für diesen Monat, 3 Monate oder das Jahr; auf dem Gerät erzeugt und in der App geöffnet, von dort teilen oder speichern |
 | **Barcode und eigene KI** | Unter ＋: Barcode, QR und GS1-DataMatrix (Datum aus dem Code); KI-Import: Foto in deiner KI, Liste in rettich übernehmen |
 | **Abschliessen** | Gegessen, weitergegeben (an wen), weggeworfen (warum) – ganz oder in sinnvollen Portionen (⅛ Kuchen, ⅓ Käse, 2 von 4 Joghurts) |
 | **Öffnungsregel** | «Nach dem Öffnen innert 21 Tagen» verkürzt das Datum automatisch |
