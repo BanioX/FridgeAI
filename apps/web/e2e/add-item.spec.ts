@@ -49,7 +49,8 @@ test('the form is lean: no barcode button, no quick add, one save button', async
   await expect(page.getByRole('button', { name: /nächsten erfassen/ })).toHaveCount(0);
   // Location and price are folded away, but the disclosure says what is set.
   await expect(page.getByRole('radio', { name: 'Tiefkühler' })).toBeHidden();
-  await expect(page.getByText('Mehr Angaben · Vorrat')).toBeVisible();
+  // «Kühlschrank zuerst»: without a known category the food goes to the fridge.
+  await expect(page.getByText('Mehr Angaben · Kühlschrank')).toBeVisible();
   await page.getByText('Mehr Angaben').click();
   await page.getByText('Tiefkühler', { exact: true }).click();
   await page.getByLabel('Preis in CHF (freiwillig)').fill('3.95');

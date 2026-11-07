@@ -89,12 +89,14 @@ export function AddItemPage() {
   // The name taken from the search: no suggestions for it until the person types again.
   const [pickedName, setPickedName] = useState<string | null>(null);
 
-  const category =
+  const knownCategory =
     (categoryChoice === null ? undefined : categoryById(categoryChoice)) ??
-    matchCategoryByName(name) ??
-    fallbackCategory();
+    matchCategoryByName(name);
+  const category = knownCategory ?? fallbackCategory();
   const portioning = portioningOf(category);
-  const location = locationChoice ?? category.defaultLocation;
+  // «Kühlschrank zuerst»: an unknown food goes to the fridge, not to the fallback category's
+  // pantry – the location sits under «Mehr Angaben» and would otherwise change unseen.
+  const location = locationChoice ?? knownCategory?.defaultLocation ?? 'fridge';
   const suggestion = suggestedAmount(category);
   const unit = unitChoice ?? suggestion.unit;
   const amountValue = amountText ?? formatAmount(suggestion.amount);

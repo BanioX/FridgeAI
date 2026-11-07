@@ -45,6 +45,13 @@ describe('AddItemPage', () => {
     expect(details?.contains(screen.getByLabelText(t.category))).toBe(true);
   });
 
+  it("puts unknown food in the fridge, not in the fallback category's pantry", async () => {
+    await renderPage();
+    expect(moreButton().textContent).toBe(t.moreWith(messages.locations.fridge));
+    await userEvent.type(screen.getByLabelText(t.name), 'Hummus nach Grossmutters Art');
+    expect(moreButton().textContent).toBe(t.moreWith(messages.locations.fridge));
+  });
+
   it('has no barcode button, no quick add and one save button', async () => {
     await renderPage();
     expect(screen.queryByRole('button', { name: messages.scanner.open })).toBeNull();
@@ -62,9 +69,9 @@ describe('AddItemPage', () => {
 
   it('follows the category suggestion in the summary until a location is chosen', async () => {
     await renderPage();
-    expect(moreButton().textContent).toBe(t.moreWith('Vorrat'));
-    await userEvent.type(screen.getByLabelText(t.name), 'Vollmilch');
     expect(moreButton().textContent).toBe(t.moreWith('Kühlschrank'));
+    await userEvent.type(screen.getByLabelText(t.name), 'Spaghetti');
+    expect(moreButton().textContent).toBe(t.moreWith('Vorrat'));
   });
 
   it('opens «Mehr Angaben» when the price is invalid on save', async () => {
