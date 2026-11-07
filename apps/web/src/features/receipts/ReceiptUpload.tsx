@@ -11,6 +11,7 @@ import {
   type Id,
   type ParsedReceipt,
   type ParsedReceiptLine,
+  type Rappen,
 } from '@fridgeai/core';
 import { FileText } from 'lucide-react';
 import { useState } from 'react';
@@ -21,6 +22,7 @@ import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { GroupedList, GroupedListItem } from '../../ui/GroupedList';
 import { formatAmount } from '../inventory/add-item';
+import { PriceField } from './PriceField';
 import { sha256Hex } from './hash';
 import { readImageText } from './read-image';
 import { readPdfText } from './read-pdf';
@@ -40,6 +42,40 @@ interface Review {
 }
 
 const paid = (line: ParsedReceiptLine) => rappen(line.priceRappen + line.discountRappen);
+
+/** A corrected price replaces what was read: paid as typed, no discount left to explain it. */
+function withPrice(receipt: ParsedReceipt, index: number, price: Rappen): ParsedReceipt {
+  const lines = receipt.lines.map((line, position) => {
+    if (position !== index) {
+      return line;
+    }
+    const perPiece = line.unit === 'pcs' && price % line.quantity === 0;
+    const corrected: ParsedReceiptLine = {
+      rawText: line.rawText,
+      kind: line.kind,
+      name: line.name,
+      quantity: line.quantity,
+      unit: line.unit,
+      ...(line.isFood === undefined ? {} : { isFood: line.isFood }),
+      priceRappen: price,
+      discountRappen: rappen(0),
+      ...(perPiece ? { unitPriceRappen: rappen(price / line.quantity) } : {}),
+    };
+    return corrected;
+  });
+  const computedTotalRappen = sumRappen(lines.map(paid));
+  return {
+    ...receipt,
+    lines,
+    computedTotalRappen,
+    sumCheck:
+      receipt.totalRappen === null
+        ? 'no-total'
+        : receipt.totalRappen === computedTotalRappen
+          ? 'ok'
+          : 'mismatch',
+  };
+}
 
 function amountText(line: ParsedReceiptLine): string {
   const shown = displayQuantity(line.quantity, line.unit);
@@ -195,8 +231,12 @@ export function ReceiptUpload() {
           <GroupedList>
             {receipt.lines.map((line, index) =>
               line.kind !== 'item' ? null : (
-                <GroupedListItem key={`${String(index)}-${line.name}`} inset="check">
-                  <label className="flex min-h-14 cursor-pointer items-center gap-3 py-2 pr-4 pl-4">
+                <GroupedListItem
+                  key={`${String(index)}-${line.name}`}
+                  inset="check"
+                  className="flex items-center gap-2 pr-2"
+                >
+                  <label className="flex min-h-14 min-w-0 flex-1 cursor-pointer items-center gap-3 py-2 pl-4">
                     <input
                       type="checkbox"
                       checked={review.chosen.has(index)}
@@ -225,10 +265,14 @@ export function ReceiptUpload() {
                           .join(' · ')}
                       </span>
                     </span>
-                    <span className="shrink-0 font-semibold tabular-nums">
-                      {formatChf(paid(line), { currency: false })}
-                    </span>
                   </label>
+                  <PriceField
+                    name={line.name}
+                    value={paid(line)}
+                    onChange={(price) => {
+                      setReview({ ...review, receipt: withPrice(receipt, index, price) });
+                    }}
+                  />
                 </GroupedListItem>
               ),
             )}
