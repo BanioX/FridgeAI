@@ -20,7 +20,7 @@ import {
   type StorageLocation,
 } from '@fridgeai/core';
 import { useId, useRef, useState } from 'react';
-import { ScanBarcode } from 'lucide-react';
+import { ChevronDown, ScanBarcode } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
@@ -49,7 +49,8 @@ const fieldClass = (invalid: boolean, width = 'w-full') =>
 
 /**
  * «Artikel erfassen» (step 3d): the name suggests the category, which suggests location, unit,
- * amount and expiry date. Everything stays editable; nothing needs more than the name.
+ * amount and expiry date. Everything stays editable; nothing needs more than the name. The
+ * category itself stays out of sight under «Mehr Angaben» (ADR-0026).
  */
 export function AddItemPage() {
   const { householdId, ids, inventory, today } = useAppData();
@@ -313,31 +314,6 @@ export function AddItemPage() {
           />
         </div>
 
-        <div className="space-y-1.5">
-          <label htmlFor={`${id}-category`} className="font-semibold">
-            {t.category}
-          </label>
-          <div className="flex items-center gap-3">
-            <span aria-hidden="true" className="text-3xl">
-              {category.emoji}
-            </span>
-            <select
-              id={`${id}-category`}
-              value={category.id}
-              onChange={(event) => {
-                setCategoryChoice(event.target.value);
-              }}
-              className={fieldClass(false)}
-            >
-              {sortedCategories.map((option) => (
-                <option key={option.id} value={option.id}>
-                  {option.name.de}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
         <fieldset className="space-y-1.5">
           <legend className="font-semibold">{t.location}</legend>
           <div className="grid grid-cols-4 gap-1 rounded-2xl bg-surface-muted p-1">
@@ -490,6 +466,41 @@ export function AddItemPage() {
             {shown(errors.price)}
           </p>
         </div>
+
+        {/* The category only works in the background (ADR-0026); changing it is rarely needed. */}
+        <details className="group">
+          <summary className="flex min-h-11 w-fit cursor-pointer list-none items-center gap-2 font-semibold text-basil-800 focus-visible:outline-2 focus-visible:outline-offset-2">
+            {t.more}
+            <ChevronDown
+              size={20}
+              aria-hidden="true"
+              className="transition-transform group-open:rotate-180"
+            />
+          </summary>
+          <div className="mt-2 space-y-1.5">
+            <label htmlFor={`${id}-category`} className="font-semibold">
+              {t.category}
+            </label>
+            <select
+              id={`${id}-category`}
+              value={category.id}
+              aria-describedby={`${id}-category-hint`}
+              onChange={(event) => {
+                setCategoryChoice(event.target.value);
+              }}
+              className={fieldClass(false)}
+            >
+              {sortedCategories.map((option) => (
+                <option key={option.id} value={option.id}>
+                  {option.name.de}
+                </option>
+              ))}
+            </select>
+            <p id={`${id}-category-hint`} className="text-sm text-ink-muted">
+              {t.categoryHint}
+            </p>
+          </div>
+        </details>
 
         <p role="status" className="font-semibold text-basil-800">
           {status}
