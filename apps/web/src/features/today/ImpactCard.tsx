@@ -1,8 +1,9 @@
-import { formatChf, type LocalDate } from '@fridgeai/core';
+import type { LocalDate } from '@fridgeai/core';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { ChevronRight } from 'lucide-react';
 import { Link } from 'react-router';
 import { useAppData } from '../../app/AppData';
+import { useMoney } from '../../app/money';
 import { messages } from '../../app/messages.de-CH';
 import { Card } from '../../ui/Card';
 
@@ -10,11 +11,12 @@ const t = messages.today;
 
 /**
  * «Deine Wirkung diesen Monat» (step 6, US-06, ADR-0033): rescued (eaten or given away shortly
- * before expiry) against wasted, in CHF and items, from `stats.waste`. Ordinary eating is not a
+ * before expiry) against wasted, in the household currency and items, from `stats.waste`. Ordinary eating is not a
  * rescue and does not show. Hidden until something was rescued or thrown away in the period.
  */
 export function ImpactCard({ from, to }: { from: LocalDate; to: LocalDate }) {
   const { householdId, inventory } = useAppData();
+  const money = useMoney();
   const stats = useLiveQuery(
     () => inventory['stats.waste']({ householdId, from, to }),
     [householdId, from, to],
@@ -39,14 +41,14 @@ export function ImpactCard({ from, to }: { from: LocalDate; to: LocalDate }) {
         <div className="rounded-xl bg-basil-50 p-3">
           <dt className="text-sm font-semibold text-basil-800">{t.saved}</dt>
           <dd className="font-display text-2xl font-semibold text-basil-800 tabular-nums">
-            {formatChf(stats.savedRappen)}
+            {money.format(stats.savedRappen)}
           </dd>
           <dd className="text-sm text-ink-muted">{t.savedCount(stats.savedCount)}</dd>
         </div>
         <div className="rounded-xl bg-surface-muted p-3">
           <dt className="text-sm font-semibold text-today">{t.wasted}</dt>
           <dd className="font-display text-2xl font-semibold text-today tabular-nums">
-            {formatChf(stats.wastedRappen)}
+            {money.format(stats.wastedRappen)}
           </dd>
           <dd className="text-sm text-ink-muted">{t.wastedCount(stats.wastedCount)}</dd>
         </div>

@@ -1,7 +1,6 @@
 import {
   displayQuantity,
   fallbackCategory,
-  formatChf,
   formatSwissDate,
   IsoDateTimeSchema,
   matchCategoryByName,
@@ -23,6 +22,7 @@ import { Card } from '../../ui/Card';
 import { GroupedList, GroupedListItem } from '../../ui/GroupedList';
 import { formatAmount } from '../inventory/add-item';
 import { MatchPanel, MatchRow, useReceiptMatching } from './ReceiptMatch';
+import { useMoney } from '../../app/money';
 import { PriceField } from './PriceField';
 import { priceHint, type PriceMemory } from './price-hint';
 import { sha256Hex } from './hash';
@@ -122,6 +122,7 @@ export function ReceiptUpload() {
   const [busy, setBusy] = useState(false);
   const [review, setReview] = useState<Review | null>(null);
   const matching = useReceiptMatching();
+  const money = useMoney();
 
   async function read(file: File) {
     setReview(null);
@@ -264,10 +265,10 @@ export function ReceiptUpload() {
             {receipt.sumCheck === 'ok' || receipt.totalRappen === null
               ? receipt.totalRappen === null
                 ? t.noTotal
-                : t.sumOk(formatChf(receipt.totalRappen))
+                : t.sumOk(money.format(receipt.totalRappen))
               : t.sumMismatch(
-                  formatChf(receipt.computedTotalRappen),
-                  formatChf(receipt.totalRappen),
+                  money.format(receipt.computedTotalRappen),
+                  money.format(receipt.totalRappen),
                 )}
           </p>
           <MatchPanel
@@ -302,14 +303,14 @@ export function ReceiptUpload() {
                           {[
                             amountText(line),
                             line.discountRappen < 0
-                              ? t.instead(formatChf(line.priceRappen, { currency: false }))
+                              ? t.instead(money.format(line.priceRappen, { currency: false }))
                               : undefined,
                             isFood(line) ? undefined : t.notFood,
                           ]
                             .filter(Boolean)
                             .join(' · ')}
                         </span>
-                        <PriceHint hint={priceHint(line, review.memory.get(line.name))} />
+                        <PriceHint hint={priceHint(line, review.memory.get(line.name), money)} />
                       </span>
                     </label>
                     <PriceField
@@ -326,7 +327,7 @@ export function ReceiptUpload() {
             )}
           </GroupedList>
           {extras === null || extras === 0 ? null : (
-            <p className="text-sm text-ink-muted">{t.extras(formatChf(extras))}</p>
+            <p className="text-sm text-ink-muted">{t.extras(money.format(extras))}</p>
           )}
           <Button
             fullWidth

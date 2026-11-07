@@ -41,7 +41,7 @@ describe('AddItemPage', () => {
     const details = moreButton().closest('details');
     expect(details?.open).toBe(false);
     expect(details?.contains(screen.getByText(t.location))).toBe(true);
-    expect(details?.contains(screen.getByLabelText(t.price))).toBe(true);
+    expect(details?.contains(screen.getByLabelText(t.price('CHF')))).toBe(true);
     expect(details?.contains(screen.getByLabelText(t.category))).toBe(true);
   });
 
@@ -63,7 +63,7 @@ describe('AddItemPage', () => {
     await renderPage('/inventory/new?location=freezer');
     expect(moreButton().textContent).toBe(t.moreWith('Tiefkühler'));
     await userEvent.click(moreButton());
-    await userEvent.type(screen.getByLabelText(t.price), '3.95');
+    await userEvent.type(screen.getByLabelText(t.price('CHF')), '3.95');
     expect(moreButton().textContent).toBe(t.moreWith('Tiefkühler, CHF 3.95'));
   });
 
@@ -78,9 +78,9 @@ describe('AddItemPage', () => {
     await renderPage();
     await userEvent.type(screen.getByLabelText(t.name), 'Butter');
     await userEvent.click(moreButton());
-    await userEvent.type(screen.getByLabelText(t.price), 'abc');
+    await userEvent.type(screen.getByLabelText(t.price('CHF')), 'abc');
     await userEvent.click(screen.getByRole('button', { name: t.save }));
-    expect(screen.getByText(t.priceInvalid)).toBeDefined();
+    expect(screen.getByText(t.priceInvalid('3.95'))).toBeDefined();
     expect(screen.getByTestId('where').textContent).toBe('/inventory/new');
   });
 

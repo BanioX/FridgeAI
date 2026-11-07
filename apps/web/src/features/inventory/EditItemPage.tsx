@@ -3,18 +3,18 @@ import {
   categoryById,
   DateKindSchema,
   fallbackCategory,
-  formatChf,
-  parseChf,
   shelfLifeAt,
   type DateKind,
   type InventoryItemView,
   type LocalDate,
   type StorageLocation,
+  rappen,
 } from '@fridgeai/core';
 import { ArrowLeft } from 'lucide-react';
 import { useId, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router';
 import { useAppData } from '../../app/AppData';
+import { useMoney } from '../../app/money';
 import { messages } from '../../app/messages.de-CH';
 import { Button } from '../../ui/Button';
 import { ChoiceChips } from '../../ui/ChoiceChips';
@@ -58,6 +58,7 @@ export function EditItemPage() {
 
 function EditItemForm({ item }: { item: InventoryItemView }) {
   const { householdId, ids, inventory, today } = useAppData();
+  const money = useMoney();
   const navigate = useNavigate();
   const location = useLocation();
   const id = useId();
@@ -69,7 +70,7 @@ function EditItemForm({ item }: { item: InventoryItemView }) {
   // Compared as text: ⅓ shows as «0.333», and saving it untouched must not change the quantity.
   const initialQuantity = formatAmount(item.quantity);
   const initialPrice =
-    item.priceRappen === undefined ? '' : formatChf(item.priceRappen, { currency: false });
+    item.priceRappen === undefined ? '' : money.format(item.priceRappen, { currency: false });
   const [quantityText, setQuantityText] = useState(initialQuantity);
   const [priceText, setPriceText] = useState(initialPrice);
   const [submitted, setSubmitted] = useState(false);
@@ -78,13 +79,13 @@ function EditItemForm({ item }: { item: InventoryItemView }) {
 
   const category = categoryById(categoryId) ?? fallbackCategory();
   const quantity = parseAmount(quantityText);
-  const price = priceText.trim() === '' ? null : parseChf(priceText);
+  const price = priceText.trim() === '' ? null : money.parse(priceText);
   const priceInvalid = priceText.trim() !== '' && (price === null || price < 0);
   const errors = {
     name: name.trim() === '' ? t.nameMissing : null,
     date: expiresOn === null ? t.dateMissing : null,
     quantity: quantity === null ? t.quantityInvalid : null,
-    price: priceInvalid ? t.priceInvalid : null,
+    price: priceInvalid ? t.priceInvalid(money.format(rappen(395), { currency: false })) : null,
   };
   const shown = (error: string | null) => (submitted ? error : null);
   const detailPath = `/inventory/${item.id}`;
@@ -252,7 +253,7 @@ function EditItemForm({ item }: { item: InventoryItemView }) {
 
         <div className="space-y-1.5">
           <label htmlFor={`${id}-price`} className="font-semibold">
-            {t.price}
+            {t.price(money.symbol)}
           </label>
           <p id={`${id}-price-hint`} className="text-sm text-ink-muted">
             {t.priceHint}

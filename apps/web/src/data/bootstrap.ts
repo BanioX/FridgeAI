@@ -1,4 +1,5 @@
 import {
+  DEFAULT_CURRENCY,
   HouseholdSchema,
   MemberSchema,
   ReminderPrefsSchema,
@@ -43,6 +44,7 @@ export async function ensureLocalHousehold(
       id: ids.next(),
       name: names.household,
       plan: 'free',
+      currency: DEFAULT_CURRENCY,
       createdAt: now,
       updatedAt: now,
     });

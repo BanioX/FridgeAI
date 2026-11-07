@@ -2,6 +2,7 @@ import { FileText } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useAppData } from '../../app/AppData';
+import { useMoney } from '../../app/money';
 import { messages } from '../../app/messages.de-CH';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
@@ -22,6 +23,7 @@ const periodOptions = (Object.keys(t.periods) as Period[]).map((value) => ({
  */
 export function ReportCard() {
   const { householdId, inventory, today } = useAppData();
+  const money = useMoney();
   const navigate = useNavigate();
   const [period, setPeriod] = useState<Period>('month');
   const [busy, setBusy] = useState(false);
@@ -41,6 +43,7 @@ export function ReportCard() {
         household: messages.defaults.householdName,
         period: t.periods[period],
         createdOn: today,
+        money,
       });
       openReport({
         file: new File([blob], `rettich-bericht-${today}.pdf`, { type: 'application/pdf' }),

@@ -1,5 +1,7 @@
 import {
   createShoppingUseCases,
+  householdCurrency,
+  type CurrencyCode,
   type Id,
   type IdGenerator,
   type LocalDate,
@@ -28,6 +30,8 @@ export interface AppData {
   householdId: Id;
   memberId: Id;
   ids: IdGenerator;
+  /** Household currency (ADR-0019); amounts are integers in its smallest unit. */
+  currency: CurrencyCode;
   /** Swiss calendar day when the app was opened; refreshed when the app becomes visible again. */
   today: LocalDate;
   inventory: InventoryHandlers;
@@ -76,6 +80,7 @@ export function AppDataProvider({ children, db }: { children: ReactNode; db?: Fr
           householdId: profile.household.id,
           memberId: profile.member.id,
           ids: browserIds,
+          currency: householdCurrency(profile.household),
           today: browserClock.today(),
           inventory: createInventoryHandlers(context),
           shopping: createShoppingUseCases(appContext(context)),

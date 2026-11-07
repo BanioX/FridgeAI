@@ -1,5 +1,6 @@
-import { categoryById, formatChf, type Report } from '@fridgeai/core';
+import { categoryById, type Report } from '@fridgeai/core';
 import { messages } from '../../app/messages.de-CH';
+import { CHF_MONEY, type Money } from '../../app/money-format';
 
 const t = messages.reports.insights;
 
@@ -8,7 +9,7 @@ const t = messages.reports.insights;
  * what is wasted most and why (with a tip for that reason), what is urgent now and where the most
  * money went. Only what the data supports.
  */
-export function reportInsights(report: Report): string[] {
+export function reportInsights(report: Report, money: Money = CHF_MONEY): string[] {
   const lines: string[] = [];
   const share = report.impact.savedShare;
   if (share !== null) {
@@ -20,7 +21,7 @@ export function reportInsights(report: Report): string[] {
   const [top] = report.impact.topWasted;
   if (top !== undefined) {
     const name = categoryById(top.categoryId)?.name.de ?? top.categoryId;
-    lines.push(t.topWaste(name, top.count, formatChf(top.valueRappen)));
+    lines.push(t.topWaste(name, top.count, money.format(top.valueRappen)));
   }
   const [reason] = report.impact.reasons;
   if (reason !== undefined) {
@@ -31,7 +32,7 @@ export function reportInsights(report: Report): string[] {
   }
   const [shop] = report.shopping.byRetailer;
   if (shop !== undefined) {
-    lines.push(t.shop(messages.priceMemory.shops[shop.retailer], formatChf(shop.spentRappen)));
+    lines.push(t.shop(messages.priceMemory.shops[shop.retailer], money.format(shop.spentRappen)));
   }
   return lines.length === 0 ? [t.nothing] : lines;
 }

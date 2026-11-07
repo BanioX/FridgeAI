@@ -1,12 +1,12 @@
 import {
   differenceFromUsual,
-  formatChf,
   rappen,
   unitPrice,
   type OperationOutput,
   type ParsedReceiptLine,
 } from '@fridgeai/core';
 import { messages } from '../../app/messages.de-CH';
+import { CHF_MONEY, type Money } from '../../app/money-format';
 
 export type PriceMemory = OperationOutput<'prices.memory'>['products'][number];
 
@@ -20,6 +20,7 @@ const PER = { pcs: '', g: '/kg', ml: '/l' } as const;
 export function priceHint(
   line: ParsedReceiptLine,
   memory: PriceMemory | undefined,
+  money: Money = CHF_MONEY,
 ): { text: string; tone: 'dearer' | 'cheaper' | 'info' } | null {
   const last = memory?.last;
   if (memory === undefined || last === undefined) {
@@ -40,6 +41,6 @@ export function priceHint(
   }
   // «zuletzt 0.70/Stück» next to «2 Stück · 1.40», so the two numbers are not confused.
   const per = last.unit === 'pcs' && line.quantity !== 1 ? '/Stück' : PER[last.unit];
-  const price = `${formatChf(last.unitPriceRappen, { currency: false })}${per}`;
+  const price = `${money.format(last.unitPriceRappen, { currency: false })}${per}`;
   return { text: t.lastPaid(price, t.retailers[last.retailer]), tone: 'info' };
 }
