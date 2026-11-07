@@ -88,9 +88,7 @@ function toView(item: InventoryItem, product: Product | undefined): InventoryIte
  */
 export function createInventoryHandlers(ctx: HandlerContext) {
   const { db, clock, ids, actor, catalog } = ctx;
-  const allTables = [db.items, db.products, db.outcomes, db.events, db.commands, db.catalogCache];
-
-  const { event, runCommand } = createCommandKit(ctx, allTables);
+  const { event, runCommand } = createCommandKit(ctx);
 
   async function activeItem(householdId: Id, itemId: Id): Promise<InventoryItem> {
     const item = await db.items.get(itemId);

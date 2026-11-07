@@ -1,11 +1,11 @@
 import 'fake-indexeddb/auto';
-import { type Id, type OperationInput } from '@fridgeai/core';
+import { createShoppingUseCases, type Id, type OperationInput } from '@fridgeai/core';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { ensureLocalHousehold } from './bootstrap';
+import { appContext } from './command';
 import type { FridgeDb } from './db';
 import { createInventoryHandlers } from './handlers';
 import { createHouseholdHandlers } from './household-handlers';
-import { createShoppingHandlers } from './shopping-handlers';
 import { fixedClock, sequentialIds, testDb } from './test-helpers';
 
 let db: FridgeDb;
@@ -39,7 +39,7 @@ describe('household export and delete', () => {
       outcome: 'eaten',
       quantity: 1,
     });
-    await createShoppingHandlers(ctx)['shopping.addItem']({
+    await createShoppingUseCases(appContext(ctx))['shopping.addItem']({
       commandId: ids.next(),
       householdId,
       name: 'Milch',
