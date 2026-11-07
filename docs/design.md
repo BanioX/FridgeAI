@@ -16,13 +16,13 @@ Alle Text-/Hintergrund-Paare erfüllen WCAG AA (mindestens 4.5:1), geprüft beim
 
 | Token | Wert | Verwendung |
 | --- | --- | --- |
-| `basil-50 … 950` | «Symbol-Grün», sanft (Alban, 7.11.2026): `#F5F9F7` … `#1F442E` (600 = `#438D61` nur für Grafik, 700 = `#3A7853` Knöpfe und Links, 800 = `#346748` Text) | Marke, Primäraktionen, «frisch». Weiss auf 700: 5.3:1, 700 auf `oat`: 4.9:1, 800 auf 100: 5.8:1 |
-| `oat` (Hintergrund) | `#F8F6F1` | App-Hintergrund |
+| `basil-50 … 950` | Albans Palette (7.11.2026): 50 Honeydew `#F0FFF0`, 100 Tea Green `#D0F0C0`, 200 Celadon `#ACE1AF`; dunklere Stufen im Celadon-Farbton: 600 `#458749` (nur Grafik), 700 `#3D7640` (Knöpfe, Links), 800 `#326235` (Text) | Marke, Flächen, Primäraktionen. Weiss auf 700: 5.4:1, 700 auf `oat`: 5.2:1, 800 auf 100: 5.8:1 |
+| `oat` (Hintergrund) | `#F6FBF5` (ein Hauch Honeydew) | App-Hintergrund |
 | `surface` | `#FFFFFF` | Karten, Navigation |
-| `surface-muted` | `#F1EEE6` | Eingabefelder, Chips |
-| `line` | `#E4DFD3` | Trennlinien, Ränder |
+| `surface-muted` | `#E9F2E7` | Eingabefelder, Chips |
+| `line` | `#D6E4D4` | Trennlinien, Ränder |
 | `ink` | `#1C211E` | Haupttext (15:1) |
-| `ink-muted` | `#5B635D` | Nebentext (5.7:1) |
+| `ink-muted` | `#56615A` | Nebentext (6.2:1) |
 | `soon` | Text `#8A4B0F` auf `#FFF1DF`, Akzent `#E39A3B` | läuft in 1–3 Tagen ab |
 | `today` | Text `#A63A22` auf `#FDEBE6`, Akzent `#E0603F` | läuft heute ab / MHD abgelaufen |
 | `danger` | Weiss auf `#B3261E` | Verbrauchsdatum abgelaufen: «Nicht mehr essen» |

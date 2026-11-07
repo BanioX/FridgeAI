@@ -12,26 +12,27 @@
     sans-serif;
   --font-display: var(--font-sans);
 
-  /* Brand: basil, the soft «Symbol-Grün» (Alban, 7.11.2026; WCAG AA on white and oat) */
-  --color-basil-50: #f5f9f7;
-  --color-basil-100: #e8f2ec;
-  --color-basil-200: #c6ded0;
-  --color-basil-300: #9bc3ab;
-  --color-basil-400: #6da483;
-  --color-basil-500: #54a474;
-  --color-basil-600: #438d61;
-  --color-basil-700: #3a7853;
-  --color-basil-800: #346748;
-  --color-basil-900: #305b41;
-  --color-basil-950: #1f442e;
+  /* Brand: basil from Alban's palette (7.11.2026): Honeydew 50, Tea Green 100, Celadon 200, darker
+     steps in Celadon's hue; WCAG AA for text and buttons (docs/design.md). */
+  --color-basil-50: #f0fff0;
+  --color-basil-100: #d0f0c0;
+  --color-basil-200: #ace1af;
+  --color-basil-300: #7bc17f;
+  --color-basil-400: #57a85b;
+  --color-basil-500: #4e9752;
+  --color-basil-600: #458749;
+  --color-basil-700: #3d7640;
+  --color-basil-800: #326235;
+  --color-basil-900: #264a28;
+  --color-basil-950: #152816;
 
-  /* Neutrals: warm, like baking paper */
-  --color-oat: #f8f6f1;
+  /* Neutrals: a breath of Honeydew, so the palette runs through the whole app */
+  --color-oat: #f6fbf5;
   --color-surface: #ffffff;
-  --color-surface-muted: #f1eee6;
-  --color-line: #e4dfd3;
+  --color-surface-muted: #e9f2e7;
+  --color-line: #d6e4d4;
   --color-ink: #1c211e;
-  --color-ink-muted: #5b635d;
+  --color-ink-muted: #56615a;
 
   /* Expiry status (always paired with text, never colour alone) */
   --color-soon: #8a4b0f;
