@@ -388,6 +388,19 @@ export const messages = {
     donation: 'Spende',
     public_fridge: 'öffentlicher Kühlschrank',
   },
+  priceMemory: {
+    last: (price: string, shop: string, date: string) => `Zuletzt ${price} bei ${shop} (${date})`,
+    usual: (price: string) => `üblich ${price}`,
+    cheapest: (price: string, shop: string) => `am günstigsten ${price} bei ${shop}`,
+    shops: {
+      coop: 'Coop',
+      migros: 'Migros',
+      aldi: 'Aldi',
+      lidl: 'Lidl',
+      denner: 'Denner',
+      other: 'anderem Laden',
+    },
+  },
   receiptUpload: {
     title: 'Bon hochladen',
     intro:

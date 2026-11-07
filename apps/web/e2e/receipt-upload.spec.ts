@@ -179,4 +179,17 @@ test('remembers prices: «zuletzt …» and «… % teurer als sonst» on the ne
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
   review = await upload(semmeli('06.11.26', 'Coop Semmeli 80G 1.0 0.95 0.95 0 A', '0.95'));
   await expect(review.getByText('22 % teurer als sonst')).toBeVisible();
+  await review.getByRole('button', { name: '1 Artikel übernehmen' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
+
+  // The item page and the add form remember too (dates in the text, the 120-day window aside).
+  await page.goto('/inventory?location=pantry');
+  await page
+    .getByRole('link', { name: /Coop Semmeli 80G/ })
+    .first()
+    .click();
+  await expect(page.getByText(/Zuletzt 0\.95 bei Coop \(06\.11\.2026\)/)).toBeVisible();
+  await page.goto('/inventory/new');
+  await page.getByLabel('Was ist es?').fill('Coop Semmeli 80G');
+  await expect(page.getByText(/Zuletzt 0\.95 bei Coop/)).toBeVisible();
 });

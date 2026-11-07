@@ -39,6 +39,7 @@ import {
 import { locationOrder } from './item-meta';
 import { NameSearch, type FoundProduct } from './NameSearch';
 import { QuickAdd } from './QuickAdd';
+import { PriceMemoryNote } from '../receipts/PriceMemoryNote';
 
 const t = messages.addItem;
 const sortedCategories = [...CATEGORIES].sort((a, b) => a.name.de.localeCompare(b.name.de, 'de'));
@@ -465,6 +466,7 @@ export function AddItemPage() {
           <p id={`${id}-price-error`} className="text-sm text-today">
             {shown(errors.price)}
           </p>
+          <PriceMemoryNote name={name} />
         </div>
 
         {/* The category only works in the background (ADR-0026); changing it is rarely needed. */}
