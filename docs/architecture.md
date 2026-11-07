@@ -3,6 +3,35 @@
 > Stand: 6. November 2026. Auftrag von Alban: «Denke gross, erweiterbar, wartbar, state of the art, skalierbar bis Unicorn.»
 > Entscheide im Detail: [`adr/`](./adr/). Plan: [`plan.md`](./plan.md). Use Cases: [`use-cases.md`](./use-cases.md).
 
+## 0. Drei Schichten ([ADR-0034](./adr/0034-three-layers.md))
+
+```mermaid
+flowchart TB
+  subgraph P["1 · Präsentation (apps/web: app, features, ui)"]
+    UI["React-Seiten und Bausteine"]
+  end
+  subgraph L["2 · Logik (packages/core)"]
+    C["Schnittstelle CONTRACT_V1 (Zod)"]
+    A["Anwendungsfälle"]
+    D["Regeln und Modell: Ablauf, gerettet, Geld, Rezepte, Bon"]
+    Ports["Ports (Interfaces)"]
+  end
+  subgraph S["3 · Daten"]
+    Dexie[("IndexedDB / Dexie (Gerät)")]
+    OFF["Open Food Facts"]
+    PG[("PostgreSQL (Server, ab Schritt 7)")]
+  end
+  UI -->|nur Commands und Queries| C --> A --> D
+  A --> Ports
+  Ports -.umgesetzt von.-> Dexie
+  Ports -.umgesetzt von.-> OFF
+  Ports -. später .-> PG
+```
+
+- **Präsentation** kennt nur die Schnittstelle. **Logik** kennt nur Ports. **Daten** setzen die Ports um: heute Dexie im Browser, später zusätzlich PostgreSQL auf dem Server.
+- Die Grenzen prüft ESLint in der CI.
+- Die Anwendungsfälle stehen heute noch in `apps/web/src/data/*-handlers.ts`. Sie wandern Schritt für Schritt nach `packages/core/src/application`, der Weg steht in ADR-0034.
+
 ## 1. Leitprinzipien
 
 1. **Modularer Monolith statt Microservices.** Ein Repo, klare Module (`core`, `web`, später `api`, `mobile`), harte Grenzen über Ports und die Schnittstelle. Microservices erst, wenn ein Teil wirklich unabhängig skalieren muss (Erfahrungswert: Millionen aktive Haushalte, nicht vorher).

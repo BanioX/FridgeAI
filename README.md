@@ -103,6 +103,7 @@ flowchart LR
   API -. später .-> Server[("Hono + PostgreSQL (Docker, Oracle Cloud)")]
 ```
 
+- **Drei Schichten** ([ADR-0034](docs/adr/0034-three-layers.md)): Präsentation (React) → Logik (`packages/core`: Schnittstelle, Anwendungsfälle, Regeln) → Daten (Dexie im Gerät, später PostgreSQL auf dem Server). ESLint prüft die Grenzen.
 - **Local-first:** Alles funktioniert ohne Konto und offline; Sync folgt mit dem Backend ([ADR-0003](docs/adr/0003-local-first-and-ids.md), [ADR-0009](docs/adr/0009-backend-stack.md)).
 - **Contract-first:** Die UI ruft nur Operationen der Schnittstelle auf; dieselben Zod-Schemas werden später zu REST-API und MCP-Werkzeugen ([ADR-0005](docs/adr/0005-contract-first-api-mcp.md)).
 - **Reiner Kern:** `packages/core` kennt kein DOM, kein IndexedDB und kein `fetch`; Äusseres nur über Ports.

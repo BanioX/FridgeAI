@@ -62,4 +62,56 @@ export default tseslint.config(
     extends: [reactHooks.configs.flat.recommended],
     languageOptions: { globals: globals.browser },
   },
+  {
+    // Three layers (ADR-0034): the presentation talks to the logic only through the contract;
+    // storage (src/data, Dexie) stays behind it. Tests may set up data directly.
+    files: ['apps/web/src/features/**/*.{ts,tsx}', 'apps/web/src/ui/**/*.{ts,tsx}'],
+    ignores: ['**/*.test.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [{ name: 'dexie', message: 'Storage belongs to the data layer (ADR-0034).' }],
+          patterns: [
+            {
+              group: ['**/data/*', '!**/data/test-helpers'],
+              message: 'Use the contract via useAppData(), not the data layer (ADR-0034).',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    // The logic layer knows neither the UI nor a database (ADR-0034).
+    files: ['packages/core/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: ['react', 'react-dom', 'dexie', 'dexie-react-hooks'],
+          patterns: [
+            { group: ['**/apps/**'], message: 'packages/core must not depend on apps (ADR-0034).' },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    // The data layer serves the logic and never reaches up into the presentation (ADR-0034).
+    files: ['apps/web/src/data/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['**/features/*', '**/ui/*'],
+              message: 'The data layer must not import the UI (ADR-0034).',
+            },
+          ],
+        },
+      ],
+    },
+  },
 );
