@@ -409,7 +409,7 @@ export const messages = {
     privacyPoints: [
       'Dein Vorrat, deine Liste und deine Statistik bleiben auf diesem Gerät.',
       'Beim Scannen geht nur die Barcode-Nummer an Open Food Facts, damit Name, Nährwerte und Bild kommen.',
-      'Gleichst du einen Bon mit Open Food Facts ab, gehen nur die Produktnamen dorthin, ohne Preise, Laden und Datum.',
+      'Nach dem Auslesen eines Bons gehen nur die Produktnamen an Open Food Facts, ohne Preise, Laden und Datum.',
       'Fotos von Bons und Codes werden nur gelesen, nie gespeichert.',
       'Kein Konto, kein Tracking, keine Werbung.',
     ],
@@ -549,21 +549,34 @@ export const messages = {
   },
   receiptUpload: {
     match: {
-      button: 'Mit Open Food Facts abgleichen',
       note: 'Nur die Produktnamen gehen an Open Food Facts, ohne Preise, Laden und Datum.',
-      progress: (done: number, total: number) =>
-        `Gleiche ab: ${String(done)} von ${String(total)} …`,
+      progress: (done: number, total: number, found: number) =>
+        `Prüfe ${String(done)} von ${String(total)} … · ${String(found)} gefunden`,
       done: (found: number, total: number) =>
         found === 0
-          ? 'Keine passenden Produkte gefunden.'
-          : `${String(found)} von ${String(total)} gefunden. Tippe «Passt» bei jedem Treffer, der stimmt.`,
+          ? 'Bei Open Food Facts nichts Passendes gefunden.'
+          : `${String(found)} von ${String(total)} gefunden.`,
       unavailable:
         'Open Food Facts ist gerade nicht erreichbar. Du kannst den Bon trotzdem übernehmen.',
+      hint: 'Für die übrigen Produkte: Tippe auf «Barcode scannen» und halte die Packung vor die Kamera. Dann bekommen auch sie Name, Nährwerte und Bild.',
       known: 'Von früheren Bons',
       sure: 'Open Food Facts',
       maybe: 'Vorschlag · Open Food Facts',
-      fits: 'Passt',
-      fitsFor: (name: string) => `Passt: ${name}`,
+      scanned: 'Per Barcode',
+      question: 'Ist es das?',
+      taken: 'Wird übernommen',
+      yes: 'Ja',
+      no: 'Nein',
+      yesFor: (name: string) => `Ja, das ist ${name}`,
+      noFor: (name: string) => `Nein, das ist nicht ${name}`,
+      none: 'Kein Treffer',
+      rejected: 'Abgelehnt',
+      scan: 'Barcode scannen',
+      scanFor: (name: string) => `Barcode scannen für ${name}`,
+      cancelScan: 'Abbrechen',
+      scanUnknown:
+        'Diesen Barcode kennt Open Food Facts nicht. Der Artikel kommt mit dem Namen vom Bon.',
+      scanInvalid: 'Das war kein Barcode. Versuch es nochmals.',
     },
     intro:
       'Wähl das PDF deines Kassenbons (Coop- oder Migros-App), einen Screenshot (z. B. Lidl Plus) oder ein Foto. rettich liest ihn auf deinem Gerät, die Datei wird nicht gespeichert.',

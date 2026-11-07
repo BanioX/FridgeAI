@@ -165,6 +165,12 @@ export function ReceiptUpload() {
         memory: new Map(products.map((product) => [product.name, product])),
       });
       setStatus('');
+      // Alban, 7.11.2026: match with Open Food Facts right away (ADR-0036).
+      void matching.start(
+        receipt.lines.flatMap((line, index) =>
+          chosen.has(index) && isPacked(line) ? [{ index, name: line.name }] : [],
+        ),
+      );
     } catch {
       setStatus(t.failed);
     } finally {
@@ -187,9 +193,7 @@ export function ReceiptUpload() {
         source: current.source,
         hash: current.hash,
         lines: receipt.lines.map((line, index) => {
-          const found = matching.confirmed.has(index)
-            ? matching.matches.get(index)?.match
-            : undefined;
+          const found = current.chosen.has(index) ? matching.accepted(index) : undefined;
           return {
             name: (line.name.trim() === '' ? t.fallbackNames[line.kind] : line.name).slice(0, 120),
             kind: line.kind,
@@ -271,12 +275,7 @@ export function ReceiptUpload() {
                   money.format(receipt.totalRappen),
                 )}
           </p>
-          <MatchPanel
-            matching={matching}
-            lines={receipt.lines.flatMap((line, index) =>
-              review.chosen.has(index) && isPacked(line) ? [{ index, name: line.name }] : [],
-            )}
-          />
+          <MatchPanel matching={matching} />
           <GroupedList>
             {receipt.lines.map((line, index) =>
               line.kind !== 'item' ? null : (
@@ -321,7 +320,9 @@ export function ReceiptUpload() {
                       }}
                     />
                   </div>
-                  {review.chosen.has(index) ? <MatchRow matching={matching} index={index} /> : null}
+                  {review.chosen.has(index) ? (
+                    <MatchRow matching={matching} index={index} name={line.name} />
+                  ) : null}
                 </GroupedListItem>
               ),
             )}
