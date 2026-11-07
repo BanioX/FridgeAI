@@ -2,7 +2,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { readFile } from 'node:fs/promises';
 import { expect, test } from './test';
 
-test('creates a PDF report on the device and hands it over', async ({ page }) => {
+test('creates a PDF report on the device, opens it in the app and shares it', async ({ page }) => {
   for (const name of ['Joghurt', 'Vollmilch']) {
     await page.goto('/inventory/new');
     await page.getByLabel('Was ist es?').fill(name);
@@ -18,15 +18,25 @@ test('creates a PDF report on the device and hands it over', async ({ page }) =>
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations).toEqual([]);
 
-  // No share sheet in desktop Chromium: the PDF goes to the downloads.
+  // The report opens inside the app, page by page.
+  await page.getByRole('button', { name: 'PDF erstellen' }).click();
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Kühlschrank jetzt · Dieses Jahr' }),
+  ).toBeVisible();
+  await expect(page.getByRole('img', { name: /^1 von \d+$/ })).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+
+  // No share sheet in desktop Chromium: «Teilen» puts the PDF into the downloads.
   const [download] = await Promise.all([
     page.waitForEvent('download'),
-    page.getByRole('button', { name: 'PDF erstellen' }).click(),
+    page.getByRole('button', { name: 'Teilen' }).click(),
   ]);
   expect(download.suggestedFilename()).toMatch(/^rettich-fridge-\d{4}-\d{2}-\d{2}\.pdf$/);
   const pdf = await readFile(await download.path());
   expect(pdf.subarray(0, 5).toString('latin1')).toBe('%PDF-');
   expect(pdf.toString('latin1')).toContain('rettich');
   expect(pdf.length).toBeGreaterThan(2000);
-  await expect(page.getByText('Das PDF ist bereit.')).toBeVisible();
+  // Back like in a banking app: to the report choice.
+  await page.getByRole('button', { name: 'Berichte' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Berichte als PDF' })).toBeVisible();
 });

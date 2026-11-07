@@ -1,10 +1,12 @@
 import { FileText } from 'lucide-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { ChoiceChips } from '../../ui/ChoiceChips';
+import { openReport } from './current-report';
 import { periodStart, type Period } from './period';
 import type { ReportKind } from './report-pdf';
 
@@ -19,37 +21,13 @@ const periodOptions = (Object.keys(t.periods) as Period[]).map((value) => ({
   label: t.periods[value],
 }));
 
-/** Shares the PDF where the device can (iPhone: Files, Mail, WhatsApp), else downloads it. */
-async function hand(file: File) {
-  // Not every browser has canShare (desktop Firefox), even though the types say so.
-  if ('canShare' in navigator && navigator.canShare({ files: [file] })) {
-    try {
-      await navigator.share({ files: [file], title: file.name });
-      return;
-    } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') {
-        return;
-      }
-    }
-  }
-  const url = URL.createObjectURL(file);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = file.name;
-  document.body.append(link);
-  link.click();
-  link.remove();
-  setTimeout(() => {
-    URL.revokeObjectURL(url);
-  }, 1000);
-}
-
 /**
  * «Berichte als PDF» (ADR-0030): choose a report and a period, rettich builds the PDF on the
- * device and hands it to the share sheet or the downloads.
+ * device and opens it inside the app; sharing is a tap away there.
  */
 export function ReportCard() {
   const { householdId, inventory, today } = useAppData();
+  const navigate = useNavigate();
   const [kind, setKind] = useState<ReportKind>('all');
   const [period, setPeriod] = useState<Period>('month');
   const [busy, setBusy] = useState(false);
@@ -71,11 +49,13 @@ export function ReportCard() {
         period: t.periods[period],
         createdOn: today,
       });
-      await hand(new File([blob], `rettich-${kind}-${today}.pdf`, { type: 'application/pdf' }));
-      setStatus(t.created);
+      openReport({
+        file: new File([blob], `rettich-${kind}-${today}.pdf`, { type: 'application/pdf' }),
+        title: `${t.kinds[kind]} · ${t.periods[period]}`,
+      });
+      void navigate('/more/reports/view');
     } catch {
       setStatus(t.failed);
-    } finally {
       setBusy(false);
     }
   }
