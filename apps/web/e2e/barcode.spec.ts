@@ -175,6 +175,7 @@ test('fills in the product from Open Food Facts and knows it offline next time',
   await scan();
   await expect(page.getByText('Gefunden: Vollmilch (Alpenhof, 1 l).')).toBeVisible();
   await expect(page.getByLabel('Was ist es?')).toHaveValue('Vollmilch');
+  await page.getByText('Mehr Angaben').click();
   await expect(page.getByLabel('Kategorie')).toHaveValue('dairy-milk');
   await expect(page.getByLabel('Menge')).toHaveValue('1');
   await expect(page.getByLabel('Einheit')).toHaveValue('l');

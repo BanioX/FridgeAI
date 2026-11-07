@@ -11,6 +11,9 @@ test('adds an item: the name suggests category, amount and unit', async ({ page 
   await expect(page.getByText('Bitte gib an, was es ist.')).toBeVisible();
 
   await page.getByLabel('Was ist es?').fill('Grana Padano');
+  // The category works in the background; it shows only under «Mehr Angaben» (ADR-0026).
+  await expect(page.getByLabel('Kategorie')).toBeHidden();
+  await page.getByText('Mehr Angaben').click();
   await expect(page.getByLabel('Kategorie')).toHaveValue('dairy-cheese-hard');
   await expect(page.getByLabel('Menge')).toHaveValue('300');
   await expect(page.getByLabel('Einheit')).toHaveValue('g');
