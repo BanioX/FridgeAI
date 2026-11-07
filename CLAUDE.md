@@ -21,6 +21,7 @@ Kurzfassung der Regeln. Vollständiger Brief: [`docs/brief.md`](docs/brief.md) �
 5. **Freigabe:** Alles, was kostenlos ist, darf ich ohne Rückfrage entscheiden und nutzen (Dienste im Gratis-Plan, Open-Source-Dependencies, Tools; Alban, 6.11.2026). **Alban fragen vor:** allem, was Geld kostet, Preis-/Freemium-Grenzen, allem, was Nutzerdaten das Gerät neu verlassen lässt, und grösseren Abweichungen vom Produkt.
 6. **Ideen unterwegs:** Bei jeder Arbeit festhalten, was erweiterbar oder zusätzlich sinnvoll wäre, in [`docs/ideen/`](docs/ideen/) (Nutzen, für wen, Aufwand, Kosten). Umsetzen nur, was im Plan steht. Ideen mit Kosten oder neuen Datenflüssen entscheidet Alban.
 7. **Tempo:** Claude baut ohne Rückfrage weiter und optimiert, bis das Limit erreicht ist (Alban, 6.11.2026). Die Grenzen aus Punkt 5 gelten weiter.
+8. **CI-Minuten kosten Geld** (privates Repo, 7.11.2026): jeden Push lokal vollständig prüfen, wenige Pushes pro PR, gestapelte PRs nur wenn nötig, main nicht ohne Grund in Branches mergen. Reine Doku-PRs überspringen Tests und E2E automatisch.
 
 ## Pflege-Rhythmus (macht immer Claude, nie Alban – ADR-0017)
 - **Jeder PR:** Conventional-Commit-Titel; README und Plan-Status nachführen, wenn sich Sichtbares ändert.
