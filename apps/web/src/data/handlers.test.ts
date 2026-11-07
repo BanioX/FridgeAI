@@ -488,7 +488,13 @@ describe('inventory.changeOutcome', () => {
     handlers['inventory.changeOutcome']({ commandId: ids.next(), householdId, eventId, ...fields });
 
   it('turns a wrong «weggeworfen» into «gegessen»: value and date stay, the item follows', async () => {
-    const { itemId } = await add({ name: 'Joghurt', quantity: 4, priceRappen: 400 });
+    // Expires in two days: at risk, so once it counts as eaten it is a rescue (ADR-0033).
+    const { itemId } = await add({
+      name: 'Joghurt',
+      quantity: 4,
+      priceRappen: 400,
+      expiresOn: '2026-11-08',
+    });
     const first = await handlers['inventory.recordOutcome']({
       commandId: ids.next(),
       householdId,
@@ -799,8 +805,14 @@ describe('products.lookup', () => {
 });
 
 describe('stats.waste', () => {
-  it('sums this period: eaten and shared as saved, wasted separately', async () => {
-    const { itemId } = await add({ name: 'Joghurt', quantity: 4, priceRappen: 400 });
+  it('sums this period: eaten and shared at risk as rescued, wasted separately', async () => {
+    // Expires in two days: at risk, so eating and sharing it rescue it (ADR-0033).
+    const { itemId } = await add({
+      name: 'Joghurt',
+      quantity: 4,
+      priceRappen: 400,
+      expiresOn: '2026-11-08',
+    });
     for (const outcome of ['eaten', 'shared_out', 'wasted'] as const) {
       await handlers['inventory.recordOutcome']({
         commandId: ids.next(),
@@ -810,6 +822,15 @@ describe('stats.waste', () => {
         quantity: 1,
       });
     }
+    // Still fresh: eating it is consumption and counts nowhere here.
+    const fresh = await add({ name: 'Gruyère', priceRappen: 600, expiresOn: '2026-12-20' });
+    await handlers['inventory.recordOutcome']({
+      commandId: ids.next(),
+      householdId,
+      itemId: fresh.itemId,
+      outcome: 'eaten',
+    });
+    expect((await db.outcomes.where('itemId').equals(fresh.itemId).first())?.atRisk).toBe(false);
     const stats = await handlers['stats.waste']({
       householdId,
       from: localDate('2026-11-01'),
@@ -821,6 +842,8 @@ describe('stats.waste', () => {
       // Joghurt: 180 g per cup from the category.
       savedGrams: 360,
       wastedGrams: 180,
+      savedCount: 2,
+      wastedCount: 1,
       estimated: false,
     });
     const before = await handlers['stats.waste']({

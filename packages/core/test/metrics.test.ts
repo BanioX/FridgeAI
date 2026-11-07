@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { localDate } from '../src/dates';
-import { startOfMonth, summarizeImpact } from '../src/metrics';
+import { isAtRisk, startOfMonth, summarizeImpact } from '../src/metrics';
 import type { OutcomeEvent } from '../src/model/inventory';
 import { IsoDateTimeSchema } from '../src/model/primitives';
 import { rappen } from '../src/money';
@@ -13,9 +13,18 @@ interface OutcomeInput {
   valueRappen?: number;
   grams?: number;
   valueEstimated?: boolean;
+  atRisk?: boolean;
 }
-const outcome = ({ at, deletedAt, valueRappen = 100, grams, ...rest }: OutcomeInput): Outcome => ({
+const outcome = ({
+  at,
+  deletedAt,
+  valueRappen = 100,
+  grams,
+  atRisk = true,
+  ...rest
+}: OutcomeInput): Outcome => ({
   valueEstimated: false,
+  atRisk,
   ...rest,
   at: IsoDateTimeSchema.parse(at),
   valueRappen: rappen(valueRappen),
@@ -27,7 +36,7 @@ const from = localDate('2026-11-01');
 const to = localDate('2026-11-30');
 
 describe('summarizeImpact', () => {
-  it('counts eaten and shared as saved, wasted separately, in CHF and grams', () => {
+  it('counts eaten and shared at risk as rescued, wasted separately, in CHF, grams and count', () => {
     const summary = summarizeImpact(
       [
         outcome({
@@ -49,6 +58,9 @@ describe('summarizeImpact', () => {
           grams: 100,
           valueEstimated: true,
         }),
+        // Eaten while still fresh, or an entry from before the rule: consumption, no rescue.
+        outcome({ outcome: 'eaten', at: '2026-11-06T12:00:00.000Z', atRisk: false }),
+        { ...outcome({ outcome: 'eaten', at: '2026-11-06T12:00:00.000Z' }), atRisk: undefined },
       ],
       from,
       to,
@@ -58,9 +70,21 @@ describe('summarizeImpact', () => {
       wastedRappen: 150,
       savedGrams: 500,
       wastedGrams: 100,
+      savedCount: 2,
+      wastedCount: 1,
       estimated: true,
       savedShare: 0.8,
     });
+  });
+
+  it('calls food at risk within the soon days or past best-before, not past use-by', () => {
+    const today = localDate('2026-11-07');
+    expect(isAtRisk(localDate('2026-11-10'), 'best_before', today, 3)).toBe(true);
+    expect(isAtRisk(localDate('2026-11-11'), 'best_before', today, 3)).toBe(false);
+    expect(isAtRisk(localDate('2026-11-07'), 'use_by', today, 3)).toBe(true);
+    expect(isAtRisk(localDate('2026-11-01'), 'best_before', today, 3)).toBe(true);
+    expect(isAtRisk(localDate('2026-11-06'), 'use_by', today, 3)).toBe(false);
+    expect(isAtRisk(localDate('2027-01-31'), 'best_before', today, 90)).toBe(true);
   });
 
   it('uses the Swiss calendar day and ignores undone outcomes', () => {
@@ -85,6 +109,13 @@ describe('summarizeImpact', () => {
 
   it('has no share without outcomes and falls back to counts when nothing has a value', () => {
     expect(summarizeImpact([], from, to).savedShare).toBeNull();
+    expect(
+      summarizeImpact(
+        [outcome({ outcome: 'eaten', at: '2026-11-03T12:00:00.000Z', atRisk: false })],
+        from,
+        to,
+      ).savedShare,
+    ).toBeNull();
     const counted = summarizeImpact(
       [
         outcome({ outcome: 'eaten', at: '2026-11-03T12:00:00.000Z', valueRappen: 0 }),

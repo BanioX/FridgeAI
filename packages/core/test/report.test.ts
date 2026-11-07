@@ -32,6 +32,7 @@ const closed = (
   valueRappen: rappen(value),
   valueEstimated: false,
   grams: 100,
+  atRisk: true,
   categoryId,
   ...extra,
 });
@@ -83,8 +84,24 @@ describe('buildReport (ADR-0030)', () => {
     ]);
   });
 
-  it('sums saved and wasted per month in the period, without undone outcomes', () => {
-    expect(report.impact).toMatchObject({ savedRappen: 900, wastedRappen: 1150 });
+  it('sums rescued and wasted per month in the period, without undone outcomes', () => {
+    expect(report.impact).toMatchObject({
+      savedRappen: 900,
+      wastedRappen: 1150,
+      savedCount: 2,
+    });
+    const fresh = buildReport({
+      today: localDate('2026-11-07'),
+      from: localDate('2026-11-01'),
+      to: localDate('2026-11-30'),
+      items: [],
+      outcomes: [
+        closed('eaten', '2026-11-02T12:00:00.000Z', 300, 'bakery-bread', { atRisk: false }),
+      ],
+      purchases: [],
+    });
+    // Eaten while fresh is consumption, not a rescue.
+    expect(fresh.impact).toMatchObject({ savedRappen: 0, savedCount: 0, savedShare: null });
     expect(report.impact.months).toEqual([
       { month: '2026-09', savedRappen: 400, wastedRappen: 0 },
       { month: '2026-10', savedRappen: 0, wastedRappen: 550 },

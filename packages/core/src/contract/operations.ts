@@ -99,6 +99,8 @@ const ReportSchema = z.object({
     savedRappen: RappenSchema,
     wastedRappen: RappenSchema,
     savedGrams: z.number().min(0),
+    savedCount: z.int().min(0),
+    wastedCount: z.int().min(0),
     wastedGrams: z.number().min(0),
     estimated: z.boolean(),
     savedShare: z.number().min(0).max(1).nullable(),
@@ -684,8 +686,8 @@ export const CONTRACT_V1 = {
   'stats.waste': query({
     name: 'stats.waste',
     summary: {
-      de: 'Gerettet und weggeworfen in CHF und kg für einen Zeitraum.',
-      en: 'Food saved and wasted in CHF and kg for a period.',
+      de: 'Gerettet (kurz vor Ablauf gegessen oder weitergegeben) und weggeworfen in CHF, kg und Anzahl für einen Zeitraum.',
+      en: 'Food rescued (eaten or shared shortly before expiry) and wasted in CHF, kg and count for a period.',
     },
     scopes: ['stats:read'],
     input: z.object({ ...queryBase, from: LocalDateSchema, to: LocalDateSchema }),
@@ -694,6 +696,9 @@ export const CONTRACT_V1 = {
       wastedRappen: RappenSchema.min(0),
       savedGrams: z.int().min(0),
       wastedGrams: z.int().min(0),
+      /** Rescued: eaten or shared while at risk (ADR-0033); ordinary eating is not counted. */
+      savedCount: z.int().min(0),
+      wastedCount: z.int().min(0),
       estimated: z.boolean(),
     }),
   }),

@@ -122,7 +122,8 @@ export type ShareRecipient = z.infer<typeof ShareRecipientSchema>;
 
 /**
  * What happened to (part of) an item. Called WasteEvent in the brief; it also records eaten and
- * shared items, which feed the «gerettet» counter. Undo = soft delete.
+ * shared items. Only those eaten or shared while at risk count as «gerettet» (ADR-0033).
+ * Undo = soft delete.
  */
 export const OutcomeEventSchema = z
   .object({
@@ -135,6 +136,11 @@ export const OutcomeEventSchema = z
     valueRappen: RappenSchema.min(0),
     valueEstimated: z.boolean(),
     grams: z.int().min(0).optional(),
+    /**
+     * At risk when closed: it expired within the «läuft bald ab» days or was past its best-before
+     * date (ADR-0033). Missing on entries from before 7.11.2026, which then never count as rescued.
+     */
+    atRisk: z.boolean().optional(),
     /** Owner of the item at that moment (snapshot for per-person statistics). */
     owner: OwnerSchema,
     at: IsoDateTimeSchema,

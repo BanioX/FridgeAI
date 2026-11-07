@@ -92,6 +92,15 @@ export const messages = {
     saved: 'Gerettet',
     wasted: 'Weggeworfen',
     savedShare: (percent: number) => `${String(percent)} % gerettet`,
+    ofAtRisk: 'von allem, was knapp wurde',
+    savedCount: (count: number) =>
+      count === 0
+        ? 'noch nichts'
+        : count === 1
+          ? '1 Artikel kurz vor Ablauf'
+          : `${String(count)} Artikel kurz vor Ablauf`,
+    wastedCount: (count: number) =>
+      count === 0 ? 'nichts' : count === 1 ? '1 Artikel' : `${String(count)} Artikel`,
     loadDemo: 'Beispieldaten laden',
   },
   check: {
