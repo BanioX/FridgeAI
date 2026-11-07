@@ -17,7 +17,11 @@ export interface ParsedReceiptLine {
   priceRappen: Rappen;
   /** Discounts on this line: «Aktion» or «Gespart» columns and «Rabatt» lines below it (≤ 0). */
   discountRappen: Rappen;
-  /** From the VAT rate: reduced rate = food and drinks. Absent when the receipt does not say. */
+  /**
+   * First guess from the VAT rate: standard rate is never food; the reduced rate also covers pet
+   * food, medicine and menstrual products, so review and category matching refine it. Absent when
+   * the receipt does not say.
+   */
   isFood?: boolean;
 }
 
