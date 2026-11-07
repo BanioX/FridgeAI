@@ -1,6 +1,6 @@
 # Designsprache aus dem Garten
 
-Stand: 7.11.2026. Albans Wunsch: «top notch, user friendly, unique, fresh like salad, broccoli, lettuce, rucola, einfach was Mutter Natur hergibt». Umgesetzt sind die fünf Grüntöne (Broccoli, Rucola, Basilikum, Kopfsalat, Eisberg, siehe [`../design.md`](../design.md)). Hier steht, was daraus noch werden könnte. Gebaut wird erst nach dem Pilot.
+Stand: 7.11.2026. Albans Wunsch: «top notch, user friendly, unique, fresh like salad, broccoli, lettuce, rucola, einfach was Mutter Natur hergibt». Die fünf Grüntöne von damals sind seit ADR-0035 durch Smaragd, Silber und Onyx ersetzt ([`../design.md`](../design.md)). Hier steht, was daraus noch werden könnte. Gebaut wird erst nach dem Pilot.
 
 ## Leitidee
 

@@ -1,62 +1,60 @@
 # rettich – Design-System
 
-> **Leitbild (Alban, 6.11.2026):** grün, food-freundlich, elegant und funktional.
+> **Leitbild (Alban, 6.11.2026):** grün, food-freundlich, elegant und funktional. Seit 7.11.2026 premium: Smaragd, Silber, Onyx.
 > Umsetzung: Tokens in `apps/web/src/index.css` (`@theme`), Komponenten in `apps/web/src/ui/`.
 
 ## Haltung
 
-- **Frisch statt laut:** Kräutergrün als Markenfarbe, warmes Off-White wie Backpapier als Hintergrund, viel Weissraum. Keine Neon-Töne, keine Verläufe.
+- **Premium statt laut:** Smaragd als Markenfarbe, Silber als Grund, Onyx für Schrift und den einen dunklen Akzent, viel Weissraum. Keine Neon-Töne, keine Verläufe.
 - **Funktion vor Dekor:** Farbe trägt Bedeutung. Grün = frisch/ok, Aprikose = bald, Tomate = heute, Rot = nicht mehr essen. Jede Farbaussage hat zusätzlich Text oder Symbol (nie nur Farbe, wegen Farbsehschwäche).
 - **Elegant durch Typografie:** Eine weiche Serifenschrift für Titel und grosse Zahlen (CHF gerettet), eine klare Sans für alles Bedienbare.
 - **Daumenfreundlich:** Wichtige Aktionen unten, Touch-Ziele mindestens 44 px, eine Hauptaktion pro Screen.
 
 ## Farben
 
-### Fünf Grüntöne aus dem Garten (7.11.2026)
+### Drei Premium-Töne: Smaragd, Silber, Onyx (7.11.2026)
 
-Alban: «frisch wie Salat, Broccoli, Kopfsalat, Rucola, einfach was Mutter Natur hergibt», mit dem ursprünglichen Logo-Grün als Hauptgrün. Die fünf Töne sind die Marke. Alles andere leitet sich aus ihnen ab.
+Alban: «ein Premium-Grün und Premium-Silber oder Premium-Schwarz, diese drei Töne». Sie ersetzen die fünf Gartengrüns vom selben Tag (ADR-0035).
 
-| Name | Wert | Stufe | Wofür |
+| Ton | Wert | Token | Wofür |
 | --- | --- | --- | --- |
-| **Broccoli** | `#0C412A` | `basil-900` | Dunkelstes Grün: Überschriften in Grün, gedrückte Knöpfe, später Dunkelmodus. Weiss darauf 11.6:1 |
-| **Rucola** | `#2C7149` | `basil-700` | Das Logo-Grün und die Markenfarbe: Knöpfe, Links, aktiver Tab, ＋. Weiss darauf 5.9:1, auf Hintergrund 5.7:1 |
-| **Basilikum** | `#4A9C5C` | `basil-500` | Grafik: Balken, Ringe, Symbole. 3.3:1 auf Hintergrund (WCAG für Grafik: 3:1) |
-| **Kopfsalat** | `#CCECAD` | `basil-100` | Frische Flächen: gewählte Chips, Markierungen. Text darauf in `basil-800` (6.4:1) |
-| **Eisberg** | `#EFFAE4` | `basil-50` | Ganz helle Flächen: Tipps, Hinweise, ausgewählte Zeilen |
+| **Smaragd** | `#135E42` | `basil-700` | Was du tippst und was gewählt ist: Knöpfe, gewähltes Segment, aktiver Tab, Links. Weiss darauf 7.8:1 |
+| **Silber** | `#F3F4F6` · `#E9EBED` · `#DBDEE2` · `#BABEC4` | `oat`, `surface-muted`, `line`, `silver` | Grund, ruhige Flächen, Haarlinien. Silberschrift nur auf Onyx (10.2:1) |
+| **Onyx** | `#0D1012` · Text `#14161A` | `onyx`, `ink` | Haupttext (16.5:1) und die eine dunkle Karte pro Seite (Wert im Kühlschrank auf Start), dazu der ＋-Knopf |
 
 **So sind sie gebaut:**
 
-- **Wie in der Natur:** Helle Töne kippen ins Gelbliche (Kopfsalat in der Sonne, Farbton 130°), dunkle ins Bläuliche (Broccoli im Schatten, 160°). So wirkt die Palette lebendig statt künstlich.
-- **Gleichmässige Schritte:** Gerechnet wird in OKLCH, damit die Helligkeitsstufen für das Auge gleichmässig sind. Die Sättigung ist in der Mitte am höchsten und zu den Enden hin tiefer. So gibt es kein Neon und kein Grau.
-- **Die Stufen dazwischen** (200, 300, 400, 600, 800, 950) sind aus den Nachbarn interpoliert:
+- **Smaragd** ist ein tiefes, leicht bläuliches Grün (OKLCH, Farbton 163°). Seine Stufen von `basil-50` bis `basil-950` sind in OKLCH gerechnet, mit gleichmässigen Helligkeitsschritten und ohne Neon:
 
-  | Stufe | 200 | 300 | 400 | 600 | 800 | 950 |
-  | --- | --- | --- | --- | --- | --- | --- |
-  | Wert | `#A7D492` | `#82BC79` | `#60A867` | `#3A8653` | `#1B593A` | `#032819` |
+  | Stufe | 50 | 100 | 200 | 300 | 400 | 500 | 600 | 800 | 900 | 950 |
+  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+  | Wert | `#EEF9F3` | `#D7F1E3` | `#B4E0CA` | `#87C8A9` | `#59A884` | `#358B68` | `#207453` | `#0D4A33` | `#073524` | `#031F14` |
 
-  600 ist nur für Fokusring und Ränder (4.3:1), 800 für grünen Text.
+  50 für Hinweis-Karten, 100 für den aktiven Tab, 600 für den Fokusring (5.2:1), 800 für grünen Text.
+- **Silber** ist ein kühles Grau mit einem Hauch Blau (Farbton 255°). Es wirkt wie gebürstetes Metall und lässt Smaragd leuchten.
+- **Onyx** ist ein weiches Schwarz statt reinem `#000`, das auf Bildschirmen hart wirkt.
 - **60–30–10:**
-  - 60 % ruhiger Hintergrund und Weiss.
-  - 30 % helle Grünflächen (Eisberg, Kopfsalat).
-  - 10 % Rucola für das, was man tippen soll.
-
-  Eine Hauptaktion pro Screen bleibt so sofort sichtbar.
-- **Das Logo** (erstes Design, Grund Rucola `#2C7149`) bleibt unverändert. Seine Blätter liegen zwischen Basilikum und Kopfsalat.
+  - 60 % Silber und Weiss.
+  - 30 % Onyx-Schrift und die eine dunkle Karte.
+  - 10 % Smaragd für die Hauptaktion.
+- **Das Logo** (erstes Design, Grund Rucola `#2C7149`) bleibt vorerst. Varianten in Smaragd und Onyx liegen Alban zum Entscheid vor.
 
 Alle Text-/Hintergrund-Paare erfüllen WCAG AA (mindestens 4.5:1, Grafik 3:1), geprüft beim Festlegen.
 
 ### Neutrale und Status
 
-**Moderner Look (7.11.2026):** Flächen sind ruhig und fast neutral, Karten weiss ohne Rahmen mit weichem Schatten. Grün steht nur dort, wo du etwas tippst oder etwas gewählt ist (Buttons, gewähltes Segment, aktiver Tab) und in den Hinweis-Karten (Eisberg). So springt das Wichtige ins Auge.
+**Moderner Look (7.11.2026):** Karten sind weiss ohne Rahmen mit weichem Schatten. Grün steht nur dort, wo du etwas tippst oder etwas gewählt ist, und in Hinweis-Karten (`basil-50`).
 
 | Token | Wert | Verwendung |
 | --- | --- | --- |
-| `oat` (Hintergrund) | `#F4F5F1` (fast neutral, ein Hauch Grün) | App-Hintergrund, Statusleiste |
+| `oat` (Hintergrund) | `#F3F4F6` (Silber) | App-Hintergrund, Statusleiste |
 | `surface` | `#FFFFFF` | Karten, Navigation |
-| `surface-muted` | `#ECEDE9` | Segment-Spur, Bildgrund, Infokästen |
-| `line` | `#DEE0DB` | Haarlinien, Ränder von Eingaben |
-| `ink` | `#1C211E` | Haupttext (15:1) |
-| `ink-muted` | `#525E56` | Nebentext (6.2:1 auf `oat`) |
+| `surface-muted` | `#E9EBED` | Segment-Spur, Symbol-Kacheln, Infokästen |
+| `line` | `#DBDEE2` | Haarlinien, Ränder von Eingaben |
+| `silver` | `#BABEC4` | Schrift und Linien auf Onyx |
+| `ink` | `#14161A` | Haupttext (16.5:1) |
+| `ink-muted` | `#5B6168` | Nebentext (5.7:1 auf `oat`) |
+| `onyx` | `#0D1012` | Die dunkle Karte, der ＋-Knopf |
 | `soon` | Text `#8A4B0F` auf `#FFF1DF`, Akzent `#E39A3B` | läuft in 1–3 Tagen ab |
 | `today` | Text `#A63A22` auf `#FDEBE6`, Akzent `#E0603F` | läuft heute ab / MHD abgelaufen |
 | `danger` | Weiss auf `#B3261E` | Verbrauchsdatum abgelaufen: «Nicht mehr essen» |
@@ -64,7 +62,7 @@ Alle Text-/Hintergrund-Paare erfüllen WCAG AA (mindestens 4.5:1, Grafik 3:1), g
 | `wheat` | Text `#8A5F14` auf `#F8F0DC` | Vorratsschrank |
 | `olive` | Text `#4F5D27` auf `#ECEEE0` | Notvorrat (6.1:1) |
 
-**Lagerorte haben je eine Akzentfarbe:** Kühlschrank = Rucola, Tiefkühler = Eis, Vorratsschrank = Weizen, Notvorrat = Oliv. Die PDF-Berichte nutzen dieselben Werte (Rucola, Eisberg, Linie).
+**Lagerorte haben je eine Akzentfarbe:** Kühlschrank = Smaragd, Tiefkühler = Eis, Vorratsschrank = Weizen, Notvorrat = Oliv. Die PDF-Berichte nutzen dieselben Werte (Smaragd, `basil-50`, Linie).
 
 ## Schrift
 
@@ -95,7 +93,7 @@ Systemschrift nach Apples Human Interface Guidelines (ADR-0021): SF Pro auf Appl
 - **Listen** (Vorrat, «Heute retten», Einkaufsliste): Apples «inset grouped» Liste. Alle Zeilen liegen in einer weissen, abgerundeten Gruppe, getrennt durch Haarlinien ab dem Text, nicht als einzelne Karten.
 - **Artikelzeile:** Packungsbild oder Emoji, Name, darunter Menge · Lagerort, rechts Status-Chip («heute», «morgen», «in 3 Tagen») und «›», wenn die Zeile eine Detailseite öffnet. Der Status steht im Chip als Text, die Farbe unterstützt nur.
 - **Startseite «Heute retten»:** grosse Zahl (Wert im Kühlschrank in CHF), darunter die dringendsten Artikel, Lagerorte als drei Kacheln.
-- **Navigation:** weisse Leiste unten mit fünf Zielen (Start, Vorrat, ＋ Erfassen, Kochen, Mehr; ADR-0031), aktives Ziel mit Basilikum-Pill hinter dem Icon. ＋ steht in der Mitte und als einziges Icon in einem gefüllten Kreis. Unterseiten haben oben links «‹ Titel der vorigen Seite».
+- **Navigation:** weisse Leiste unten mit fünf Zielen (Start, Vorrat, ＋ Erfassen, Kochen, Mehr; ADR-0031), aktives Ziel mit hellgrüner Pill (`basil-100`) hinter dem Icon. ＋ steht in der Mitte und als einziges Icon in einem gefüllten Onyx-Kreis. Unterseiten haben oben links «‹ Titel der vorigen Seite».
 - **Segment-Auswahl** (2–4 kurze Optionen, z. B. «Wo ist es?»): eine graue Spur mit gleich breiten Segmenten, 13 px. Die Lagerort-Tabs im Vorrat sehen gleich aus. Das gewählte Segment ist basilikumgrün mit weisser Schrift statt iOS-weiss, damit der Zustand 3:1 Kontrast hat. Sehr lange Wörter trennen auf schmalen Handys mit Bindestrich.
 - **Auswahl-Chips** (Portionen, Gründe): Pills, die umbrechen.
 - **Primärbutton:** `basil-700`, weisse Schrift (8:1), volle Breite auf Mobile.

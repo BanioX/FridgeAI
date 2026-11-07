@@ -165,7 +165,7 @@ export function StyleguidePage() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="font-display text-xl font-semibold">Basilikum</h2>
+        <h2 className="font-display text-xl font-semibold">Smaragd</h2>
         <div className="flex overflow-hidden rounded-xl border border-line">
           {basilScale.map((swatch) => (
             <div key={swatch} className={`h-12 flex-1 ${swatch}`} title={swatch} />

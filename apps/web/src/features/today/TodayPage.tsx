@@ -85,9 +85,9 @@ export function TodayPage() {
       ) : null}
 
       {all.length > 0 ? (
-        <Card>
-          <BigNumber value={formatChf(total)} label={t.valueLabel} />
-          {estimated ? <p className="mt-1 text-sm text-ink-muted">{t.estimated}</p> : null}
+        <Card variant="premium">
+          <BigNumber value={formatChf(total)} label={t.valueLabel} onDark />
+          {estimated ? <p className="mt-1 text-sm text-silver">{t.estimated}</p> : null}
         </Card>
       ) : null}
 
