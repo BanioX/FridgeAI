@@ -1,6 +1,7 @@
 # CLAUDE.md – rettich
 
 Kurzfassung der Regeln. Vollständiger Brief: [`docs/brief.md`](docs/brief.md) · Plan: [`docs/plan.md`](docs/plan.md) · Strategie: [`docs/blue-ocean.md`](docs/blue-ocean.md) · Use Cases: [`docs/use-cases.md`](docs/use-cases.md) · Entscheide: [`docs/adr/`](docs/adr/).
+Karte für alle KI-Werkzeuge: [`AGENTS.md`](AGENTS.md) · SWELP (Darf, Tut, Lernt): [`docs/swelp/`](docs/swelp/) · Schulden: [`docs/schulden.md`](docs/schulden.md) · Glossar: [`docs/glossar.md`](docs/glossar.md).
 
 **Name:** rettich, immer klein geschrieben («rett' ich»); nur unter dem App-Symbol steht «Rettich». Claim: «Wirf kein Geld in den Kübel.» Bis 7.11.2026 hiess die App «FridgeAI»; Repo, Pakete `@fridgeai/*`, Datenbank und Web-Adresse bleiben technisch so (ADR-0032).
 
@@ -22,6 +23,7 @@ Kurzfassung der Regeln. Vollständiger Brief: [`docs/brief.md`](docs/brief.md) �
 6. **Ideen unterwegs:** Bei jeder Arbeit festhalten, was erweiterbar oder zusätzlich sinnvoll wäre, in [`docs/ideen/`](docs/ideen/) (Nutzen, für wen, Aufwand, Kosten). Umsetzen nur, was im Plan steht. Ideen mit Kosten oder neuen Datenflüssen entscheidet Alban. Grosse Hebel mit USP, die Abklärung brauchen (Partner, Verträge, Kosten, Recht), und das Geschäftsmodell parken in [`docs/ideen/parkplatz.md`](docs/ideen/parkplatz.md); bei jedem passenden Gespräch nachführen.
 7. **Tempo:** Claude baut ohne Rückfrage weiter und optimiert, bis das Limit erreicht ist (Alban, 6.11.2026). Die Grenzen aus Punkt 5 gelten weiter.
 8. **CI-Minuten kosten Geld** (privates Repo, 7.11.2026): jeden Push lokal vollständig prüfen, wenige Pushes pro PR, gestapelte PRs nur wenn nötig, main nicht ohne Grund in Branches mergen. Reine Doku-PRs überspringen Tests und E2E automatisch.
+9. **Wenig technische Schulden** (Alban, 7.11.2026): Nebenwirkungen in [`docs/swelp/nebenwirkungen.md`](docs/swelp/nebenwirkungen.md) (Test prüft), bewusste Abkürzungen in [`docs/schulden.md`](docs/schulden.md), Lektionen in [`docs/swelp/lernbuch.md`](docs/swelp/lernbuch.md), Begriffe im [Glossar](docs/glossar.md). Lieber eine Schuld eintragen als sie verschweigen.
 
 ## Pflege-Rhythmus (macht immer Claude, nie Alban – ADR-0017)
 - **Jeder PR:** Conventional-Commit-Titel; README und Plan-Status nachführen, wenn sich Sichtbares ändert.
