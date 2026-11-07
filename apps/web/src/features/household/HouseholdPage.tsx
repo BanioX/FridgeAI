@@ -1,5 +1,6 @@
-import { Download, FileSpreadsheet, ShieldCheck, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { HouseholdExportSchema, type HouseholdExport } from '@fridgeai/core';
+import { Download, FileSpreadsheet, ShieldCheck, Trash2, Upload } from 'lucide-react';
+import { useRef, useState, type ChangeEvent } from 'react';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
 import { BackLink } from '../../ui/BackLink';
@@ -10,8 +11,8 @@ import { exportFileName, inventoryCsv, saveFile } from './export-files';
 const t = messages.household;
 
 /**
- * «Daten und Datenschutz» under «Mehr»: the person's data (export as JSON or CSV, delete
- * everything, ADR-0020) and privacy in plain words. Sharing with flatmates arrives with accounts
+ * «Daten und Datenschutz» under «Mehr»: the person's data (export as JSON or CSV, bring an export
+ * back, delete everything, ADR-0020) and privacy in plain words. Sharing with flatmates arrives with accounts
  * (step 7).
  */
 export function HouseholdPage() {
@@ -19,6 +20,8 @@ export function HouseholdPage() {
   const [status, setStatus] = useState('');
   const [confirming, setConfirming] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [pending, setPending] = useState<{ name: string; data: HouseholdExport } | null>(null);
+  const fileInput = useRef<HTMLInputElement>(null);
 
   async function run(action: () => Promise<string | null>) {
     setBusy(true);
@@ -49,6 +52,42 @@ export function HouseholdPage() {
       const name = exportFileName(today, 'csv');
       saveFile(name, 'text/csv;charset=utf-8', inventoryCsv(items));
       return t.exported(name);
+    });
+
+  /** Reads the chosen file on the device; nothing is replaced before the person confirms. */
+  const chooseFile = (event: ChangeEvent<HTMLInputElement>) =>
+    run(async () => {
+      const file = event.target.files?.[0];
+      event.target.value = '';
+      if (file === undefined) {
+        return null;
+      }
+      let json: unknown;
+      try {
+        json = JSON.parse(await file.text());
+      } catch {
+        return t.importInvalid;
+      }
+      const parsed = HouseholdExportSchema.safeParse(json);
+      if (!parsed.success) {
+        return t.importInvalid;
+      }
+      setConfirming(false);
+      setPending({ name: file.name, data: parsed.data });
+      return null;
+    });
+
+  const importAll = (data: HouseholdExport) =>
+    run(async () => {
+      await household['household.import']({
+        commandId: ids.next(),
+        householdId,
+        data,
+        confirm: true,
+      });
+      // Start again as the imported household.
+      window.location.assign('/');
+      return null;
     });
 
   const deleteAll = () =>
@@ -89,6 +128,46 @@ export function HouseholdPage() {
         >
           {t.exportCsv}
         </Button>
+        <input
+          ref={fileInput}
+          type="file"
+          accept="application/json,.json"
+          aria-label={t.importFile}
+          className="sr-only"
+          tabIndex={-1}
+          onChange={(event) => void chooseFile(event)}
+        />
+        {pending === null ? (
+          <Button
+            variant="secondary"
+            icon={Upload}
+            fullWidth
+            disabled={busy}
+            onClick={() => fileInput.current?.click()}
+          >
+            {t.importJson}
+          </Button>
+        ) : (
+          <Card className="space-y-3">
+            <p className="font-semibold">
+              {t.importQuestion(pending.name, pending.data.items.length)}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Button disabled={busy} onClick={() => void importAll(pending.data)}>
+                {t.importConfirm}
+              </Button>
+              <Button
+                variant="secondary"
+                disabled={busy}
+                onClick={() => {
+                  setPending(null);
+                }}
+              >
+                {t.deleteCancel}
+              </Button>
+            </div>
+          </Card>
+        )}
         {confirming ? (
           <Card className="space-y-3 border-danger">
             <p className="font-semibold">{t.deleteQuestion}</p>

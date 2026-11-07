@@ -392,10 +392,17 @@ export const messages = {
   household: {
     data: 'Deine Daten',
     dataText:
-      'Alles bleibt auf diesem Gerät. Ein Konto zum Teilen mit Mitbewohner:innen kommt später.',
+      'Alles bleibt auf diesem Gerät. Mit einem Export nimmst du deine Daten auf ein neues Gerät mit. Ein Konto zum Teilen mit Mitbewohner:innen kommt später.',
     exportJson: 'Alles exportieren (JSON)',
     exportCsv: 'Vorrat als Tabelle (CSV)',
     exported: (file: string) => `${file} ist gespeichert.`,
+    importJson: 'Daten importieren (JSON)',
+    importFile: 'Exportdatei wählen',
+    importQuestion: (file: string, items: number) =>
+      `${file} übernehmen? Darin sind ${items} Artikel. Was jetzt auf diesem Gerät gespeichert ist, wird ersetzt.`,
+    importConfirm: 'Ja, übernehmen',
+    importInvalid:
+      'Diese Datei ist kein rettich-Export. Nimm die JSON-Datei von «Alles exportieren».',
     deleteAll: 'Alles löschen',
     deleteQuestion:
       'Wirklich alles löschen? Vorrat, Liste, Statistik und Einstellungen sind danach weg. Das lässt sich nicht rückgängig machen.',
