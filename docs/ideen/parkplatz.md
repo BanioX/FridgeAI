@@ -40,7 +40,7 @@ Alles in diesem Parkplatz wartet auf den Pilot und seine Zahlen.
 | P13 | **Preisvergleich zwischen Läden** («bei Coop 30 Rappen günstiger») | Spart Geld, nicht nur Lebensmittel | Preisdaten der Händler (P1) oder Preise aus vielen Haushalten (P2), Datenschutz | geparkt |
 | P14 | **Gamification**: Fortschritt, Serien, «Bon komplett», Reineclaude-Erfolg | Macht das Erfassen zur Routine | Nach dem Pilot mit echten Zahlen. Gestaltung mit Alban ([`designsprache-garten.md`](./designsprache-garten.md)) | geparkt |
 | P15 | **Aggregierte Food-Waste-Kennzahlen** für Handel, Forschung, Gemeinden | Einnahmen ohne Werbung. Messbarer Beitrag zum Ziel 2030 | Genug Haushalte, Anonymisierung (k-Anonymität), Einwilligung. Nie Einzeldaten verkaufen | geparkt |
-| P16 | **Förderung** (z. B. Innosuisse, Aktionsplan des Bundes gegen Lebensmittelverschwendung, Stiftungen) | Geld ohne Anteile abzugeben, dazu Glaubwürdigkeit | Passende Programme, Firmenform, Gesuch | geparkt |
+| P16 | **Förderung** (z. B. StreamUp von United Against Waste, Innosuisse, Aktionsplan des Bundes gegen Lebensmittelverschwendung, Stiftungen) | Geld ohne Anteile abzugeben, dazu Glaubwürdigkeit und ein Netzwerk in der Branche | Passende Programme, Firmenform, Gesuch. StreamUp: siehe «P16 im Detail» | geparkt |
 | P17 | **Büro-Kühlschrank für Teams** | B2B-Einnahmen pro Team | Eigener Vertrieb, Konten (P6) ([`monetarisierung.md`](./monetarisierung.md)) | geparkt |
 | P18 | **Bestandesaufnahme per Foto** (Kühlschrank oder Einkauf fotografieren, rettich erkennt die Lebensmittel) | Ersetzt den entfernten Umweg «Mit eigener KI». Ein Foto genügt, das wäre ein starkes Premium-Argument | KI-Kosten pro Bild, neuer Datenfluss (das Bild verlässt das Gerät), Qualität. Der Parser für die Liste ist da (ADR-0012) | geparkt |
 | P19 | **Allergene pro Person**: wer im Haushalt was nicht verträgt, Warnung beim Scannen, Rezepte ohne dieses Allergen | Für Menschen mit Allergien ein Grund, rettich jeden Tag zu öffnen, und ein starkes Pro-Argument. Die «Enthält»-Liste pro Produkt (Open Food Facts) zeigt rettich schon heute | Gesundheitsdaten sind besonders schützenswert (nDSG Art. 5 lit. c, DSGVO Art. 9): nur auf dem Gerät, ausdrückliche Einwilligung. Haftung: offene Daten können fehlen oder falsch sein, darum nie «allergenfrei» versprechen. Fachlich prüfen lassen (z. B. aha! Allergiezentrum Schweiz) | geparkt |
@@ -117,6 +117,46 @@ Ein Partner-Adapter ist Arbeit von Tagen, nicht Monaten. Der Aufwand liegt beim 
   Software hat eine hohe Marge, Hardware eine tiefe. **Empfehlung:** Software lizenzieren, Hardware nur mit Partnern.
 - **Wann wieder prüfen:** wenn ein Händler Funk-Etiketten auf Lebensmitteln testet oder nach einem ersten Partner (P1).
 
+## P16 im Detail: StreamUp und andere Förderung
+
+**Alban, 7.11.2026:** «Die grössere Vision ist Food Waste, aber auch alles, was dazugehört. Es gibt auch Förderbeiträge», mit dem Hinweis auf [foodways.ch/streamup](https://foodways.ch/streamup/).
+
+**StreamUp** (Stand der Websuche vom 7.11.2026; die Seite selbst war aus Claudes Umgebung nicht erreichbar, also vor einer Bewerbung dort prüfen):
+
+- **Wer:** ein Förder- und Mentoring-Programm von United Against Waste (UAW), entwickelt und betrieben von Foodways.
+- **Was:** Mentoring, Workshops und Zugang zum Netzwerk aus Branche, Forschung und Entscheidungsträger:innen der Lebensmittelbranche. Ob es auch Geld gibt, wird aus den Quellen nicht klar.
+- **Für wen:** Start-ups, etablierte Firmen und Hochschulen mit Lösungen, die Lebensmittelverluste messbar senken, für den Schweizer Markt.
+- **Rhythmus:** Die erste Kohorte lief Januar bis Juni 2025 (11 Projekte). Für die zweite wurden im April 2026 neun Teilnehmende gewählt.
+- **Schwerpunkt:** bisher Nebenströme der Verarbeitung (z. B. Pasta aus altem Brot). Haushalte passen nur teilweise. Die Stärke von rettich für eine Bewerbung: messbar gerettete Franken und Kilo pro Haushalt, aus dem Pilot.
+
+**Quellen:** [United Against Waste: Konzept hinter StreamUp](https://united-against-waste.ch/medien-article/vom-nebenstrom-zur-hauptidee-das-konzept-hinter-streamup/), [Startupticker: zweite Kohorte](https://www.startupticker.ch/en/news/streamup-selects-nine-food-tech-companies-for-second-accelerator-cohort), [Swiss Food & Nutrition Valley: Interview zu StreamUp](https://swissfoodnutritionvalley.com/five-questions-for-streamup-project-lead-tatjana-nebel-about-supporting-swiss-food-loss-reduction-solutions/).
+
+**Was es braucht:** Pilotzahlen (gerettete CHF und kg pro Haushalt und Monat), eine kurze Projektbeschreibung und je nach Programm eine Firmenform.
+
+**Weitere Quellen**, ohne Gewähr: Innosuisse (Innovationsscheck, Start-up-Coaching), Stiftungen für Nachhaltigkeit, Förderprogramme der Kantone.
+
+## Name und Vision (Findungsphase)
+
+**Alban, 7.11.2026:** «Unsere App heisst rettich, aber wir sind ja noch in der Findungsphase. FridgeAI war die ganze Vision. Die grössere Vision ist Food Waste, aber auch alles, was dazugehört.»
+
+**Claudes Vorschlag: drei Ebenen trennen.**
+
+| Ebene | Frage | Vorschlag | Wann entscheiden |
+| --- | --- | --- | --- |
+| **Mission** | Warum gibt es uns? | Food Waste im Haushalt halbieren, wie es das Schweizer Ziel für 2030 verlangt. Bleibt, egal wie Produkt und Firma heissen | jetzt (gilt schon) |
+| **Produkt** | Was nutzt die Person? | **rettich**, die App für den eigenen Haushalt | entschieden (ADR-0032) |
+| **Firma oder Dach** | Wer steht dahinter? | Offen. Ein eigener Dachname lohnt sich erst, wenn mehrere Produkte kommen (Büro P17, Kennzahlen P15, Lizenz P22). Bis dahin genügt rettich | bei der Gründung (Alban) |
+
+**Warum rettich die grosse Vision besser trägt als FridgeAI:**
+
+- **Mission im Namen:** «rett' ich» sagt die Mission (retten), nicht ein Gerät. Der Name passt auch zu Vorrat, Tiefkühler, Rezepten, Weitergeben und Partnern wie Too Good To Go.
+- **Zu eng:** «Fridge» bindet an den Kühlschrank, die Vision ist breiter.
+- **Austauschbar:** «AI» kann heute jede App behaupten. Eine App «Fridge AI: Food & Recipes» gibt es schon ([`markt-und-timing.md`](./markt-und-timing.md)), also drohen Verwechslung und Ärger um die Marke.
+
+**Vision in einem Satz** (Vorschlag): «rettich hilft dir, kein Essen und kein Geld wegzuwerfen. Zusammen halbieren wir Food Waste bis 2030.»
+
+«FridgeAI» bleibt nur der technische Name von Repo, Paketen und Datenbank (ADR-0032). Status: **geparkt**. Die Marke entscheidet Alban (P8).
+
 ## Geschäftsmodell-Entwurf (zu prüfen)
 
 Stand: 7.11.2026, aufbauend auf [`monetarisierung.md`](./monetarisierung.md) und dem Businessplan. **Nichts davon ist entschieden.**
@@ -147,6 +187,7 @@ Stand: 7.11.2026, aufbauend auf [`monetarisierung.md`](./monetarisierung.md) und
 
 | Datum | Änderung |
 | --- | --- |
+| 7.11.2026 | P16 mit StreamUp (United Against Waste, Foodways) ergänzt; Abschnitt «Name und Vision» zu rettich und FridgeAI. |
 | 7.11.2026 | P23 (Stammdaten-Pools) aus der YAZIO-Analyse. |
 | 7.11.2026 | Aus Albans Brainstorming: P19 (Allergene), P20 (Spaces), P21 (ungleiche Disziplin), P22 (von selbst erfasst, Etiketten, Lizenz). Dazu «Fokus jetzt», die Brainstorming-Regel und Säule 6 (Lizenz). |
 | 7.11.2026 | P18 (Bestandesaufnahme per Foto) nach dem Entfernen von «Mit eigener KI». |
