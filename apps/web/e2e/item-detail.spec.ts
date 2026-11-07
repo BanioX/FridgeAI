@@ -172,3 +172,21 @@ test('deletes an item entered by mistake, with undo, without counting it as wast
   await expect(page.getByRole('heading', { level: 1, name: 'Start' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Deine Wirkung diesen Monat' })).toHaveCount(0);
 });
+
+test('offers «Nachkaufen» after an item is used up', async ({ page }) => {
+  await page.goto('/inventory/new');
+  await page.getByLabel('Was ist es?').fill('Mozzarella');
+  await page.getByRole('button', { name: 'Speichern', exact: true }).click();
+  await page.getByRole('link', { name: /Mozzarella/ }).click();
+  await page.getByRole('button', { name: 'Als gegessen speichern' }).click();
+
+  await expect(page.getByRole('status')).toHaveText('Mozzarella: als gegessen gespeichert.');
+  await page.getByRole('button', { name: 'Nachkaufen' }).click();
+  await expect(page.getByRole('status')).toHaveText('Mozzarella steht bei «Nachkaufen».');
+  await expect(page.getByRole('button', { name: 'Nachkaufen' })).toHaveCount(0);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+
+  await page.getByRole('navigation').getByRole('link', { name: 'Mehr' }).click();
+  await page.getByRole('link', { name: /^Nachkaufen/ }).click();
+  await expect(page.getByRole('checkbox', { name: 'Mozzarella' })).toBeVisible();
+});

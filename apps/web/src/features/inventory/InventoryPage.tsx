@@ -2,10 +2,11 @@ import {
   expiryStatus,
   soonThresholdFor,
   StorageLocationSchema,
+  type Id,
   type StorageLocation,
 } from '@fridgeai/core';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { Plus, Undo2 } from 'lucide-react';
+import { Plus, ShoppingBasket, Undo2 } from 'lucide-react';
 import { useRef, useState, type KeyboardEvent } from 'react';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router';
 import { useAppData } from '../../app/AppData';
@@ -22,17 +23,46 @@ const tabId = (location: StorageLocation) => `tab-${location}`;
 const panelId = (location: StorageLocation) => `panel-${location}`;
 
 /**
- * After an item was closed on its detail page: «Mozzarella: als gegessen gespeichert.» with undo.
- * The notice lives in the history entry, so it disappears once the person moves on.
+ * After an item was closed on its detail page: «Mozzarella: als gegessen gespeichert.» with undo
+ * and, once it is used up or gone, «Nachkaufen» with one tap (ADR-0031). The notice lives in the
+ * history entry, so it disappears once the person moves on.
  */
 function ClosedNotice() {
-  const { householdId, ids, inventory } = useAppData();
+  const { householdId, ids, inventory, shopping } = useAppData();
   const location = useLocation();
   const navigate = useNavigate();
   const closed = closedItemFrom(location.state);
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
+  // Tied to the closed entry it answers: the next closed item starts without it.
+  const [rebuyNote, setRebuyNote] = useState<{ id: Id; text: string; done: boolean } | null>(null);
   const t = messages.inventory;
+  const closedId =
+    closed === null ? null : closed.kind === 'deleted' ? closed.itemId : closed.eventId;
+  const note = rebuyNote !== null && rebuyNote.id === closedId ? rebuyNote : null;
+
+  const rebuy = async () => {
+    if (closed === null || closed.kind === 'deleted' || busy) {
+      return;
+    }
+    setBusy(true);
+    try {
+      const result = await shopping['shopping.addItem']({
+        commandId: ids.next(),
+        householdId,
+        name: closed.name.slice(0, 80),
+      });
+      setRebuyNote({
+        id: closed.eventId,
+        text: result.alreadyOnList ? t.rebuyAlready(closed.name) : t.rebought(closed.name),
+        done: true,
+      });
+    } catch {
+      setRebuyNote({ id: closed.eventId, text: t.rebuyFailed, done: false });
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const undo = async () => {
     if (closed === null || busy) {
@@ -65,9 +95,11 @@ function ClosedNotice() {
   const text =
     closed === null
       ? message
-      : closed.kind === 'deleted'
-        ? t.deleted(closed.name)
-        : t.closed[closed.outcome](closed.name);
+      : note !== null
+        ? note.text
+        : closed.kind === 'deleted'
+          ? t.deleted(closed.name)
+          : t.closed[closed.outcome](closed.name);
   if (text === '') {
     return null;
   }
@@ -78,16 +110,30 @@ function ClosedNotice() {
         {text}
       </p>
       {closed === null ? null : (
-        <Button
-          variant="ghost"
-          icon={Undo2}
-          disabled={busy}
-          onClick={() => {
-            void undo();
-          }}
-        >
-          {t.undo}
-        </Button>
+        <div className="flex flex-wrap gap-1">
+          {closed.kind === 'deleted' || note?.done === true ? null : (
+            <Button
+              variant="ghost"
+              icon={ShoppingBasket}
+              disabled={busy}
+              onClick={() => {
+                void rebuy();
+              }}
+            >
+              {t.rebuy}
+            </Button>
+          )}
+          <Button
+            variant="ghost"
+            icon={Undo2}
+            disabled={busy}
+            onClick={() => {
+              void undo();
+            }}
+          >
+            {t.undo}
+          </Button>
+        </div>
       )}
     </Card>
   );
