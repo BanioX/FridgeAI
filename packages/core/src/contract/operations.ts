@@ -397,6 +397,32 @@ export const CONTRACT_V1 = {
     input: z.object({ ...commandBase, eventId: IdSchema }),
     output: z.object({ itemId: IdSchema, quantity: z.number().min(0) }),
   }),
+  'inventory.history': query({
+    name: 'inventory.history',
+    summary: {
+      de: 'Verlauf: was gegessen, weitergegeben oder weggeworfen wurde, neueste zuerst.',
+      en: 'History: what was eaten, shared or wasted, newest first.',
+    },
+    scopes: ['inventory:read'],
+    input: z.object({ ...queryBase, from: LocalDateSchema, to: LocalDateSchema }),
+    output: z.object({
+      outcomes: z.array(
+        z.object({
+          eventId: IdSchema,
+          itemId: IdSchema,
+          name: z.string(),
+          outcome: OutcomeSchema,
+          quantity: QuantitySchema,
+          unit: UnitSchema,
+          valueRappen: RappenSchema.min(0),
+          valueEstimated: z.boolean(),
+          wasteReason: WasteReasonSchema.optional(),
+          sharedWith: ShareRecipientSchema.optional(),
+          at: IsoDateTimeSchema,
+        }),
+      ),
+    }),
+  }),
   'inventory.open': command({
     name: 'inventory.open',
     summary: {

@@ -394,6 +394,87 @@ describe('inventory.undoOutcome', () => {
   });
 });
 
+describe('inventory.history', () => {
+  const november = () => ({
+    householdId,
+    from: localDate('2026-11-01'),
+    to: localDate('2026-11-30'),
+  });
+
+  it('lists what was eaten and wasted, newest first, with the share of the price', async () => {
+    const { itemId } = await add({
+      name: 'Grana Padano',
+      quantity: 300,
+      unit: 'g',
+      priceRappen: 600,
+    });
+    await handlers['inventory.recordOutcome']({
+      commandId: ids.next(),
+      householdId,
+      itemId,
+      outcome: 'eaten',
+      quantity: 150,
+    });
+    const wasted = await handlers['inventory.recordOutcome']({
+      commandId: ids.next(),
+      householdId,
+      itemId,
+      outcome: 'wasted',
+      wasteReason: 'forgotten',
+    });
+    const { outcomes } = await handlers['inventory.history'](november());
+    expect(outcomes).toHaveLength(2);
+    // Half of 300 g for CHF 6.00 is CHF 3.00 each way.
+    expect(outcomes.map((entry) => [entry.outcome, entry.quantity, entry.valueRappen])).toEqual(
+      expect.arrayContaining([
+        ['eaten', 150, 300],
+        ['wasted', 150, 300],
+      ]),
+    );
+    expect(outcomes.find((entry) => entry.eventId === wasted.eventId)).toMatchObject({
+      itemId,
+      name: 'Grana Padano',
+      unit: 'g',
+      wasteReason: 'forgotten',
+      valueEstimated: false,
+    });
+    expect((outcomes[0]?.at ?? '') >= (outcomes[1]?.at ?? '')).toBe(true);
+
+    await handlers['inventory.undoOutcome']({
+      commandId: ids.next(),
+      householdId,
+      eventId: wasted.eventId,
+    });
+    expect((await handlers['inventory.history'](november())).outcomes).toHaveLength(1);
+    expect(
+      (
+        await handlers['inventory.history']({
+          householdId,
+          from: localDate('2026-10-01'),
+          to: localDate('2026-10-31'),
+        })
+      ).outcomes,
+    ).toEqual([]);
+  });
+
+  it('removes the entry of an item deleted later, so statistics no longer count it', async () => {
+    const { itemId } = await add({ name: 'Joghurt', quantity: 4, priceRappen: 400 });
+    const { eventId } = await handlers['inventory.recordOutcome']({
+      commandId: ids.next(),
+      householdId,
+      itemId,
+      outcome: 'wasted',
+      quantity: 1,
+    });
+    await handlers['inventory.deleteItem']({ commandId: ids.next(), householdId, itemId });
+    expect(
+      await handlers['inventory.undoOutcome']({ commandId: ids.next(), householdId, eventId }),
+    ).toEqual({ itemId, quantity: 0 });
+    expect((await db.items.get(itemId))?.deletedAt).toBeDefined();
+    expect((await handlers['stats.waste'](november())).wastedRappen).toBe(0);
+  });
+});
+
 describe('packaging, opening and reasons', () => {
   it('stores how pieces are packed and shows it in the list', async () => {
     const { itemId } = await add({
