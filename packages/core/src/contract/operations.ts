@@ -397,6 +397,29 @@ export const CONTRACT_V1 = {
     input: z.object({ ...commandBase, eventId: IdSchema }),
     output: z.object({ itemId: IdSchema, quantity: z.number().min(0) }),
   }),
+  'inventory.changeOutcome': command({
+    name: 'inventory.changeOutcome',
+    summary: {
+      de: 'Einen Eintrag korrigieren: gegessen, weitergegeben oder weggeworfen, Grund oder Empfänger. Menge, Wert und Datum bleiben.',
+      en: 'Correct an entry: eaten, shared or wasted, reason or recipient. Amount, value and date stay.',
+    },
+    scopes: ['inventory:write'],
+    input: z
+      .object({
+        ...commandBase,
+        eventId: IdSchema,
+        outcome: OutcomeSchema,
+        wasteReason: WasteReasonSchema.optional(),
+        sharedWith: ShareRecipientSchema.optional(),
+      })
+      .refine((input) => input.wasteReason === undefined || input.outcome === 'wasted', {
+        message: 'A waste reason only fits wasted food',
+      })
+      .refine((input) => input.sharedWith === undefined || input.outcome === 'shared_out', {
+        message: 'A recipient only fits shared food',
+      }),
+    output: z.object({ eventId: IdSchema, outcome: OutcomeSchema }),
+  }),
   'inventory.history': query({
     name: 'inventory.history',
     summary: {
