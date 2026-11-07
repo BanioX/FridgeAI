@@ -11,6 +11,8 @@ export const messages = {
     start: 'Start',
     inventory: 'Vorrat',
     add: 'Erfassen',
+    receipt: 'Bon hochladen',
+    ai: 'Mit eigener KI',
     shopping: 'Nachkaufen',
     more: 'Mehr',
     data: 'Daten und Datenschutz',
@@ -403,8 +405,14 @@ export const messages = {
       other: 'anderem Laden',
     },
   },
+  addHub: {
+    receipt: 'PDF, Screenshot oder Foto vom Kassenbon',
+    barcode: 'Packung vor die Kamera halten',
+    manualTitle: 'Von Hand erfassen',
+    manual: 'Name eintippen, den Rest schlägt FridgeAI vor',
+    ai: 'Foto in ChatGPT, Claude oder Gemini, Liste hier übernehmen',
+  },
   receiptUpload: {
-    title: 'Bon hochladen',
     intro:
       'Wähl das PDF deines Kassenbons (Coop- oder Migros-App), einen Screenshot (z. B. Lidl Plus) oder ein Foto. FridgeAI liest ihn auf deinem Gerät, die Datei wird nicht gespeichert.',
     choose: 'PDF oder Foto wählen',
@@ -442,7 +450,6 @@ export const messages = {
     saveFailed: 'Speichern hat nicht geklappt. Bitte versuch es nochmals.',
   },
   aiImport: {
-    title: 'Mit deiner eigenen KI erfassen',
     intro:
       'Mach ein Foto vom Kühlschrank, Einkauf oder Kassenbon mit deiner eigenen KI (ChatGPT, Claude, Gemini …) und übernimm die Liste hier.',
     step1: '1. Auftrag kopieren',

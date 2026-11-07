@@ -17,7 +17,7 @@ const answer = [
 ].join('\n');
 
 test('imports what the own AI recognised after a review', async ({ page }) => {
-  await page.goto('/scan');
+  await page.goto('/add/ai');
   await page.getByRole('button', { name: 'Auftrag kopieren' }).click();
   await expect(page.getByText('Kopiert. Jetzt in deine KI einfügen.')).toBeVisible();
   const copied = await page.evaluate(() => navigator.clipboard.readText());
@@ -46,7 +46,7 @@ test('imports what the own AI recognised after a review', async ({ page }) => {
 });
 
 test('explains when the answer contains no items', async ({ page }) => {
-  await page.goto('/scan');
+  await page.goto('/add/ai');
   await page.getByLabel('Antwort der KI').fill('Ich kann auf dem Bild leider nichts erkennen.');
   await page.getByRole('button', { name: 'Prüfen' }).click();
   await expect(page.getByText(/keine Artikel gefunden/)).toBeVisible();

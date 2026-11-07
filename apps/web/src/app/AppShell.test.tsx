@@ -54,6 +54,33 @@ describe('AppShell', () => {
     ).toBe(false);
   });
 
+  it('offers every way to add food under «Erfassen» and keeps the tab on the add form', async () => {
+    await renderAt('/add');
+    const main = within(await screen.findByRole('main'));
+    expect(await main.findByRole('heading', { level: 1, name: messages.pages.add })).toBeDefined();
+    for (const title of [
+      messages.pages.receipt,
+      messages.scanner.open,
+      messages.addHub.manualTitle,
+      messages.pages.ai,
+    ]) {
+      expect(main.getByRole('link', { name: new RegExp(`^${title}`) })).toBeDefined();
+    }
+    await userEvent.click(
+      main.getByRole('link', { name: new RegExp(`^${messages.addHub.manualTitle}`) }),
+    );
+    expect(
+      await screen.findByRole('heading', { level: 1, name: messages.pages.addItem }),
+    ).toBeDefined();
+    const nav = screen.getByRole('navigation', { name: messages.navLabel });
+    expect(
+      within(nav).getByRole('link', { name: messages.nav.add }).getAttribute('aria-current'),
+    ).toBe('page');
+    expect(
+      within(nav).getByRole('link', { name: messages.nav.inventory }).hasAttribute('aria-current'),
+    ).toBe(false);
+  });
+
   it('sends the old addresses to the new places', async () => {
     await renderAt('/scan');
     expect(

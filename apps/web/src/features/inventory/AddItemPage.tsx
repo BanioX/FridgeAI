@@ -24,6 +24,7 @@ import { ChevronDown, ScanBarcode } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
+import { BackLink } from '../../ui/BackLink';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { DateField } from '../../ui/DateField';
@@ -240,7 +241,10 @@ export function AddItemPage() {
 
   return (
     <div className="space-y-6 pb-8">
-      <h1 className="large-title">{messages.pages.addItem}</h1>
+      <div>
+        <BackLink to="/add" label={messages.pages.add} />
+        <h1 className="large-title">{messages.pages.addItem}</h1>
+      </div>
 
       <div className="space-y-3">
         <Button

@@ -11,16 +11,16 @@ import {
   type Id,
   type StorageLocation,
 } from '@fridgeai/core';
-import { Copy, ScanBarcode } from 'lucide-react';
+import { Copy } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
+import { BackLink } from '../../ui/BackLink';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { formatAmount } from '../inventory/add-item';
 import { locationOrder } from '../inventory/item-meta';
-import { ReceiptUpload } from '../receipts/ReceiptUpload';
 
 const t = messages.aiImport;
 
@@ -116,19 +116,10 @@ export function AiImportPage() {
 
   return (
     <div className="space-y-6 pb-8">
-      <h1 className="large-title">{messages.pages.add}</h1>
-
-      <ReceiptUpload />
-
-      <Link
-        to="/inventory/new?scan=1"
-        className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-basil-700 px-5 font-semibold text-white transition-colors hover:bg-basil-800 active:bg-basil-900"
-      >
-        <ScanBarcode size={20} aria-hidden="true" />
-        {messages.scanner.open}
-      </Link>
-
-      <h2 className="font-display text-xl font-semibold">{t.title}</h2>
+      <div>
+        <BackLink to="/add" label={messages.pages.add} />
+        <h1 className="large-title">{messages.pages.ai}</h1>
+      </div>
       <p className="text-ink-muted">{t.intro}</p>
 
       <Card>
