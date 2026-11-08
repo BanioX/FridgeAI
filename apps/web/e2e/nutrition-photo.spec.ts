@@ -50,7 +50,7 @@ test('reads the nutrition table of a screenshot on the device and saves it', asy
   });
 
   await expect(
-    card.getByText('Das hat rettich gelesen. Stimmt es mit der Packung überein?'),
+    card.getByText('Das hat Rettich gelesen. Stimmt es mit der Packung überein?'),
   ).toBeVisible({
     timeout: 60_000,
   });

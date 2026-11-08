@@ -1,5 +1,5 @@
 export const messages = {
-  appName: 'rettich',
+  appName: 'Rettich',
   navLabel: 'Hauptnavigation',
   nav: {
     start: 'Start',
@@ -22,16 +22,16 @@ export const messages = {
     check: 'Kühlschrank-Check',
   },
   placeholder: 'Kommt bald.',
-  loading: 'rettich wird geladen …',
+  loading: 'Rettich wird geladen …',
   errors: {
     title: 'Da ist etwas schiefgelaufen',
-    text: 'Lade rettich bitte neu. Deine Daten bleiben auf dem Gerät erhalten.',
+    text: 'Lade Rettich bitte neu. Deine Daten bleiben auf dem Gerät erhalten.',
     updating: 'Neue Version',
-    updatingText: 'rettich wurde aktualisiert und lädt neu. Einen Moment.',
+    updatingText: 'Rettich wurde aktualisiert und lädt neu. Einen Moment.',
     reload: 'Neu laden',
     home: 'Zur Startseite',
     storage:
-      'Der lokale Speicher ist nicht verfügbar. Ist der private Modus aktiv? rettich braucht ihn, um deinen Vorrat zu speichern.',
+      'Der lokale Speicher ist nicht verfügbar. Ist der private Modus aktiv? Rettich braucht ihn, um deinen Vorrat zu speichern.',
   },
   defaults: { householdName: 'Mein Haushalt', memberName: 'Ich' },
   expiry: {
@@ -80,9 +80,9 @@ export const messages = {
     expiringTitle: 'Läuft bald ab',
     expiringEmpty: 'Nichts läuft in den nächsten 3 Tagen ab. Gut gemacht!',
     showAll: (count: number) => `Alle anzeigen (${String(count)})`,
-    welcomeTitle: 'Willkommen bei rettich',
+    welcomeTitle: 'Willkommen bei Rettich',
     welcomeText:
-      'Wirf kein Geld in den Kübel: Erfasse, was du zu Hause hast, und rettich sagt dir, was du heute retten solltest.',
+      'Wirf kein Geld in den Kübel: Erfasse, was du zu Hause hast, und Rettich sagt dir, was du heute retten solltest.',
     firstItem: 'Ersten Artikel erfassen',
     impactTitle: 'Deine Wirkung diesen Monat',
     saved: 'Gerettet',
@@ -102,7 +102,7 @@ export const messages = {
   check: {
     cardText: 'Ist alles noch da? Einmal pro Woche, in etwa 30 Sekunden.',
     cardStart: 'Check starten',
-    intro: 'Ein Tipp pro Artikel. Was weg ist, zählt rettich mit.',
+    intro: 'Ein Tipp pro Artikel. Was weg ist, zählt Rettich mit.',
     progress: (step: number, total: number) => `${String(step)} von ${String(total)}`,
     question: 'Ist das noch da?',
     still: 'Noch da',
@@ -254,7 +254,7 @@ export const messages = {
     more: 'Gefundene Produkte',
     searching: 'Suche …',
     picked: (name: string) => `Übernommen: ${name}.`,
-    none: 'Nichts gefunden. Erfasse es einfach von Hand, beim nächsten Mal kennt rettich es.',
+    none: 'Nichts gefunden. Erfasse es einfach von Hand, beim nächsten Mal kennt Rettich es.',
     unavailable:
       'Die Produktsuche ist gerade nicht erreichbar (offline oder zu viele Suchen). Erfasse es von Hand oder versuch es gleich nochmals.',
     retry: 'Nochmals suchen',
@@ -374,13 +374,13 @@ export const messages = {
     imageCredit: 'Bild: Open Food Facts (CC BY-SA)',
     photo: {
       missing:
-        'Nährwerte fehlen. Fotografiere die Nährwerttabelle auf der Packung oder wähle einen Screenshot, z. B. von Migipedia oder coop.ch. rettich liest sie auf deinem Gerät.',
+        'Nährwerte fehlen. Fotografiere die Nährwerttabelle auf der Packung oder wähle einen Screenshot, z. B. von Migipedia oder coop.ch. Rettich liest sie auf deinem Gerät.',
       choose: 'Foto oder Screenshot wählen',
       reading: 'Bild wird gelesen, das dauert ein paar Sekunden …',
       tooLarge: 'Die Datei ist zu gross (höchstens 15 MB).',
       notFound: 'Keine Nährwerttabelle erkannt. Versuch ein scharfes Bild nur von der Tabelle.',
       failed: 'Das Bild konnte nicht gelesen werden. Versuch es noch einmal.',
-      preview: 'Das hat rettich gelesen. Stimmt es mit der Packung überein?',
+      preview: 'Das hat Rettich gelesen. Stimmt es mit der Packung überein?',
       save: 'Speichern',
       discard: 'Verwerfen',
       saveFailed: 'Das Speichern hat nicht geklappt. Versuch es noch einmal.',
@@ -405,9 +405,9 @@ export const messages = {
     failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
   },
   more: {
-    install: 'rettich als App',
+    install: 'Rettich als App',
     installIos:
-      'In Safari unten auf «Teilen» tippen, dann «Zum Home-Bildschirm». Danach startet rettich wie eine App, auch offline.',
+      'In Safari unten auf «Teilen» tippen, dann «Zum Home-Bildschirm». Danach startet Rettich wie eine App, auch offline.',
     installOther: 'Im Browser-Menü «App installieren» oder «Zum Startbildschirm» wählen.',
     reportsDetail: 'Kühlschrank, Wirkung und Einkäufe zum Teilen',
     historyDetail: 'Gegessen und weggeworfen: ansehen, ändern, löschen',
@@ -426,7 +426,7 @@ export const messages = {
       `${file} übernehmen? Darin sind ${items} Artikel. Was jetzt auf diesem Gerät gespeichert ist, wird ersetzt.`,
     importConfirm: 'Ja, übernehmen',
     importInvalid:
-      'Diese Datei ist kein rettich-Export. Nimm die JSON-Datei von «Alles exportieren».',
+      'Diese Datei ist kein Rettich-Export. Nimm die JSON-Datei von «Alles exportieren».',
     deleteAll: 'Alles löschen',
     deleteQuestion:
       'Wirklich alles löschen? Vorrat, Liste, Statistik und Einstellungen sind danach weg. Das lässt sich nicht rückgängig machen.',
@@ -478,7 +478,7 @@ export const messages = {
   },
   reports: {
     title: 'Berichte als PDF',
-    intro: 'rettich erstellt den Bericht auf deinem Gerät. Teilen oder speichern entscheidest du.',
+    intro: 'Rettich erstellt den Bericht auf deinem Gerät. Teilen oder speichern entscheidest du.',
     periodLegend: 'Zeitraum',
     periods: { month: 'Dieser Monat', quarter: 'Letzte 3 Monate', year: 'Dieses Jahr' },
     reportTitle: (period: string) => `Bericht · ${period}`,
@@ -528,7 +528,7 @@ export const messages = {
       inventory: 'Alles im Vorrat',
       total: 'Total',
       estimated: '* geschätzt aus dem Durchschnittspreis der Kategorie',
-      footer: 'Erstellt auf deinem Gerät mit rettich · Wirf kein Geld in den Kübel.',
+      footer: 'Erstellt auf deinem Gerät mit Rettich · Wirf kein Geld in den Kübel.',
       page: (page: number, pages: number) => `Seite ${String(page)} von ${String(pages)}`,
       noWaste: 'Nichts weggeworfen. Stark!',
       noUrgent: 'Nichts läuft in den nächsten drei Tagen ab.',
@@ -576,10 +576,10 @@ export const messages = {
     receipt: 'Alle Einkäufe auf einmal: PDF, Screenshot oder Foto der Quittung',
     barcode: 'Packung vor die Kamera halten',
     manualTitle: 'Von Hand',
-    manual: 'Name eintippen, den Rest schlägt rettich vor',
+    manual: 'Name eintippen, den Rest schlägt Rettich vor',
     startTitle: 'Zum Start: einmal Bestand aufnehmen',
     start:
-      'Hast du noch Quittungen der letzten Tage? Lade sie hoch, dann kennt rettich deinen Kühlschrank in wenigen Minuten. Was nicht auf einer Quittung steht, scannst du einfach.',
+      'Hast du noch Quittungen der letzten Tage? Lade sie hoch, dann kennt Rettich deinen Kühlschrank in wenigen Minuten. Was nicht auf einer Quittung steht, scannst du einfach.',
   },
   receiptUpload: {
     match: {
@@ -613,17 +613,17 @@ export const messages = {
       scanInvalid: 'Das war kein Barcode. Versuch es nochmals.',
     },
     intro:
-      'Lade deine Quittung hoch: das PDF aus der Coop- oder Migros-App, einen Screenshot (z. B. Lidl Plus) oder ein Foto. rettich liest sie auf deinem Gerät und speichert die Datei nicht.',
+      'Lade deine Quittung hoch: das PDF aus der Coop- oder Migros-App, einen Screenshot (z. B. Lidl Plus) oder ein Foto. Rettich liest sie auf deinem Gerät und speichert die Datei nicht.',
     /** The shops are named only to say where the file comes from (no logos, no partnership). */
     trademarks:
-      'Coop, Migros und Lidl Plus sind Marken ihrer Inhaber. rettich ist mit ihnen nicht verbunden.',
+      'Coop, Migros und Lidl Plus sind Marken ihrer Inhaber. Rettich ist mit ihnen nicht verbunden.',
     choose: 'PDF oder Foto wählen',
     reading: 'Quittung wird gelesen …',
     readingPhoto: 'Foto wird gelesen, das dauert ein paar Sekunden …',
     tooLarge: 'Die Datei ist zu gross für eine Quittung (höchstens 15 MB).',
     noText:
       'In diesem PDF steht kein lesbarer Text, es ist wohl ein eingescanntes Bild. Mach stattdessen ein Foto oder einen Screenshot.',
-    noLines: 'Auf dieser Quittung hat rettich keine Artikel gefunden.',
+    noLines: 'Auf dieser Quittung hat Rettich keine Artikel gefunden.',
     failed:
       'Die Datei liess sich nicht lesen. Versuch es nochmals oder mit einer anderen Quittung.',
     sumOk: (total: string) => `Summe stimmt: ${total}`,
@@ -660,21 +660,21 @@ export const messages = {
     hint: 'Code in den Rahmen, Handy etwa 20 cm entfernt halten. Ist es unscharf: etwas weiter weg.',
     torch: 'Licht',
     torchFallback:
-      'Hier kann rettich das Licht nicht selbst einschalten. Die Kamera öffnet sich: Blitz einschalten und den Code fotografieren.',
+      'Hier kann Rettich das Licht nicht selbst einschalten. Die Kamera öffnet sich: Blitz einschalten und den Code fotografieren.',
     denied:
       'Die Kamera ist blockiert. Erlaube sie in den Einstellungen deines Browsers, oder nimm ein Foto bzw. tipp die Nummer ein.',
     unavailable:
       'Auf diesem Gerät gibt es keine Kamera für die App. Nimm ein Foto oder tipp die Nummer ein.',
     photo: 'Code aus Foto lesen',
-    noCode: 'Auf dem Foto hat rettich keinen Code gefunden. Versuch es näher und schärfer.',
+    noCode: 'Auf dem Foto hat Rettich keinen Code gefunden. Versuch es näher und schärfer.',
     manual: 'Nummer unter dem Strichcode',
     manualSubmit: 'Übernehmen',
-    unknownCode: 'Diesen Code kennt rettich nicht. Bitte tipp die Nummer unter dem Strichcode ein.',
+    unknownCode: 'Diesen Code kennt Rettich nicht. Bitte tipp die Nummer unter dem Strichcode ein.',
     found: (code: string) => `Barcode ${code} erkannt.`,
     looking: 'Suche Produktdaten …',
     product: (name: string, details: string) => `Gefunden: ${name}${details}.`,
     unknownProduct:
-      'Produkt noch unbekannt: Gib den Namen ein. Beim nächsten Scan kennt rettich es.',
+      'Produkt noch unbekannt: Gib den Namen ein. Beim nächsten Scan kennt Rettich es.',
     attribution: 'Daten: Open Food Facts (ODbL)',
     foundWithDate: (code: string, date: string) => `Barcode ${code} erkannt, haltbar bis ${date}.`,
   },

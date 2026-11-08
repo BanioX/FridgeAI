@@ -43,3 +43,11 @@ Alban: «Ich will rettich statt Rettich. Das Framing ist retten, nicht das Gemü
 - **Claim:** «Wirf kein Geld in den Kübel.»
 - **Logo:** Der Rettich bleibt das Symbol.
 
+## Nachtrag (8.11.2026): «Rettich» mit grossem R
+
+Alban: «Wir wechseln doch auf Rettich statt rettich. Es macht mehr mit dem Auge.»
+
+- Der Name steht überall mit grossem R: in allen Texten der App, im App-Namen (Manifest, Titel des Browsers), im PDF-Bericht, in README, CLAUDE.md, AGENTS.md und in der Design-Doku. Ein Test im Textkatalog prüft das.
+- **Klein bleiben** technische Namen: Dateinamen (`rettich-bericht-….pdf`, `rettich-….json`), Kennungen im Code, die Domain (`rettich.app`, Parkplatz P8) sowie Repo, Pakete und Datenbank (`fridgeai`).
+- Ältere ADRs bleiben, wie sie geschrieben wurden.
+

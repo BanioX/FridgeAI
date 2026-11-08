@@ -1,4 +1,4 @@
-# SWELP für rettich: was der Code darf, was er tut, was wir gelernt haben
+# SWELP für Rettich: was der Code darf, was er tut, was wir gelernt haben
 
 Alban (7.11.2026): «Baue so weiter, dass so wenige Technical Debts wie möglich entstehen. Führe eine Coding-Bibliothek oder Dokumentation nach, mit Sinn für Mensch und Sinn für Maschine.» Die Idee stammt aus SWELP (Scoped Work, Side Effect, Self Learning Protocols).
 

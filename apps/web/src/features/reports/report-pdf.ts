@@ -85,9 +85,9 @@ export async function reportPdf(
   const { jsPDF } = await import('jspdf');
   const doc = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
   doc.setProperties({
-    title: `rettich – ${t.heading}`,
+    title: `Rettich – ${t.heading}`,
     subject: options.period,
-    creator: 'rettich',
+    creator: 'Rettich',
   });
   const ctx: Context = {
     doc,

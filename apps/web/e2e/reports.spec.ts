@@ -34,7 +34,7 @@ test('creates a PDF report on the device, opens it in the app and shares it', as
   expect(download.suggestedFilename()).toMatch(/^rettich-bericht-\d{4}-\d{2}-\d{2}\.pdf$/);
   const pdf = await readFile(await download.path());
   expect(pdf.subarray(0, 5).toString('latin1')).toBe('%PDF-');
-  expect(pdf.toString('latin1')).toContain('rettich');
+  expect(pdf.toString('latin1')).toContain('Rettich');
   expect(pdf.length).toBeGreaterThan(2000);
   // Back like in a banking app: to the report choice.
   await page.getByRole('button', { name: 'Berichte' }).click();

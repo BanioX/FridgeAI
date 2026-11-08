@@ -9,7 +9,7 @@ Hier parkt alles, was nachweislich einen USP hätte, aber vor dem Bau eine Abkl�
 - Ein Eintrag wandert erst in den [Plan](../plan.md), wenn er entschieden ist.
 - **Status:** `geparkt` · `in Abklärung` · `entschieden → Plan` · `verworfen` (mit Grund).
 - Kleinere Ideen ohne Abklärungsbedarf stehen in den anderen Dateien dieses Ordners ([Übersicht](./README.md)).
-- Pitch und Businessplan liegen als Artifacts vor: [rettich Pitch](https://claude.ai/artifact/GCdjDPAGbtJLmXAoguBBLS), [rettich Businessplan](https://claude.ai/artifact/LUoSvobGNDrPYsc2453SNd).
+- Pitch und Businessplan liegen als Artifacts vor: [Rettich Pitch](https://claude.ai/artifact/GCdjDPAGbtJLmXAoguBBLS), [Rettich Businessplan](https://claude.ai/artifact/LUoSvobGNDrPYsc2453SNd).
 
 ## Fokus jetzt: bis zum Pilot
 
@@ -26,34 +26,34 @@ Alles in diesem Parkplatz wartet auf den Pilot und seine Zahlen.
 | # | Hebel | USP: warum gross | Was abzuklären ist | Status |
 | --- | --- | --- | --- | --- |
 | P1 | **Partnerschaft mit Migros und Coop** (auch Denner, Lidl, Aldi): Produktdaten, Nachkauf mit Provision, digitale Kassenzettel | Kein Abfotografieren mehr, vollständige Produktdaten, Nachkauf in einem Tipp. Daraus entsteht ein Geschäftsmodell (siehe unten) | Pitch, Vertrag, Einwilligung pro Haushalt, Provisionshöhe | geparkt |
-| P2 | **Gemeinsames Gedächtnis über alle Haushalte**: Bon-Text → Barcode | Netzwerkeffekt: Ein bestätigter Bon hilft allen. Mit jeder Person wird rettich besser, das kann niemand kopieren | Konten und Server (P6), Datenschutz: nur die Zuordnung, nie wer was kauft | geparkt |
-| P3 | **WG-Funktionen**: wem gehört's, wer schuldet was | Kern der Vision («Scan deinen Bon – rettich weiss, … wem es gehört, wer was schuldet»). Kein Konkurrent kann das | Konten, Sync, Einladungen, Abrechnung (P6). «Wer hat's gegessen» (wer im Haushalt wischt) gehört zu den WG-Funktionen. | geparkt |
+| P2 | **Gemeinsames Gedächtnis über alle Haushalte**: Bon-Text → Barcode | Netzwerkeffekt: Ein bestätigter Bon hilft allen. Mit jeder Person wird Rettich besser, das kann niemand kopieren | Konten und Server (P6), Datenschutz: nur die Zuordnung, nie wer was kauft | geparkt |
+| P3 | **WG-Funktionen**: wem gehört's, wer schuldet was | Kern der Vision («Scan deinen Bon – Rettich weiss, … wem es gehört, wer was schuldet»). Kein Konkurrent kann das | Konten, Sync, Einladungen, Abrechnung (P6). «Wer hat's gegessen» (wer im Haushalt wischt) gehört zu den WG-Funktionen. | geparkt |
 | P4 | **Open Food Repo der EPFL** als zweite Produktquelle | Stark bei Schweizer Eigenmarken, also genau der Lücke von Open Food Facts | Lebt die API noch? Lizenz, Schlüssel über einen Gratis-Proxy, neuer Datenfluss | geparkt |
-| P5 | **Beitragen an Open Food Facts** (Fotos, Nährwerte) | Unbekannte Produkte werden für alle bekannt; rettich als guter Bürger der offenen Daten | Konto der Person bei Open Food Facts, neuer Datenfluss | geparkt |
+| P5 | **Beitragen an Open Food Facts** (Fotos, Nährwerte) | Unbekannte Produkte werden für alle bekannt; Rettich als guter Bürger der offenen Daten | Konto der Person bei Open Food Facts, neuer Datenfluss | geparkt |
 | P6 | **Backend und Konten** (Hono, PostgreSQL) | Voraussetzung für P2, P3, Sync zwischen Handys, echte Push-Mitteilungen | Hosting-Kosten, Datenschutz (ADR-0020), Betrieb. Die drei Schichten sind vorbereitet (ADR-0034) | geparkt |
 | P7 | **App Store über Capacitor** | Echte App-Symbole, Push, Taschenlampe auch auf dem iPhone, Hintergrund-Erinnerungen, Vertrauen | Kosten: Apple USD 99 pro Jahr, Google USD 25 einmal; Review-Prozess ([`app-stores.md`](./app-stores.md)) | geparkt |
 | P8 | **Marke und Domain**: rettich.app, Marke Schweiz und EU | Schutz vor Kopien, bevor das Marketing startet | CHF 350 (Schweiz), EUR 900–1050 (EU). «Rettermarkt Rettich» in Saarbrücken prüfen ([`schutz.md`](./schutz.md)) | geparkt (Alban) |
 | P9 | **Start in Deutschland und Österreich** | Zehnfacher Markt. Die Währungs-Grundlage ist gebaut (ADR-0019) | Bon-Parser für Rewe, Edeka, Spar, Billa usw., Schätzpreise pro Land, Befehl zum Umstellen der Währung | geparkt |
-| P10 | **GS1-2D-Codes** («Sunrise 2027») mit GS1 Schweiz | Ablaufdatum direkt aus dem Code, ohne Tippen. rettich liest sie schon heute | Pilotpartner, Zeitplan der Händler ([`integrationen.md`](./integrationen.md)) | geparkt |
-| P11 | **Thermomix/Cookidoo, Samsung Food** und eine **offene rettich-Schnittstelle** (OpenAPI, MCP) | rettich als Schicht zwischen Einkauf und Küche | Ob die Importe funktionieren, Partnergespräche, Einwilligung ([`integrationen.md`](./integrationen.md)) | geparkt |
+| P10 | **GS1-2D-Codes** («Sunrise 2027») mit GS1 Schweiz | Ablaufdatum direkt aus dem Code, ohne Tippen. Rettich liest sie schon heute | Pilotpartner, Zeitplan der Händler ([`integrationen.md`](./integrationen.md)) | geparkt |
+| P11 | **Thermomix/Cookidoo, Samsung Food** und eine **offene Rettich-Schnittstelle** (OpenAPI, MCP) | Rettich als Schicht zwischen Einkauf und Küche | Ob die Importe funktionieren, Partnergespräche, Einwilligung ([`integrationen.md`](./integrationen.md)) | geparkt |
 | P12 | **Kühlschrank-Hersteller** (LG, Samsung) und EU Data Act | Langfristig Daten direkt vom Gerät | Kein Hersteller öffnet heute sein Inventar ([`integrationen.md`](./integrationen.md)) | geparkt |
 | P13 | **Preisvergleich zwischen Läden** («bei Coop 30 Rappen günstiger») | Spart Geld, nicht nur Lebensmittel | Preisdaten der Händler (P1) oder Preise aus vielen Haushalten (P2), Datenschutz | geparkt |
 | P14 | **Gamification**: Fortschritt, Serien, «Bon komplett», Reineclaude-Erfolg | Macht das Erfassen zur Routine | Nach dem Pilot mit echten Zahlen. Gestaltung mit Alban ([`designsprache-garten.md`](./designsprache-garten.md)) | geparkt |
 | P15 | **Aggregierte Food-Waste-Kennzahlen** für Handel, Forschung, Gemeinden | Einnahmen ohne Werbung. Messbarer Beitrag zum Ziel 2030 | Genug Haushalte, Anonymisierung (k-Anonymität), Einwilligung. Nie Einzeldaten verkaufen | geparkt |
 | P16 | **Förderung** (z. B. StreamUp von United Against Waste, Innosuisse, Aktionsplan des Bundes gegen Lebensmittelverschwendung, Stiftungen) | Geld ohne Anteile abzugeben, dazu Glaubwürdigkeit und ein Netzwerk in der Branche | Passende Programme, Firmenform, Gesuch. StreamUp: siehe «P16 im Detail» | geparkt |
 | P17 | **Büro-Kühlschrank für Teams** | B2B-Einnahmen pro Team | Eigener Vertrieb, Konten (P6) ([`monetarisierung.md`](./monetarisierung.md)) | geparkt |
-| P18 | **Bestandesaufnahme per Foto** (Kühlschrank oder Einkauf fotografieren, rettich erkennt die Lebensmittel) | Ersetzt den entfernten Umweg «Mit eigener KI». Ein Foto genügt, das wäre ein starkes Premium-Argument | KI-Kosten pro Bild, neuer Datenfluss (das Bild verlässt das Gerät), Qualität. Der Parser für die Liste ist da (ADR-0012) | geparkt |
-| P19 | **Allergene pro Person**: wer im Haushalt was nicht verträgt, Warnung beim Scannen, Rezepte ohne dieses Allergen | Für Menschen mit Allergien ein Grund, rettich jeden Tag zu öffnen, und ein starkes Pro-Argument. Die «Enthält»-Liste pro Produkt (Open Food Facts) zeigt rettich schon heute | Gesundheitsdaten sind besonders schützenswert (nDSG Art. 5 lit. c, DSGVO Art. 9): nur auf dem Gerät, ausdrückliche Einwilligung. Haftung: offene Daten können fehlen oder falsch sein, darum nie «allergenfrei» versprechen. Fachlich prüfen lassen (z. B. aha! Allergiezentrum Schweiz) | geparkt |
+| P18 | **Bestandesaufnahme per Foto** (Kühlschrank oder Einkauf fotografieren, Rettich erkennt die Lebensmittel) | Ersetzt den entfernten Umweg «Mit eigener KI». Ein Foto genügt, das wäre ein starkes Premium-Argument | KI-Kosten pro Bild, neuer Datenfluss (das Bild verlässt das Gerät), Qualität. Der Parser für die Liste ist da (ADR-0012) | geparkt |
+| P19 | **Allergene pro Person**: wer im Haushalt was nicht verträgt, Warnung beim Scannen, Rezepte ohne dieses Allergen | Für Menschen mit Allergien ein Grund, Rettich jeden Tag zu öffnen, und ein starkes Pro-Argument. Die «Enthält»-Liste pro Produkt (Open Food Facts) zeigt Rettich schon heute | Gesundheitsdaten sind besonders schützenswert (nDSG Art. 5 lit. c, DSGVO Art. 9): nur auf dem Gerät, ausdrückliche Einwilligung. Haftung: offene Daten können fehlen oder falsch sein, darum nie «allergenfrei» versprechen. Fachlich prüfen lassen (z. B. aha! Allergiezentrum Schweiz) | geparkt |
 | P20 | **Spaces**: Zuhause, Büro, Ferienwohnung, bei den Eltern; eine Person in mehreren Haushalten, oben umschalten | Ein Zugang für alle Kühlschränke im Leben; Brücke zum Büro-Kühlschrank (P17) | Auf einem Gerät ginge es ohne Server, das Datenmodell kennt Haushalte schon. Mit anderen teilen braucht Konten (P6). Gratis oder Pro? Darf das Erfassen nicht verkomplizieren | geparkt |
 | P21 | **Geteilter Haushalt, ungleich diszipliniert**: eine Person trägt alles nach, die andere nie | Gut gelöst ein Vorteil, an dem Vorrats-Apps sonst scheitern: Der Bestand bleibt brauchbar, auch wenn nicht alle mitmachen | Konten und Sync (P6, P3). Gestaltung: siehe «P21 im Detail» | geparkt, Teile gebaut |
-| P22 | **Von selbst erfasst**: Etiketten mit RFID oder NFC wie bei Decathlon, ein Kamera- oder Sensor-Modul, rettich als Anbieter oder Lizenzgeber | Kein Aufwand mehr für die Person | Hardware bindet viel Kapital und rechnet sich bei Lebensmitteln kaum. Günstigere Wege zum selben Ziel: P1 und P10. Siehe «P22 im Detail» | geparkt, Vision |
+| P22 | **Von selbst erfasst**: Etiketten mit RFID oder NFC wie bei Decathlon, ein Kamera- oder Sensor-Modul, Rettich als Anbieter oder Lizenzgeber | Kein Aufwand mehr für die Person | Hardware bindet viel Kapital und rechnet sich bei Lebensmitteln kaum. Günstigere Wege zum selben Ziel: P1 und P10. Siehe «P22 im Detail» | geparkt, Vision |
 | P23 | **Stammdaten-Pools** der Hersteller (GDSN, GS1 Schweiz trustbox) | Geprüfte Produktdaten mit Bild, Nährwerten und Allergenen, auch für Eigenmarken; so baut YAZIO seine «verifizierten» Produkte ([`mitbewerber-yazio.md`](./mitbewerber-yazio.md)) | Mitgliedschaft und Vertrag bei GS1 Schweiz, Kosten, Nutzungsrechte für eine App | geparkt |
 
 ## P1 im Detail: Migros und Coop als Partner
 
 **Alban, 7.11.2026:** «Ich könnte mir vorstellen, Migros oder Coop meine App zu pitchen, damit sie Partner werden und die Nutzer über meine App Produkte nachkaufen können, als Provisionsmodell.»
 
-**Technisch ist das einfach, sobald ein Händler öffnet.** rettich hat die Anschlüsse schon, heute mit Mocks:
+**Technisch ist das einfach, sobald ein Händler öffnet.** Rettich hat die Anschlüsse schon, heute mit Mocks:
 
 | Port in `packages/core/src/ports` | Was ein Partner liefert | Was es für die Person heisst |
 | --- | --- | --- |
@@ -82,7 +82,7 @@ Ein Partner-Adapter ist Arbeit von Tagen, nicht Monaten. Der Aufwand liegt beim 
 
 **Alban, 7.11.2026:** «Ein Partner kann diszipliniert sein, ein anderer nicht. Wenn einer das nicht konsequent nachführt, stimmt es nicht.»
 
-**Grundsatz:** rettich verlangt keine Disziplin, es rechnet mit Lücken. Je weniger Aufwand eine Änderung kostet, desto öfter stimmt der Bestand.
+**Grundsatz:** Rettich verlangt keine Disziplin, es rechnet mit Lücken. Je weniger Aufwand eine Änderung kostet, desto öfter stimmt der Bestand.
 
 **Schon gebaut:**
 
@@ -100,19 +100,19 @@ Ein Partner-Adapter ist Arbeit von Tagen, nicht Monaten. Der Aufwand liegt beim 
 
 ## P22 im Detail: von selbst erfasst
 
-**Alban, 7.11.2026 (Idee aus dem Schulprojekt):** Wie bei C&A oder Decathlon wird der Artikel automatisch erkannt, wenn man ihn hinlegt. rettich könnte die Etiketten selbst anbieten oder das System lizenzieren, je nach Marge.
+**Alban, 7.11.2026 (Idee aus dem Schulprojekt):** Wie bei C&A oder Decathlon wird der Artikel automatisch erkannt, wenn man ihn hinlegt. Rettich könnte die Etiketten selbst anbieten oder das System lizenzieren, je nach Marge.
 
 **Claudes Einschätzung:**
 
 - **Warum es bei Kleidern geht:** Ein Pullover kostet 30 bis 100 Franken, ein Etikett einige Rappen. Bei einem Joghurt für 70 Rappen frisst das Etikett die Marge, denn der Detailhandel verdient netto nur wenige Prozent. Dazu kommt: Funk-Etiketten lesen sich durch Flüssigkeiten und Metall schlecht (Getränke, Dosen, Alu-Deckel), und sie landen im Abfall. Die Preise sind eine Grössenordnung, vor einem Pitch prüfen.
 - **Etiketten selbst herstellen** wäre ein anderes Unternehmen: mit Fabriken, in einem Markt grosser Spezialisten.
 - **Der Kern der Idee ist «erfasst sich beim Bezahlen von selbst».** Das geht ohne eigene Hardware:
-  1. **Digitaler Kassenzettel** vom Händler (P1): Die Kasse kennt jeden Artikel schon mit Barcode. Mit Einwilligung kommt der Einkauf von selbst in rettich, mit demselben Erlebnis und ohne Etikett.
-  2. **2D-Code mit Ablaufdatum** (P10): Bis 2027 sollen Kassen 2D-Codes lesen können («Sunrise 2027»). Diese Codes tragen das Ablaufdatum, und rettich liest sie schon.
-  3. **Kamera im Kühlschrank:** Das gehört den Geräteherstellern (P12); rettich wäre die Software darin.
+  1. **Digitaler Kassenzettel** vom Händler (P1): Die Kasse kennt jeden Artikel schon mit Barcode. Mit Einwilligung kommt der Einkauf von selbst in Rettich, mit demselben Erlebnis und ohne Etikett.
+  2. **2D-Code mit Ablaufdatum** (P10): Bis 2027 sollen Kassen 2D-Codes lesen können («Sunrise 2027»). Diese Codes tragen das Ablaufdatum, und Rettich liest sie schon.
+  3. **Kamera im Kühlschrank:** Das gehört den Geräteherstellern (P12); Rettich wäre die Software darin.
 - **Lizenz statt Hardware:** Wertvoll ist die Logik, nicht das Etikett: was abläuft, was zu retten ist, wem was gehört, Rezepte. Sie liegt sauber getrennt in `packages/core`. Zwei Wege:
   - ein Vorrats-Modul für die App eines Händlers, bezahlt pro aktivem Haushalt;
-  - die offene rettich-Schnittstelle (P11) für Gerätehersteller und Etiketten-Anbieter.
+  - die offene Rettich-Schnittstelle (P11) für Gerätehersteller und Etiketten-Anbieter.
 
   Software hat eine hohe Marge, Hardware eine tiefe. **Empfehlung:** Software lizenzieren, Hardware nur mit Partnern.
 - **Wann wieder prüfen:** wenn ein Händler Funk-Etiketten auf Lebensmitteln testet oder nach einem ersten Partner (P1).
@@ -127,7 +127,7 @@ Ein Partner-Adapter ist Arbeit von Tagen, nicht Monaten. Der Aufwand liegt beim 
 - **Was:** Mentoring, Workshops und Zugang zum Netzwerk aus Branche, Forschung und Entscheidungsträger:innen der Lebensmittelbranche. Ob es auch Geld gibt, wird aus den Quellen nicht klar.
 - **Für wen:** Start-ups, etablierte Firmen und Hochschulen mit Lösungen, die Lebensmittelverluste messbar senken, für den Schweizer Markt.
 - **Rhythmus:** Die erste Kohorte lief Januar bis Juni 2025 (11 Projekte). Für die zweite wurden im April 2026 neun Teilnehmende gewählt.
-- **Schwerpunkt:** bisher Nebenströme der Verarbeitung (z. B. Pasta aus altem Brot). Haushalte passen nur teilweise. Die Stärke von rettich für eine Bewerbung: messbar gerettete Franken und Kilo pro Haushalt, aus dem Pilot.
+- **Schwerpunkt:** bisher Nebenströme der Verarbeitung (z. B. Pasta aus altem Brot). Haushalte passen nur teilweise. Die Stärke von Rettich für eine Bewerbung: messbar gerettete Franken und Kilo pro Haushalt, aus dem Pilot.
 
 **Quellen:** [United Against Waste: Konzept hinter StreamUp](https://united-against-waste.ch/medien-article/vom-nebenstrom-zur-hauptidee-das-konzept-hinter-streamup/), [Startupticker: zweite Kohorte](https://www.startupticker.ch/en/news/streamup-selects-nine-food-tech-companies-for-second-accelerator-cohort), [Swiss Food & Nutrition Valley: Interview zu StreamUp](https://swissfoodnutritionvalley.com/five-questions-for-streamup-project-lead-tatjana-nebel-about-supporting-swiss-food-loss-reduction-solutions/).
 
@@ -137,23 +137,23 @@ Ein Partner-Adapter ist Arbeit von Tagen, nicht Monaten. Der Aufwand liegt beim 
 
 ## Name und Vision (Findungsphase)
 
-**Alban, 7.11.2026:** «Unsere App heisst rettich, aber wir sind ja noch in der Findungsphase. FridgeAI war die ganze Vision. Die grössere Vision ist Food Waste, aber auch alles, was dazugehört.»
+**Alban, 7.11.2026:** «Unsere App heisst Rettich, aber wir sind ja noch in der Findungsphase. FridgeAI war die ganze Vision. Die grössere Vision ist Food Waste, aber auch alles, was dazugehört.»
 
 **Claudes Vorschlag: drei Ebenen trennen.**
 
 | Ebene | Frage | Vorschlag | Wann entscheiden |
 | --- | --- | --- | --- |
 | **Mission** | Warum gibt es uns? | Food Waste im Haushalt halbieren, wie es das Schweizer Ziel für 2030 verlangt. Bleibt, egal wie Produkt und Firma heissen | jetzt (gilt schon) |
-| **Produkt** | Was nutzt die Person? | **rettich**, die App für den eigenen Haushalt | entschieden (ADR-0032) |
-| **Firma oder Dach** | Wer steht dahinter? | Offen. Ein eigener Dachname lohnt sich erst, wenn mehrere Produkte kommen (Büro P17, Kennzahlen P15, Lizenz P22). Bis dahin genügt rettich | bei der Gründung (Alban) |
+| **Produkt** | Was nutzt die Person? | **Rettich**, die App für den eigenen Haushalt | entschieden (ADR-0032) |
+| **Firma oder Dach** | Wer steht dahinter? | Offen. Ein eigener Dachname lohnt sich erst, wenn mehrere Produkte kommen (Büro P17, Kennzahlen P15, Lizenz P22). Bis dahin genügt Rettich | bei der Gründung (Alban) |
 
-**Warum rettich die grosse Vision besser trägt als FridgeAI:**
+**Warum Rettich die grosse Vision besser trägt als FridgeAI:**
 
 - **Mission im Namen:** «rett' ich» sagt die Mission (retten), nicht ein Gerät. Der Name passt auch zu Vorrat, Tiefkühler, Rezepten, Weitergeben und Partnern wie Too Good To Go.
 - **Zu eng:** «Fridge» bindet an den Kühlschrank, die Vision ist breiter.
 - **Austauschbar:** «AI» kann heute jede App behaupten. Eine App «Fridge AI: Food & Recipes» gibt es schon ([`markt-und-timing.md`](./markt-und-timing.md)), also drohen Verwechslung und Ärger um die Marke.
 
-**Vision in einem Satz** (Vorschlag): «rettich hilft dir, kein Essen und kein Geld wegzuwerfen. Zusammen halbieren wir Food Waste bis 2030.»
+**Vision in einem Satz** (Vorschlag): «Rettich hilft dir, kein Essen und kein Geld wegzuwerfen. Zusammen halbieren wir Food Waste bis 2030.»
 
 «FridgeAI» bleibt nur der technische Name von Repo, Paketen und Datenbank (ADR-0032). Status: **geparkt**. Die Marke entscheidet Alban (P8).
 
@@ -164,11 +164,11 @@ Stand: 7.11.2026, aufbauend auf [`monetarisierung.md`](./monetarisierung.md) und
 | Säule | Wer zahlt | Wofür | Voraussetzung | Wann |
 | --- | --- | --- | --- | --- |
 | 1. **Haushalts-Abo «Pro»** | Haushalte, WGs | ohne Werbung, mehrere Personen, Berichte, Sync | Konten (P6). Preisgrenze um CHF 3–5 pro Monat (Konkurrenz, siehe `monetarisierung.md`) | nach dem Pilot |
-| 2. **Provision auf Nachkauf** | Händler, Lieferdienste | Nachkauf und Warenkorb aus rettich | Vertrag (P1) | mit dem ersten Partner |
+| 2. **Provision auf Nachkauf** | Händler, Lieferdienste | Nachkauf und Warenkorb aus Rettich | Vertrag (P1) | mit dem ersten Partner |
 | 3. **Partner-Daten statt Werbung** | Händler, Marken | anonyme, aggregierte Kennzahlen (P15) | Grösse, Einwilligung, Anonymisierung | spät |
 | 4. **Förderung und Impact** | öffentliche Hand, Stiftungen | messbar weniger Food Waste | Kennzahlen aus dem Pilot (P16) | parallel |
 | 5. **Team-Lizenz** | Firmen | Büro-Kühlschrank (P17) | Konten, Vertrieb | später |
-| 6. **Lizenz der rettich-Logik** | Händler, Gerätehersteller | Vorrats-Modul in deren App oder Gerät (P22) | Pilotzahlen, stabile Schnittstelle (P11), Vertrag | spät |
+| 6. **Lizenz der Rettich-Logik** | Händler, Gerätehersteller | Vorrats-Modul in deren App oder Gerät (P22) | Pilotzahlen, stabile Schnittstelle (P11), Vertrag | spät |
 
 **Kandidaten für Pro:** Allergene pro Person (P19), Spaces (P20), Berichte, mehrere Personen.
 
@@ -187,7 +187,7 @@ Stand: 7.11.2026, aufbauend auf [`monetarisierung.md`](./monetarisierung.md) und
 
 | Datum | Änderung |
 | --- | --- |
-| 7.11.2026 | P16 mit StreamUp (United Against Waste, Foodways) ergänzt; Abschnitt «Name und Vision» zu rettich und FridgeAI. |
+| 7.11.2026 | P16 mit StreamUp (United Against Waste, Foodways) ergänzt; Abschnitt «Name und Vision» zu Rettich und FridgeAI. |
 | 7.11.2026 | P23 (Stammdaten-Pools) aus der YAZIO-Analyse. |
 | 7.11.2026 | Aus Albans Brainstorming: P19 (Allergene), P20 (Spaces), P21 (ungleiche Disziplin), P22 (von selbst erfasst, Etiketten, Lizenz). Dazu «Fokus jetzt», die Brainstorming-Regel und Säule 6 (Lizenz). |
 | 7.11.2026 | P18 (Bestandesaufnahme per Foto) nach dem Entfernen von «Mit eigener KI». |
