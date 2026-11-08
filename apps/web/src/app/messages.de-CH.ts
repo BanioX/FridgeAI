@@ -217,7 +217,7 @@ export const messages = {
   swipe: {
     tip: 'Tipp: Wisch nach links, wenn du etwas verwertet hast, nach rechts, wenn du es entsorgt hast.',
     /** Visually hidden, read after the row name (WCAG 2.5.1: the item page has the buttons). */
-    hint: 'Nach links wischen: verwertet. Nach rechts wischen: entsorgt. Oder öffne den Artikel für alle Optionen.',
+    hint: 'Nach links wischen: verwertet. Nach rechts wischen: entsorgt. Oder öffne den Artikel für alle Optionen. Lang drücken, um mehrere auszuwählen und auf einen Lagerort zu ziehen.',
     /** The strips behind a swiped row, like Spotify (Alban, 8.11.2026). */
     outcomes: { eaten: 'Verwertet', wasted: 'Entsorgt' },
     piece: '−1',

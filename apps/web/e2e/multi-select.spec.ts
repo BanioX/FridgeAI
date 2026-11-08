@@ -145,3 +145,47 @@ test('drags the selected items onto a storage-location tab', async ({ page }) =>
   await expect(page.getByRole('link', { name: /Eier/ })).toBeVisible();
   await expect(page.getByRole('link', { name: /Saft/ })).toBeVisible();
 });
+
+test('a long press in the normal list starts select mode and the drag', async ({ page }) => {
+  for (const name of ['Eier', 'Saft']) {
+    await addToFridge(page, name);
+  }
+  await page.goto('/inventory?location=fridge');
+  const row = page.getByRole('link', { name: /Eier/ });
+  await expect(row).toBeVisible();
+  await expect
+    .poll(async () => {
+      const first = await row.boundingBox();
+      await page.waitForTimeout(100);
+      return JSON.stringify(first) === JSON.stringify(await row.boundingBox());
+    })
+    .toBe(true);
+  const from = await row.boundingBox();
+  expect(from).not.toBeNull();
+  const x = (from?.x ?? 0) + 120;
+  const y = (from?.y ?? 0) + (from?.height ?? 0) / 2;
+
+  // Long press without moving: select mode with the row chosen, the item page stays closed.
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.waitForTimeout(600);
+  await page.mouse.up();
+  await expect(page.getByText('1 ausgewählt')).toBeVisible();
+  await expect(page.getByRole('checkbox', { name: 'Eier' })).toBeChecked();
+  await expect(page).toHaveURL(/\/inventory\?location=fridge/);
+
+  // Leave select mode, then hold and drag from the normal list onto «Vorrat».
+  await page.getByRole('button', { name: 'Fertig' }).click();
+  await expect(page.getByRole('link', { name: /Eier/ })).toBeVisible();
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.waitForTimeout(600);
+  const vorrat = page.getByRole('tab', { name: /Vorrat/ });
+  const tab = await vorrat.boundingBox();
+  expect(tab).not.toBeNull();
+  await page.mouse.move((tab?.x ?? 0) + (tab?.width ?? 0) / 2, (tab?.y ?? 0) + 20, { steps: 12 });
+  await page.mouse.up();
+  await expect(page.getByRole('status')).toHaveText('Eier liegt jetzt im Vorrat.');
+  await vorrat.click();
+  await expect(page.getByRole('link', { name: /Eier/ })).toBeVisible();
+});

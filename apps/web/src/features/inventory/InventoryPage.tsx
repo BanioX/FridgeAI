@@ -239,10 +239,12 @@ export function InventoryPage() {
   };
 
   const drag = useDragToLocation({
-    enabled: selection.active && !mover.busy,
+    enabled: !mover.busy,
+    selecting: selection.active,
     from: selected,
     begin: (id) => {
-      // Holding a row that is not chosen yet chooses it, so it travels with the others.
+      // Holding a row starts select mode and chooses it, so it travels with the others.
+      selection.start();
       const picked = selection.ids.has(id);
       if (!picked) {
         selection.toggle(id);
@@ -393,17 +395,22 @@ export function InventoryPage() {
                 }
                 return (
                   <GroupedListItem key={item.id}>
-                    <SwipeAction {...swipe.sides(item)}>
-                      {({ sliced }) => (
-                        <Link
-                          to={`/inventory/${item.id}`}
-                          aria-describedby={SWIPE_HINT_ID}
-                          className={GROUPED_ROW_LINK}
-                        >
-                          <InventoryItemRow chevron sliced={sliced} item={item} status={status} />
-                        </Link>
-                      )}
-                    </SwipeAction>
+                    <div
+                      {...drag.rowProps(item.id)}
+                      className="[-webkit-touch-callout:none] select-none"
+                    >
+                      <SwipeAction {...swipe.sides(item)}>
+                        {({ sliced }) => (
+                          <Link
+                            to={`/inventory/${item.id}`}
+                            aria-describedby={SWIPE_HINT_ID}
+                            className={GROUPED_ROW_LINK}
+                          >
+                            <InventoryItemRow chevron sliced={sliced} item={item} status={status} />
+                          </Link>
+                        )}
+                      </SwipeAction>
+                    </div>
                   </GroupedListItem>
                 );
               })}
