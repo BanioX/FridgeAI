@@ -1,6 +1,6 @@
 ---
 name: marketing
-generated: swelper 0.1.0
+generated: swelper 0.1.1
 description: Use proactively for messages, copy, channel plans, launch texts, claims and competitor comparisons. Marks every number as sourced, estimated or derived; writes only into contexts/<kontext>/out/marketing/.
 model: sonnet
 effort: medium

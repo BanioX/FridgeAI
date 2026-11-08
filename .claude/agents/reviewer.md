@@ -1,6 +1,6 @@
 ---
 name: reviewer
-generated: swelper 0.1.0
+generated: swelper 0.1.1
 description: Use for a second opinion on every PR from claude/* before the dispatcher merges: correctness, security, privacy, test gaps, rule compliance. Reads and runs checks only; never edits, never merges.
 model: sonnet
 effort: medium

@@ -1,6 +1,6 @@
-# Swelper: die Schaltzentrale als eigener Rahmen
+# SWELPER: die Schaltzentrale als eigener Rahmen
 
-Stand 8.11.2026, dritte Fassung. Vorschlag von Claude als Architekt, **Entscheid über den Start offen** (Alban). **Name: Swelper** (Alban, 8.11.2026; technisch `swelper`), der Rahmen, der Albans [SWELP](https://github.com/BanioX/swelp) über Agenten hinweg ausführt. Der Swelper ist **kein Teil von Rettich**, sondern ein eigener Rahmen in einem eigenen Repo: ein Programm, mit dem du Ideen hineinlegst, Aufgaben nach Kontext geclustert siehst, beim Entwickeln eine Aufgabe auswählst oder eine neue hineinlegst, und ein Dirigent sie an ansteckbare Fach-Agenten verteilt. Rettich ist der erste Kontext, nicht der einzige.
+Stand 8.11.2026, dritte Fassung. Vorschlag von Claude als Architekt, **Entscheid über den Start offen** (Alban). **Name: SWELPER** (Alban, 8.11.2026; technisch `swelper`), der Rahmen, der Albans [SWELP](https://github.com/BanioX/swelp) über Agenten hinweg ausführt. Der SWELPER ist **kein Teil von Rettich**, sondern ein eigener Rahmen in einem eigenen Repo: ein Programm, mit dem du Ideen hineinlegst, Aufgaben nach Kontext geclustert siehst, beim Entwickeln eine Aufgabe auswählst oder eine neue hineinlegst, und ein Dirigent sie an ansteckbare Fach-Agenten verteilt. Rettich ist der erste Kontext, nicht der einzige.
 
 **Wie dieser Vorschlag entstand:** vier Recherche-Agenten (Claude-Code-Stack, externe Frameworks, Repo-Stand, Nebenläufigkeit und Kosten), drei konkurrierende Entwürfe, drei Juroren, 13 Skeptiker, die jede Produkt-Behauptung gegen die Doku prüften. Alle drei Juroren wählten den Stufen-Entwurf. Die Recherche selbst hat Albans 5-Stunden-Fenster erreicht (26 Agenten, rund 4,2 Mio. Tokens), siehe L-21 im [Lernbuch](../swelp/lernbuch.md).
 
@@ -10,7 +10,7 @@ Stand 8.11.2026, dritte Fassung. Vorschlag von Claude als Architekt, **Entscheid
 
 | Dein Wort | Was es heisst | Begriff hier |
 | --- | --- | --- |
-| «eigenes Programm, eigener Rahmen, Frame» | Der Swelper lebt in einem eigenen Repo und wird per Sync in jedes Projekt eingesteckt | **Rahmen** (Repo `swelper`) |
+| «eigenes Programm, eigener Rahmen, Frame» | Der SWELPER lebt in einem eigenen Repo und wird per Sync in jedes Projekt eingesteckt | **Rahmen** (Repo `swelper`) |
 | «kontextbezogen, geclustert» | Aufgaben gehören zu einem Kontext (Rettich, nächstes Projekt, privat) und zu einer Kompetenz | **Kontext** und **Lane** |
 | «Trichter», «Catchup-Staubsauger» | Ein Ort, an dem du frei schreibst; alles wird aufgesaugt und sortiert | **Trichter** |
 | «Er moderiert und bricht es an Marketing, CEO usw.» | Ein Dirigent zerlegt nach Kompetenz und delegiert | **Dispatcher** |
@@ -22,21 +22,21 @@ Stand 8.11.2026, dritte Fassung. Vorschlag von Claude als Architekt, **Entscheid
 
 ## Kurzantwort
 
-**Bau den Swelper als eigenes privates Repo `swelper`: die Quelle für Agenten, Skills, Hooks und Takt-Prompts, die ein Sync-Skript in jedes Projekt kopiert, und das Gedächtnis (Tickets als GitHub Issues, geclustert nach Kontext, als privates GitHub Project sichtbar). Jedes Projekt, Rettich zuerst, trägt eine erzeugte Kopie und sagt nur, welcher Kontext es ist.** Kein Server, kein API-Key, keine neue Dependency; alles läuft im Abo. Drei Stufen: im Gespräch nutzbar, dann ereignisgetrieben ohne dich, dann mit Takt, eigener Ansicht und anderen Anbietern. Nichts wird später weggeworfen.
+**Bau den SWELPER als eigenes privates Repo `swelper`: die Quelle für Agenten, Skills, Hooks und Takt-Prompts, die ein Sync-Skript in jedes Projekt kopiert, und das Gedächtnis (Tickets als GitHub Issues, geclustert nach Kontext, als privates GitHub Project sichtbar). Jedes Projekt, Rettich zuerst, trägt eine erzeugte Kopie und sagt nur, welcher Kontext es ist.** Kein Server, kein API-Key, keine neue Dependency; alles läuft im Abo. Drei Stufen: im Gespräch nutzbar, dann ereignisgetrieben ohne dich, dann mit Takt, eigener Ansicht und anderen Anbietern. Nichts wird später weggeworfen.
 
 Warum nicht eine eigene Anwendung mit Server (Hono auf Cloudflare, Agent SDK, Managed Agents)? Weil das beim ersten Schritt einen API-Key und Geld braucht (Regel 5), rund 1500 Zeilen eigenen Code, und weil Abo, Cloud-Sitzungen, Scheduled Tasks und Subagents dasselbe heute schon können. Die Idee einer austauschbaren Ausführer-Schnittstelle kommt in Stufe 3.
 
-## Warum Swelper
+## Warum SWELPER
 
-SWELP ist Albans eigenes Protokoll-Set ([`BanioX/swelp`](https://github.com/BanioX/swelp)): **S**coped **W**ork, Side **E**ffect, Self **L**earning **P**rotocols, in Rettich als «Darf, Tut, Lernt» gelebt ([`docs/swelp/`](../swelp/README.md)). Die KI arbeitet, an drei Punkten entscheidet ein Mensch. Der **Swelper** ist der, der diesen Kreis dreht, über Agenten, Projekte und Tage hinweg:
+SWELP ist Albans eigenes Protokoll-Set ([`BanioX/swelp`](https://github.com/BanioX/swelp)): **S**coped **W**ork, Side **E**ffect, Self **L**earning **P**rotocols, in Rettich als «Darf, Tut, Lernt» gelebt ([`docs/swelp/`](../swelp/README.md)). Die KI arbeitet, an drei Punkten entscheidet ein Mensch. Der **SWELPER** ist der, der diesen Kreis dreht, über Agenten, Projekte und Tage hinweg:
 
-| SWELP | Alltagsbild | Im Swelper |
+| SWELP | Alltagsbild | Im SWELPER |
 | --- | --- | --- |
 | **Darf** (SWP) | Auftrag und Quittung | Jedes Ticket ist ein Auftrag mit Ziel, Pfaden, Tabu und Testweg; die Landung ist die Quittung (PR, Datei, Issue-Kommentar) |
 | **Tut** (SEP) | Beipackzettel und Zulassung | Gates `gate:money`, `gate:data-flow`, `gate:product`; neue Nebenwirkungen stoppen, bis du Ja sagst |
 | **Lernt** (SLP) | Lektionenbuch | Lernbuch des Kontexts, `metrics.json`, und in Stufe 3 der Dispatcher, der daraus Tickets vorschlägt |
 
-**Schreibweise, design-technisch:** SWELP bleibt gross, weil es ein Akronym ist. Der Swelper ist eine Rolle, kein Akronym mehr, darum **Swelper** mit grossem S wie Rettich, und technisch klein: Repo `BanioX/swelper`, Befehl `/swelper`, Datei `.swelper.json`, Label `swelper`. «SWELPER» in Grossbuchstaben würde schreien und wie eine zweite Abkürzung aussehen. Kollisionsprüfung per Websuche am 8.11.2026: kein Werkzeug und kein Projekt mit diesem Namen gefunden. Zweiter Platz war **Mainspring**, die Zugfeder des Uhrwerks; besetzt in dieser Nische sind Clockwork, Escapement, Ratchet, Camshaft, Pinion, Gearbox und Cog.
+**Schreibweise, design-technisch:** SWELP bleibt gross, weil es ein Akronym ist. Der SWELPER ist eine Rolle, kein Akronym mehr, darum **SWELPER** mit grossem S wie Rettich, und technisch klein: Repo `BanioX/swelper`, Befehl `/swelper`, Datei `.swelper.json`, Label `swelper`. «SWELPER» in Grossbuchstaben würde schreien und wie eine zweite Abkürzung aussehen. Kollisionsprüfung per Websuche am 8.11.2026: kein Werkzeug und kein Projekt mit diesem Namen gefunden. Zweiter Platz war **Mainspring**, die Zugfeder des Uhrwerks; besetzt in dieser Nische sind Clockwork, Escapement, Ratchet, Camshaft, Pinion, Gearbox und Cog.
 
 ## Bild
 
@@ -82,16 +82,16 @@ swelper/
 
 **Ein Projekt steckt den Rahmen ein** per Sync, nicht per Plugin: `node bin/sync.mjs <projekt>` erzeugt im Projekt `.claude/agents/*.md`, `.claude/skills/*/SKILL.md`, `.claude/hooks/*.mjs` und den Hook-Teil von `.claude/settings.json`, jede Datei mit Kopfzeile «erzeugt von swelper vX, nicht von Hand ändern», dazu `.swelper.json` mit `{ "context": "rettich" }`. Geprüft ist: Cloud-Sitzungen und Scheduled Tasks laden Plugins, die Projekt-Settings deklarieren, **nicht**, wohl aber die `.claude/`-Dateien im Repo. Ein Test im Projekt prüft, dass die Kopie zur Version im Rahmen passt. Das Plugin bleibt eine Bequemlichkeit für deinen Rechner (`/swelper` in jedem Ordner) und für Kontexte ohne Repo. Die drei bestehenden Agenten in `.claude/agents` von Rettich werden durch die erzeugten ersetzt.
 
-**Geclustert heisst:** Jedes Ticket trägt genau einen Kontext (`ctx:rettich`), eine Lane (`lane:dev`, `lane:marketing`, `lane:ceo`, `lane:design`, `lane:legal`, `lane:finance`), einen Status (`status:inbox`, `ready`, `doing`, `review`, `waiting-alban`, `done`, `parked`) und bei Bedarf Gates (`gate:money`, `gate:data-flow`, `gate:product`). `/swelper status` zeigt das als Baum: Kontext → Lane → Status. Dieselben Issues erscheinen in einem **privaten GitHub Project** auf deinem Konto (Tabelle und Board, gruppiert nach Kontext und Lane, auch in der GitHub-App auf dem Handy); die eingebaute Automation «Auto-add» nimmt jedes Issue mit Label `swelper` von selbst auf. Das ist die erste Ansicht des Swelpers, ohne eine Zeile Code. Ein neuer Kontext ist ein Ordner unter `contexts/` und ein Label; sonst nichts.
+**Geclustert heisst:** Jedes Ticket trägt genau einen Kontext (`ctx:rettich`), eine Lane (`lane:dev`, `lane:marketing`, `lane:ceo`, `lane:design`, `lane:legal`, `lane:finance`), einen Status (`status:inbox`, `ready`, `doing`, `review`, `waiting-alban`, `done`, `parked`) und bei Bedarf Gates (`gate:money`, `gate:data-flow`, `gate:product`). `/swelper status` zeigt das als Baum: Kontext → Lane → Status. Dieselben Issues erscheinen in einem **privaten GitHub Project** auf deinem Konto (Tabelle und Board, gruppiert nach Kontext und Lane, auch in der GitHub-App auf dem Handy); die eingebaute Automation «Auto-add» nimmt jedes Issue mit Label `swelper` von selbst auf. Das ist die erste Ansicht des SWELPER, ohne eine Zeile Code. Ein neuer Kontext ist ein Ordner unter `contexts/` und ein Label; sonst nichts.
 
 ## So nutzt du es beim Entwickeln
 
-1. Du öffnest Rettich in Claude Code. Der SessionStart-Hook `board-brief` druckt ohne Tokens: «Swelper · Kontext rettich · 3 bereit · 1 wartet auf dich · Not-Aus aus».
+1. Du öffnest Rettich in Claude Code. Der SessionStart-Hook `board-brief` druckt ohne Tokens: «SWELPER · Kontext rettich · 3 bereit · 1 wartet auf dich · Not-Aus aus».
 2. **Aufgabe auswählen:** `/swelper pick` listet die `ready`-Tickets dieses Kontexts, du wählst eines, Claude setzt es auf `doing`, legt den Worktree und den Branch `claude/A-0024-landingpage` an und arbeitet nach dem Ticket (Ziel, Pfade, Tabu, Testweg).
 3. **Aufgabe hineinlegen:** `/swelper add «Wir brauchen eine Landingpage mit Warteliste»`. Das wird ein Issue mit `trichter` und `ctx:rettich`; der Dispatcher sortiert sofort, wenn du willst, sonst beim nächsten Lauf.
 4. **Fertig melden:** `/swelper done A-0024` verlinkt den PR, setzt `review`, und der Reviewer schaut drauf. Gemergt wird erst nach grüner CI.
 5. **Vom Handy:** GitHub-App, Repo `swelper`, neues Issue mit Label `trichter`. Kontext-Label, wenn du es weisst, sonst setzt es der Dispatcher.
-6. **Anderer Kontext, gleicher Swelper:** Im nächsten Repo steht `.swelper.json` mit einem anderen Kontext; `/swelper pick` zeigt nur dessen Tickets. Private Aufgaben bekommen einen Kontext ohne Repo.
+6. **Anderer Kontext, gleicher SWELPER:** Im nächsten Repo steht `.swelper.json` mit einem anderen Kontext; `/swelper pick` zeigt nur dessen Tickets. Private Aufgaben bekommen einen Kontext ohne Repo.
 
 ## Rollenmodell
 
@@ -138,9 +138,9 @@ Jeder Cloud-Lauf klont frisch, ohne Erinnerung an den Lauf eine Stunde vorher. A
 | Was | Wo | Wer schreibt |
 | --- | --- | --- |
 | Lebender Zustand der Tickets (Kontext, Lane, Status, Besitzer, Gates) | Issues im Repo `swelper`, Labels wie oben | Dispatcher; du antwortest per Kommentar oder Label |
-| Steuerung und Not-Aus | ein Issue «Swelper: Steuerung» mit Labels `takt:on` / `takt:stop` | du, vom Handy |
+| Steuerung und Not-Aus | ein Issue «SWELPER: Steuerung» mit Labels `takt:on` / `takt:stop` | du, vom Handy |
 | Code, PRs, Faden eines Kontexts | im Projekt-Repo (Rettich: `docs/swelp/uebergabe.md`), Ticket verlinkt den PR | Dispatcher, Implementer |
-| Ansicht für dich | privates GitHub Project «Swelper» (Auto-add über Label), Baum per `/swelper status` | GitHub, automatisch |
+| Ansicht für dich | privates GitHub Project «SWELPER» (Auto-add über Label), Baum per `/swelper status` | GitHub, automatisch |
 | Maschinenlesbarer Spiegel und Messwerte | `board/<kontext>/board.json`, `metrics.json` (pro Lauf: Modell, Turns, Dauer, Dateien) | `takt-report`, als Doku-PR |
 | Regeln | `standing-orders.md`, `contexts/*/context.json`, `schema/` | nur du und der Dispatcher in einem reviewten PR |
 | Ergebnisse der Fach-Rollen | `contexts/<kontext>/out/<rolle>/` | die jeweilige Rolle |
@@ -193,7 +193,7 @@ Cloud Scheduled Tasks (unter `claude.ai/code/routines` oder mit `/schedule`) lau
 
 Du hast mich um eine Empfehlung gebeten. Sie beruht auf den geprüften Fakten unten, nicht auf Dollar-Schätzungen.
 
-1. **Der Swelper ist Zweitverbraucher.** Deine eigene Arbeit mit Claude hat Vorrang. Autonome Läufe bekommen **höchstens ein Viertel des Wochenlimits** und starten nur, wenn der Wochenbalken unter 75 % steht. Ab 80 % setzt du `takt:stop`, bis er zurückgesetzt ist.
+1. **Der SWELPER ist Zweitverbraucher.** Deine eigene Arbeit mit Claude hat Vorrang. Autonome Läufe bekommen **höchstens ein Viertel des Wochenlimits** und starten nur, wenn der Wochenbalken unter 75 % steht. Ab 80 % setzt du `takt:stop`, bis er zurückgesetzt ist.
 2. **Keine Usage Credits**, bis der Pilot Zahlen liefert. Der API-Weg (Agent SDK, Managed Agents) bleibt Stufe 3 und braucht deinen Geld-Entscheid.
 3. **Modellmix:** Opus nur für den Dispatcher. Sonnet mit `effort: medium` für Umsetzung und Review. Haiku für Bericht und Finanz-Rechnen. `CLAUDE_CODE_SUBAGENT_MODEL=sonnet` als Standard. Fable nur, wenn du es rufst: Es zieht aus demselben Wochenlimit, schneller, mit eigener Kappe.
 4. **Autonome Läufe ausserhalb deiner Arbeitszeit**, zum Beispiel 06:07 und 20:37 Uhr, damit das 5-Stunden-Fenster am Morgen dir gehört. Darum ist der Takt nicht mehr 8 bis 17 Uhr.
@@ -249,11 +249,11 @@ Du hast mich um eine Empfehlung gebeten. Sie beruht auf den geprüften Fakten un
 | --- | --- | --- | --- |
 | **1 Rahmen im Gespräch** | sobald du das Repo angelegt hast, in einer Woche mit freiem Wochenbalken | Repo `swelper` mit Sync-Skript, Kontext `rettich`, `/swelper` und `/trichter`, Stecker, Standing Orders, Wächter, GitHub Project, Branch-Schutz auf `main`; kein Lauf ohne dich | 10 Ideen durch den Trichter, mindestens 8 richtig sortiert, 0 Überschreibungen, du hast in Rettich dreimal `/swelper pick` genutzt |
 | **2 Ereignisse ohne dich** | nach dem Pilot-Start | Trichter-Lauf, Reviewer auf PRs, Umsetzungs-Task auf `ready`, Tagesbericht, Not-Aus, `takt-ping` | 5 Arbeitstage ohne Eingriff, jeden Tag ein Bericht, Verbrauch innerhalb des Viertels |
-| **3 Swelper als Programm** | wenn der Nutzen belegt ist | Zweiter Kontext; eigene Ansicht als Mod-Panel in Claude Code (das GitHub Project bleibt die Ansicht fürs Handy); Dispatcher schlägt aus Lernbuch, Schulden und Metriken selbst Tickets vor, du gibst frei; Takt zu Uhrzeiten, wenn gewünscht; Ausführer-Schnittstelle für andere Anbieter über MCP; optional Agent SDK oder Managed Agents mit API-Key | dein Entscheid über Geld und Datenflüsse |
+| **3 SWELPER als Programm** | wenn der Nutzen belegt ist | Zweiter Kontext; eigene Ansicht als Mod-Panel in Claude Code (das GitHub Project bleibt die Ansicht fürs Handy); Dispatcher schlägt aus Lernbuch, Schulden und Metriken selbst Tickets vor, du gibst frei; Takt zu Uhrzeiten, wenn gewünscht; Ausführer-Schnittstelle für andere Anbieter über MCP; optional Agent SDK oder Managed Agents mit API-Key | dein Entscheid über Geld und Datenflüsse |
 
 ### Die ersten fünf PRs, alle im Repo `swelper`
 
-0. **Du:** privates Repo `BanioX/swelper` anlegen, Claude GitHub App darauf installieren, Branch-Schutz auf `main` (nur PR, CI grün, kein Force-Push), ein privates GitHub Project «Swelper» mit Auto-add für das Label `swelper`.
+0. **Du:** privates Repo `BanioX/swelper` anlegen, Claude GitHub App darauf installieren, Branch-Schutz auf `main` (nur PR, CI grün, kein Force-Push), ein privates GitHub Project «SWELPER» mit Auto-add für das Label `swelper`.
 1. **Gerüst** (Doku, CI-günstig): `README.md` (Begriffe, Bild, Ticket-Lebenszyklus), ADR-0001 des Rahmens (Entscheide aus diesem Dokument), `standing-orders.md`, `schema/`, `contexts/rettich/context.json`, Labels per Skript.
 2. **Stecker:** `agents/*.md` nach einheitlicher Schablone; Test prüft Frontmatter gegen Schema und Pfad-Besitz.
 3. **Wächter und Sync:** `hooks/hooks.json`, `guard-paths.mjs`, `guard-git.mjs`, `board-brief.mjs`, `bin/sync.mjs`; Tests: Beispiel-Verstoss endet mit Exit 2, Sync ist idempotent, erzeugte Dateien tragen die Kopfzeile.

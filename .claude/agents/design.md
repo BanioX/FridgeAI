@@ -1,6 +1,6 @@
 ---
 name: design
-generated: swelper 0.1.0
+generated: swelper 0.1.1
 description: Use proactively for interface critique, layout proposals, flows and preview sheets for Alban, following Apple's Human Interface Guidelines. Produces proposals and pictures; the implementation goes to the implementer as a ticket. Writes only into contexts/<kontext>/out/design/.
 model: sonnet
 effort: medium

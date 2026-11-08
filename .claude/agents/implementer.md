@@ -1,6 +1,6 @@
 ---
 name: implementer
-generated: swelper 0.1.0
+generated: swelper 0.1.1
 description: Use for clearly specified, medium-sized code tickets (a feature, a parser, an adapter, a flow) inside an approved order: goal, files, acceptance criteria, taboo areas and test path are given. Works in its own worktree and branch and never widens its order.
 model: sonnet
 effort: medium

@@ -1,7 +1,7 @@
-<!-- generated: swelper 0.1.0. Nicht von Hand ändern: `swelper sync` im Rahmen BanioX/SWELPER. -->
+<!-- generated: swelper 0.1.1. Nicht von Hand ändern: `swelper sync` im Rahmen BanioX/SWELPER. -->
 # Standing Orders: was Claude an Albans Projekten alleine darf
 
-Alban Hyseni (8.11.2026): «Du hast die Erlaubnis, SWELP, Swelper, SWP, SLP und SEP selbständig auszubauen und zu optimieren.» Dieses Dokument macht aus dem Satz eine Betriebsordnung im Sinn des Scoped Work Protocol: Es sagt, was eine Rolle ohne Rückfrage darf, wann sie Alban fragt und wie sie eskaliert. Der Zeitpunkt der Arbeit steht nicht hier, den gibt ein Auftrag oder ein Takt vor. Gilt für SWELP (`BanioX/swelp`), den Swelper (`BanioX/swelper`) und Rettich (`BanioX/FridgeAI`); die CLAUDE.md eines Repos kann die Regeln verschärfen, nie lockern.
+Alban Hyseni (8.11.2026): «Du hast die Erlaubnis, SWELP, SWELPER, SWP, SLP und SEP selbständig auszubauen und zu optimieren.» Dieses Dokument macht aus dem Satz eine Betriebsordnung im Sinn des Scoped Work Protocol: Es sagt, was eine Rolle ohne Rückfrage darf, wann sie Alban fragt und wie sie eskaliert. Der Zeitpunkt der Arbeit steht nicht hier, den gibt ein Auftrag oder ein Takt vor. Gilt für SWELP (`BanioX/swelp`), den SWELPER (`BanioX/swelper`) und Rettich (`BanioX/FridgeAI`); die CLAUDE.md eines Repos kann die Regeln verschärfen, nie lockern.
 
 ## Grundsatz
 

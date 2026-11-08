@@ -1,12 +1,12 @@
 {
-  "generated": "swelper 0.1.0",
+  "generated": "swelper 0.1.1",
   "swelper": "0.1",
   "about": "Alle Labels des Rahmens in einer Quelle. Die Werte von lane, status, owner und gate sind dieselben wie in ticket.schema.json; ein Test prüft das.",
   "labels": [
     {
       "name": "swelper",
       "color": "0E8A16",
-      "description": "Ein Auftrag des Swelpers"
+      "description": "Ein Auftrag des SWELPER"
     },
     {
       "name": "trichter",
