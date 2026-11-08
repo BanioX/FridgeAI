@@ -1,6 +1,6 @@
 # ADR-0031: Tab-Leiste – Start, Vorrat, ＋ Erfassen, Kochen, Mehr
 
-- **Status:** angenommen
+- **Status:** angenommen; «Kochen» abgelöst durch «Wissen» ([ADR-0040](0040-no-recipes.md), [ADR-0041](0041-knowledge-tab.md))
 - **Datum:** 2026-11-07
 
 ## Kontext

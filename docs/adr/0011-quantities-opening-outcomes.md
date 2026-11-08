@@ -1,6 +1,6 @@
 # ADR-0011: Mengen, Öffnungsregel und Abschliessen mit Grund
 
-- **Status:** angenommen
+- **Status:** angenommen; Punkt 5 («weitergegeben», `sharedWith`) abgelöst durch [ADR-0046](0046-awareness-verwertet-entsorgt.md)
 - **Datum:** 2026-11-06
 
 ## Kontext

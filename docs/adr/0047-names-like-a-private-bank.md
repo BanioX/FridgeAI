@@ -1,12 +1,12 @@
 # ADR-0047: Namen wie bei einer Schweizer Privatbank
 
-- Status: angenommen
-- Datum: 8.11.2026
-- Entscheid: Claude (Namen), auf Albans Wunsch: «Ich brauche luxury premium naming über die ganze App verteilt, kein AI Slop.»
+- **Status:** angenommen
+- **Datum:** 8.11.2026
+- **Entscheid:** Claude (Namen), auf Albans Wunsch: «Ich brauche luxury premium naming über die ganze App verteilt, kein AI Slop.»
 
 ## Kontext
 
-Rettich zeigt Geld: was im Kühlschrank liegt, was du rettest, was du entsorgst. Die Berichte sind schon wie Kontoauszüge gebaut, mit Monats- und Jahresabschluss am letzten Bankwerktag (ADR-0041). Die Namen der Bereiche waren aber Alltagswörter («Berichte als PDF», «Deine Wirkung diesen Monat»), teils Englisch («Food Waste»).
+Rettich zeigt Geld: was im Kühlschrank liegt, was du rettest, was du entsorgst. Die Berichte sind schon wie Kontoauszüge gebaut, mit Monats- und Jahresabschluss am letzten Bankwerktag (ADR-0030). Die Namen der Bereiche waren aber Alltagswörter («Berichte als PDF», «Deine Wirkung diesen Monat»), teils Englisch («Food Waste»).
 
 «Kein AI Slop» heisst: keine Modewörter wie «Smart», «Insights», «Hub», «Magic», «Journey», keine Ausrufezeichen, keine Superlative.
 

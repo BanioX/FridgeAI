@@ -1,6 +1,6 @@
 # ADR-0012: KI-Erkennung über die KI der Nutzer:innen («Bring your own AI»)
 
-- **Status:** angenommen
+- **Status:** teilweise abgelöst: Stufe 1 entfernt (Nachtrag 7.11.2026), Stufen 2 und 3 offen
 - **Datum:** 2026-11-06
 
 ## Kontext

@@ -1,6 +1,6 @@
 # ADR-0023: Nach dem Kochen abbuchen
 
-- **Status:** angenommen
+- **Status:** abgelöst durch [ADR-0040](0040-no-recipes.md) (Rezepte entfernt)
 - **Datum:** 2026-11-06
 
 ## Kontext
