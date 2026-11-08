@@ -783,12 +783,15 @@ export const messages = {
     trademarks:
       'Coop, Migros und Lidl Plus sind Marken ihrer Inhaber. Rettich ist mit ihnen nicht verbunden.',
     choose: 'PDF oder Foto wählen',
-    /** Several files chosen at once (Alban, 8.11.2026): one after the other. */
-    progress: (index: number, total: number) => `Quittung ${String(index)} von ${String(total)}`,
-    next: 'Nächste Quittung',
+    /** Several files chosen at once (Alban, 8.11.2026): read first, then one page for all. */
+    readingOf: (index: number, total: number) =>
+      `Quittung ${String(index)} von ${String(total)} wird gelesen …`,
+    leftOut: 'Nicht auf dieser Seite:',
+    alreadyKnown: 'schon erfasst',
+    checkSum: 'Summe prüfen',
+    exclude: 'Diese Quittung nicht übernehmen',
     /** The shop of a receipt, preset from what was read, changed with one tap. */
     shopQuestion: 'Wo eingekauft?',
-    skip: 'Diese Quittung überspringen',
     reading: 'Quittung wird gelesen …',
     readingPhoto: 'Foto wird gelesen, das dauert ein paar Sekunden …',
     tooLarge: 'Die Datei ist zu gross für eine Quittung (höchstens 15 MB).',
@@ -820,7 +823,14 @@ export const messages = {
     extras: (amount: string) => `Dazu Tasche, Pfand und Rabatte: ${amount}`,
     take: (count: number) =>
       count === 1 ? '1 Artikel übernehmen' : `${String(count)} Artikel übernehmen`,
-    duplicate: 'Diese Quittung hast du schon übernommen.',
+    takeAll: (articles: number, receipts: number) =>
+      `Alle übernehmen · ${articles === 1 ? '1 Artikel' : `${String(articles)} Artikel`} aus ${receipts === 1 ? '1 Quittung' : `${String(receipts)} Quittungen`}`,
+    done: (articles: number, receipts: number) =>
+      `${articles === 1 ? '1 Artikel' : `${String(articles)} Artikel`} aus ${receipts === 1 ? '1 Quittung' : `${String(receipts)} Quittungen`} übernommen.`,
+    duplicate: (count: number) =>
+      count === 1
+        ? 'Diese Quittung hast du schon übernommen.'
+        : `${String(count)} Quittungen hast du schon übernommen.`,
     saveFailed: 'Speichern hat nicht geklappt. Bitte versuch es nochmals.',
   },
   scanner: {

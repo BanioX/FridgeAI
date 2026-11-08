@@ -1,108 +1,43 @@
 import {
-  displayQuantity,
   fallbackCategory,
-  formatSwissDate,
   IsoDateTimeSchema,
   matchCategoryByName,
   parseReceiptText,
-  rappen,
-  sumRappen,
-  type Id,
   type ParsedReceipt,
-  type ParsedReceiptLine,
-  type Rappen,
-  type Retailer,
 } from '@fridgeai/core';
 import { FileText } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
-import { GroupedList, GroupedListItem } from '../../ui/GroupedList';
-import { ShopBadge } from '../../ui/ShopBadge';
-import { formatAmount } from '../inventory/add-item';
-import { MatchPanel, MatchRow, useReceiptMatching } from './ReceiptMatch';
-import { useMoney } from '../../app/money';
-import { PriceField } from './PriceField';
-import { priceHint, type PriceMemory } from './price-hint';
 import { sha256Hex } from './hash';
 import { readImageText } from './read-image';
 import { readPdfText } from './read-pdf';
+import { batchTotals, orderBySumCheck, seenInBatch } from './receipt-batch';
+import type { ReceiptMatching } from './ReceiptMatch';
+import { isFood, ReceiptReview, type Review } from './ReceiptReview';
 
 const t = messages.receiptUpload;
 const MAX_BYTES = 15 * 1024 * 1024;
 
 const isPdf = (file: File) => file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
 
-/** The order of the shop tabs: the big Swiss shops first, «Laden» for any other. */
-const SHOPS: readonly Retailer[] = ['coop', 'migros', 'denner', 'aldi', 'lidl', 'other'];
-
-interface Review {
-  receipt: ParsedReceipt;
-  hash: string;
-  source: 'pdf' | 'photo';
-  /** Fixed per receipt: a retry after an error never imports twice. */
-  commandId: Id;
-  chosen: ReadonlySet<number>;
-  /** Earlier prices of the same products, by name on the receipt (ADR-0029). */
-  memory: ReadonlyMap<string, PriceMemory>;
+/** One receipt on the review page. */
+interface Section {
+  key: string;
+  review: Review;
+  /** «Diese Quittung nicht übernehmen». */
+  excluded: boolean;
+  fileName: string;
 }
 
-const paid = (line: ParsedReceiptLine) => rappen(line.priceRappen + line.discountRappen);
-
-/** Food for the inventory: an article, not standard-rate VAT and not a non-food category (pet food). */
-const isFood = (line: ParsedReceiptLine) =>
-  line.kind === 'item' &&
-  line.isFood !== false &&
-  matchCategoryByName(line.name)?.group !== 'non_food';
-
-/** A corrected price replaces what was read: paid as typed, no discount left to explain it. */
-function withPrice(receipt: ParsedReceipt, index: number, price: Rappen): ParsedReceipt {
-  const lines = receipt.lines.map((line, position) => {
-    if (position !== index) {
-      return line;
-    }
-    const perPiece = line.unit === 'pcs' && price % line.quantity === 0;
-    const corrected: ParsedReceiptLine = {
-      rawText: line.rawText,
-      kind: line.kind,
-      name: line.name,
-      quantity: line.quantity,
-      unit: line.unit,
-      ...(line.isFood === undefined ? {} : { isFood: line.isFood }),
-      priceRappen: price,
-      discountRappen: rappen(0),
-      ...(perPiece ? { unitPriceRappen: rappen(price / line.quantity) } : {}),
-    };
-    return corrected;
-  });
-  const computedTotalRappen = sumRappen(lines.map(paid));
-  return {
-    ...receipt,
-    lines,
-    computedTotalRappen,
-    sumCheck:
-      receipt.totalRappen === null
-        ? 'no-total'
-        : receipt.totalRappen === computedTotalRappen
-          ? 'ok'
-          : 'mismatch',
-  };
+/** A file that is not on the page, with the reason. */
+interface LeftOut {
+  fileName: string;
+  text: string;
 }
-
-function amountText(line: ParsedReceiptLine): string {
-  const shown = displayQuantity(line.quantity, line.unit);
-  return `${formatAmount(shown.amount)} ${messages.inputUnits[shown.unit]}`;
-}
-
-/**
- * Worth asking the open database: packed food. Loose produce and weighed goods rarely have one
- * barcode for everyone (ADR-0036).
- */
-const isPacked = (line: ParsedReceiptLine) =>
-  isFood(line) && line.unit !== 'g' && matchCategoryByName(line.name)?.group !== 'produce';
 
 /** Purchase time as printed (local time of the device), else now. */
 function purchasedAt(receipt: ParsedReceipt) {
@@ -118,60 +53,31 @@ function purchasedAt(receipt: ParsedReceipt) {
 /**
  * «Quittung hochladen» (ADR-0028): a receipt PDF, photo or screenshot is read on the device, the lines show with name and
  * price paid, food is ticked, and «übernehmen» stores the receipt and puts the ticked items into
- * the inventory with their price. Several files at once (Alban, 8.11.2026) come one after the
- * other, each with its own review; «übernehmen» or «überspringen» leads to the next.
+ * the inventory with their price. Several files at once (Alban, 8.11.2026) are read first, one
+ * after the other, and then shown on one page, one section per receipt, with one button for all.
  */
 export function ReceiptUpload() {
   const { householdId, ids, inventory } = useAppData();
   const navigate = useNavigate();
   const [status, setStatus] = useState('');
   const [busy, setBusy] = useState(false);
-  const [review, setReview] = useState<Review | null>(null);
-  /** Files still waiting after the one on screen, and where the person is among all of them. */
-  const [queue, setQueue] = useState<readonly File[]>([]);
-  const [position, setPosition] = useState<{ index: number; total: number } | null>(null);
-  const matching = useReceiptMatching();
+  const [sections, setSections] = useState<readonly Section[]>([]);
+  const [leftOut, setLeftOut] = useState<readonly LeftOut[]>([]);
+  /** The matching of each receipt, read when its products are taken over. */
+  const matchings = useRef(new Map<string, ReceiptMatching>());
 
-  function start(files: readonly File[]) {
-    const [first, ...rest] = files;
-    if (first === undefined) {
-      return;
-    }
-    setQueue(rest);
-    setPosition(files.length > 1 ? { index: 1, total: files.length } : null);
-    void read(first);
-  }
-
-  /** The next file, or the inventory when none is left. */
-  function next() {
-    const [file, ...rest] = queue;
-    if (file === undefined) {
-      void navigate('/inventory');
-      return;
-    }
-    setQueue(rest);
-    setPosition((current) => (current === null ? null : { ...current, index: current.index + 1 }));
-    void read(file);
-  }
-  const money = useMoney();
-
-  async function read(file: File) {
-    setReview(null);
-    matching.reset();
+  /** One file: its review, or the reason it cannot be shown. */
+  async function read(file: File): Promise<{ review: Review } | { text: string }> {
     if (file.size > MAX_BYTES) {
-      setStatus(t.tooLarge);
-      return;
+      return { text: t.tooLarge };
     }
     const source = isPdf(file) ? 'pdf' : 'photo';
-    setBusy(true);
-    setStatus(source === 'pdf' ? t.reading : t.readingPhoto);
     try {
       const text =
         source === 'pdf' ? await readPdfText(await file.arrayBuffer()) : await readImageText(file);
       const receipt = parseReceiptText(text);
       if (text.trim() === '' || !receipt.lines.some((line) => line.kind === 'item')) {
-        setStatus(text.trim() === '' && source === 'pdf' ? t.noText : t.noLines);
-        return;
+        return { text: text.trim() === '' && source === 'pdf' ? t.noText : t.noLines };
       }
       const chosen = new Set(receipt.lines.flatMap((line, index) => (isFood(line) ? [index] : [])));
       const names = [
@@ -187,79 +93,171 @@ export function ReceiptUpload() {
           : await inventory['prices.memory']({ householdId, names }).catch(() => ({
               products: [],
             }));
-      setReview({
-        receipt,
-        hash: await sha256Hex(text),
-        source,
-        commandId: ids.next(),
-        chosen,
-        memory: new Map(products.map((product) => [product.name, product])),
-      });
-      setStatus('');
-      // Alban, 7.11.2026: match with Open Food Facts right away (ADR-0036).
-      void matching.start(
-        receipt.lines.flatMap((line, index) =>
-          chosen.has(index) && isPacked(line) ? [{ index, name: line.name }] : [],
-        ),
-      );
+      return {
+        review: {
+          receipt,
+          hash: await sha256Hex(text),
+          source,
+          commandId: ids.next(),
+          chosen,
+          memory: new Map(products.map((product) => [product.name, product])),
+        },
+      };
     } catch {
-      setStatus(t.failed);
-    } finally {
-      setBusy(false);
+      return { text: t.failed };
     }
   }
 
-  async function take(current: Review) {
+  /** Reads all files first, one after the other; then one page shows them all. */
+  async function start(files: readonly File[]) {
+    if (files.length === 0) {
+      return;
+    }
+    const several = files.length > 1;
+    setSections([]);
+    setLeftOut([]);
+    setBusy(true);
+    const named: { fileName: string; review: Review }[] = [];
+    const skipped: LeftOut[] = [];
+    for (const [position, file] of files.entries()) {
+      setStatus(
+        several
+          ? t.readingOf(position + 1, files.length)
+          : isPdf(file)
+            ? t.reading
+            : t.readingPhoto,
+      );
+      const result = await read(file);
+      if (!('review' in result)) {
+        skipped.push({ fileName: file.name, text: result.text });
+      } else if (
+        seenInBatch(
+          result.review.hash,
+          named.map((entry) => entry.review),
+        )
+      ) {
+        skipped.push({ fileName: file.name, text: t.alreadyKnown });
+      } else {
+        named.push({ fileName: file.name, review: result.review });
+      }
+    }
+    matchings.current.clear();
+    setSections(
+      orderBySumCheck(named).map(({ fileName, review }, position) => ({
+        key: `receipt-${String(position)}`,
+        review,
+        excluded: false,
+        fileName,
+      })),
+    );
+    if (several) {
+      setLeftOut(skipped);
+      setStatus('');
+    } else {
+      setStatus(skipped[0]?.text ?? '');
+    }
+    setBusy(false);
+  }
+
+  /** Stores each included receipt with its ticked lines; one summary, then the inventory. */
+  async function takeAll() {
     setBusy(true);
     setStatus('');
-    const { receipt } = current;
-    try {
-      const result = await inventory['receipts.import']({
-        commandId: current.commandId,
-        householdId,
-        retailer: receipt.retailer,
-        ...(receipt.storeName === undefined ? {} : { storeName: receipt.storeName }),
-        purchasedAt: purchasedAt(receipt),
-        totalRappen: receipt.totalRappen ?? receipt.computedTotalRappen,
-        source: current.source,
-        hash: current.hash,
-        lines: receipt.lines.map((line, index) => {
-          const found = current.chosen.has(index) ? matching.accepted(index) : undefined;
-          return {
-            name: (line.name.trim() === '' ? t.fallbackNames[line.kind] : line.name).slice(0, 120),
-            kind: line.kind,
-            quantity: line.quantity,
-            unit: line.unit,
-            ...(line.unitPriceRappen === undefined
-              ? {}
-              : { unitPriceRappen: line.unitPriceRappen }),
-            priceRappen: line.priceRappen,
-            discountRappen: line.discountRappen,
-            isFood: isFood(line),
-            ...(current.chosen.has(index)
-              ? { location: (matchCategoryByName(line.name) ?? fallbackCategory()).defaultLocation }
-              : {}),
-            ...(found === undefined ? {} : { gtin: found.gtin, productName: found.name }),
-          };
-        }),
-      });
-      if (result.duplicate) {
-        setStatus(t.duplicate);
-        return;
+    const taken = sections.filter((section) => !section.excluded && section.review.chosen.size > 0);
+    const done = new Set<string>();
+    const known: LeftOut[] = [];
+    let articles = 0;
+    let failed = 0;
+    for (const { key, review: current, fileName } of taken) {
+      const { receipt } = current;
+      const accepted = matchings.current.get(key)?.accepted;
+      try {
+        const result = await inventory['receipts.import']({
+          commandId: current.commandId,
+          householdId,
+          retailer: receipt.retailer,
+          ...(receipt.storeName === undefined ? {} : { storeName: receipt.storeName }),
+          purchasedAt: purchasedAt(receipt),
+          totalRappen: receipt.totalRappen ?? receipt.computedTotalRappen,
+          source: current.source,
+          hash: current.hash,
+          lines: receipt.lines.map((line, index) => {
+            const found = current.chosen.has(index) ? accepted?.(index) : undefined;
+            return {
+              name: (line.name.trim() === '' ? t.fallbackNames[line.kind] : line.name).slice(
+                0,
+                120,
+              ),
+              kind: line.kind,
+              quantity: line.quantity,
+              unit: line.unit,
+              ...(line.unitPriceRappen === undefined
+                ? {}
+                : { unitPriceRappen: line.unitPriceRappen }),
+              priceRappen: line.priceRappen,
+              discountRappen: line.discountRappen,
+              isFood: isFood(line),
+              ...(current.chosen.has(index)
+                ? {
+                    location: (matchCategoryByName(line.name) ?? fallbackCategory())
+                      .defaultLocation,
+                  }
+                : {}),
+              ...(found === undefined ? {} : { gtin: found.gtin, productName: found.name }),
+            };
+          }),
+        });
+        done.add(key);
+        if (result.duplicate) {
+          known.push({ fileName, text: t.alreadyKnown });
+        } else {
+          articles += result.itemIds.length;
+        }
+      } catch {
+        failed += 1;
       }
-      next();
-    } catch {
-      setStatus(t.saveFailed);
-    } finally {
-      setBusy(false);
+    }
+    setBusy(false);
+    // A failed receipt stays on the page: a retry cannot import anything twice (fixed commandId).
+    setSections((previous) => previous.filter((section) => !done.has(section.key)));
+    if (failed === 0 && known.length === 0) {
+      void navigate('/inventory');
+      return;
+    }
+    setLeftOut((previous) => [...previous, ...known]);
+    const imported = done.size - known.length;
+    setStatus(
+      [
+        imported > 0 ? t.done(articles, imported) : '',
+        known.length > 0 ? t.duplicate(known.length) : '',
+        failed > 0 ? t.saveFailed : '',
+      ]
+        .filter(Boolean)
+        .join(' '),
+    );
+    if (failed === 0) {
+      setSections([]);
     }
   }
 
-  const receipt = review?.receipt;
-  const extras =
-    receipt === undefined
-      ? null
-      : sumRappen(receipt.lines.filter((line) => line.kind !== 'item').map(paid));
+  function change(key: string, patch: Partial<Section>) {
+    setSections((previous) =>
+      previous.map((section) => (section.key === key ? { ...section, ...patch } : section)),
+    );
+  }
+
+  const several = sections.length > 1;
+  const totals = batchTotals(
+    sections.map((section) => ({
+      excluded: section.excluded,
+      chosen: section.review.chosen,
+    })),
+  );
+  const takeButton = (
+    <Button fullWidth disabled={busy || totals.articles === 0} onClick={() => void takeAll()}>
+      {several ? t.takeAll(totals.articles, totals.receipts) : t.take(totals.articles)}
+    </Button>
+  );
 
   return (
     <Card>
@@ -276,160 +274,52 @@ export function ReceiptUpload() {
           onChange={(event) => {
             const files = [...(event.target.files ?? [])];
             event.target.value = '';
-            start(files);
+            void start(files);
           }}
         />
       </label>
-      {position === null ? null : (
-        <p className="mt-3 text-sm font-semibold text-ink-muted">
-          {t.progress(position.index, position.total)}
-        </p>
-      )}
       <p role="status" className="mt-2 text-sm font-semibold text-basil-800">
         {status}
       </p>
-      {review === null && !busy && queue.length > 0 ? (
-        <Button fullWidth variant="secondary" onClick={next}>
-          {t.next}
-        </Button>
-      ) : null}
-      {review === null ? <p className="text-xs text-ink-muted">{t.trademarks}</p> : null}
+      {leftOut.length === 0 ? null : (
+        <div className="mt-2 text-sm text-ink-muted">
+          <p className="font-semibold">{t.leftOut}</p>
+          <ul className="mt-1 space-y-1">
+            {leftOut.map((file, position) => (
+              <li key={`${String(position)}-${file.fileName}`} className="break-words">
+                {file.fileName}: {file.text}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {sections.length === 0 ? <p className="text-xs text-ink-muted">{t.trademarks}</p> : null}
 
-      {review === null || receipt === undefined ? null : (
-        <section aria-labelledby="receipt-title" className="mt-4 space-y-3">
-          <h2 id="receipt-title" className="flex items-center gap-2 font-semibold">
-            <ShopBadge retailer={receipt.retailer} />
-            {[
-              t.retailers[receipt.retailer],
-              receipt.storeName,
-              receipt.purchasedOn === undefined ? undefined : formatSwissDate(receipt.purchasedOn),
-            ]
-              .filter(Boolean)
-              .join(' · ')}
-          </h2>
-          {/* min-w-0: a fieldset is as wide as its content otherwise; `relative` on each tab keeps its
-              sr-only radio inside the scrolling row (else it widens the page, like #34). */}
-          <fieldset className="min-w-0">
-            <legend className="mb-2 text-sm font-semibold text-ink-muted">{t.shopQuestion}</legend>
-            <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
-              {SHOPS.map((shop) => (
-                <label
-                  key={shop}
-                  className={`relative flex min-h-11 shrink-0 cursor-pointer items-center gap-2 rounded-full border py-1 pr-3 pl-1 text-sm font-semibold has-focus-visible:outline-2 has-focus-visible:outline-basil-600 ${
-                    receipt.retailer === shop
-                      ? 'border-basil-700 bg-basil-50 text-basil-800'
-                      : 'border-line bg-surface text-ink'
-                  }`}
-                >
-                  <input
-                    type="radio"
-                    name="shop"
-                    value={shop}
-                    checked={receipt.retailer === shop}
-                    onChange={() => {
-                      setReview({ ...review, receipt: { ...receipt, retailer: shop } });
-                    }}
-                    className="sr-only"
-                  />
-                  <ShopBadge retailer={shop} size={30} />
-                  {t.retailers[shop]}
-                </label>
-              ))}
-            </div>
-          </fieldset>
-          <p className={`text-sm ${receipt.sumCheck === 'ok' ? 'text-basil-800' : 'text-today'}`}>
-            {receipt.sumCheck === 'ok' || receipt.totalRappen === null
-              ? receipt.totalRappen === null
-                ? t.noTotal
-                : t.sumOk(money.format(receipt.totalRappen))
-              : t.sumMismatch(
-                  money.format(receipt.computedTotalRappen),
-                  money.format(receipt.totalRappen),
-                )}
-          </p>
-          <MatchPanel matching={matching} />
-          <GroupedList>
-            {receipt.lines.map((line, index) =>
-              line.kind !== 'item' ? null : (
-                <GroupedListItem key={`${String(index)}-${line.name}`} inset="check">
-                  <div className="flex items-center gap-2 pr-2">
-                    <label className="flex min-h-14 min-w-0 flex-1 cursor-pointer items-center gap-3 py-2 pl-4">
-                      <input
-                        type="checkbox"
-                        checked={review.chosen.has(index)}
-                        onChange={() => {
-                          const chosen = new Set(review.chosen);
-                          if (!chosen.delete(index)) {
-                            chosen.add(index);
-                          }
-                          setReview({ ...review, chosen });
-                        }}
-                        className="size-6 shrink-0 accent-basil-700"
-                      />
-                      <span className="min-w-0 flex-1">
-                        <span className="line-clamp-2 block font-semibold break-words">
-                          {line.name}
-                        </span>
-                        <span className="block truncate text-sm text-ink-muted">
-                          {[
-                            amountText(line),
-                            line.discountRappen < 0
-                              ? t.instead(money.format(line.priceRappen, { currency: false }))
-                              : undefined,
-                            isFood(line) ? undefined : t.notFood,
-                          ]
-                            .filter(Boolean)
-                            .join(' · ')}
-                        </span>
-                        <PriceHint hint={priceHint(line, review.memory.get(line.name), money)} />
-                      </span>
-                    </label>
-                    {/* The shop on every line (Alban, 8.11.2026); it changes with «Wo eingekauft?». */}
-                    {receipt.retailer === 'other' ? null : (
-                      <ShopBadge retailer={receipt.retailer} size={22} />
-                    )}
-                    <PriceField
-                      name={line.name}
-                      value={paid(line)}
-                      onChange={(price) => {
-                        setReview({ ...review, receipt: withPrice(receipt, index, price) });
-                      }}
-                    />
-                  </div>
-                  {review.chosen.has(index) ? (
-                    <MatchRow matching={matching} index={index} name={line.name} />
-                  ) : null}
-                </GroupedListItem>
-              ),
-            )}
-          </GroupedList>
-          {extras === null || extras === 0 ? null : (
-            <p className="text-sm text-ink-muted">{t.extras(money.format(extras))}</p>
-          )}
-          <Button
-            fullWidth
-            disabled={busy || review.chosen.size === 0}
-            onClick={() => {
-              void take(review);
-            }}
-          >
-            {t.take(review.chosen.size)}
-          </Button>
-          {queue.length > 0 ? (
-            <Button fullWidth variant="ghost" disabled={busy} onClick={next}>
-              {t.skip}
-            </Button>
-          ) : null}
-        </section>
+      {sections.length === 0 ? null : (
+        <div className="mt-4 space-y-4">
+          {several ? takeButton : null}
+          {sections.map((section) => (
+            <ReceiptReview
+              key={section.key}
+              id={section.key}
+              review={section.review}
+              onChange={(review) => {
+                change(section.key, { review });
+              }}
+              collapsible={several}
+              excluded={section.excluded}
+              onExcludedChange={(excluded) => {
+                change(section.key, { excluded });
+              }}
+              {...(several ? {} : { afterSum: takeButton })}
+              onMatching={(matching) => {
+                matchings.current.set(section.key, matching);
+              }}
+            />
+          ))}
+          {takeButton}
+        </div>
       )}
     </Card>
-  );
-}
-
-const TONES = { dearer: 'text-today', cheaper: 'text-basil-800', info: 'text-ink-muted' } as const;
-
-function PriceHint({ hint }: { hint: ReturnType<typeof priceHint> }) {
-  return hint === null ? null : (
-    <span className={`block text-sm font-medium ${TONES[hint.tone]}`}>{hint.text}</span>
   );
 }
