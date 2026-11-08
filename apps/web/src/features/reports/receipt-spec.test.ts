@@ -11,9 +11,10 @@ const labels = (kind: QuickKind, days = 3) =>
   spec(kind, days).sections.flatMap((section) => section.map((post) => post.label));
 
 describe('receiptSpec', () => {
-  it('sums up the impact: saved, shared, wasted, then the total saved', () => {
+  it('sums up the impact: saved and wasted (no «Weitergegeben»), then the total saved', () => {
     const receipt = spec('impact');
-    expect(receipt.sections.map((section) => section.length)).toEqual([3, 2]);
+    expect(receipt.sections.map((section) => section.length)).toEqual([2, 2]);
+    expect(receipt.sections[0]?.map((post) => post.label)).toEqual(['GERETTET', 'ENTSORGT']);
     expect(receipt.totals.at(-1)).toMatchObject({ label: 'TOTAL GERETTET', big: true });
     expect(receipt.empty).toBeUndefined();
   });
