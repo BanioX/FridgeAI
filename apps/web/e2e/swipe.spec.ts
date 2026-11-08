@@ -22,47 +22,67 @@ async function addGlace(page: Page) {
   }
 }
 
-async function swipeLeft(page: Page, distance: number) {
-  const box = await page.getByRole('link', { name: /Glace/ }).boundingBox();
+/** A negative distance swipes to the left («Verwertet»), a positive one to the right («Entsorgt»). */
+async function swipe(page: Page, distance: number) {
+  const row = page.getByRole('link', { name: /Glace/ });
+  // After a swipe the row springs back for 300 ms: measure it only once it stands still.
+  let last: number | undefined;
+  await expect
+    .poll(
+      async () => {
+        const x = (await row.boundingBox())?.x;
+        const still = x !== undefined && x === last;
+        last = x;
+        return still;
+      },
+      { intervals: [100] },
+    )
+    .toBe(true);
+  const box = await row.boundingBox();
   if (box === null) {
     throw new Error('Row not found');
   }
   const y = box.y + box.height / 2;
-  const startX = box.x + box.width - 30;
+  const startX = distance < 0 ? box.x + box.width - 30 : box.x + 30;
   await page.mouse.move(startX, y);
   await page.mouse.down();
-  await page.mouse.move(startX - distance / 2, y, { steps: 6 });
-  await page.mouse.move(startX - distance, y, { steps: 6 });
+  await page.mouse.move(startX + distance / 2, y, { steps: 6 });
+  await page.mouse.move(startX + distance, y, { steps: 6 });
   await page.mouse.up();
 }
 
-test('swipes left to eat one piece, undoes it, and a short drag changes nothing', async ({
+test('swipes left for «Verwertet», right for «Entsorgt», undoes, and a short drag changes nothing', async ({
   page,
 }) => {
   await addGlace(page);
   const row = page.getByRole('link', { name: /Glace/ });
   await expect(row).toContainText('6 Stk.');
-  await expect(page.getByText(/^Tipp: Wisch einen Artikel nach links/)).toBeVisible();
+  await expect(page.getByText(/^Tipp: Wisch nach links/)).toBeVisible();
 
-  // Below the threshold: the row springs back, nothing is eaten, the item page stays closed.
-  await swipeLeft(page, 60);
+  // Below the threshold: the row springs back, nothing is recorded, the item page stays closed.
+  await swipe(page, -60);
   await expect(row).toContainText('6 Stk.');
   await expect(page.getByRole('status')).toHaveCount(0);
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
 
   // Past 40 % of the row.
-  await swipeLeft(page, 250);
+  await swipe(page, -250);
   await expect(row).toContainText('5 Stk.');
   await expect(page.getByRole('status')).toContainText('1 Glace verwertet');
+
+  // To the right, like Spotify: one piece «Entsorgt».
+  await swipe(page, 250);
+  await expect(row).toContainText('4 Stk.');
+  await expect(page.getByRole('status')).toContainText('1 Glace entsorgt');
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
   // The tip stays for this visit, so the list does not jump under the finger.
-  await expect(page.getByText(/^Tipp: Wisch einen Artikel nach links/)).toBeVisible();
+  await expect(page.getByText(/^Tipp: Wisch nach links/)).toBeVisible();
 
   const result = await new AxeBuilder({ page }).analyze();
   expect(result.violations).toEqual([]);
 
   await page.getByRole('status').getByRole('button', { name: 'Rückgängig' }).click();
-  await expect(row).toContainText('6 Stk.');
+  await expect(row).toContainText('5 Stk.');
   await expect(page.getByRole('status')).toHaveCount(0);
 
   // A tap still opens the item page.
@@ -72,5 +92,5 @@ test('swipes left to eat one piece, undoes it, and a short drag changes nothing'
   // Next visit: the tip has done its job.
   await page.goBack();
   await expect(row).toBeVisible();
-  await expect(page.getByText(/^Tipp: Wisch einen Artikel nach links/)).toBeHidden();
+  await expect(page.getByText(/^Tipp: Wisch nach links/)).toBeHidden();
 });

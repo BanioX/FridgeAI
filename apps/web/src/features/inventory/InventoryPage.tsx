@@ -23,7 +23,7 @@ import { factFor } from '../knowledge/food-facts';
 import { GROUPED_ROW_LINK, GroupedList, GroupedListItem } from '../../ui/GroupedList';
 import { InventoryItemRow } from './InventoryItemRow';
 import { locationOrder } from './item-meta';
-import { SWIPE_HINT_ID, swipeLabel, useSwipeEat } from './swipe-eat';
+import { SWIPE_HINT_ID, useSwipeOutcome } from './swipe-outcome';
 
 const tabId = (location: StorageLocation) => `tab-${location}`;
 const panelId = (location: StorageLocation) => `panel-${location}`;
@@ -182,7 +182,7 @@ export function InventoryPage() {
   const parsed = StorageLocationSchema.safeParse(params.get('location'));
   const selected: StorageLocation = parsed.success ? parsed.data : 'fridge';
 
-  const swipe = useSwipeEat();
+  const swipe = useSwipeOutcome();
 
   const items = useLiveQuery(
     async () => (await inventory['inventory.list']({ householdId })).items,
@@ -286,12 +286,7 @@ export function InventoryPage() {
             <GroupedList>
               {visible.map((item) => (
                 <GroupedListItem key={item.id}>
-                  <SwipeAction
-                    {...swipeLabel(item)}
-                    onCommit={() => {
-                      swipe.eat(item);
-                    }}
-                  >
+                  <SwipeAction {...swipe.sides(item)}>
                     {({ sliced }) => (
                       <Link
                         to={`/inventory/${item.id}`}
