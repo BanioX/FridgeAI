@@ -31,6 +31,12 @@ describe('messages.de-CH', () => {
     }
   });
 
+  it('says «Abfall», never «Kübel» (Alban, 8.11.2026)', () => {
+    for (const [path, text] of texts(messages, 'messages')) {
+      expect(text, path).not.toMatch(/Kübel/);
+    }
+  });
+
   it('uses «ss» instead of «ß»', () => {
     for (const [path, text] of texts(messages, 'messages')) {
       expect(text, path).not.toContain('ß');
