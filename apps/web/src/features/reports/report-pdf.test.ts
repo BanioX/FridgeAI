@@ -25,7 +25,7 @@ describe('reportPdf', () => {
     }
   });
 
-  it('draws the shop monogram of items from a receipt', async () => {
+  it('draws the shop letter of items from a receipt', async () => {
     const report = sampleReport();
     expect(report.fridge.items.some((item) => item.retailer === 'coop')).toBe(true);
     const without = {
@@ -36,7 +36,7 @@ describe('reportPdf', () => {
         urgent: report.fridge.urgent.map((item) => ({ ...item, retailer: undefined })),
       },
     };
-    // The monogram and the shop in the detail line make the page content longer.
+    // The shop letter and the shop in the detail line make the page content longer.
     const [with_, plain] = [await render(report), await render(without)];
     expect(new TextDecoder().decode(with_.slice(0, 5))).toBe('%PDF-');
     expect(with_.length).toBeGreaterThan(plain.length);

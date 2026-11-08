@@ -301,7 +301,7 @@ interface ListRow {
   chip: { label: string; tone: Tone };
   /** Fridge, freezer, pantry or reserve, as a badge in the middle of the row. */
   place?: StorageLocation;
-  /** The shop it was bought at, as a small monogram left of the place badge. */
+  /** The shop it was bought at, as a small letter tile left of the place badge. */
   shop?: Retailer;
   value?: string;
 }
@@ -362,11 +362,11 @@ function list({ doc, pictures }: Context, rows: readonly ListRow[], y: number): 
               { left: box.x + box.width * 0.47, limit: chipLeft - 3, middle },
               LOCATION_COLOR[row.place],
             ) - 4;
-      // The shop monogram sits left of the place badge; without 30 mm left for the name it stays out.
-      if (row.shop !== undefined && row.place !== undefined) {
+      // The shop's letter sits left of the place badge; without 30 mm left for the name it stays out.
+      if (row.shop !== undefined && row.shop !== 'other' && row.place !== undefined) {
         const markLeft = textEnd - SHOP_MARK + 2;
         if (markLeft - 2 - textX >= 30) {
-          shopMark(doc, row.shop.charAt(0).toUpperCase(), markLeft, middle);
+          shopMark(doc, row.shop, markLeft, middle);
           textEnd = markLeft - 2;
         }
       }

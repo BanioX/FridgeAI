@@ -15,7 +15,7 @@ interface ItemRowProps {
   chevron?: boolean;
   /** Plays the «slice» of the picture (two halves fly apart) after a swipe. */
   sliced?: boolean;
-  /** Where it was bought (from its receipt): the monogram before the meta line, `label` for screen readers. */
+  /** Where it was bought (from its receipt): the shop letter before the meta line, `label` for screen readers. */
   shop?: { retailer: Retailer; label: string } | undefined;
 }
 

@@ -1,3 +1,4 @@
+import type { Retailer } from '@fridgeai/core';
 import type { jsPDF } from 'jspdf';
 import { messages } from '../../app/messages.de-CH';
 import type { Tone } from '../../ui/tones';
@@ -409,26 +410,57 @@ export function placeBadge(
   return left;
 }
 
-/** Side of the shop monogram in the lists, in mm. */
+/** Side of the shop letter tile in the lists, in mm. */
 export const SHOP_MARK = 4.2;
 
+/** Each shop's letter in the look of its sign (see `ui/ShopBadge.tsx`, Alban 8.11.2026). */
+const SHOP_LOOK: Record<
+  Exclude<Retailer, 'other'>,
+  { letter: string; tile: Rgb; ink: Rgb; border?: Rgb; disc?: Rgb; frame?: Rgb; italic?: boolean }
+> = {
+  coop: { letter: 'c', tile: [255, 255, 255], ink: [232, 88, 12], border: [228, 228, 231] },
+  migros: { letter: 'M', tile: [255, 255, 255], ink: [240, 106, 29], border: [228, 228, 231] },
+  denner: { letter: 'D', tile: [215, 0, 30], ink: [255, 255, 255], italic: true },
+  lidl: { letter: 'L', tile: [0, 80, 170], ink: [0, 80, 170], disc: [255, 240, 0] },
+  aldi: { letter: 'A', tile: [16, 28, 99], ink: [255, 255, 255], frame: [243, 146, 0] },
+};
+
 /**
- * The Rettich monogram of a shop (see `ui/ShopBadge.tsx`): an onyx tile, the white capital of the
- * shop and the emerald line under it. `left` is the tile's left edge; returns nothing.
+ * A shop's letter as a small tile, in the look of its sign like `ui/ShopBadge.tsx`. `left` is the
+ * tile's left edge; returns nothing.
  */
-export function shopMark(doc: jsPDF, letter: string, left: number, middle: number): void {
+export function shopMark(
+  doc: jsPDF,
+  retailer: Exclude<Retailer, 'other'>,
+  left: number,
+  middle: number,
+): void {
+  const look = SHOP_LOOK[retailer];
   const top = middle - SHOP_MARK / 2;
-  doc.setFillColor(...PDF_COLOR.onyx);
-  doc.roundedRect(left, top, SHOP_MARK, SHOP_MARK, 1.2, 1.2, 'F');
-  write(doc, letter, left + SHOP_MARK / 2, middle - 0.25, {
-    size: 7,
-    color: PDF_COLOR.white,
-    bold: true,
+  doc.setFillColor(...look.tile);
+  if (look.border === undefined) {
+    doc.roundedRect(left, top, SHOP_MARK, SHOP_MARK, 1, 1, 'F');
+  } else {
+    doc.setDrawColor(...look.border);
+    doc.setLineWidth(0.15);
+    doc.roundedRect(left, top, SHOP_MARK, SHOP_MARK, 1, 1, 'FD');
+  }
+  if (look.frame !== undefined) {
+    doc.setDrawColor(...look.frame);
+    doc.setLineWidth(0.25);
+    doc.roundedRect(left + 0.45, top + 0.45, SHOP_MARK - 0.9, SHOP_MARK - 0.9, 0.7, 0.7, 'S');
+  }
+  if (look.disc !== undefined) {
+    doc.setFillColor(...look.disc);
+    doc.circle(left + SHOP_MARK / 2, middle, SHOP_MARK * 0.37, 'F');
+  }
+  doc.setFont('helvetica', look.italic === true ? 'bolditalic' : 'bold');
+  doc.setFontSize(look.disc === undefined ? 7.5 : 6);
+  doc.setTextColor(...look.ink);
+  doc.text(look.letter, left + SHOP_MARK / 2, middle - 0.1, {
     align: 'center',
     baseline: 'middle',
   });
-  doc.setFillColor(...PDF_COLOR.smaragdMid);
-  doc.roundedRect(left + SHOP_MARK / 2 - 0.9, top + SHOP_MARK - 0.95, 1.8, 0.4, 0.2, 0.2, 'F');
 }
 
 /** A dashed rule like on a till receipt. */
