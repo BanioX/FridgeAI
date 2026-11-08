@@ -6,14 +6,16 @@ import { useAppData } from '../../app/AppData';
 import { useMoney } from '../../app/money';
 import { messages } from '../../app/messages.de-CH';
 import { Card } from '../../ui/Card';
+import { OutcomeRings } from '../../ui/OutcomeRings';
+import { ringShare } from '../../ui/ring-share';
 import { RettichGrowth } from './RettichGrowth';
 
 const t = messages.today;
 
 /**
- * «Deine Wirkung diesen Monat» (step 6, US-06, ADR-0033): the growing Rettich (ADR-0043), then
- * rescued (confirmed, ADR-0039) against wasted, in the household currency and items, from `stats.waste`. Ordinary eating is not a
- * rescue and does not show. Hidden until something was rescued or thrown away in the period.
+ * «Deine Wirkung diesen Monat» (step 6, US-06): the growing Rettich (ADR-0043), then «Verwertet»
+ * and «Entsorgt» as two rings (ADR-0046), and below what was rescued: confirmed rescues of food
+ * at risk (ADR-0033, ADR-0039). Hidden until something was closed in the period.
  */
 export function ImpactCard({ from, to }: { from: LocalDate; to: LocalDate }) {
   const { householdId, inventory } = useAppData();
@@ -22,18 +24,18 @@ export function ImpactCard({ from, to }: { from: LocalDate; to: LocalDate }) {
     () => inventory['stats.waste']({ householdId, from, to }),
     [householdId, from, to],
   );
-  if (stats === undefined) {
+  if (stats === undefined || stats.usedCount + stats.wastedCount === 0) {
     return null;
   }
-  const total = stats.savedRappen + stats.wastedRappen;
-  const count = stats.savedCount + stats.wastedCount;
-  if (count === 0) {
-    return null;
-  }
+  const used = { rappen: stats.usedRappen, count: stats.usedCount };
+  const wasted = { rappen: stats.wastedRappen, count: stats.wastedCount };
+  const atRisk = stats.savedRappen + stats.wastedRappen;
   const percent =
-    total === 0
-      ? Math.round((100 * stats.savedCount) / count)
-      : Math.round((100 * stats.savedRappen) / total);
+    stats.savedCount + stats.wastedCount === 0
+      ? null
+      : atRisk === 0
+        ? Math.round((100 * stats.savedCount) / (stats.savedCount + stats.wastedCount))
+        : Math.round((100 * stats.savedRappen) / atRisk);
 
   return (
     <Card>
@@ -41,36 +43,35 @@ export function ImpactCard({ from, to }: { from: LocalDate; to: LocalDate }) {
       <div className="mt-3">
         <RettichGrowth rescues={stats.savedCount} />
       </div>
-      <dl className="mt-3 grid grid-cols-2 gap-3">
-        <div className="rounded-xl bg-basil-50 p-3">
-          <dt className="text-sm font-semibold text-basil-800">{t.saved}</dt>
-          <dd className="font-display text-2xl font-semibold text-basil-800 tabular-nums">
-            {money.format(stats.savedRappen)}
-          </dd>
-          <dd className="text-sm text-ink-muted">{t.savedCount(stats.savedCount)}</dd>
-        </div>
-        <div className="rounded-xl bg-surface-muted p-3">
-          <dt className="text-sm font-semibold text-today">{t.wasted}</dt>
-          <dd className="font-display text-2xl font-semibold text-today tabular-nums">
-            {money.format(stats.wastedRappen)}
-          </dd>
-          <dd className="text-sm text-ink-muted">{t.wastedCount(stats.wastedCount)}</dd>
-        </div>
-      </dl>
-      <div
-        role="img"
-        aria-label={t.savedShare(percent)}
-        className="mt-3 h-2 overflow-hidden rounded-full bg-today-bg"
-      >
-        <div
-          className="h-full rounded-full bg-basil-600"
-          style={{ width: `${String(percent)}%` }}
+      <div className="mt-4">
+        <OutcomeRings
+          used={{
+            label: t.used,
+            share: ringShare(used, wasted),
+            value: money.format(stats.usedRappen),
+            detail: t.wastedCount(stats.usedCount),
+          }}
+          wasted={{
+            label: t.wasted,
+            share: ringShare(wasted, used),
+            value: money.format(stats.wastedRappen),
+            detail: t.wastedCount(stats.wastedCount),
+          }}
         />
       </div>
-      <p className="mt-1 text-sm text-ink-muted">
-        {t.savedShare(percent)} {t.ofAtRisk}
-        {stats.estimated ? ` · ${t.estimated}` : null}
-      </p>
+      <div className="mt-4 rounded-xl bg-basil-50 p-3">
+        <p className="flex items-baseline justify-between gap-2">
+          <span className="font-semibold text-basil-800">{t.saved}</span>
+          <span className="font-display text-xl font-semibold text-basil-800 tabular-nums">
+            {money.format(stats.savedRappen)}
+          </span>
+        </p>
+        <p className="text-sm text-ink-muted">
+          {t.savedCount(stats.savedCount)}
+          {percent === null ? null : ` · ${t.savedShare(percent)} ${t.ofAtRisk}`}
+          {stats.estimated ? ` · ${t.estimated}` : null}
+        </p>
+      </div>
       <Link
         to="/more/history"
         className="mt-2 -mb-1 inline-flex min-h-11 items-center gap-0.5 font-semibold text-basil-700"

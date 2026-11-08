@@ -172,6 +172,8 @@ export function createInventoryQueries(ctx: AppContext) {
       wastedGrams: summary.wastedGrams,
       savedCount: summary.savedCount,
       wastedCount: summary.wastedCount,
+      usedRappen: summary.usedRappen,
+      usedCount: summary.usedCount,
       estimated: summary.estimated,
     };
   };
