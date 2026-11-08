@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { Link } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { useMoney } from '../../app/money';
-import { DEV_TOOLS } from '../../app/dev-tools';
 import { messages } from '../../app/messages.de-CH';
 import { BigNumber } from '../../ui/BigNumber';
 import { Card } from '../../ui/Card';
@@ -16,6 +15,7 @@ import { SWIPE_HINT_ID, useSwipeOutcome } from '../inventory/swipe-outcome';
 import { SwipeAction } from '../../ui/SwipeAction';
 import { checkDue, readLastCheck } from '../check/check-state';
 import { ImpactCard } from './ImpactCard';
+import { StartIntro } from './StartIntro';
 import { URGENT_LIMIT, urgentItems } from './urgent-items';
 
 const MORE_LINK =
@@ -58,28 +58,7 @@ export function TodayPage() {
     <div className="space-y-6">
       <h1 className="large-title">{messages.pages.start}</h1>
 
-      {all.length === 0 ? (
-        <Card>
-          <h2 className="font-display text-xl font-semibold">{t.welcomeTitle}</h2>
-          <p className="mt-2 text-ink-muted">{t.welcomeText}</p>
-          <div className="mt-4 flex flex-wrap items-center gap-2">
-            <Link
-              to="/inventory/new"
-              className="inline-flex min-h-12 items-center justify-center rounded-xl bg-basil-700 px-5 font-semibold text-white transition-colors hover:bg-basil-800 active:bg-basil-900"
-            >
-              {t.firstItem}
-            </Link>
-            {DEV_TOOLS ? (
-              <Link
-                to="/dev/seed"
-                className="inline-flex min-h-12 items-center justify-center rounded-xl px-4 font-semibold text-basil-800 underline-offset-4 hover:underline"
-              >
-                {t.loadDemo}
-              </Link>
-            ) : null}
-          </div>
-        </Card>
-      ) : null}
+      {all.length === 0 ? <StartIntro /> : null}
 
       {all.length > 0 ? (
         <Card variant="premium">
@@ -104,45 +83,47 @@ export function TodayPage() {
         </Card>
       ) : null}
 
-      <section aria-labelledby="expiring-title" className="space-y-3">
-        <h2 id="expiring-title" className="font-display text-xl font-semibold">
-          {t.expiringTitle}
-        </h2>
-        {urgent.length === 0 ? (
-          <Card variant="tip">{t.expiringEmpty}</Card>
-        ) : (
-          <>
-            {swipe.tip}
-            <GroupedList>
-              {urgent.slice(0, URGENT_LIMIT).map((item) => (
-                <GroupedListItem key={item.id}>
-                  <SwipeAction {...swipe.sides(item)}>
-                    {({ sliced }) => (
-                      <Link
-                        to={`/inventory/${item.id}`}
-                        aria-describedby={SWIPE_HINT_ID}
-                        className={GROUPED_ROW_LINK}
-                      >
-                        <InventoryItemRow
-                          chevron
-                          sliced={sliced}
-                          item={item}
-                          status={expiryBadge(item.status, item.expiresOn, today, item.location)}
-                        />
-                      </Link>
-                    )}
-                  </SwipeAction>
-                </GroupedListItem>
-              ))}
-            </GroupedList>
-          </>
-        )}
-        {urgent.length > URGENT_LIMIT ? (
-          <Link to="/inventory" className={MORE_LINK}>
-            {t.showAll(urgent.length)}
-          </Link>
-        ) : null}
-      </section>
+      {all.length === 0 ? null : (
+        <section aria-labelledby="expiring-title" className="space-y-3">
+          <h2 id="expiring-title" className="font-display text-xl font-semibold">
+            {t.expiringTitle}
+          </h2>
+          {urgent.length === 0 ? (
+            <Card variant="tip">{t.expiringEmpty}</Card>
+          ) : (
+            <>
+              {swipe.tip}
+              <GroupedList>
+                {urgent.slice(0, URGENT_LIMIT).map((item) => (
+                  <GroupedListItem key={item.id}>
+                    <SwipeAction {...swipe.sides(item)}>
+                      {({ sliced }) => (
+                        <Link
+                          to={`/inventory/${item.id}`}
+                          aria-describedby={SWIPE_HINT_ID}
+                          className={GROUPED_ROW_LINK}
+                        >
+                          <InventoryItemRow
+                            chevron
+                            sliced={sliced}
+                            item={item}
+                            status={expiryBadge(item.status, item.expiresOn, today, item.location)}
+                          />
+                        </Link>
+                      )}
+                    </SwipeAction>
+                  </GroupedListItem>
+                ))}
+              </GroupedList>
+            </>
+          )}
+          {urgent.length > URGENT_LIMIT ? (
+            <Link to="/inventory" className={MORE_LINK}>
+              {t.showAll(urgent.length)}
+            </Link>
+          ) : null}
+        </section>
+      )}
 
       <ImpactCard from={startOfMonth(today)} to={today} />
       {swipe.toast}
