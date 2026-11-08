@@ -8,16 +8,13 @@ import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { ChoiceChips } from '../../ui/ChoiceChips';
 import { openReport } from './current-report';
-import { periodStart, type Period } from './period';
+import { PeriodPicker } from './PeriodPicker';
+import { chosenPeriod, initialPeriod, monthOptions } from './report-period';
 import { REPORT_KINDS, usesPeriod, type ReportKind } from './receipt-spec';
 
 const t = messages.reports;
 
 const kindOptions = REPORT_KINDS.map((value) => ({ value, label: t.kinds[value].label }));
-const periodOptions = (Object.keys(t.periods) as Period[]).map((value) => ({
-  value,
-  label: t.periods[value],
-}));
 type DaysChoice = keyof typeof t.days;
 const DAYS: Record<Exclude<DaysChoice, 'custom'>, number> = { one: 1, three: 3, seven: 7 };
 const daysOptions = (Object.keys(t.days) as DaysChoice[]).map((value) => ({
@@ -42,27 +39,32 @@ export function ReportCard() {
   const navigate = useNavigate();
   const daysId = useId();
   const [kind, setKind] = useState<ReportKind>('impact');
-  const [period, setPeriod] = useState<Period>('month');
+  const [periodState, setPeriodState] = useState(() => initialPeriod(today));
   const [daysChoice, setDaysChoice] = useState<DaysChoice>('three');
   const [daysText, setDaysText] = useState('14');
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState('');
 
   const days = daysChoice === 'custom' ? customDays(daysText) : DAYS[daysChoice];
+  // Receipts about today use the running month only for what they do not show.
+  const chosen = usesPeriod(kind) ? chosenPeriod(periodState, today) : monthOptions(today, 1)[0];
   const detail = usesPeriod(kind)
-    ? t.periods[period]
+    ? (chosen?.label ?? '')
     : kind === 'expiring'
       ? t.nextDays(days)
       : t.now;
 
   async function create() {
+    if (chosen === undefined || chosen === null) {
+      return;
+    }
     setBusy(true);
     setStatus(t.creating);
     try {
       const report = await inventory['reports.build']({
         householdId,
-        from: periodStart(usesPeriod(kind) ? period : 'month', today),
-        to: today,
+        from: chosen.period.from,
+        to: chosen.period.to,
       });
       const { loadPdfPictures } = await import('./pdf-assets');
       const pictures = await loadPdfPictures();
@@ -98,13 +100,7 @@ export function ReportCard() {
         <p className="text-sm text-ink-muted">{t.kinds[kind].hint}</p>
       </div>
       {usesPeriod(kind) ? (
-        <ChoiceChips
-          legend={t.periodLegend}
-          options={periodOptions}
-          value={period}
-          onChange={setPeriod}
-          segmented
-        />
+        <PeriodPicker state={periodState} onChange={setPeriodState} today={today} />
       ) : null}
       {kind === 'expiring' ? (
         <div className="space-y-3">
@@ -136,7 +132,12 @@ export function ReportCard() {
           ) : null}
         </div>
       ) : null}
-      <Button icon={FileText} fullWidth disabled={busy} onClick={() => void create()}>
+      <Button
+        icon={FileText}
+        fullWidth
+        disabled={busy || chosen === null || chosen === undefined}
+        onClick={() => void create()}
+      >
         {busy ? t.creating : t.create}
       </Button>
       <p role="status" className="text-sm font-semibold text-basil-800">

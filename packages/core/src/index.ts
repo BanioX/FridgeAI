@@ -42,4 +42,5 @@ export * from './nutrition/label';
 export * from './receipt/pdf-lines';
 export * from './receipt/off-match';
 export * from './prices/price-memory';
+export * from './reports/closing';
 export * from './reports/report';
