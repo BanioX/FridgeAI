@@ -11,6 +11,7 @@ import {
   type ParsedReceipt,
   type ParsedReceiptLine,
   type Rappen,
+  type Retailer,
 } from '@fridgeai/core';
 import { FileText } from 'lucide-react';
 import { useState } from 'react';
@@ -20,6 +21,7 @@ import { messages } from '../../app/messages.de-CH';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { GroupedList, GroupedListItem } from '../../ui/GroupedList';
+import { ShopBadge } from '../../ui/ShopBadge';
 import { formatAmount } from '../inventory/add-item';
 import { MatchPanel, MatchRow, useReceiptMatching } from './ReceiptMatch';
 import { useMoney } from '../../app/money';
@@ -33,6 +35,9 @@ const t = messages.receiptUpload;
 const MAX_BYTES = 15 * 1024 * 1024;
 
 const isPdf = (file: File) => file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
+
+/** The order of the shop tabs: the big Swiss shops first, «Laden» for any other. */
+const SHOPS: readonly Retailer[] = ['coop', 'migros', 'denner', 'aldi', 'lidl', 'other'];
 
 interface Review {
   receipt: ParsedReceipt;
@@ -292,7 +297,8 @@ export function ReceiptUpload() {
 
       {review === null || receipt === undefined ? null : (
         <section aria-labelledby="receipt-title" className="mt-4 space-y-3">
-          <h2 id="receipt-title" className="font-semibold">
+          <h2 id="receipt-title" className="flex items-center gap-2 font-semibold">
+            <ShopBadge retailer={receipt.retailer} />
             {[
               t.retailers[receipt.retailer],
               receipt.storeName,
@@ -301,6 +307,36 @@ export function ReceiptUpload() {
               .filter(Boolean)
               .join(' · ')}
           </h2>
+          {/* min-w-0: a fieldset is as wide as its content otherwise; `relative` on each tab keeps its
+              sr-only radio inside the scrolling row (else it widens the page, like #34). */}
+          <fieldset className="min-w-0">
+            <legend className="mb-2 text-sm font-semibold text-ink-muted">{t.shopQuestion}</legend>
+            <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+              {SHOPS.map((shop) => (
+                <label
+                  key={shop}
+                  className={`relative flex min-h-11 shrink-0 cursor-pointer items-center gap-2 rounded-full border py-1 pr-3 pl-1 text-sm font-semibold has-focus-visible:outline-2 has-focus-visible:outline-basil-600 ${
+                    receipt.retailer === shop
+                      ? 'border-basil-700 bg-basil-50 text-basil-800'
+                      : 'border-line bg-surface text-ink'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="shop"
+                    value={shop}
+                    checked={receipt.retailer === shop}
+                    onChange={() => {
+                      setReview({ ...review, receipt: { ...receipt, retailer: shop } });
+                    }}
+                    className="sr-only"
+                  />
+                  <ShopBadge retailer={shop} size={30} />
+                  {t.retailers[shop]}
+                </label>
+              ))}
+            </div>
+          </fieldset>
           <p className={`text-sm ${receipt.sumCheck === 'ok' ? 'text-basil-800' : 'text-today'}`}>
             {receipt.sumCheck === 'ok' || receipt.totalRappen === null
               ? receipt.totalRappen === null

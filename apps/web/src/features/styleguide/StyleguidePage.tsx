@@ -11,6 +11,7 @@ import { LocationTile } from '../../ui/LocationTile';
 import { StatusChip } from '../../ui/StatusChip';
 import type { Tone } from '../../ui/tones';
 import { RettichGrowth } from '../today/RettichGrowth';
+import { ShopBadge } from '../../ui/ShopBadge';
 
 /*
  * Development-only reference of the design system (route /styleguide, see routes.tsx).
@@ -134,6 +135,15 @@ export function StyleguidePage() {
           <LocationTile location="pantry" label="Vorrat" countLabel="23 Artikel" />
           <LocationTile location="reserve" label="Notvorrat" countLabel="reicht 9 Tage" />
         </div>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="font-display text-xl font-semibold">Läden</h2>
+        <Card className="flex flex-wrap gap-3">
+          {(['coop', 'migros', 'denner', 'aldi', 'lidl', 'other'] as const).map((shop) => (
+            <ShopBadge key={shop} retailer={shop} size={48} />
+          ))}
+        </Card>
       </section>
 
       <section className="space-y-3">
