@@ -1,94 +1,62 @@
 import type { Retailer } from '@fridgeai/core';
 import { Store } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { useId } from 'react';
 
-const FONT = { fontWeight: 900, textAnchor: 'middle', dominantBaseline: 'central' } as const;
-
-/**
- * Each shop as one letter in the design language of its sign (Alban, 8.11.2026): Coop a small
- * orange «c» on white, Migros a heavy orange «M» on white, Denner a white slanted «D» on red,
- * Lidl a blue «L» on a yellow disc on blue, Aldi a white «A» on dark blue in a warm frame.
- * Colours, letter style and plain shapes only, never the protected marks themselves (Lidl's red
- * ring and diamond, Aldi's striped A and triple frame, Coop's overlapping rings), and always
- * next to the shop's name: it says where something was bought, not that Rettich belongs to it.
- */
-const SHOPS: Record<Exclude<Retailer, 'other'>, ReactNode> = {
-  coop: (
-    <>
-      <rect x="0.5" y="0.5" width="27" height="27" rx="6.5" fill="#ffffff" stroke="#e4e4e7" />
-      <text x="14" y="13" fontSize="23" fill="#e8580c" {...FONT}>
-        c
-      </text>
-    </>
-  ),
-  migros: (
-    <>
-      <rect x="0.5" y="0.5" width="27" height="27" rx="6.5" fill="#ffffff" stroke="#e4e4e7" />
-      <text x="14" y="14.5" fontSize="17" fill="#f06a1d" {...FONT}>
-        M
-      </text>
-    </>
-  ),
-  denner: (
-    <>
-      <rect width="28" height="28" rx="7" fill="#d7001e" />
-      <text
-        x="14"
-        y="14.5"
-        fontSize="17"
-        fill="#ffffff"
-        transform="skewX(-12) translate(3 0)"
-        {...FONT}
-      >
-        D
-      </text>
-    </>
-  ),
-  lidl: (
-    <>
-      <rect width="28" height="28" rx="7" fill="#0050aa" />
-      <circle cx="14" cy="14" r="10.5" fill="#fff000" />
-      <text x="14" y="14.5" fontSize="14" fill="#0050aa" {...FONT}>
-        L
-      </text>
-    </>
-  ),
-  aldi: (
-    <>
-      <rect width="28" height="28" rx="7" fill="#101c63" />
-      <rect
-        x="2.5"
-        y="2.5"
-        width="23"
-        height="23"
-        rx="5"
-        fill="none"
-        stroke="#f39200"
-        strokeWidth="1.6"
-      />
-      <text x="14" y="14.5" fontSize="15" fill="#ffffff" {...FONT}>
-        A
-      </text>
-    </>
-  ),
+/** The letter that names each shop; «Laden» (any other shop) gets the shop symbol instead. */
+const LETTER: Record<Exclude<Retailer, 'other'>, string> = {
+  coop: 'C',
+  migros: 'M',
+  denner: 'D',
+  aldi: 'A',
+  lidl: 'L',
 };
 
-/** Decorative: the shop's name always stands next to it. */
+/**
+ * The Rettich monogram of a shop (Alban, 8.11.2026): one letter in Rettich's own design language,
+ * like a hallmark: an onyx tile, a silver serif capital and the emerald line under it, the same for
+ * every shop. The first letter says which shop it is; no shop colours, letter shapes or logos (the
+ * shops all use sans-serif letters), so it never looks like a shop's mark. Decorative: the shop's
+ * name always stands next to it.
+ */
 export function ShopBadge({ retailer, size = 28 }: { retailer: Retailer; size?: number }) {
-  if (retailer === 'other') {
-    return (
-      <span
-        aria-hidden="true"
-        style={{ width: size, height: size }}
-        className="inline-flex shrink-0 items-center justify-center rounded-lg bg-surface-muted text-ink-muted"
-      >
-        <Store size={Math.round(size * 0.6)} />
-      </span>
-    );
-  }
+  const tile = useId().replace(/[^\w-]/g, '');
   return (
     <svg aria-hidden="true" width={size} height={size} viewBox="0 0 28 28" className="shrink-0">
-      {SHOPS[retailer]}
+      <defs>
+        <linearGradient id={tile} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#2a2d33" />
+          <stop offset="1" stopColor="#0d1012" />
+        </linearGradient>
+      </defs>
+      <rect width="28" height="28" rx="8" fill={`url(#${tile})`} />
+      <rect
+        x="1"
+        y="1"
+        width="26"
+        height="26"
+        rx="7"
+        fill="none"
+        stroke="#ffffff"
+        strokeOpacity="0.12"
+      />
+      {retailer === 'other' ? (
+        <Store x="7.5" y="5.5" width="13" height="13" color="#f3f4f6" strokeWidth={2.2} />
+      ) : (
+        <text
+          x="14"
+          y="12.75"
+          fontSize="15"
+          fontWeight="500"
+          fontFamily="ui-serif, 'New York', Georgia, 'Times New Roman', serif"
+          fill="#f3f4f6"
+          textAnchor="middle"
+          dominantBaseline="central"
+          letterSpacing="0.2"
+        >
+          {LETTER[retailer]}
+        </text>
+      )}
+      <rect x="11" y="21" width="6" height="1.4" rx="0.7" fill="#59a884" />
     </svg>
   );
 }
