@@ -37,6 +37,16 @@ async function swipeLeft(page: Page, distance: number) {
   await page.mouse.up();
 }
 
+/**
+ * Axe measures colours as they are on screen: during the row's fade the text is a little lighter
+ * than at rest (4.46 instead of 4.5:1 in CI), so wait until every transition has ended.
+ */
+async function settled(page: Page) {
+  await page.waitForFunction(() =>
+    document.getAnimations().every((animation) => animation.playState !== 'running'),
+  );
+}
+
 test('swipes left to eat one piece, undoes it, and a short drag changes nothing', async ({
   page,
 }) => {
@@ -59,6 +69,7 @@ test('swipes left to eat one piece, undoes it, and a short drag changes nothing'
   // The tip stays for this visit, so the list does not jump under the finger.
   await expect(page.getByText(/^Tipp: Wisch einen Artikel nach links/)).toBeVisible();
 
+  await settled(page);
   const result = await new AxeBuilder({ page }).analyze();
   expect(result.violations).toEqual([]);
 

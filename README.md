@@ -4,7 +4,7 @@
 
 Bis 7.11.2026 hiess die App «FridgeAI». Repo, Paketnamen und Web-Adresse heissen technisch weiter so ([ADR-0032](docs/adr/0032-name-rettich.md)).
 
-**Wirf kein Geld in den Kübel.** Rettich, wie «rett' ich».
+**Wirf kein Geld in den Abfall.** Rettich, wie «rett' ich».
 
 > **Scan deine Quittung – Rettich weiss, was du hast, wem es gehört, wer was schuldet und was du heute retten musst.**
 
