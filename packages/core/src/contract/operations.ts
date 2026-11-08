@@ -2,7 +2,6 @@ import { z } from 'zod';
 import { IdSchema } from '../ids';
 import { RappenSchema } from '../money';
 import { DomainEventSchema } from './events';
-import { RecipeTagSchema } from '../recipes/recipe';
 import { HouseholdSchema, MemberSchema, type Scope } from '../model/household';
 import {
   ReceiptLineKindSchema,
@@ -122,6 +121,16 @@ const ReportSchema = z.object({
     savedShare: z.number().min(0).max(1).nullable(),
     sharedRappen: RappenSchema,
     sharedCount: z.int().min(0),
+    wastedItems: z.array(
+      z.object({
+        name: z.string(),
+        categoryId: z.string(),
+        on: LocalDateSchema,
+        valueRappen: RappenSchema,
+        grams: z.number().min(0).optional(),
+        reason: WasteReasonSchema.optional(),
+      }),
+    ),
     months: z.array(
       z.object({ month: z.string(), savedRappen: RappenSchema, wastedRappen: RappenSchema }),
     ),
@@ -194,6 +203,8 @@ export const InventoryItemViewSchema = z.object({
   packageSize: PackageSizeSchema.optional(),
   /** Set once the pack is open; the expiry date then follows the opening rule. */
   openedOn: LocalDateSchema.optional(),
+  /** When it came home, e.g. for «Gerettet» only on food that kept longer (ADR-0039). */
+  purchasedAt: IsoDateTimeSchema,
   /** Product facts, e.g. from Open Food Facts after a scan (step 10b, ODbL). */
   brand: z.string().optional(),
   packSize: z.string().optional(),
@@ -238,6 +249,15 @@ export const FrequentProductSchema = z.object({
   packageSize: PackageSizeSchema.optional(),
 });
 export type FrequentProduct = z.infer<typeof FrequentProductSchema>;
+
+/** A category thrown away at least twice lately, with a tip (ADR-0038). */
+export const WasteHabitSchema = z.object({
+  categoryId: CategoryIdSchema,
+  times: z.int().min(1),
+  names: z.array(z.string()),
+  lastOn: LocalDateSchema,
+  tip: z.string().optional(),
+});
 
 export const ExpiryStatusSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('fresh'), daysLeft: z.int() }),
@@ -449,14 +469,31 @@ export const CONTRACT_V1 = {
         wasteReason: WasteReasonSchema.optional(),
         /** Who got it (only with `shared_out`). */
         sharedWith: ShareRecipientSchema.optional(),
+        /**
+         * «Ohne Rettich im Abfall gelandet» (ADR-0039): counts as rescued only if the item could
+         * be rescued (`canBeRescued`), never for wasted food.
+         */
+        rescued: z.boolean().optional(),
       })
       .refine((input) => input.wasteReason === undefined || input.outcome === 'wasted', {
         message: 'A waste reason only fits wasted food',
       })
       .refine((input) => input.sharedWith === undefined || input.outcome === 'shared_out', {
         message: 'A recipient only fits shared food',
+      })
+      .refine((input) => input.rescued !== true || input.outcome !== 'wasted', {
+        message: 'Thrown away food is not rescued',
       }),
-    output: z.object({ eventId: IdSchema, remainingQuantity: z.number().min(0) }),
+    output: z.object({
+      eventId: IdSchema,
+      remainingQuantity: z.number().min(0),
+      /** Whether it counts as rescued. */
+      rescued: z.boolean(),
+      /** Value of what was closed, e.g. for «Gerettet: CHF 2.10». */
+      valueRappen: RappenSchema.min(0),
+      /** No price from a receipt: the value is the category estimate («etwa CHF 1.20»). */
+      valueEstimated: z.boolean(),
+    }),
   }),
   'inventory.undoOutcome': command({
     name: 'inventory.undoOutcome',
@@ -606,6 +643,16 @@ export const CONTRACT_V1 = {
     input: z.object({ ...queryBase, limit: z.int().min(1).max(20).default(8) }),
     output: z.object({ products: z.array(FrequentProductSchema) }),
   }),
+  'products.wasteHabits': query({
+    name: 'products.wasteHabits',
+    summary: {
+      de: 'Was der Haushalt in den letzten drei Monaten mehrmals weggeworfen hat, mit einem Tipp.',
+      en: 'What the household threw away more than once in the last three months, with a tip.',
+    },
+    scopes: ['stats:read'],
+    input: z.object({ ...queryBase }),
+    output: z.object({ habits: z.array(WasteHabitSchema) }),
+  }),
   'products.image': query({
     name: 'products.image',
     summary: {
@@ -685,86 +732,6 @@ export const CONTRACT_V1 = {
     scopes: ['shopping_list:write'],
     input: z.object({ ...commandBase, itemId: IdSchema }),
     output: z.object({ removed: z.boolean() }),
-  }),
-  'recipes.suggest': query({
-    name: 'recipes.suggest',
-    summary: {
-      de: 'Rezepte, die möglichst viele bald ablaufende Lebensmittel verwenden.',
-      en: 'Recipes that use as much soon-expiring food as possible.',
-    },
-    scopes: ['recipes:read'],
-    input: z.object({ ...queryBase, limit: z.int().min(1).max(10).default(3) }),
-    output: z.object({
-      recipes: z.array(
-        z.object({
-          id: z.string(),
-          title: z.string(),
-          minutes: z.int().positive(),
-          usesExpiring: z.array(z.string()),
-          missing: z.array(z.string()),
-        }),
-      ),
-    }),
-  }),
-  'recipes.list': query({
-    name: 'recipes.list',
-    summary: {
-      de: 'Alle Rezepte, zuerst die, für die am wenigsten fehlt; optional mit einem Merkmal.',
-      en: 'All recipes, those with the fewest missing ingredients first; optionally with one tag.',
-    },
-    scopes: ['recipes:read'],
-    input: z.object({ ...queryBase, tag: RecipeTagSchema.optional() }),
-    output: z.object({
-      recipes: z.array(
-        z.object({
-          id: z.string(),
-          title: z.string(),
-          minutes: z.int().positive(),
-          tags: z.array(RecipeTagSchema),
-          usesExpiring: z.array(z.string()),
-          missing: z.array(z.string()),
-        }),
-      ),
-    }),
-  }),
-  'recipes.get': query({
-    name: 'recipes.get',
-    summary: {
-      de: 'Ein Rezept mit Zutaten und Schritten; pro Zutat, was davon schon zu Hause ist.',
-      en: 'One recipe with ingredients and steps; for each ingredient, what is already at home.',
-    },
-    scopes: ['recipes:read'],
-    input: z.object({ ...queryBase, recipeId: z.string().min(1).max(64) }),
-    output: z.object({
-      recipe: z
-        .object({
-          id: z.string(),
-          title: z.string(),
-          minutes: z.int().positive(),
-          servings: z.int().positive(),
-          tags: z.array(z.string()),
-          ingredients: z.array(
-            z.object({
-              text: z.string(),
-              staple: z.boolean(),
-              optional: z.boolean(),
-              /** Food at home that counts as this ingredient, e.g. to book it after cooking. */
-              atHome: z.array(
-                z.object({
-                  itemId: IdSchema,
-                  name: z.string(),
-                  quantity: QuantitySchema,
-                  unit: UnitSchema,
-                  expiresOn: LocalDateSchema,
-                  expiryKind: DateKindSchema,
-                }),
-              ),
-            }),
-          ),
-          steps: z.array(z.string()),
-        })
-        .nullable(),
-    }),
   }),
   'stats.waste': query({
     name: 'stats.waste',

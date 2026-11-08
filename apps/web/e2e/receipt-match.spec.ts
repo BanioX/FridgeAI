@@ -1,5 +1,4 @@
-import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from './test';
+import { AxeBuilder, expect, test } from './test';
 import { textPdf } from './pdf';
 
 // Open Food Facts is never called for real in tests (ADR-0036).

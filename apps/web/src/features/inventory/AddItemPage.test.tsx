@@ -2,6 +2,7 @@ import 'fake-indexeddb/auto';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, useLocation } from 'react-router';
+import { addDays, formatSwissDate, toLocalDate } from '@fridgeai/core';
 import { afterEach, describe, expect, it } from 'vitest';
 import { AppDataProvider } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
@@ -15,9 +16,9 @@ function Where() {
   return <output data-testid="where">{`${location.pathname}${location.search}`}</output>;
 }
 
-async function renderPage(path = '/inventory/new') {
+async function renderPage(path = '/inventory/new', db = testDb()) {
   render(
-    <AppDataProvider db={testDb()}>
+    <AppDataProvider db={db}>
       <MemoryRouter initialEntries={[path]}>
         <AddItemPage />
         <Where />
@@ -48,7 +49,7 @@ describe('AddItemPage', () => {
   it("puts unknown food in the fridge, not in the fallback category's pantry", async () => {
     await renderPage();
     expect(moreButton().textContent).toBe(t.moreWith(`1 Stück, ${messages.locations.fridge}`));
-    await userEvent.type(screen.getByLabelText(t.name), 'Hummus nach Grossmutters Art');
+    await userEvent.type(screen.getByLabelText(t.name), 'Kimchi nach Grossmutters Art');
     expect(moreButton().textContent).toBe(t.moreWith(`1 Stück, ${messages.locations.fridge}`));
   });
 
@@ -89,5 +90,24 @@ describe('AddItemPage', () => {
     await userEvent.type(screen.getByLabelText(t.name), 'Butter');
     await userEvent.click(screen.getByRole('button', { name: t.save }));
     expect(await screen.findByText('/inventory?location=fridge')).toBeDefined();
+  });
+
+  it('keeps cheese from the counter only as long as an open pack (ADR-0038)', async () => {
+    const db = testDb();
+    await renderPage('/inventory/new', db);
+    // Packed food has no choice; cheese, cold cuts and dips do.
+    expect(screen.queryByRole('radio', { name: t.loose })).toBeNull();
+    await userEvent.type(screen.getByLabelText(t.name), 'Mozzarella');
+    await userEvent.click(screen.getByRole('radio', { name: t.loose }));
+    expect(screen.getByText(t.looseHint(3))).toBeDefined();
+    const today = toLocalDate(new Date());
+    expect(screen.getByLabelText<HTMLInputElement>(t.expiry).value).toBe(
+      formatSwissDate(addDays(today, 3)),
+    );
+    await userEvent.click(screen.getByRole('button', { name: t.save }));
+    await screen.findByText(/^\/inventory\?location=fridge$/);
+    const [item] = await db.items.toArray();
+    expect(item?.openedOn).toBe(today);
+    expect(item?.expiresOn).toBe(addDays(today, 3));
   });
 });

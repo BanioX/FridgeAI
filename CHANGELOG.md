@@ -2,6 +2,57 @@
 
 Alle Änderungen an FridgeAI, neueste zuerst. Wird mit `pnpm release` erzeugt (ADR-0017).
 
+## [0.10.0] – 2026-11-08
+
+**Haltbarkeit 1–10, ein ehrliches «Gerettet» mit Belohnung, und «Wissen» statt «Kochen».**
+- **Haltbarkeit 1–10:** Jede Kategorie hat einen Score, 10 hält am längsten. Die Artikelseite zeigt ihn als Ring (heikel, mittel, robust). Der Kühlschrank-Check fragt Robustes mit fernem Datum nicht mehr ab. Neu gibt es Kategorien für Dips, Saucen sowie Tomatenmark & Pesto.
+- **Von der Theke:** Offen gekaufter Käse, Aufschnitt oder Dips halten ab dem Kauf wie eine geöffnete Packung.
+- **Das wirfst du oft weg:** Beim Erfassen kommt ein Tipp, wenn du eine Kategorie oft wegwirfst.
+- **Ehrliches «Gerettet»:** Eine Rettung zählt nur, wenn du sie bestätigst und das Lebensmittel auf der Kippe stand. Danach siehst du den Betrag, das Monatstotal und ein «Wusstest du?». Auf Start wächst «Dein Rettich» mit jeder Rettung bis «Vorbild».
+- **Wissen statt Kochen:** Die Rezepte sind weg. Der neue Tab erklärt die Daten auf der Packung und zeigt Haltbarkeit A–Z.
+
+### Neu
+
+- a Rettich on Start that grows with each rescue this month ([#186](https://github.com/BanioX/FridgeAI/pull/186))
+- reward a confirmed rescue with its value and a food fact ([#185](https://github.com/BanioX/FridgeAI/pull/185))
+- «Wissen» tab – the dates explained and Haltbarkeit A–Z ([#184](https://github.com/BanioX/FridgeAI/pull/184))
+- «gerettet» only when you confirm it, and only on the brink ([#183](https://github.com/BanioX/FridgeAI/pull/183))
+- remove recipes and the Kochen tab ([#182](https://github.com/BanioX/FridgeAI/pull/182))
+- shelf score 1 to 10 with a ring on the item page ([#181](https://github.com/BanioX/FridgeAI/pull/181))
+- «Das wirfst du oft weg» – a tip when adding food you often throw away ([#180](https://github.com/BanioX/FridgeAI/pull/180))
+- «Von der Theke» – loose cheese, cold cuts and dips keep like an open pack ([#179](https://github.com/BanioX/FridgeAI/pull/179))
+- perishability per category, and categories for dips, sauces and tomato paste ([#178](https://github.com/BanioX/FridgeAI/pull/178))
+
+### Dokumentation
+
+- update the handover after v0.9.0 ([#177](https://github.com/BanioX/FridgeAI/pull/177))
+
+## [0.9.0] – 2026-11-08
+
+**Berichte wie ein Kontoauszug, Kurz-Berichte als Quittung, und Rettich mit grossem R.**
+- **Berichtsarten:** Kurz-Berichte als Quittung: Wirkung, Läuft bald ab (1, 3, 7 oder eigene Tage), Weggeworfen, Kühlschrank, Tiefkühler, Vorrat. Der ausführliche Bericht zeigt keine Quittung.
+- **Schwarze Karte mit Ring:** Der ausführliche Bericht beginnt wieder mit der Onyx-Karte, der Rettungsquote als Ring und drei Kacheln.
+- **Zeiträume wie ein Kontoauszug:** Monats- oder Jahresabschluss am letzten Schweizer Bankwerktag oder frei von–bis, immer als TT.MM.JJJJ.
+- **Sprache und Marke:** «Quittung» statt «Bon», «Abfall» statt «Kübel», «Rettich» mit grossem R. Der Claim lautet «Wirf kein Geld in den Abfall.».
+- **Stabilere Tests:** Die Barrierefreiheits-Prüfung wartet, bis Animationen fertig sind.
+
+### Neu
+
+- periods like a bank statement – closings on the last Swiss bank day, or any range ([#175](https://github.com/BanioX/FridgeAI/pull/175))
+- bring back the onyx card with the rescue ring in the detailed report ([#174](https://github.com/BanioX/FridgeAI/pull/174))
+- report kinds – quick receipts and a detailed report without one ([#173](https://github.com/BanioX/FridgeAI/pull/173))
+- «Abfall» instead of «Kübel», the claim is «Wirf kein Geld in den Abfall.» ([#172](https://github.com/BanioX/FridgeAI/pull/172))
+- the brand is «Rettich» with a capital R ([#170](https://github.com/BanioX/FridgeAI/pull/170))
+- page 1 of the PDF as a Rettich receipt ([#168](https://github.com/BanioX/FridgeAI/pull/168))
+- «Quittung» instead of «Bon», with a note on shop names ([#167](https://github.com/BanioX/FridgeAI/pull/167))
+- the PDF report in the app's design language ([#165](https://github.com/BanioX/FridgeAI/pull/165))
+
+### Dokumentation
+
+- update the handover after #170 ([#171](https://github.com/BanioX/FridgeAI/pull/171))
+- a handover note for the next session ([#169](https://github.com/BanioX/FridgeAI/pull/169))
+- StreamUp funding and the name-and-vision question ([#166](https://github.com/BanioX/FridgeAI/pull/166))
+
 ## [0.8.0] – 2026-11-07
 
 **Eins wegwischen, die Quittung gleicht sich selbst ab, und weniger Schulden.**

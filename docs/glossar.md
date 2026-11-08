@@ -6,15 +6,24 @@ Damit Mensch und Maschine dasselbe meinen: Wort in der App (de-CH), Name im Code
 
 | App (de-CH) | Code | Bedeutung | Andere Regionen |
 | --- | --- | --- | --- |
+| **Monatsabschluss**, **Jahresabschluss** | `closingMonth`, `closingYear`, `monthClosingDay` | Berichtszeitraum bis zum letzten Schweizer Bankwerktag des Monats oder Jahres; der nächste beginnt am Tag danach (ADR-0030) | – |
+| **Bankwerktag** | `isSwissBankDay`, `swissBankHolidays` | Montag bis Freitag ohne Bankfeiertage des Schweizer Zahlungsverkehrs (SIC); 24.12. und 31.12. zählen | DE/AT: TARGET2-Kalender, später je Land |
+| **Kurz-Bericht** (Quittung im PDF) | `ReportKind`, `receiptSpec`, `receiptPdf` | Ein PDF im Look einer Quittung zu einem Thema: Wirkung, Läuft bald ab, Weggeworfen, ein Ort. Der ausführliche Bericht zeigt keine Quittung (ADR-0030) | – |
 | **SWELP** | `swelp` | Albans Protokoll-Set «Darf, Tut, Lernt»: Scoped Work, Side Effect, Self Learning Protocols ([`BanioX/swelp`](https://github.com/BanioX/swelp)); in Rettich gelebt in [`docs/swelp/`](./swelp/README.md) | – |
 | **Swelper** (Alban 8.11.2026) | `swelper`, `/swelper`, `.swelper.json` | Albans Schaltzentrale als eigener Rahmen: Trichter, Dispatcher, Stecker, Kontexte; führt SWELP über Agenten aus ([`docs/ideen/swelper.md`](./ideen/swelper.md)) | – |
 | **Quittung** (nicht «Bon», Alban 7.11.2026) | `receipt`, `receipts.import`, `receipts.matchLine` | Kassenzettel eines Einkaufs, als PDF, Screenshot oder Foto | de-DE «Kassenbon», de-AT «Kassabon» oder «Rechnung» |
 | **Abfall** (nicht «Kübel», Alban 8.11.2026) | `wasted` | wohin weggeworfene Lebensmittel gehen; Claim «Wirf kein Geld in den Abfall.» | de-DE auch «Müll», de-CH auch «Kehricht» |
 | **Vorrat** (Tab) | `inventory` | alles, was im Haushalt ist, über alle Lagerorte | – |
+| **Haltbarkeit** 1–10 (heikel 1–4, mittel 5–6, robust 7–10) | `shelfScore`, `perishability`, `needsWatching` | Wie lange eine Kategorie hält, 10 = am längsten; geöffnet zählen die Tage nach dem Öffnen; der Kühlschrank-Check fragt Robustes mit fernem Datum nicht ab (ADR-0038) | – |
+| **Von der Theke** | `soldLoose`, `openedOn` | Offen gekauft (Käse, Aufschnitt, Dips): hält ab Kauf wie eine geöffnete Packung (ADR-0038) | – |
+| **Das wirfst du oft weg** | `products.wasteHabits`, `wasteHabits` | Kategorie mit mindestens zwei Mal «Weggeworfen» in 90 Tagen; beim Erfassen kommt ein Tipp (ADR-0038) | – |
+| **Wissen** (Tab) | `/knowledge`, `shelfGuide` | «Kurz erklärt» und «Haltbarkeit A–Z» aus dem Katalog (ADR-0041) | – |
 | **Lagerort** | `StorageLocation` | `fridge` Kühlschrank, `freezer` Tiefkühler, `pantry` Vorrat, `reserve` Notvorrat | de-DE «Gefrierschrank», «Vorratsschrank» |
 | **Haltbar bis** | `expiresOn` (`LocalDate`, Europe/Zurich) | Kalendertag, an dem etwas abläuft | – |
 | **Mindestens haltbar / Zu verbrauchen** | `DateKind`: `best_before` / `use_by` | MHD darf man prüfen und oft noch essen, Verbrauchsdatum nicht | de-AT «mindestens haltbar bis» |
-| **Gerettet** | `atRisk` + `eaten`/`shared_out` | kurz vor oder nach Ablauf gegessen oder weitergegeben (ADR-0033) | – |
+| **Gerettet** | `rescued`, `canBeRescued`, `isRescue` | gegessen oder weitergegeben und selbst bestätigt «ohne Rettich im Abfall gelandet»; Rettich fragt nur, wenn es auf der Kippe stand (ADR-0039) | – |
+| **Wusstest du?** (Food Fact) | `factFor`, `messages.knowledge.facts` | kurzer Fact nach einer bestätigten Rettung und einmal pro Tag im Tab «Wissen»; Zahlen nur mit Quelle (ADR-0042) | – |
+| **Dein Rettich** (Samen, Keimling, Jungpflanze, Rettich, Vorbild) | `growthOf`, `RettichGrowth` | wächst mit jeder bestätigten Rettung im Monat, ein Blatt pro Rettung; «Vorbild» ab 10 Rettungen; beginnt jeden Monat neu (ADR-0043) | – |
 | **Abschluss** | `OutcomeEvent` | gegessen, weitergegeben oder weggeworfen, mit Menge und Wert | – |
 | **Nachkaufen** | `shopping.*`, `ShoppingListItem` | Einkaufsliste | – |
 | **Haushalt** | `Household` | WG, Paar, Familie; hat eine Währung (ADR-0019) | – |

@@ -57,15 +57,9 @@ export const routes: RouteObject[] = [
         }),
       },
       {
-        path: 'cook',
+        path: 'knowledge',
         lazy: async () => ({
-          Component: (await import('../features/recipes/CookPage')).CookPage,
-        }),
-      },
-      {
-        path: 'recipes/:recipeId',
-        lazy: async () => ({
-          Component: (await import('../features/recipes/RecipePage')).RecipePage,
+          Component: (await import('../features/knowledge/KnowledgePage')).KnowledgePage,
         }),
       },
       {
@@ -109,6 +103,9 @@ export const routes: RouteObject[] = [
       // «Mit eigener KI» was removed on 7.11.2026 (ADR-0012): old links land on «Erfassen».
       { path: 'add/ai', element: <Navigate to="/add" replace /> },
       { path: 'household', element: <Navigate to="/more" replace /> },
+      // Recipes were removed (ADR-0040); old links and home-screen shortcuts land on Start.
+      { path: 'cook', element: <Navigate to="/" replace /> },
+      { path: 'recipes/*', element: <Navigate to="/" replace /> },
       // Demo data and design-system reference: dev and demo builds only (dead code in production).
       // Inline on purpose: the bundler drops the lazy chunks only for a literal condition here.
       ...(import.meta.env.DEV || import.meta.env.MODE === 'demo'

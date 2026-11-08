@@ -40,8 +40,8 @@ describe('reports.build (ADR-0030)', () => {
     await add('Skyr Natur', '2026-11-08', 185);
     await add('Vollmilch', '2026-11-20', 125);
     const bread = await add('Ruchbrot', '2026-11-06', 380);
-    // Eaten the day before it expires: a rescue (ADR-0033).
-    const cheese = await add('Gruyère', '2026-11-08', 600);
+    // Eaten on its last day and confirmed: a rescue (ADR-0033, ADR-0039).
+    const cheese = await add('Gruyère', '2026-11-07', 600);
     await inventory['inventory.recordOutcome']({
       commandId: ids.next(),
       householdId,
@@ -56,6 +56,7 @@ describe('reports.build (ADR-0030)', () => {
       itemId: cheese,
       outcome: 'eaten',
       quantity: 1,
+      rescued: true,
     });
     await inventory['receipts.import']({
       commandId: ids.next(),

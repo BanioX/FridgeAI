@@ -43,3 +43,19 @@ Ideen aus der Arbeit an der Apple-Designsprache (ADR-0021). Noch nicht beschloss
 - **Wegwischen auf Einkaufsliste und Kühlschrank-Check:** Dieselbe Geste zum Abhaken. Aufwand S.
 - **Braucht:** nichts Neues, alles auf dem Gerät.
 
+
+## Berichte weiterdenken (nach den Berichtsarten, 8.11.2026)
+
+- **Quittung als Bild teilen:** Neben dem PDF ein PNG im Hochformat, das direkt in WhatsApp oder Instagram-Stories passt. Mehr Reichweite für Rettich ohne Werbung. Aufwand S (Canvas auf dem Gerät), Kosten keine.
+- **Sonntags-Quittung:** Einmal pro Woche ein Hinweis «Deine Woche: CHF 12.40 gerettet», ein Tipp öffnet die Wirkungs-Quittung. Braucht Benachrichtigungen ([`benachrichtigungen.md`](benachrichtigungen.md)). Aufwand M.
+- **«Läuft bald ab» als Kochplan:** Auf der Quittung pro Artikel ein passendes Rezept aus «Kochen». Aufwand S, alles auf dem Gerät.
+- **Notvorrat als eigene Quittung:** Heute nur im ausführlichen Bericht. Mit Ablaufdaten wichtig für die Vorratsliste des Bundes. Aufwand S.
+- **Mehrere Orte zusammen:** Kühlschrank und Tiefkühler auf einer Quittung, mit Zwischentotal pro Ort. Aufwand S.
+- **Braucht:** nichts Neues; kein Datenfluss nach aussen.
+
+## Verlauf mit Abschlüssen (8.11.2026)
+
+- **Idee:** Der Verlauf unter «Mehr» hat noch «Dieser Monat / Letzte 3 Monate / Dieses Jahr». Er könnte dieselbe Auswahl wie die Berichte bekommen: Monats- und Jahresabschluss per letztem Bankwerktag oder frei von–bis.
+- **Aufwand:** S. `PeriodPicker` ist wiederverwendbar.
+- **Offen:** Alban entscheidet, ob der Verlauf so «bankig» sein soll oder einfach bleibt.
+- **Später, DACH:** Bankwerktage je Land, für Deutschland und Österreich etwa der TARGET2-Kalender. Heute gilt der Schweizer SIC-Kalender für alle.

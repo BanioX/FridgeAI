@@ -1,5 +1,4 @@
-import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from './test';
+import { AxeBuilder, expect, test } from './test';
 import { readFile } from 'node:fs/promises';
 
 test('exports the data, deletes everything after asking and imports the export again', async ({

@@ -171,6 +171,8 @@ Person ─ Haushalt ─ Haus ─ Quartier ─ Gemeinde ─ Kollektiv/Organisatio
 
 ## 3. Kochen & Verwerten: Rezepte
 
+> **Stand 8.11.2026:** Rezepte und der Tab «Kochen» sind entfernt ([ADR-0040](adr/0040-no-recipes.md)). Die Use Cases bleiben als spätere Möglichkeit stehen.
+
 | # | Use Case | Nutzen | Phase |
 | --- | --- | --- | --- |
 | R-01 | 3 «Rette-es»-Vorschläge aus bald ablaufenden Artikeln | Waste wird zu Znacht | MVP |

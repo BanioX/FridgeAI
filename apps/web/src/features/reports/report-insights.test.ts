@@ -25,6 +25,7 @@ const empty: Report = {
     savedShare: null,
     sharedRappen: rappen(0),
     sharedCount: 0,
+    wastedItems: [],
     months: [],
     topWasted: [],
     reasons: [],

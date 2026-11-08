@@ -33,6 +33,8 @@ interface Spec {
   reserve?: number;
   /** Days the food keeps after opening. */
   opened?: number;
+  /** Also sold loose at the counter; then it keeps like an open pack. */
+  loose?: boolean;
   /** Unit, container, pack sizes and fractions (default: pieces in quarters). */
   portion?: Portioning;
   /** Price of a typical pack in Rappen; weight of a typical pack in grams. */
@@ -60,6 +62,7 @@ function def(spec: Spec): Category {
       ...(spec.reserve === undefined ? {} : { reserve: spec.reserve }),
     },
     ...(spec.opened === undefined ? {} : { afterOpeningDays: spec.opened }),
+    ...(spec.loose === true ? { soldLoose: true } : {}),
     avgPriceRappen: rappen(spec.price),
     ...(spec.grams === undefined ? {} : { avgWeightGrams: spec.grams }),
     ...(spec.portion === undefined ? {} : { portioning: spec.portion }),
@@ -168,6 +171,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'dairy-cheese-hard',
+    loose: true,
     portion: { unit: 'g', splits: [3, 4] },
     opened: 21,
     de: 'Hartkäse',
@@ -196,6 +200,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'dairy-cheese-soft',
+    loose: true,
     portion: { unit: 'pcs', splits: [4] },
     opened: 3,
     de: 'Quark & Frischkäse',
@@ -313,6 +318,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'meat-coldcuts',
+    loose: true,
     portion: { unit: 'g', splits: [4] },
     opened: 3,
     de: 'Aufschnitt',
@@ -341,6 +347,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'meat-sausage',
+    loose: true,
     portion: { unit: 'pcs', splits: [2] },
     opened: 3,
     de: 'Würste',
@@ -396,6 +403,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'fish-smoked-salmon',
+    loose: true,
     portion: { unit: 'g', splits: [4] },
     opened: 2,
     de: 'Rauchlachs',
@@ -889,6 +897,53 @@ export const CATEGORIES: readonly Category[] = [
     ],
   }),
   def({
+    id: 'pantry-sauces',
+    portion: { unit: 'g', container: 'jar', splits: [4] },
+    opened: 30,
+    de: 'Saucen & Dressings',
+    emoji: '🫙',
+    group: 'pantry',
+    dateKind: 'best_before',
+    location: 'pantry',
+    shelf: [null, null, 365],
+    price: 280,
+    grams: 300,
+    owner: 'shared',
+    keywords: [
+      'mayonnaise',
+      'ketchup',
+      'senf',
+      'salatsauce',
+      'dressing',
+      'currypaste',
+      'aioli',
+      'grillsauce',
+    ],
+    tips: [
+      'Nach dem Öffnen in den Kühlschrank und das Datum merken.',
+      'Selten gebraucht? Die kleine Flasche oder die Tube ist oft günstiger als der Rest im Abfall.',
+    ],
+  }),
+  def({
+    id: 'pantry-tomato-paste',
+    portion: { unit: 'g', container: 'can', splits: [4] },
+    opened: 5,
+    de: 'Tomatenmark & Pesto',
+    emoji: '🍅',
+    group: 'pantry',
+    dateKind: 'best_before',
+    location: 'pantry',
+    shelf: [null, 180, 730],
+    price: 150,
+    grams: 140,
+    owner: 'shared',
+    keywords: ['tomatenmark', 'tomatenpüree', 'tomatenkonzentrat', 'doppelkonzentrat', 'pesto'],
+    tips: [
+      'Offen nur rund fünf Tage: Tube statt Dose oder Glas, sie hält offen Wochen.',
+      'Reste löffelweise im Eiswürfelbehälter einfrieren, Pesto mit etwas Öl bedeckt.',
+    ],
+  }),
+  def({
     id: 'pantry-cereal',
     portion: { unit: 'g', splits: [4] },
     opened: 90,
@@ -1200,6 +1255,27 @@ export const CATEGORIES: readonly Category[] = [
     tips: [
       'Fertiggerichte für die ersten Tage nach dem Einkauf einplanen, sie halten am kürzesten.',
       'Ungeöffnet kühl lagern, geöffnet am gleichen Tag essen.',
+    ],
+  }),
+  def({
+    id: 'prepared-dips',
+    loose: true,
+    portion: { unit: 'g', container: 'cup', splits: [4] },
+    opened: 3,
+    de: 'Dips & Aufstriche',
+    emoji: '🥙',
+    group: 'prepared',
+    dateKind: 'best_before',
+    location: 'fridge',
+    shelf: [10, 60, null],
+    price: 295,
+    grams: 200,
+    owner: 'buyer',
+    keywords: ['hummus', 'guacamole', 'tzatziki', 'dip', 'aufstrich', 'tapenade', 'baba ganoush'],
+    tips: [
+      'Offen hält ein Dip nur wenige Tage: lieber die kleine Packung kaufen.',
+      'Hummus und Pesto lassen sich portionsweise einfrieren, Guacamole mit etwas Zitrone.',
+      'Mit einem sauberen Löffel herausnehmen, nie direkt mit dem Brot.',
     ],
   }),
   def({

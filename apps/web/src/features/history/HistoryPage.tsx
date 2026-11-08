@@ -30,9 +30,9 @@ interface Edit {
 type Mode = { eventId: Id; kind: 'remove' } | ({ eventId: Id; kind: 'edit' } & Edit);
 
 const t = messages.history;
-const periodOptions = (Object.keys(messages.reports.periods) as Period[]).map((value) => ({
+const periodOptions = (Object.keys(messages.history.periods) as Period[]).map((value) => ({
   value,
-  label: messages.reports.periods[value],
+  label: messages.history.periods[value],
 }));
 const TONES = { eaten: 'text-basil-800', shared_out: 'text-basil-800', wasted: 'text-today' };
 

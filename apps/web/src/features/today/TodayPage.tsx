@@ -15,7 +15,6 @@ import { InventoryItemRow } from '../inventory/InventoryItemRow';
 import { SWIPE_HINT_ID, swipeLabel, useSwipeEat } from '../inventory/swipe-eat';
 import { SwipeAction } from '../../ui/SwipeAction';
 import { checkDue, readLastCheck } from '../check/check-state';
-import { RecipeIdeas } from '../recipes/RecipeIdeas';
 import { ImpactCard } from './ImpactCard';
 import { URGENT_LIMIT, urgentItems } from './urgent-items';
 
@@ -149,16 +148,6 @@ export function TodayPage() {
           </Link>
         ) : null}
       </section>
-
-      <RecipeIdeas
-        limit={1}
-        title={messages.recipes.rescueTitle}
-        footer={
-          <Link to="/cook" className={MORE_LINK}>
-            {messages.recipes.moreRecipes}
-          </Link>
-        }
-      />
 
       <ImpactCard from={startOfMonth(today)} to={today} />
       {swipe.toast}

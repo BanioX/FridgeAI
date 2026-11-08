@@ -35,7 +35,7 @@ describe('AppShell', () => {
       messages.nav.start,
       messages.nav.inventory,
       messages.nav.add,
-      messages.nav.cook,
+      messages.nav.knowledge,
       messages.nav.more,
     ]);
     expect(
@@ -84,14 +84,6 @@ describe('AppShell', () => {
     expect(
       within(nav).getByRole('link', { name: messages.nav.inventory }).hasAttribute('aria-current'),
     ).toBe(false);
-  });
-
-  it('keeps «Kochen» highlighted on a recipe', async () => {
-    await renderAt('/recipes/gibt-es-nicht');
-    const nav = screen.getByRole('navigation', { name: messages.navLabel });
-    expect(
-      within(nav).getByRole('link', { name: messages.nav.cook }).getAttribute('aria-current'),
-    ).toBe('page');
   });
 
   it('sends the old addresses to the new places', async () => {

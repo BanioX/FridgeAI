@@ -48,3 +48,8 @@ Alban, nach den Vorschaubildern: «Ich brauche 5 Menüs. ＋ ist in der Mitte, S
 - «Start» behält die drei Rezeptideen als Kurzfassung.
 - **«Alle Rezepte»** darunter: die ganze Sammlung, zuerst was mit dem Vorrat geht (am wenigsten fehlt), dann was mehr rettet, dann das Schnellste. Ein Tipp filtert nach Schnell, Vegetarisch, Vegan oder Eiweissreich. Dafür gibt es die Abfrage `recipes.list` in der Schnittstelle.
 
+## Nachtrag (8.11.2026)
+
+«Kochen» fällt mit allen Rezepten weg ([ADR-0040](0040-no-recipes.md)). Die Leiste ist vorübergehend Start · Vorrat · ＋ · Mehr; der Platz geht an «Wissen».
+
+Seit [ADR-0041](0041-knowledge-tab.md) steht dort «Wissen»: Start · Vorrat · ＋ · Wissen · Mehr.

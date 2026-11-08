@@ -1,5 +1,4 @@
-import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from './test';
+import { AxeBuilder, expect, test } from './test';
 
 test('adds an item: the name suggests category, amount and unit', async ({ page }) => {
   await page.goto('/inventory');

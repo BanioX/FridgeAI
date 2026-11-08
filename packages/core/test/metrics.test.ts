@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { localDate } from '../src/dates';
-import { isAtRisk, startOfMonth, summarizeImpact } from '../src/metrics';
+import { canBeRescued, isAtRisk, startOfMonth, summarizeImpact } from '../src/metrics';
 import type { OutcomeEvent } from '../src/model/inventory';
 import { IsoDateTimeSchema } from '../src/model/primitives';
 import { rappen } from '../src/money';
@@ -14,6 +14,7 @@ interface OutcomeInput {
   grams?: number;
   valueEstimated?: boolean;
   atRisk?: boolean;
+  rescued?: boolean;
 }
 const outcome = ({
   at,
@@ -21,10 +22,12 @@ const outcome = ({
   valueRappen = 100,
   grams,
   atRisk = true,
+  rescued = atRisk,
   ...rest
 }: OutcomeInput): Outcome => ({
   valueEstimated: false,
   atRisk,
+  ...(rescued && rest.outcome !== 'wasted' ? { rescued: true } : {}),
   ...rest,
   at: IsoDateTimeSchema.parse(at),
   valueRappen: rappen(valueRappen),
@@ -58,9 +61,9 @@ describe('summarizeImpact', () => {
           grams: 100,
           valueEstimated: true,
         }),
-        // Eaten while still fresh, or an entry from before the rule: consumption, no rescue.
+        // Eaten while still fresh, or knapp but not confirmed as a rescue (ADR-0039): no rescue.
         outcome({ outcome: 'eaten', at: '2026-11-06T12:00:00.000Z', atRisk: false }),
-        { ...outcome({ outcome: 'eaten', at: '2026-11-06T12:00:00.000Z' }), atRisk: undefined },
+        outcome({ outcome: 'eaten', at: '2026-11-06T12:00:00.000Z', rescued: false }),
       ],
       from,
       to,
@@ -132,5 +135,39 @@ describe('startOfMonth', () => {
   it('returns the first day of the month', () => {
     expect(startOfMonth(localDate('2026-11-06'))).toBe('2026-11-01');
     expect(startOfMonth(localDate('2027-02-28'))).toBe('2027-02-01');
+  });
+});
+
+describe('canBeRescued (ADR-0039)', () => {
+  const today = localDate('2026-11-08');
+  const item = (
+    expiresOn: string,
+    purchasedOn: string,
+    expiryKind: 'best_before' | 'use_by' = 'best_before',
+  ) => ({
+    expiresOn: localDate(expiresOn),
+    expiryKind,
+    location: 'fridge' as const,
+    purchasedAt: `${purchasedOn}T09:00:00.000Z`,
+  });
+
+  it('never offers it for bread eaten before its date: eating is not rescuing', () => {
+    // Bought Saturday, good until Monday, eaten on Sunday.
+    expect(canBeRescued(item('2026-11-09', '2026-11-07'), today)).toBe(false);
+  });
+
+  it('offers it on the last day and after a best-before date', () => {
+    expect(canBeRescued(item('2026-11-08', '2026-11-06'), today)).toBe(true);
+    expect(canBeRescued(item('2026-11-05', '2026-11-01'), today)).toBe(true);
+  });
+
+  it('offers it in the last days only for food that kept longer than a week', () => {
+    expect(canBeRescued(item('2026-11-10', '2026-10-27'), today)).toBe(true);
+    expect(canBeRescued(item('2026-11-10', '2026-11-04'), today)).toBe(false);
+    expect(canBeRescued(item('2026-11-30', '2026-10-27'), today)).toBe(false);
+  });
+
+  it('never after a use-by date: that is no food any more', () => {
+    expect(canBeRescued(item('2026-11-07', '2026-11-05', 'use_by'), today)).toBe(false);
   });
 });

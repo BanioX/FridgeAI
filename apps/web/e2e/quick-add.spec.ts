@@ -1,5 +1,4 @@
-import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from './test';
+import { AxeBuilder, expect, test } from './test';
 
 test('adds a usual product with one tap and takes it back', async ({ page }) => {
   // Quick add lives on the Erfassen hub, not in the add form.

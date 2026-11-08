@@ -2,7 +2,7 @@
 
 Stand 8.11.2026, dritte Fassung. Vorschlag von Claude als Architekt, **Entscheid über den Start offen** (Alban). **Name: Swelper** (Alban, 8.11.2026; technisch `swelper`), der Rahmen, der Albans [SWELP](https://github.com/BanioX/swelp) über Agenten hinweg ausführt. Der Swelper ist **kein Teil von Rettich**, sondern ein eigener Rahmen in einem eigenen Repo: ein Programm, mit dem du Ideen hineinlegst, Aufgaben nach Kontext geclustert siehst, beim Entwickeln eine Aufgabe auswählst oder eine neue hineinlegst, und ein Dirigent sie an ansteckbare Fach-Agenten verteilt. Rettich ist der erste Kontext, nicht der einzige.
 
-**Wie dieser Vorschlag entstand:** vier Recherche-Agenten (Claude-Code-Stack, externe Frameworks, Repo-Stand, Nebenläufigkeit und Kosten), drei konkurrierende Entwürfe, drei Juroren, 13 Skeptiker, die jede Produkt-Behauptung gegen die Doku prüften. Alle drei Juroren wählten den Stufen-Entwurf. Die Recherche selbst hat Albans 5-Stunden-Fenster erreicht (26 Agenten, rund 4,2 Mio. Tokens), siehe L-20 im [Lernbuch](../swelp/lernbuch.md).
+**Wie dieser Vorschlag entstand:** vier Recherche-Agenten (Claude-Code-Stack, externe Frameworks, Repo-Stand, Nebenläufigkeit und Kosten), drei konkurrierende Entwürfe, drei Juroren, 13 Skeptiker, die jede Produkt-Behauptung gegen die Doku prüften. Alle drei Juroren wählten den Stufen-Entwurf. Die Recherche selbst hat Albans 5-Stunden-Fenster erreicht (26 Agenten, rund 4,2 Mio. Tokens), siehe L-21 im [Lernbuch](../swelp/lernbuch.md).
 
 **Albans Antworten vom 8.11.2026:** Grokbot meint xAI's Grok Bot. Das Budget empfiehlt Claude. GitHub Pro ist bezahlt. Der Takt war eine Idee, keine Vorgabe. Wichtig: ein eigener Rahmen ausserhalb von Rettich, kontextbezogen und geclustert, in dem er beim Entwickeln Aufgaben auswählt oder hineinlegt.
 
@@ -198,7 +198,7 @@ Du hast mich um eine Empfehlung gebeten. Sie beruht auf den geprüften Fakten un
 3. **Modellmix:** Opus nur für den Dispatcher. Sonnet mit `effort: medium` für Umsetzung und Review. Haiku für Bericht und Finanz-Rechnen. `CLAUDE_CODE_SUBAGENT_MODEL=sonnet` als Standard. Fable nur, wenn du es rufst: Es zieht aus demselben Wochenlimit, schneller, mit eigener Kappe.
 4. **Autonome Läufe ausserhalb deiner Arbeitszeit**, zum Beispiel 06:07 und 20:37 Uhr, damit das 5-Stunden-Fenster am Morgen dir gehört. Darum ist der Takt nicht mehr 8 bis 17 Uhr.
 5. **Messen statt schätzen:** `/usage` vor und nach einem Autonomie-Tag, `metrics.json` pro Lauf. Nach zwei Wochen passen wir das Viertel an.
-6. **Workflows mit vielen Agenten** (Ultracode) nur interaktiv, nur unter 50 % Wochenbalken, höchstens zehn Agenten (L-20).
+6. **Workflows mit vielen Agenten** (Ultracode) nur interaktiv, nur unter 50 % Wochenbalken, höchstens zehn Agenten (L-21).
 
 ## Kosten und Limits, geprüft
 

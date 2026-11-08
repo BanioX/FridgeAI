@@ -1,5 +1,4 @@
-import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from './test';
+import { AxeBuilder, expect, test } from './test';
 
 // Open Food Facts is never called for real in tests.
 const SEARCH = 'https://world.openfoodfacts.org/cgi/search.pl**';

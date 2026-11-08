@@ -1,6 +1,6 @@
 # ADR-0033: «Gerettet» heisst kurz vor Ablauf gegessen
 
-- **Status:** angenommen
+- **Status:** angenommen; die Zählregel ersetzt [ADR-0039](0039-rescue-confirmed.md) (gerettet nur auf Bestätigung)
 - **Datum:** 2026-11-07
 
 ## Kontext

@@ -1,5 +1,8 @@
 import {
+  canBeRescued,
   categoryById,
+  perishabilityOf,
+  shelfScore,
   expiryStatus,
   fallbackCategory,
   isFreezable,
@@ -23,6 +26,7 @@ import { PriceMemoryNote } from '../receipts/PriceMemoryNote';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { ChoiceChips } from '../../ui/ChoiceChips';
+import { ScoreRing } from '../../ui/ScoreRing';
 import { StatusChip } from '../../ui/StatusChip';
 import { describeDate } from '../../ui/date-text';
 import { expiryBadge } from '../../ui/expiry-badge';
@@ -39,6 +43,10 @@ import { useProductImage } from './use-product-image';
 
 const t = messages.itemDetail;
 const outcomeOptions = OutcomeSchema.options.map((value) => ({ value, label: t.outcomes[value] }));
+const rescueOptions = [
+  { value: 'yes' as const, label: messages.itemDetail.rescueYes },
+  { value: 'no' as const, label: messages.itemDetail.rescueNo },
+];
 const reasonOptions = WasteReasonSchema.options.map((value) => ({
   value,
   label: messages.wasteReasons[value],
@@ -68,6 +76,8 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
   const [otherText, setOtherText] = useState('');
   const [reason, setReason] = useState<WasteReason | null>(null);
   const [recipient, setRecipient] = useState<ShareRecipient | null>(null);
+  /** «Ohne Rettich im Abfall gelandet?» (ADR-0039): only a «Ja» counts as rescued. */
+  const [rescued, setRescued] = useState<'yes' | 'no'>('no');
   const [status, setStatus] = useState('');
   /** The partial outcome just saved: it can be undone until the next action. */
   const [undoable, setUndoable] = useState<Id | null>(null);
@@ -112,6 +122,11 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
     item.location,
   );
   const canMove = item.location === 'freezer' || isFreezable(category);
+  // Haltbarkeit 1 to 10 (ADR-0038): an open pack scores by its days after opening.
+  const score = shelfScore(category, { opened: item.openedOn !== undefined });
+  const level = perishabilityOf(score);
+  // «Gerettet» only when it really was on the brink, never for thrown away food (ADR-0039).
+  const rescuable = outcome !== 'wasted' && canBeRescued(item, today);
 
   async function run(action: () => Promise<string | null>) {
     if (busy) {
@@ -145,6 +160,7 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
         quantity,
         ...(outcome === 'wasted' && reason !== null ? { wasteReason: reason } : {}),
         ...(outcome === 'shared_out' && recipient !== null ? { sharedWith: recipient } : {}),
+        ...(rescuable && rescued === 'yes' ? { rescued: true } : {}),
       });
       if (result.remainingQuantity === 0) {
         const closed: ClosedItem = {
@@ -152,6 +168,12 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
           eventId: result.eventId,
           name: item.name,
           outcome,
+          ...(result.rescued
+            ? {
+                rescuedRappen: result.valueRappen,
+                ...(result.valueEstimated ? { estimated: true as const } : {}),
+              }
+            : {}),
         };
         void navigate(`/inventory?location=${item.location}`, { state: { closed } });
         return null;
@@ -262,6 +284,21 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
           </div>
           <StatusChip tone={badge.tone}>{badge.label}</StatusChip>
         </div>
+        <div className="mt-4 flex items-center gap-3 border-t border-line pt-4">
+          <ScoreRing
+            score={score}
+            level={level}
+            label={t.scoreLabel(score, t.perishability[level])}
+          />
+          <div>
+            <p className="font-semibold">
+              {t.score(score)} · {t.perishability[level]}
+            </p>
+            {item.openedOn === undefined && category.afterOpeningDays !== undefined ? (
+              <p className="text-sm text-ink-muted">{t.keepsOpen(category.afterOpeningDays)}</p>
+            ) : null}
+          </div>
+        </div>
       </Card>
 
       <OtherPacks item={item} />
@@ -313,6 +350,15 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
         </div>
         {outcome === 'wasted' ? (
           <ChoiceChips legend={t.why} options={reasonOptions} value={reason} onChange={setReason} />
+        ) : null}
+        {rescuable ? (
+          <ChoiceChips
+            legend={t.rescueQuestion}
+            options={rescueOptions}
+            value={rescued}
+            onChange={setRescued}
+            segmented
+          />
         ) : null}
         {outcome === 'shared_out' ? (
           <ChoiceChips

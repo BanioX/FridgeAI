@@ -8,6 +8,7 @@ import { rappen } from '../money';
 import { summarizePrices, type PriceObservation } from '../prices/price-memory';
 import { buildReport, type ReportItem, type ReportOutcome } from '../reports/report';
 import { itemValue } from '../value';
+import { WASTE_HABIT_DAYS, wasteHabits } from '../waste-habits';
 import type { AppContext, UseCase } from './command';
 
 /** Additions older than this do not count: habits change, and old data should fade (ADR-0020). */
@@ -164,9 +165,13 @@ export function createInsightQueries({ storage, clock }: AppContext) {
       });
     const closed: ReportOutcome[] = outcomes.map((outcome) => {
       const item = itemById.get(outcome.itemId);
+      const category = item === undefined ? fallbackCategory() : categoryOf(item.productId);
       return {
         ...outcome,
-        categoryId: (item === undefined ? fallbackCategory() : categoryOf(item.productId)).id,
+        categoryId: category.id,
+        name:
+          (item === undefined ? undefined : productById.get(item.productId)?.name) ??
+          category.name.de,
       };
     });
     const purchases = receipts
@@ -179,5 +184,37 @@ export function createInsightQueries({ storage, clock }: AppContext) {
     return buildReport({ today: clock.today(), from, to, items, outcomes: closed, purchases });
   };
 
-  return { 'products.frequent': frequent, 'prices.memory': prices, 'reports.build': report };
+  /** `products.wasteHabits` (ADR-0038): categories thrown away at least twice in 90 days. */
+  const habits: UseCase<'products.wasteHabits'> = async (raw) => {
+    const input = CONTRACT_V1['products.wasteHabits'].input.parse(raw);
+    const [items, products, outcomes] = await Promise.all([
+      storage.items.ofHousehold(input.householdId),
+      storage.products.ofHousehold(input.householdId),
+      storage.outcomes.ofHousehold(input.householdId),
+    ]);
+    const productById = new Map<string, (typeof products)[number]>(
+      products.map((product) => [product.id, product]),
+    );
+    const itemById = new Map<string, (typeof items)[number]>(items.map((item) => [item.id, item]));
+    const since = new Date(Date.parse(clock.now()) - WASTE_HABIT_DAYS * 86_400_000).toISOString();
+    return {
+      habits: wasteHabits({
+        outcomes,
+        since,
+        itemInfo: (itemId) => {
+          const product = productById.get(itemById.get(itemId)?.productId ?? '');
+          return product === undefined
+            ? undefined
+            : { name: product.name, categoryId: product.categoryId };
+        },
+      }),
+    };
+  };
+
+  return {
+    'products.frequent': frequent,
+    'products.wasteHabits': habits,
+    'prices.memory': prices,
+    'reports.build': report,
+  };
 }

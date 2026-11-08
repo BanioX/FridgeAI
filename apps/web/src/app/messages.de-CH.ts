@@ -5,7 +5,7 @@ export const messages = {
     start: 'Start',
     inventory: 'Vorrat',
     add: 'Erfassen',
-    cook: 'Kochen',
+    knowledge: 'Wissen',
     more: 'Mehr',
   },
   pages: {
@@ -14,7 +14,7 @@ export const messages = {
     add: 'Erfassen',
     receipt: 'Quittung hochladen',
     shopping: 'Nachkaufen',
-    cook: 'Kochen',
+    knowledge: 'Wissen',
     more: 'Mehr',
     history: 'Verlauf',
     data: 'Daten und Datenschutz',
@@ -85,6 +85,21 @@ export const messages = {
       'Wirf kein Geld in den Abfall: Erfasse, was du zu Hause hast, und Rettich sagt dir, was du heute retten solltest.',
     firstItem: 'Ersten Artikel erfassen',
     impactTitle: 'Deine Wirkung diesen Monat',
+    growth: {
+      title: 'Dein Rettich',
+      stages: {
+        seed: 'Samen',
+        sprout: 'Keimling',
+        young: 'Jungpflanze',
+        grown: 'Rettich',
+        model: 'Vorbild',
+      },
+      rescues: (count: number) =>
+        count === 1 ? '1 Rettung diesen Monat' : `${String(count)} Rettungen diesen Monat`,
+      next: (missing: number, stage: string) => `noch ${String(missing)} bis ${stage}`,
+      label: (stage: string, leaves: number) =>
+        `Dein Rettich: ${stage}, ${leaves === 1 ? '1 Blatt' : `${String(leaves)} Blätter`}`,
+    },
     saved: 'Gerettet',
     wasted: 'Weggeworfen',
     savedShare: (percent: number) => `${String(percent)} % gerettet`,
@@ -124,72 +139,6 @@ export const messages = {
     toToday: 'Zum Start',
     failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
   },
-  recipes: {
-    moreRecipes: 'Mehr Rezepte',
-    rescueTitle: 'Rette heute',
-    filterLegend: 'Rezepte zeigen',
-    listLabel: 'Rezepte',
-    filters: {
-      rescue: 'Retten',
-      feierabend: 'Feierabend',
-      all: 'Alle',
-    },
-    empty: {
-      rescue: 'Gerade läuft nichts bald ab. Schau bei «Alle» rein.',
-      feierabend:
-        'Für den Feierabend (höchstens 15 Minuten, nichts einkaufen) fehlt dir gerade bei jedem Rezept noch etwas. Schau bei «Alle» rein.',
-      all: 'Gerade gibt es keine Rezepte.',
-    },
-    listDetail: (minutes: number, missing: number, rescues: string) =>
-      [
-        `${String(minutes)} Min.`,
-        missing === 0
-          ? 'alles da'
-          : missing === 1
-            ? '1 Zutat fehlt'
-            : `${String(missing)} Zutaten fehlen`,
-        rescues === '' ? undefined : `rettet ${rescues}`,
-      ]
-        .filter(Boolean)
-        .join(' · '),
-    rescues: (food: string, minutes: number, missing: number) =>
-      `Rettet ${food} · ${String(minutes)} Min.${missing === 0 ? ' · alles da' : ` · ${String(missing)} fehlt`}`,
-    notFound: 'Dieses Rezept gibt es nicht (mehr).',
-    minutes: (minutes: number) => `${String(minutes)} Min.`,
-    servings: (servings: number) =>
-      servings === 1 ? '1 Portion' : `${String(servings)} Portionen`,
-    ingredients: 'Zutaten',
-    atHome: (food: string) => `Da: ${food}`,
-    staple: 'Grundvorrat',
-    optional: 'Wenn du es hast',
-    missing: 'Fehlt',
-    toList: (count: number) =>
-      count === 1 ? 'Fehlende Zutat nachkaufen' : `${String(count)} fehlende Zutaten nachkaufen`,
-    onList: (count: number) =>
-      count === 1
-        ? '1 Zutat steht bei «Nachkaufen».'
-        : `${String(count)} Zutaten stehen bei «Nachkaufen».`,
-    steps: 'So geht’s',
-    cooked: {
-      title: 'Gekocht?',
-      text: 'Buche ab, was du dafür gebraucht hast. So stimmt dein Vorrat.',
-      start: 'Zutaten abbuchen',
-      all: 'Alles',
-      half: 'Halb',
-      none: 'Nichts',
-      book: 'Abbuchen',
-      cancel: 'Abbrechen',
-      booked: (count: number) =>
-        count === 0
-          ? 'Nichts abgebucht.'
-          : count === 1
-            ? '1 Zutat als gegessen abgebucht.'
-            : `${String(count)} Zutaten als gegessen abgebucht.`,
-      undone: 'Rückgängig gemacht, alles ist wieder im Vorrat.',
-      failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
-    },
-    failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
-  },
   inventory: {
     tabsLabel: 'Lagerorte',
     empty: 'Hier liegt noch nichts.',
@@ -201,6 +150,10 @@ export const messages = {
       wasted: (name: string) => `${name}: als weggeworfen gespeichert.`,
       shared_out: (name: string) => `${name}: als weitergegeben gespeichert.`,
     },
+    /** After a confirmed rescue (ADR-0042): factual, no «Danke» (Alban, 8.11.2026). */
+    rescued: (name: string, value: string, estimated: boolean) =>
+      `Gerettet: ${name}, ${estimated ? 'etwa ' : ''}${value}.`,
+    monthSaved: (value: string) => `Diesen Monat gerettet: ${value}`,
     deleted: (name: string) => `${name} gelöscht.`,
     undo: 'Rückgängig',
     rebuy: 'Nachkaufen',
@@ -234,6 +187,17 @@ export const messages = {
     more: 'Mehr Angaben',
     moreWith: (summary: string) => `Mehr Angaben · ${summary}`,
     location: 'Wo lagerst du es?',
+    /** «Das wirfst du oft weg» (ADR-0038): from the household's own history, on the device. */
+    habit: (times: number, names: readonly string[]) =>
+      `${names.slice(0, 3).join(', ')}: in den letzten 3 Monaten ${String(times)}× weggeworfen.`,
+    /** Packed or loose from the counter (ADR-0038). */
+    bought: 'Wie gekauft?',
+    packed: 'Verpackt',
+    loose: 'Von der Theke',
+    looseHint: (days: number) =>
+      days === 1
+        ? 'Offen gekauft hält es etwa 1 Tag. Das Datum ist angepasst.'
+        : `Offen gekauft hält es etwa ${String(days)} Tage. Das Datum ist angepasst.`,
     amount: 'Menge',
     unit: 'Einheit',
     amountInvalid: 'Bitte eine Menge über 0 angeben, z. B. 1.5',
@@ -283,6 +247,13 @@ export const messages = {
     box: 'Schachtel',
   },
   itemDetail: {
+    /** How quickly it spoils (ADR-0038). */
+    perishability: { high: 'heikel', medium: 'mittel', low: 'robust' },
+    /** Haltbarkeit 1 to 10, 10 = keeps longest (Alban, 8.11.2026). */
+    score: (score: number) => `Haltbarkeit ${String(score)}/10`,
+    scoreLabel: (score: number, level: string) => `Haltbarkeit ${String(score)} von 10, ${level}`,
+    keepsOpen: (days: number) =>
+      days === 1 ? 'Offen etwa 1 Tag haltbar' : `Offen etwa ${String(days)} Tage haltbar`,
     back: 'Zurück zum Vorrat',
     gone: 'Dieser Artikel ist nicht mehr im Vorrat.',
     bestBefore: 'Mindestens haltbar bis',
@@ -293,6 +264,10 @@ export const messages = {
     otherPacksEarlier: 'Eine andere Packung läuft früher ab. Die solltest du zuerst essen.',
     whatHappened: 'Was ist damit passiert?',
     outcomes: { eaten: 'Gegessen', wasted: 'Weggeworfen', shared_out: 'Weitergegeben' },
+    /** Only a confirmed rescue counts as «gerettet» (ADR-0039). */
+    rescueQuestion: 'Ohne Rettich im Abfall gelandet?',
+    rescueYes: 'Ja, gerettet',
+    rescueNo: 'Nein',
     howMuch: 'Wie viel?',
     all: 'alles',
     otherAmount: (unit: string) => `Andere Menge (${unit})`,
@@ -404,6 +379,69 @@ export const messages = {
     toInventory: 'In den Vorrat legen',
     failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
   },
+  /** «Wissen» (ADR-0041): what keeps how long, and how it stays good longer. */
+  knowledge: {
+    intro: 'Was wie lange hält und wie es länger gut bleibt.',
+    explainTitle: 'Kurz erklärt',
+    explain: [
+      {
+        title: 'Mindestens haltbar bis',
+        text: 'Bis zu diesem Datum garantiert der Hersteller die Qualität. Danach ist vieles noch gut: schauen, riechen, probieren. Es ist kein Wegwerfdatum.',
+      },
+      {
+        title: 'Zu verbrauchen bis',
+        text: 'Steht auf leicht Verderblichem wie Hackfleisch, Poulet, Fisch oder Feinkostsalaten. Nach diesem Datum nicht mehr essen, auch wenn es noch gut aussieht.',
+      },
+      {
+        title: 'Richtig kühlen',
+        text: 'Der Kühlschrank hat höchstens 5 °C. Fleisch und Fisch gehören ganz unten über das Gemüsefach, dort ist es am kältesten. In die Tür kommen Getränke, Butter und Saucen.',
+      },
+      {
+        title: 'Einfrieren und auftauen',
+        text: 'Möglichst frisch einfrieren, gut verpackt und mit Datum. Im Kühlschrank auftauen. Rohes, das aufgetaut ist, nicht wieder einfrieren, gekocht geht es wieder.',
+      },
+    ],
+    guideTitle: 'Haltbarkeit A–Z',
+    search: 'Lebensmittel suchen',
+    searchPlaceholder: 'z. B. Joghurt, Pesto, Hackfleisch',
+    noMatch: 'Dazu kenne ich nichts. Versuch ein anderes Wort.',
+    groups: {
+      dairy: 'Milchprodukte',
+      meat: 'Fleisch',
+      fish: 'Fisch',
+      produce: 'Gemüse und Früchte',
+      bakery: 'Brot und Gebäck',
+      prepared: 'Fertiges und Dips',
+      pantry: 'Vorrat',
+      drinks: 'Getränke',
+      frozen: 'Tiefkühl',
+      reserve: 'Notvorrat',
+      non_food: 'Haushalt',
+    },
+    keeps: (time: string, place: string) => `Hält ${time} (${place})`,
+    opened: (time: string) => `offen ${time}`,
+    freezer: (time: string) => `Einfrieren: hält ${time}`,
+    noFreezer: 'Nicht zum Einfrieren',
+    scoreLabel: (score: number, level: string) => `Haltbarkeit ${String(score)} von 10, ${level}`,
+    levels: { high: 'heikel', medium: 'mittel', low: 'robust' },
+    didYouKnow: 'Wusstest du?',
+    /**
+     * Food facts (ADR-0042): tips without numbers, and only numbers with a checked source (L-17).
+     * One appears after a confirmed rescue and one a day on «Wissen».
+     */
+    facts: [
+      'Rund ein Drittel der Lebensmittelverluste der Schweiz entsteht in den Haushalten (BAFU).',
+      'Mindestens haltbar bis ist kein Wegwerfdatum: Joghurt, Hartkäse und Teigwaren sind danach oft noch gut.',
+      'Brot vom Vortag wird zu Fotzelschnitten, Croûtons oder Paniermehl.',
+      'Äpfel und Bananen geben Reifegas ab. Getrennt gelagert reift das übrige Obst langsamer.',
+      'Frische Kräuter halten länger in einem Glas Wasser, wie ein Blumenstrauss.',
+      'Hartkäse mit wenig Schimmel: grosszügig wegschneiden. Weichkäse, Joghurt und Brot mit Schimmel ganz wegwerfen.',
+      'Suppe, Sauce, Tomatenmark und Pesto lassen sich portionsweise einfrieren, zum Beispiel im Eiswürfelbehälter.',
+      'Am kältesten ist es im Kühlschrank unten über dem Gemüsefach. Dort gehören Fleisch und Fisch hin.',
+      'Welke Rüebli und schlapper Salat werden in kaltem Wasser oft wieder knackig.',
+      'Aus Gemüseschalen und Strünken wird eine Bouillon: auskochen, absieben, fertig.',
+    ],
+  },
   more: {
     install: 'Rettich als App',
     installIos:
@@ -446,6 +484,7 @@ export const messages = {
     intro:
       'Was du gegessen, weitergegeben oder weggeworfen hast, mit dem Anteil am Preis. Einen falschen Eintrag kannst du ändern oder löschen. Beim Löschen kommt die Menge zurück in den Vorrat.',
     periodLegend: 'Zeitraum',
+    periods: { month: 'Dieser Monat', quarter: 'Letzte 3 Monate', year: 'Dieses Jahr' },
     empty: 'In diesem Zeitraum hast du nichts abgeschlossen.',
     estimated: 'geschätzt',
     removeLabel: (name: string) => `Eintrag ${name} löschen`,
@@ -479,9 +518,68 @@ export const messages = {
   reports: {
     title: 'Berichte als PDF',
     intro: 'Rettich erstellt den Bericht auf deinem Gerät. Teilen oder speichern entscheidest du.',
+    kindLegend: 'Welcher Bericht?',
+    /** Short reports are receipts; «Ausführlich» is the full report (Alban, 8.11.2026). */
+    kinds: {
+      impact: {
+        label: 'Wirkung',
+        hint: 'Als Quittung: was du gerettet, weitergegeben und weggeworfen hast.',
+      },
+      expiring: {
+        label: 'Läuft bald ab',
+        hint: 'Als Quittung: alles, was in den nächsten Tagen abläuft.',
+      },
+      wasted: {
+        label: 'Weggeworfen',
+        hint: 'Als Quittung: was im Abfall gelandet ist, mit Grund und Wert.',
+      },
+      fridge: {
+        label: 'Kühlschrank',
+        hint: 'Als Quittung: alles im Kühlschrank, mit Datum und Wert.',
+      },
+      freezer: {
+        label: 'Tiefkühler',
+        hint: 'Als Quittung: alles im Tiefkühler, mit Datum und Wert.',
+      },
+      pantry: { label: 'Vorrat', hint: 'Als Quittung: alles im Vorrat, mit Datum und Wert.' },
+      full: {
+        label: 'Ausführlich',
+        hint: 'Der ganze Bericht mit Diagrammen und Listen, ohne Quittung.',
+      },
+    },
+    daysLegend: 'Wie viele Tage voraus?',
+    days: { one: '1 Tag', three: '3 Tage', seven: '7 Tage', custom: 'Eigene' },
+    customDays: 'Anzahl Tage (1 bis 60)',
+    nextDays: (days: number) => (days === 1 ? 'heute und morgen' : `nächste ${String(days)} Tage`),
+    now: 'Stand heute',
     periodLegend: 'Zeitraum',
-    periods: { month: 'Dieser Monat', quarter: 'Letzte 3 Monate', year: 'Dieses Jahr' },
-    reportTitle: (period: string) => `Bericht · ${period}`,
+    /** Like a bank statement (Alban, 8.11.2026): closings on the last Swiss bank day. */
+    periodModes: { month: 'Monat', year: 'Jahr', range: 'Von – bis' },
+    monthLabel: 'Monatsabschluss',
+    yearLabel: 'Jahresabschluss',
+    from: 'Von',
+    to: 'Bis',
+    calendar: (field: string) => `Kalender für «${field}» öffnen`,
+    rangeInvalid: '«Von» muss vor «Bis» liegen, und «Bis» höchstens heute.',
+    closingHint: 'Abschluss am letzten Schweizer Bankwerktag, wie bei deinem Kontoauszug.',
+    monthNames: [
+      'Januar',
+      'Februar',
+      'März',
+      'April',
+      'Mai',
+      'Juni',
+      'Juli',
+      'August',
+      'September',
+      'Oktober',
+      'November',
+      'Dezember',
+    ],
+    closedPer: (date: string) => `per ${date}`,
+    running: 'bis heute',
+    yearName: (year: number) => `Jahr ${String(year)}`,
+    reportTitle: (kind: string, detail: string) => `${kind} · ${detail}`,
     create: 'PDF erstellen',
     creating: 'PDF wird erstellt …',
     view: {
@@ -496,7 +594,7 @@ export const messages = {
     failed: 'Das PDF liess sich nicht erstellen. Bitte versuch es nochmals.',
     pdf: {
       heading: 'Dein Bericht',
-      /** Page 1 of the PDF: the report as a till receipt (Alban, 8.11.2026). */
+      /** The short reports as till receipts; the detailed report has none (Alban, 8.11.2026). */
       receipt: {
         claim: 'Wirf kein Geld in den Abfall.',
         title: 'So hast du Food Waste reduziert',
@@ -510,8 +608,29 @@ export const messages = {
         detail: (count: number, kg: string) => `${String(count)}× · ${kg}`,
         sharedDetail: (count: number) => `${String(count)}× an andere, in «Gerettet» enthalten`,
         thanks: 'Danke fürs Retten.',
+        count: 'ARTIKEL',
+        weight: 'GEWICHT',
+        expiringTitle: (days: number) =>
+          days === 1
+            ? 'Läuft heute oder morgen ab'
+            : `Läuft in den nächsten ${String(days)} Tagen ab`,
+        expiringTotal: 'TOTAL IN GEFAHR',
+        expiringEmpty: 'Nichts läuft in dieser Zeit ab. Stark!',
+        wastedTitle: 'Was weggeworfen wurde',
+        wastedTotal: 'TOTAL WEGGEWORFEN',
+        wastedEmpty: 'Nichts weggeworfen. Stark!',
+        placeTitle: (place: string) => `Im ${place}`,
+        placeTotal: 'TOTAL WERT',
+        placeEmpty: 'Hier ist gerade nichts.',
+        continued: '… Fortsetzung',
       },
       created: (date: string) => `Erstellt am ${date}`,
+      /** The onyx card of the detailed report (Alban, 8.11.2026: «gibt Premium-Look»). */
+      heroSentence: 'hast du vor dem Abfall gerettet.',
+      savedDetail: (kg: string, count: number) => `${kg} Lebensmittel · ${String(count)}× gerettet`,
+      rateLabel: 'gerettet',
+      inStock: 'Im Vorrat',
+      spent: 'Eingekauft',
       saved: 'Gerettet',
       wasted: 'Weggeworfen',
       items: (count: number) => (count === 1 ? '1 Artikel' : `${String(count)} Artikel`),

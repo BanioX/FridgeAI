@@ -81,3 +81,56 @@ Alban: «Cool wäre, wenn mein PDF auch wie eine Quittung aussieht: So hast du F
 - Die Seite lässt sich allein teilen. Onyx-Karte und Kacheln fallen weg, ihre Zahlen stehen auf der Quittung.
 - **Ab Seite 2** folgt «Dein Bericht» mit «Was auffällt», «Pro Monat», «Jetzt essen», «Was im Kübel landet», «Vorrat und Einkäufe» und «Alles im Vorrat». Ein Abschnitt beginnt nur dann auf einer neuen Seite, wenn er nicht mehr ganz passt.
 - **Kern:** Der Bericht kennt neu `sharedRappen` und `sharedCount`, also den geretteten Teil, der weitergegeben statt gegessen wurde. Wer frische Ware verschenkt, ist grosszügig, rettet aber nichts (ADR-0033).
+
+## Nachtrag (8.11.2026): Berichtsarten, Quittung und ausführlicher Bericht getrennt
+
+Alban: «Die Quittung ist wie ein einzelner PDF-Export, quasi ein Quick Summary. Das andere ist ausführlicher. Es sollte verschiedene Kategorien von Berichten geben … Die Quittung ist sexy und cool, aber das grosse Summary darf die Quittung dann nicht zeigen. Also quasi eigene Report- bzw. PDF-Sprache.»
+
+- **Sieben Berichtsarten** unter «Berichte als PDF», gewählt mit Chips. Unter der Wahl steht in einem Satz, was kommt.
+  - Als **Quittung** (Kurz-Bericht, eine Seite, wenn es passt):
+    - **Wirkung:** die bisherige Quittung;
+    - **Läuft bald ab:** 1, 3 oder 7 Tage oder eine eigene Zahl von 1 bis 60, Abgelaufenes eingeschlossen;
+    - **Weggeworfen:** jeder Artikel mit Datum, Grund und Wert, dazu Anzahl, Gewicht und Total;
+    - **Kühlschrank**, **Tiefkühler**, **Vorrat:** alles an diesem Ort mit Menge, Datum und Wert.
+  - **Ausführlich:** der ganze Bericht mit Diagrammen und Listen, ohne Quittung.
+- **Zeitraum** gibt es nur, wo er zählt: bei Wirkung, Weggeworfen und Ausführlich. Die anderen zeigen den Stand heute.
+- **Zwei Sprachen, sauber getrennt:**
+  - Die Quittung bleibt Papier, Courier, Doppellinien und Strichcode. Ist eine Liste länger als eine Seite, läuft sie auf weiteren Papierstücken mit «… Fortsetzung» weiter; nichts wird abgeschnitten.
+  - Der ausführliche Bericht hat einen eigenen Kopf wie die App: Symbol und «Rettich» links, das Datum rechts, eine Haarlinie, darunter gross «Dein Bericht».
+- **Technik:**
+  - `receipt-spec.ts` legt rein fest, was auf einer Quittung steht, und ist ohne Zeichnen getestet.
+  - `receipt-pdf.ts` zeichnet jede Quittung.
+  - Seitenmasse und Fusszeile liegen gemeinsam in `pdf-kit.ts`.
+- **Kern:** Der Bericht liefert neu `impact.wastedItems`, das Weggeworfene einzeln, neuestes zuerst. Ohne Produktnamen steht der Name der Kategorie.
+- **Dateinamen:** `rettich-bericht-JJJJ-MM-TT.pdf` für den ausführlichen Bericht, `rettich-quittung-<art>-JJJJ-MM-TT.pdf` für die Quittungen.
+
+## Nachtrag (8.11.2026): die Onyx-Karte kehrt zurück
+
+Alban zum früheren Entwurf: «Ich liebe das Schwarze im Dashboard, gibt Premium-Look. Und die Kreise ein Augenschmaus.»
+
+- Seit die Quittung ein eigener Kurz-Bericht ist, hat der ausführliche Bericht wieder Platz für die Übersicht.
+- Unter «Dein Bericht» stehen wieder:
+  - die Onyx-Karte mit dem geretteten Betrag;
+  - der Satz «hast du vor dem Abfall gerettet.»;
+  - die Rettungsquote als Ring in Smaragd;
+  - darunter drei gleich grosse Kacheln: Im Vorrat, Weggeworfen, Eingekauft.
+- Danach folgt «Was auffällt». «Pro Monat» beginnt auf Seite 2, damit kein Diagramm zerschnitten wird.
+- `ring` ist zurück in `pdf-kit.ts`, mit Test.
+
+## Nachtrag (8.11.2026): Zeiträume wie ein Kontoauszug
+
+Alban: «Report per Wunschdatum oder von–bis … Schmeiss das 1 Monat, 3 Monate, 1 Jahr weg … Monatliche Reports per 31./30. nach Schweizer Bankwerktagen.» Rückfrage per Auswahl, beim Stichtag gewählt: «Letzter Bankwerktag».
+
+- **Statt** «Dieser Monat / Letzte 3 Monate / Dieses Jahr» gibt es bei Wirkung, Weggeworfen und Ausführlich drei Wege:
+  - **Monat:** Monatsabschluss, die letzten 24 Monate. Der laufende Monat steht zuoberst («November 2026 · bis heute»).
+  - **Jahr:** Jahresabschluss, das laufende und die zwei Jahre davor.
+  - **Von – bis:** zwei Datumsfelder, beliebiger Zeitraum bis heute. Sie zeigen immer TT.MM.JJJJ, unabhängig von der Sprache des Geräts. Alban: «Ich will 31.10.2026, nicht 10/31/2026, Schweizer Standard.» Der Kalender-Knopf öffnet das Datumsrad des Geräts (`ui/CalendarButton.tsx`, gemeinsam mit dem Ablaufdatum).
+- **Stichtag:** Ein Monat schliesst am letzten Schweizer Bankwerktag. Der nächste beginnt am Tag danach. So zählt jeder Tag genau einmal, wie auf einem Kontoauszug. Beispiele:
+  - Samstag 31.10.2026: Der Oktober schliesst per Fr 30.10. und der Samstag gehört zum November.
+  - 31.12.2023 war ein Sonntag: 2023 schloss per 29.12. und das Jahr 2024 beginnt am 30.12.2023.
+- **Bankwerktage:** Montag bis Freitag ohne die Bankfeiertage des Schweizer Zahlungsverkehrs (SIX Interbank Clearing, SIC). Das sind 1.1., 2.1., Karfreitag, Ostermontag, 1.5., Auffahrt, Pfingstmontag, 1.8., 25.12. und 26.12. Der 24.12. und der 31.12. sind dort Valutatage, also Bankwerktage. Kantonale Feiertage zählen nicht. Ostern wird berechnet (Meeus/Jones/Butcher), es gibt keine Tabelle, die veraltet.
+- **Technik:**
+  - `packages/core/src/reports/closing.ts`: `swissBankHolidays`, `isSwissBankDay`, `monthClosingDay`, `closingMonth`, `closingYear` und `closingMonthOf`. Rein, ohne Browser.
+  - `features/reports/report-period.ts`: die Auswahl mit ihren Texten.
+  - `PeriodPicker.tsx`: die Bedienung.
+- **Verlauf:** Der Verlauf behält vorerst seine drei Zeiträume. Ob er auch Abschlüsse bekommt, entscheidet Alban (`docs/ideen/design-und-bedienung.md`).

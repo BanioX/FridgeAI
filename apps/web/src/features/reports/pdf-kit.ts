@@ -1,4 +1,5 @@
 import type { jsPDF } from 'jspdf';
+import { messages } from '../../app/messages.de-CH';
 import type { Tone } from '../../ui/tones';
 
 /**
@@ -401,6 +402,52 @@ export function dashed(
   doc.setLineDashPattern([], 0);
 }
 
+/** A round-capped arc from 12 o'clock, clockwise, over `share` of the circle. */
+function arc(
+  doc: jsPDF,
+  center: { x: number; y: number },
+  radius: number,
+  thickness: number,
+  share: number,
+  color: Rgb,
+): void {
+  const steps = Math.max(12, Math.ceil(share * 144));
+  const point = (step: number) => {
+    const angle = -Math.PI / 2 + (step / steps) * share * 2 * Math.PI;
+    return { x: center.x + radius * Math.cos(angle), y: center.y + radius * Math.sin(angle) };
+  };
+  const start = point(0);
+  const segments: number[][] = [];
+  let last = start;
+  for (let step = 1; step <= steps; step += 1) {
+    const next = point(step);
+    segments.push([next.x - last.x, next.y - last.y]);
+    last = next;
+  }
+  doc.setDrawColor(...color);
+  doc.setLineWidth(thickness);
+  doc.setLineCap('round');
+  doc.setLineJoin('round');
+  doc.lines(segments, start.x, start.y, [1, 1], 'S', false);
+  doc.setLineCap('butt');
+}
+
+/** A ring from 12 o'clock, clockwise: `share` of it in `fill`, the rest in `track`. */
+export function ring(
+  doc: jsPDF,
+  center: { x: number; y: number },
+  radius: number,
+  thickness: number,
+  share: number | null,
+  track: Rgb,
+  fill: Rgb,
+): void {
+  arc(doc, center, radius, thickness, 1, track);
+  if (share !== null && share > 0) {
+    arc(doc, center, radius, thickness, Math.min(1, share), fill);
+  }
+}
+
 /** Two thin rules, the «total» line of a receipt. */
 export function double(doc: jsPDF, from: number, to: number, y: number): void {
   doc.setDrawColor(...PDF_COLOR.ink);
@@ -473,5 +520,28 @@ export function barcode(
     }
     at += width;
     bar = !bar;
+  }
+}
+
+/** A4 in millimetres, the margin of every page, where the footer starts and content begins. */
+export const PAGE = { width: 210, height: 297, margin: 16 } as const;
+export const FOOTER = PAGE.height - 14;
+export const TOP = 22;
+
+/** The footer of every page: a hairline, where the PDF was made, and the page number. */
+export function footers(doc: jsPDF): void {
+  const t = messages.reports.pdf;
+  const pages = doc.getNumberOfPages();
+  for (let page = 1; page <= pages; page += 1) {
+    doc.setPage(page);
+    doc.setDrawColor(...PDF_COLOR.line);
+    doc.setLineWidth(0.2);
+    doc.line(PAGE.margin, FOOTER, PAGE.width - PAGE.margin, FOOTER);
+    const style = { size: 8, color: PDF_COLOR.muted };
+    write(doc, t.footer, PAGE.margin, FOOTER + 5, style);
+    write(doc, t.page(page, pages), PAGE.width - PAGE.margin, FOOTER + 5, {
+      ...style,
+      align: 'right',
+    });
   }
 }

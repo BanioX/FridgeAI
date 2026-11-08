@@ -7,7 +7,6 @@ import type { Id } from '../ids';
 import type { Rappen } from '../money';
 import type { Nutrition } from '../model/inventory';
 import type { CategoryId, Gtin, IsoDateTime, LocalDate, Retailer } from '../model/primitives';
-import type { Recipe } from '../recipes/recipe';
 
 /** Cooperative cancellation without DOM/Node AbortSignal types. */
 export interface CancelCheck {
@@ -104,13 +103,6 @@ export function chainCatalogs(catalogs: readonly ProductCatalog[]): ProductCatal
       return null;
     },
   };
-}
-
-// --- Recipes -----------------------------------------------------------------------------
-
-/** Source of candidate recipes; ranking by expiring food happens in core (step 11b). */
-export interface RecipeProvider {
-  recipes: () => Promise<readonly Recipe[]>;
 }
 
 // --- Partners (Vision; MVP uses mocks only, see brief §0.4) --------------------------------
