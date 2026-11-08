@@ -85,6 +85,21 @@ export const messages = {
       'Wirf kein Geld in den Abfall: Erfasse, was du zu Hause hast, und Rettich sagt dir, was du heute retten solltest.',
     firstItem: 'Ersten Artikel erfassen',
     impactTitle: 'Deine Wirkung diesen Monat',
+    growth: {
+      title: 'Dein Rettich',
+      stages: {
+        seed: 'Samen',
+        sprout: 'Keimling',
+        young: 'Jungpflanze',
+        grown: 'Rettich',
+        model: 'Vorbild',
+      },
+      rescues: (count: number) =>
+        count === 1 ? '1 Rettung diesen Monat' : `${String(count)} Rettungen diesen Monat`,
+      next: (missing: number, stage: string) => `noch ${String(missing)} bis ${stage}`,
+      label: (stage: string, leaves: number) =>
+        `Dein Rettich: ${stage}, ${leaves === 1 ? '1 Blatt' : `${String(leaves)} Blätter`}`,
+    },
     saved: 'Gerettet',
     wasted: 'Weggeworfen',
     savedShare: (percent: number) => `${String(percent)} % gerettet`,
