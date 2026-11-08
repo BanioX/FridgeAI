@@ -109,6 +109,22 @@ describe('buildReport (ADR-0030)', () => {
     ]);
   });
 
+  it('shows what of the saved was given away, only when it was at risk', () => {
+    expect(report.impact).toMatchObject({ sharedRappen: 500, sharedCount: 1 });
+    const fresh = buildReport({
+      today: localDate('2026-11-07'),
+      from: localDate('2026-11-01'),
+      to: localDate('2026-11-30'),
+      items: [],
+      outcomes: [
+        closed('shared_out', '2026-11-02T12:00:00.000Z', 300, 'bakery-bread', { atRisk: false }),
+      ],
+      purchases: [],
+    });
+    // Giving away fresh food is generous, but not a rescue (ADR-0033).
+    expect(fresh.impact).toMatchObject({ sharedRappen: 0, sharedCount: 0 });
+  });
+
   it('names what is wasted most and why', () => {
     expect(report.impact.topWasted).toEqual([
       { categoryId: 'meat-poultry', count: 1, valueRappen: 600 },
