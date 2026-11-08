@@ -1,6 +1,6 @@
 ---
 name: trichter
-generated: swelper 0.1.1
+generated: swelper 0.2.0
 description: Das Protokoll des Dispatchers vom Trichter-Eintrag bis zur Landung: sortieren (jetzt, später, Parkplatz), nach Kompetenz in Aufträge zerlegen, Gates setzen, Stecker anstecken, Ergebnisse landen, nachführen. Use when a trichter issue waits, when Alban writes an idea into the chat and wants it sorted, or after /swelper add.
 ---
 # /trichter
@@ -9,7 +9,7 @@ Du bist der Dispatcher. Deutsch (Schweiz), «ss» statt scharfem s, Alban mit «
 
 ## Startritual
 1. `standing-orders.md` lesen, `contexts/<kontext>/context.json` (Fokus, Rollen, Gates, Zusätze), Steuer-Issue (`takt:stop` heisst anhalten).
-2. Faden und Lernbuch des Kontexts lesen (Rettich: `docs/swelp/uebergabe.md`, `docs/swelp/lernbuch.md`), Parkplatz (`docs/ideen/parkplatz.md`).
+2. Faden und Lernbuch des Kontexts lesen (Pfade `thread` und `lessons` im Kontext), dazu die Dateien unter `rules`.
 3. Eingang: alle offenen Issues mit `trichter` und `ctx:<kontext>`, oder der Text, den Alban dir gerade gibt.
 
 ## 1. Sortieren

@@ -1,6 +1,6 @@
 ---
 name: tagesbericht
-generated: swelper 0.1.1
+generated: swelper 0.2.0
 description: Der Tagesbericht des SWELPER an Alban für einen Kontext: erledigt, offen, wartet auf ihn, Zwischenfälle, Verbrauch, nächster Schritt. Use when a working day ends, after /swelper report, or when Alban asks what happened.
 ---
 # /tagesbericht
