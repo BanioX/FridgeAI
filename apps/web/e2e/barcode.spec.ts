@@ -1,6 +1,5 @@
-import AxeBuilder from '@axe-core/playwright';
 import type { Page } from '@playwright/test';
-import { expect, test } from './test';
+import { AxeBuilder, expect, test } from './test';
 
 const executablePath = process.env.PW_CHROMIUM_EXECUTABLE;
 // A fake camera, so «Kamera starten» meets a real device and the permission decides.

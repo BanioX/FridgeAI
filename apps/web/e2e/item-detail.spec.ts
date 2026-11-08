@@ -1,6 +1,5 @@
-import AxeBuilder from '@axe-core/playwright';
 import type { Page } from '@playwright/test';
-import { expect, test } from './test';
+import { AxeBuilder, expect, test } from './test';
 
 /** Tap a chip the way people do: on its label (the radio itself is visually hidden). */
 async function choose(page: Page, name: string) {

@@ -72,17 +72,32 @@ export function sampleReport(): Report {
   });
   const outcomes = [
     outcome('2026-06-10', 'eaten', 'dairy-yoghurt', 280, 600),
-    outcome('2026-06-18', 'wasted', 'produce-salad', 350, 100, { wasteReason: 'spoiled' }),
+    outcome('2026-06-18', 'wasted', 'produce-salad', 350, 100, {
+      name: 'Nüsslisalat',
+      wasteReason: 'spoiled',
+    }),
     outcome('2026-07-03', 'eaten', 'meat-poultry', 1190, 400),
-    outcome('2026-07-22', 'wasted', 'bakery-bread', 420, 500, { wasteReason: 'forgotten' }),
+    outcome('2026-07-22', 'wasted', 'bakery-bread', 420, 500, {
+      name: 'Ruchbrot',
+      wasteReason: 'forgotten',
+    }),
     outcome('2026-08-05', 'eaten', 'dairy-cheese-hard', 640, 250),
     outcome('2026-08-19', 'shared_out', 'produce-berries', 450, 250),
-    outcome('2026-08-28', 'wasted', 'produce-salad', 350, 100, { wasteReason: 'forgotten' }),
+    outcome('2026-08-28', 'wasted', 'produce-salad', 350, 100, {
+      name: 'Kopfsalat',
+      wasteReason: 'forgotten',
+    }),
     outcome('2026-09-11', 'eaten', 'meat-minced', 890, 500),
-    outcome('2026-09-25', 'wasted', 'dairy-cream', 245, 200, { wasteReason: 'too_much' }),
+    outcome('2026-09-25', 'wasted', 'dairy-cream', 245, 200, {
+      name: 'Vollrahm',
+      wasteReason: 'too_much',
+    }),
     outcome('2026-10-02', 'eaten', 'produce-tomatoes', 380, 500),
     outcome('2026-10-14', 'eaten', 'dairy-milk', 165, 1000),
-    outcome('2026-10-21', 'wasted', 'produce-salad', 350, 100, { wasteReason: 'expired' }),
+    outcome('2026-10-21', 'wasted', 'produce-salad', 350, 100, {
+      name: 'Rucola',
+      wasteReason: 'expired',
+    }),
     outcome('2026-11-03', 'eaten', 'fish-smoked-salmon', 790, 200),
     outcome('2026-11-05', 'eaten', 'bakery-bread', 420, 500),
   ];

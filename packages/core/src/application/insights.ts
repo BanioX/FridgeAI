@@ -164,9 +164,13 @@ export function createInsightQueries({ storage, clock }: AppContext) {
       });
     const closed: ReportOutcome[] = outcomes.map((outcome) => {
       const item = itemById.get(outcome.itemId);
+      const category = item === undefined ? fallbackCategory() : categoryOf(item.productId);
       return {
         ...outcome,
-        categoryId: (item === undefined ? fallbackCategory() : categoryOf(item.productId)).id,
+        categoryId: category.id,
+        name:
+          (item === undefined ? undefined : productById.get(item.productId)?.name) ??
+          category.name.de,
       };
     });
     const purchases = receipts
