@@ -250,7 +250,7 @@ Du hast mich um eine Empfehlung gebeten. Sie beruht auf den geprüften Fakten un
 
 ## Offen
 
-1. **Name des Repos:** `zentrale`, oder lieber `schaltzentrale`? Technisch klein geschrieben, wie bei Rettich.
+1. **Name:** Alban will nicht «Zentrale» (8.11.2026); bis zum Entscheid bleibt es der Arbeitsname in diesem Dokument. Kandidaten mit Claudes Empfehlung zuerst: **Stellwerk** (stellt Weichen nach Kompetenz, verriegelt Fahrstrassen, damit nichts kollidiert, fährt nach Fahrplan; schweizerisch), **Regie** (der Regieraum, aus dem der Regisseur alles steuert; kurz für Befehle wie `/regie pick`), **Steckbrett** (das Brett der Telefonistin, in das Stecker gesteckt werden), dazu **Leitstelle** und **Weiche**. Technischer Name klein und ohne Umlaut.
 2. **Eingang vom Handy:** GitHub-Issue reicht (gratis, sicher, benachrichtigt dich)? Telegram braucht einen laufenden Rechner oder Server.
 3. **Modell:** Dispatcher standardmässig Opus, Fable auf Zuruf. Einverstanden?
 4. **Zweiter Kontext:** Welches Projekt oder welcher Lebensbereich kommt nach Rettich? Das bestimmt, wie allgemein die Standing Orders sein müssen.
