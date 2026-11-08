@@ -1,0 +1,157 @@
+{
+  "generated": "swelper 0.1.0",
+  "swelper": "0.1",
+  "about": "Alle Labels des Rahmens in einer Quelle. Die Werte von lane, status, owner und gate sind dieselben wie in ticket.schema.json; ein Test prüft das.",
+  "labels": [
+    {
+      "name": "swelper",
+      "color": "0E8A16",
+      "description": "Ein Auftrag des Swelpers"
+    },
+    {
+      "name": "trichter",
+      "color": "FBCA04",
+      "description": "Eintrag im Trichter, noch nicht sortiert"
+    },
+    {
+      "name": "takt:on",
+      "color": "1D76DB",
+      "description": "Steuer-Issue: Läufe ohne Alban sind erlaubt"
+    },
+    {
+      "name": "takt:stop",
+      "color": "B60205",
+      "description": "Steuer-Issue: Not-Aus, jeder Lauf hält an"
+    },
+    {
+      "name": "ctx:rettich",
+      "color": "5319E7",
+      "description": "Kontext Rettich (BanioX/FridgeAI)"
+    },
+    {
+      "name": "lane:dev",
+      "color": "0052CC",
+      "description": "Kompetenz Entwicklung"
+    },
+    {
+      "name": "lane:marketing",
+      "color": "0052CC",
+      "description": "Kompetenz Marketing"
+    },
+    {
+      "name": "lane:ceo",
+      "color": "0052CC",
+      "description": "Kompetenz Strategie"
+    },
+    {
+      "name": "lane:design",
+      "color": "0052CC",
+      "description": "Kompetenz Design"
+    },
+    {
+      "name": "lane:legal",
+      "color": "0052CC",
+      "description": "Kompetenz Recht und Datenschutz"
+    },
+    {
+      "name": "lane:finance",
+      "color": "0052CC",
+      "description": "Kompetenz Finanzen"
+    },
+    {
+      "name": "status:inbox",
+      "color": "EDEDED",
+      "description": "Sortiert, noch nicht bereit"
+    },
+    {
+      "name": "status:ready",
+      "color": "C2E0C6",
+      "description": "Bereit zum Ziehen"
+    },
+    {
+      "name": "status:doing",
+      "color": "BFD4F2",
+      "description": "In Arbeit, Worktree und Branch angelegt"
+    },
+    {
+      "name": "status:review",
+      "color": "D4C5F9",
+      "description": "Wartet auf den Reviewer"
+    },
+    {
+      "name": "status:waiting-alban",
+      "color": "F9D0C4",
+      "description": "Ein Gate ist offen, Alban entscheidet"
+    },
+    {
+      "name": "status:done",
+      "color": "0E8A16",
+      "description": "Erledigt, Quittung im Issue"
+    },
+    {
+      "name": "status:parked",
+      "color": "EDEDED",
+      "description": "Später oder Parkplatz"
+    },
+    {
+      "name": "owner:dispatcher",
+      "color": "FEF2C0",
+      "description": "Besitzer: Dispatcher"
+    },
+    {
+      "name": "owner:ceo",
+      "color": "FEF2C0",
+      "description": "Besitzer: CEO/Strategie"
+    },
+    {
+      "name": "owner:marketing",
+      "color": "FEF2C0",
+      "description": "Besitzer: Marketing"
+    },
+    {
+      "name": "owner:design",
+      "color": "FEF2C0",
+      "description": "Besitzer: Design"
+    },
+    {
+      "name": "owner:legal",
+      "color": "FEF2C0",
+      "description": "Besitzer: Recht"
+    },
+    {
+      "name": "owner:finance",
+      "color": "FEF2C0",
+      "description": "Besitzer: Finanzen"
+    },
+    {
+      "name": "owner:implementer",
+      "color": "FEF2C0",
+      "description": "Besitzer: Implementer"
+    },
+    {
+      "name": "owner:helper",
+      "color": "FEF2C0",
+      "description": "Besitzer: Helper"
+    },
+    {
+      "name": "owner:reviewer",
+      "color": "FEF2C0",
+      "description": "Besitzer: Reviewer"
+    },
+    {
+      "name": "gate:money",
+      "color": "B60205",
+      "description": "Kostet Geld: Alban entscheidet"
+    },
+    {
+      "name": "gate:data-flow",
+      "color": "B60205",
+      "description": "Neuer Datenfluss oder neue Nebenwirkung: Alban entscheidet"
+    },
+    {
+      "name": "gate:product",
+      "color": "B60205",
+      "description": "Abweichung vom Produkt oder Plan: Alban entscheidet"
+    }
+  ]
+}

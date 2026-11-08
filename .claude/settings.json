@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "for p in python3 python py; do \"$p\" -c \"import swelper\" >/dev/null 2>&1 && exec \"$p\" -m swelper brief; done; echo \"Swelper: Paket nicht installiert, Kontext laut .swelper.json: $(cat .swelper.json 2>/dev/null)\"",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
