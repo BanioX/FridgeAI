@@ -1,6 +1,6 @@
 ---
 name: ceo
-generated: swelper 0.1.0
+generated: swelper 0.1.1
 description: Use proactively for strategy, positioning, market, priorities and the question whether an idea fits the product and its focus. Reads the brief, the blue-ocean strategy and the parking lot of the context; writes only into contexts/<kontext>/out/strategie/.
 model: opus
 effort: high

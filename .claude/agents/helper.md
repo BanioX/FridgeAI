@@ -1,6 +1,6 @@
 ---
 name: helper
-generated: swelper 0.1.0
+generated: swelper 0.1.1
 description: Use for small, sharply bounded work inside an approved order: boilerplate, simple components, tests for finished logic, fixtures without personal data, mechanical refactors, documentation. Works in its own worktree; never decides anything.
 model: haiku
 effort: low

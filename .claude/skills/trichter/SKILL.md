@@ -1,6 +1,6 @@
 ---
 name: trichter
-generated: swelper 0.1.0
+generated: swelper 0.1.1
 description: Das Protokoll des Dispatchers vom Trichter-Eintrag bis zur Landung: sortieren (jetzt, später, Parkplatz), nach Kompetenz in Aufträge zerlegen, Gates setzen, Stecker anstecken, Ergebnisse landen, nachführen. Use when a trichter issue waits, when Alban writes an idea into the chat and wants it sorted, or after /swelper add.
 ---
 # /trichter
