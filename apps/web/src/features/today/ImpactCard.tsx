@@ -43,9 +43,11 @@ export function ImpactCard({ from, to }: { from: LocalDate; to: LocalDate }) {
 
   return (
     <Card>
-      <h2 className="font-display text-xl font-semibold">{t.impactTitle(monthName(from))}</h2>
+      <h2 className="text-center font-display text-xl font-semibold">
+        {t.impactTitle(monthName(from))}
+      </h2>
       <div className="mt-3">
-        <RettichGrowth rescues={stats.savedCount} />
+        <RettichGrowth rescues={stats.savedCount} centered />
       </div>
       <div className="mt-4">
         <OutcomeRings
