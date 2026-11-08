@@ -382,7 +382,13 @@ export function createInventoryCommands(ctx: AppContext) {
           }),
         );
       }
-      return { eventId: outcome.id, remainingQuantity: closed ? 0 : remaining, rescued };
+      return {
+        eventId: outcome.id,
+        remainingQuantity: closed ? 0 : remaining,
+        rescued,
+        valueRappen,
+        valueEstimated: item.priceRappen === undefined,
+      };
     });
   };
 

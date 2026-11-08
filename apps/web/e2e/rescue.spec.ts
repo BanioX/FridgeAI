@@ -2,7 +2,8 @@ import { AxeBuilder, expect, test } from './test';
 
 /**
  * «Gerettet» only when confirmed (ADR-0039): bread eaten before its date is just eaten; yoghurt on
- * its last day asks «Ohne Rettich im Abfall gelandet?», and only «Ja, gerettet» counts.
+ * its last day asks «Ohne Rettich im Abfall gelandet?», and only «Ja, gerettet» counts. The
+ * rescue is then shown as what it was worth (ADR-0042).
  */
 test('counts a rescue only when the person confirms it on the brink', async ({ page }) => {
   const today = new Intl.DateTimeFormat('de-CH', {
@@ -35,6 +36,16 @@ test('counts a rescue only when the person confirms it on the brink', async ({ p
   await page.locator('label').filter({ hasText: 'Ja, gerettet' }).click();
   await page.getByRole('button', { name: 'Als gegessen speichern' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
+
+  // The reward (ADR-0042): what it was worth, the month so far and a food fact, no «Danke».
+  await expect(page.getByRole('status')).toHaveText(
+    // No price from a receipt: the value is an estimate and says so.
+    /^Gerettet: Joghurt, etwa CHF \d+\.\d{2}\.$/,
+  );
+  await expect(page.getByText(/^Diesen Monat gerettet: CHF \d+\.\d{2}$/)).toBeVisible();
+  await expect(page.getByText('Wusstest du?')).toBeVisible();
+  await expect(page.getByText(/Danke/)).toHaveCount(0);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 
   await page.getByRole('navigation').getByRole('link', { name: 'Start' }).click();
   await expect(page.getByRole('img', { name: '100 % gerettet' })).toBeVisible();
