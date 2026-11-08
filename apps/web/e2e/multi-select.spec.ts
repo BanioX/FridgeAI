@@ -189,3 +189,47 @@ test('a long press in the normal list starts select mode and the drag', async ({
   await vorrat.click();
   await expect(page.getByRole('link', { name: /Eier/ })).toBeVisible();
 });
+
+test.describe('with a finger', () => {
+  test.use({ hasTouch: true });
+
+  // A real touch drag, sent through the browser's input pipeline: without cancelling touchmove on
+  // the held row (which select mode replaces), the browser would pan the list and cancel the drag.
+  test('a long press and a drag up onto a tab moves the item', async ({ page }) => {
+    for (const name of ['Eier', 'Saft']) {
+      await addToFridge(page, name);
+    }
+    await page.goto('/inventory?location=fridge');
+    const row = page.getByRole('link', { name: /Eier/ });
+    await expect(row).toBeVisible();
+    await expect
+      .poll(async () => {
+        const first = await row.boundingBox();
+        await page.waitForTimeout(100);
+        return JSON.stringify(first) === JSON.stringify(await row.boundingBox());
+      })
+      .toBe(true);
+    const from = await row.boundingBox();
+    const tab = await page.getByRole('tab', { name: /Vorrat/ }).boundingBox();
+    expect(from).not.toBeNull();
+    expect(tab).not.toBeNull();
+    const x = (from?.x ?? 0) + 120;
+    const y = (from?.y ?? 0) + (from?.height ?? 0) / 2;
+    const toX = (tab?.x ?? 0) + (tab?.width ?? 0) / 2;
+    const toY = (tab?.y ?? 0) + (tab?.height ?? 0) / 2;
+
+    const cdp = await page.context().newCDPSession(page);
+    const touch = (type: 'touchStart' | 'touchMove' | 'touchEnd', at: { x: number; y: number }) =>
+      cdp.send('Input.dispatchTouchEvent', {
+        type,
+        touchPoints: type === 'touchEnd' ? [] : [{ x: Math.round(at.x), y: Math.round(at.y) }],
+      });
+    await touch('touchStart', { x, y });
+    await page.waitForTimeout(700);
+    for (let step = 1; step <= 12; step += 1) {
+      await touch('touchMove', { x: x + ((toX - x) * step) / 12, y: y + ((toY - y) * step) / 12 });
+    }
+    await touch('touchEnd', { x: toX, y: toY });
+    await expect(page.getByRole('status')).toHaveText('Eier liegt jetzt im Vorrat.');
+  });
+});

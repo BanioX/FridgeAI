@@ -46,6 +46,8 @@ export function useDragToLocation({
 }) {
   const [drag, setDrag] = useState<Drag | null>(null);
   const hold = useRef<Hold | null>(null);
+  /** The row element that was held: touch events keep going to it even after it left the page. */
+  const pressed = useRef<HTMLElement | null>(null);
   const guard = useRef(false);
   const latest = useRef({ begin, drop, from });
   useEffect(() => {
@@ -99,18 +101,24 @@ export function useDragToLocation({
       }
     };
     // iOS still scrolls on touchmove unless it is cancelled (touch-action is read at touchstart).
+    // A list row is replaced by its select row when the hold starts select mode; touch events keep
+    // going to the removed row and no longer bubble to the document, so cancel them on the row too.
     const stop = (event: TouchEvent) => {
       event.preventDefault();
     };
+    const row = pressed.current;
     window.addEventListener('pointermove', move);
     window.addEventListener('pointerup', end);
     window.addEventListener('pointercancel', end);
     document.addEventListener('touchmove', stop, { passive: false });
+    row?.addEventListener('touchmove', stop, { passive: false });
     return () => {
       window.removeEventListener('pointermove', move);
       window.removeEventListener('pointerup', end);
       window.removeEventListener('pointercancel', end);
       document.removeEventListener('touchmove', stop);
+      row?.removeEventListener('touchmove', stop);
+      pressed.current = null;
     };
   }, [dragging]);
 
@@ -128,10 +136,12 @@ export function useDragToLocation({
         return;
       }
       cancelHold();
+      const row = event.currentTarget;
       const { pointerId, clientX: x, clientY: y } = event;
       const timer = window.setTimeout(
         () => {
           hold.current = null;
+          pressed.current = row;
           try {
             document.body.setPointerCapture(pointerId);
           } catch {
