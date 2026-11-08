@@ -1,4 +1,10 @@
-import { daysBetween, localDate, type InventoryItemView, type LocalDate } from '@fridgeai/core';
+import {
+  daysBetween,
+  localDate,
+  needsWatching,
+  type InventoryItemView,
+  type LocalDate,
+} from '@fridgeai/core';
 
 /** The four answers of the fridge check (UC-04, ADR-0022). */
 export type CheckAnswer = 'still' | 'half' | 'eaten' | 'wasted';
@@ -6,10 +12,16 @@ export type CheckAnswer = 'still' | 'half' | 'eaten' | 'wasted';
 /** Once a week is enough to keep the fridge current without nagging. */
 export const CHECK_EVERY_DAYS = 7;
 
-/** Fridge items in the order the check asks for them: soonest date first, then by name. */
-export function checkQueue(items: readonly InventoryItemView[]): InventoryItemView[] {
+/**
+ * Fridge items in the order the check asks for them: soonest date first, then by name. Robust
+ * food with a far date (drinks, an unopened sauce) is left out (ADR-0038).
+ */
+export function checkQueue(
+  items: readonly InventoryItemView[],
+  today: LocalDate,
+): InventoryItemView[] {
   return items
-    .filter((item) => item.location === 'fridge')
+    .filter((item) => item.location === 'fridge' && needsWatching(item, today))
     .sort(
       (a, b) => a.expiresOn.localeCompare(b.expiresOn) || a.name.localeCompare(b.name, 'de-CH'),
     );

@@ -1,5 +1,6 @@
 import {
   categoryById,
+  perishability,
   expiryStatus,
   fallbackCategory,
   isFreezable,
@@ -259,6 +260,16 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
                 {t.openedOn(describeDate(item.openedOn))}
               </p>
             )}
+            <p className="mt-1 text-sm text-ink-muted">
+              {[
+                t.perishability[perishability(category)],
+                item.openedOn === undefined && category.afterOpeningDays !== undefined
+                  ? t.keepsOpen(category.afterOpeningDays)
+                  : null,
+              ]
+                .filter((part) => part !== null)
+                .join(' · ')}
+            </p>
           </div>
           <StatusChip tone={badge.tone}>{badge.label}</StatusChip>
         </div>

@@ -45,13 +45,13 @@ export function CheckPage() {
     let active = true;
     void inventory['inventory.list']({ householdId }).then(({ items }) => {
       if (active) {
-        setQueue(checkQueue(items));
+        setQueue(checkQueue(items, today));
       }
     });
     return () => {
       active = false;
     };
-  }, [householdId, inventory]);
+  }, [householdId, inventory, today]);
 
   const finished = queue !== null && queue.length > 0 && steps.length === queue.length;
   useEffect(() => {

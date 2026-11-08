@@ -4,8 +4,8 @@ import { checkDue, checkQueue, readLastCheck, tally, writeLastCheck } from './ch
 
 const today = localDate('2026-11-06');
 
-const item = (name: string, location: string, expiresOn: string) =>
-  ({ name, location, expiresOn }) as unknown as InventoryItemView;
+const item = (name: string, location: string, expiresOn: string, categoryId = 'dairy-yoghurt') =>
+  ({ name, location, expiresOn, categoryId }) as unknown as InventoryItemView;
 
 function memoryStore() {
   const values = new Map<string, string>();
@@ -19,13 +19,29 @@ function memoryStore() {
 
 describe('fridge check', () => {
   it('asks only for fridge items, soonest first', () => {
-    const queue = checkQueue([
-      item('Joghurt', 'fridge', '2026-11-12'),
-      item('Erbsen', 'freezer', '2026-11-07'),
-      item('Milch', 'fridge', '2026-11-07'),
-      item('Butter', 'fridge', '2026-11-07'),
-    ]);
+    const queue = checkQueue(
+      [
+        item('Joghurt', 'fridge', '2026-11-12'),
+        item('Erbsen', 'freezer', '2026-11-07'),
+        item('Milch', 'fridge', '2026-11-07'),
+        item('Butter', 'fridge', '2026-11-07'),
+      ],
+      today,
+    );
     expect(queue.map((entry) => entry.name)).toEqual(['Butter', 'Milch', 'Joghurt']);
+  });
+
+  it('leaves out robust food with a far date, like a cola in the fridge (ADR-0038)', () => {
+    const queue = checkQueue(
+      [
+        item('Cola', 'fridge', '2027-06-01', 'drinks-soft'),
+        item('Senf', 'fridge', '2027-06-01', 'pantry-sauces'),
+        item('Hummus', 'fridge', '2026-11-20', 'prepared-dips'),
+        item('Bier', 'fridge', '2026-11-10', 'drinks-alcohol'),
+      ],
+      today,
+    );
+    expect(queue.map((entry) => entry.name)).toEqual(['Bier', 'Hummus']);
   });
 
   it('is due without a check or after a week', () => {

@@ -48,7 +48,7 @@ describe('AddItemPage', () => {
   it("puts unknown food in the fridge, not in the fallback category's pantry", async () => {
     await renderPage();
     expect(moreButton().textContent).toBe(t.moreWith(`1 Stück, ${messages.locations.fridge}`));
-    await userEvent.type(screen.getByLabelText(t.name), 'Hummus nach Grossmutters Art');
+    await userEvent.type(screen.getByLabelText(t.name), 'Kimchi nach Grossmutters Art');
     expect(moreButton().textContent).toBe(t.moreWith(`1 Stück, ${messages.locations.fridge}`));
   });
 
