@@ -211,6 +211,8 @@ test('takes several receipts chosen at once, one after the other', async ({ page
     'Total CHF 1.95',
     'Twint 1.95',
   ]);
+  // Phone width: the shop tabs do not fit and must scroll on their own.
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/add/receipt');
   await page.getByLabel('PDF oder Foto wählen').setInputFiles([
     { name: 'eins.pdf', mimeType: 'application/pdf', buffer: COOP },
@@ -228,8 +230,20 @@ test('takes several receipts chosen at once, one after the other', async ({ page
   await page.getByRole('button', { name: 'Nächste Quittung' }).click();
 
   await expect(page.getByText('Quittung 3 von 3')).toBeVisible();
+  // Read as «Laden»: one tap tells Rettich it was Coop.
   const review = page.getByRole('region', { name: /Musterdorf Bahnhof · 06\.11\.2026/ });
-  await expect(review).toBeVisible();
+  await expect(review.getByRole('radio', { name: 'Laden' })).toBeChecked();
+  // The shop tabs scroll on their own; the page never scrolls sideways.
+  await review.locator('label', { has: page.getByRole('radio', { name: 'Lidl' }) }).click();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
+    true,
+  );
+  await review.locator('label', { has: page.getByRole('radio', { name: 'Coop' }) }).click();
+  await expect(review.getByRole('radio', { name: 'Coop' })).toBeChecked();
+  await expect(
+    page.getByRole('region', { name: /^Coop · Musterdorf Bahnhof · 06\.11\.2026/ }),
+  ).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await expect(page.getByRole('button', { name: 'Diese Quittung überspringen' })).toHaveCount(0);
   await review.getByRole('button', { name: '1 Artikel übernehmen' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();

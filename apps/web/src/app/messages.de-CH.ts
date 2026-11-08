@@ -740,6 +740,8 @@ export const messages = {
     /** Several files chosen at once (Alban, 8.11.2026): one after the other. */
     progress: (index: number, total: number) => `Quittung ${String(index)} von ${String(total)}`,
     next: 'Nächste Quittung',
+    /** The shop of a receipt, preset from what was read, changed with one tap. */
+    shopQuestion: 'Wo eingekauft?',
     skip: 'Diese Quittung überspringen',
     reading: 'Quittung wird gelesen …',
     readingPhoto: 'Foto wird gelesen, das dauert ein paar Sekunden …',
