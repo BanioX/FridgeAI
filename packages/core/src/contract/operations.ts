@@ -2,7 +2,6 @@ import { z } from 'zod';
 import { IdSchema } from '../ids';
 import { RappenSchema } from '../money';
 import { DomainEventSchema } from './events';
-import { RecipeTagSchema } from '../recipes/recipe';
 import { HouseholdSchema, MemberSchema, type Scope } from '../model/household';
 import {
   ReceiptLineKindSchema,
@@ -714,86 +713,6 @@ export const CONTRACT_V1 = {
     scopes: ['shopping_list:write'],
     input: z.object({ ...commandBase, itemId: IdSchema }),
     output: z.object({ removed: z.boolean() }),
-  }),
-  'recipes.suggest': query({
-    name: 'recipes.suggest',
-    summary: {
-      de: 'Rezepte, die möglichst viele bald ablaufende Lebensmittel verwenden.',
-      en: 'Recipes that use as much soon-expiring food as possible.',
-    },
-    scopes: ['recipes:read'],
-    input: z.object({ ...queryBase, limit: z.int().min(1).max(10).default(3) }),
-    output: z.object({
-      recipes: z.array(
-        z.object({
-          id: z.string(),
-          title: z.string(),
-          minutes: z.int().positive(),
-          usesExpiring: z.array(z.string()),
-          missing: z.array(z.string()),
-        }),
-      ),
-    }),
-  }),
-  'recipes.list': query({
-    name: 'recipes.list',
-    summary: {
-      de: 'Alle Rezepte, zuerst die, für die am wenigsten fehlt; optional mit einem Merkmal.',
-      en: 'All recipes, those with the fewest missing ingredients first; optionally with one tag.',
-    },
-    scopes: ['recipes:read'],
-    input: z.object({ ...queryBase, tag: RecipeTagSchema.optional() }),
-    output: z.object({
-      recipes: z.array(
-        z.object({
-          id: z.string(),
-          title: z.string(),
-          minutes: z.int().positive(),
-          tags: z.array(RecipeTagSchema),
-          usesExpiring: z.array(z.string()),
-          missing: z.array(z.string()),
-        }),
-      ),
-    }),
-  }),
-  'recipes.get': query({
-    name: 'recipes.get',
-    summary: {
-      de: 'Ein Rezept mit Zutaten und Schritten; pro Zutat, was davon schon zu Hause ist.',
-      en: 'One recipe with ingredients and steps; for each ingredient, what is already at home.',
-    },
-    scopes: ['recipes:read'],
-    input: z.object({ ...queryBase, recipeId: z.string().min(1).max(64) }),
-    output: z.object({
-      recipe: z
-        .object({
-          id: z.string(),
-          title: z.string(),
-          minutes: z.int().positive(),
-          servings: z.int().positive(),
-          tags: z.array(z.string()),
-          ingredients: z.array(
-            z.object({
-              text: z.string(),
-              staple: z.boolean(),
-              optional: z.boolean(),
-              /** Food at home that counts as this ingredient, e.g. to book it after cooking. */
-              atHome: z.array(
-                z.object({
-                  itemId: IdSchema,
-                  name: z.string(),
-                  quantity: QuantitySchema,
-                  unit: UnitSchema,
-                  expiresOn: LocalDateSchema,
-                  expiryKind: DateKindSchema,
-                }),
-              ),
-            }),
-          ),
-          steps: z.array(z.string()),
-        })
-        .nullable(),
-    }),
   }),
   'stats.waste': query({
     name: 'stats.waste',

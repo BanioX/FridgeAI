@@ -110,28 +110,6 @@ describe('TodayPage', () => {
     expect(screen.queryByRole('link', { name: /^Alle anzeigen/ })).toBeNull();
   });
 
-  it('suggests exactly one recipe with a link to «Kochen»', async () => {
-    const db = testDb();
-    await seedDb(db, [{ name: 'Vollmilch', location: 'fridge', inDays: 1 }]);
-    renderPage(db);
-    const ideas = within(await screen.findByRole('region', { name: messages.recipes.rescueTitle }));
-    const recipeLinks = ideas
-      .getAllByRole('link')
-      .filter((link) => (link.getAttribute('href') ?? '').startsWith('/recipes/'));
-    expect(recipeLinks).toHaveLength(1);
-    const more = ideas.getByRole('link', { name: messages.recipes.moreRecipes });
-    expect(more.getAttribute('href')).toBe('/cook');
-  });
-
-  it('hides the recipe block when nothing is worth rescuing', async () => {
-    const db = testDb();
-    await seedDb(db, [{ name: 'Vollmilch', location: 'fridge', inDays: 20 }]);
-    renderPage(db);
-    expect(await screen.findByText(/^CHF\s/)).toBeDefined();
-    expect(screen.queryByRole('region', { name: messages.recipes.rescueTitle })).toBeNull();
-    expect(screen.queryByRole('link', { name: messages.recipes.moreRecipes })).toBeNull();
-  });
-
   it('offers the fridge check only when it is due', async () => {
     const db = testDb();
     await seedDb(db, [{ name: 'Vollmilch', location: 'fridge', inDays: 20 }]);

@@ -19,7 +19,7 @@ Zuletzt gemergt:
 
 1. **Vier Schritte pro Artikel** (Branch `feat/receipt-steps`, siehe oben). Dabei «Rettich» und «Quittung» beachten, beides prüft der Textkatalog-Test.
 2. **Scanner:** «Code aus Foto lesen» und die Nummer von Hand hinter «Andere Wege» legen. Dabei die Quittungs-E2E anpassen, sie nutzen die Nummer.
-3. **TD-02:** Produktsuche, Quittungs-Import und Rezepte nach `packages/core/src/application` ziehen (je ein PR).
+3. **TD-02:** Produktsuche und Quittungs-Import nach `packages/core/src/application` ziehen (je ein PR). Die Rezepte sind weg (ADR-0040).
 4. **Mit dem nächsten Code-PR:** In `.github/workflows/release.yml` heisst der Release-Titel noch «rettich v…». Er soll «Rettich v…» heissen. Ein eigener PR nur dafür würde die volle CI auslösen.
 5. **Release** bei 10 gemergten PRs seit v0.9.0 (`pnpm release --count`).
 6. **Später (Ideen):** der Rettich als Maskottchen in leeren Zuständen und beim Teilen. Illustrationen passend zum Logo, zum Beispiel mit einer Bild-KI erstellt (Albans Abos).
