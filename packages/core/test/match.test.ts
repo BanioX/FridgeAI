@@ -73,3 +73,40 @@ describe('receipt words (plan 4d)', () => {
     }
   });
 });
+
+describe('precision on real receipt lines (Lidl, 8.11.2026)', () => {
+  const id = (name: string) => matchCategoryByName(name)?.id;
+
+  it('knows fruit, vegetables and the words a receipt cuts off', () => {
+    expect(id('Kirschen lose')).toBe('produce-fruit');
+    expect(id('Plattnektarinen')).toBe('produce-fruit');
+    expect(id('Trauben hell kernlos')).toBe('produce-fruit');
+    expect(id('Pimientos de Padron 200g')).toBe('produce-vegetables');
+    expect(id('Landjäger')).toBe('meat-coldcuts');
+    expect(id('Schweizer Schmelzkäses.')).toBe('dairy-cheese-hard');
+    expect(id('Zott Monte 2K-Joghu.Butt')).toBe('dairy-yoghurt');
+    expect(id('Push up Lollies mit Gumm')).toBe('frozen-icecream');
+  });
+
+  it('lets flavour and origin words lose against the product', () => {
+    expect(id('Eislutscher Cola')).toBe('frozen-icecream');
+    expect(id('Glace Schokolade')).toBe('frozen-icecream');
+    expect(id('Eistee Pfirsich')).not.toBe('produce-fruit');
+    expect(id('Appenzeller Bratspeck')).toBe('meat-coldcuts');
+    expect(id('Appenzeller')).toBe('dairy-cheese-hard');
+    expect(id('Pfirsiche')).toBe('produce-fruit');
+    expect(id('Feiner Rührkuchen, Zitrone')).toBe('bakery-pastry');
+    expect(id('Fleischkäse, geschnitten')).toBe('meat-coldcuts');
+  });
+
+  it('moves «TK» food to the freezer', () => {
+    expect(id('TK Hähnchen-Cordon Bleu')).toBe('frozen-meals');
+    expect(id('TK Broccoli')).toBe('frozen-vegetables');
+    expect(id('TK Bauernhof Nuggets')).toBe('frozen-meals');
+  });
+
+  it('does not guess from short cut-offs', () => {
+    expect(id('Rosé Millesimato extra dry')).not.toBe('produce-vegetables');
+    expect(id('Port Tawny')).toBeUndefined();
+  });
+});
