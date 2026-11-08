@@ -8,9 +8,11 @@ import {
   rappen,
   sumRappen,
   type Id,
+  type LocalDate,
   type ParsedReceipt,
   type ParsedReceiptLine,
   type Rappen,
+  type StorageLocation,
 } from '@fridgeai/core';
 import { FileText } from 'lucide-react';
 import { useState } from 'react';
@@ -20,14 +22,15 @@ import { messages } from '../../app/messages.de-CH';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { GroupedList, GroupedListItem } from '../../ui/GroupedList';
-import { formatAmount } from '../inventory/add-item';
-import { MatchPanel, MatchRow, useReceiptMatching } from './ReceiptMatch';
+import { formatAmount, suggestedExpiry } from '../inventory/add-item';
+import { ArticleCard } from './ArticleCard';
+import { MatchPanel, useReceiptMatching } from './ReceiptMatch';
 import { useMoney } from '../../app/money';
-import { PriceField } from './PriceField';
 import { priceHint, type PriceMemory } from './price-hint';
 import { sha256Hex } from './hash';
 import { readImageText } from './read-image';
 import { readPdfText } from './read-pdf';
+import { isComplete, nextIncomplete, stepsDone } from './receipt-steps';
 
 const t = messages.receiptUpload;
 const MAX_BYTES = 15 * 1024 * 1024;
@@ -43,6 +46,12 @@ interface Review {
   chosen: ReadonlySet<number>;
   /** Earlier prices of the same products, by name on the receipt (ADR-0029). */
   memory: ReadonlyMap<string, PriceMemory>;
+  /** Best-before dates the person entered per line; `null`: the field was emptied again. */
+  dates: ReadonlyMap<number, LocalDate | null>;
+  /** Places the person chose per line; without one the category's default place stands. */
+  places: ReadonlyMap<number, StorageLocation>;
+  /** The article card that is open (one at a time). */
+  open: number | null;
 }
 
 const paid = (line: ParsedReceiptLine) => rappen(line.priceRappen + line.discountRappen);
@@ -99,6 +108,16 @@ function amountText(line: ParsedReceiptLine): string {
 const isPacked = (line: ParsedReceiptLine) =>
   isFood(line) && line.unit !== 'g' && matchCategoryByName(line.name)?.group !== 'produce';
 
+const placeOf = (review: Review, index: number, line: ParsedReceiptLine): StorageLocation =>
+  review.places.get(index) ?? categoryOf(line).defaultLocation;
+
+const categoryOf = (line: ParsedReceiptLine) =>
+  matchCategoryByName(line.name) ?? fallbackCategory();
+
+/** Food that gets an article card: ticked packed or loose food. */
+const hasSteps = (review: Review, index: number, line: ParsedReceiptLine) =>
+  review.chosen.has(index) && isFood(line);
+
 /** Purchase time as printed (local time of the device), else now. */
 function purchasedAt(receipt: ParsedReceipt) {
   const printed =
@@ -116,7 +135,7 @@ function purchasedAt(receipt: ParsedReceipt) {
  * the inventory with their price.
  */
 export function ReceiptUpload() {
-  const { householdId, ids, inventory } = useAppData();
+  const { householdId, ids, inventory, today } = useAppData();
   const navigate = useNavigate();
   const [status, setStatus] = useState('');
   const [busy, setBusy] = useState(false);
@@ -156,6 +175,7 @@ export function ReceiptUpload() {
           : await inventory['prices.memory']({ householdId, names }).catch(() => ({
               products: [],
             }));
+      const first = receipt.lines.findIndex((line, index) => chosen.has(index) && isFood(line));
       setReview({
         receipt,
         hash: await sha256Hex(text),
@@ -163,6 +183,10 @@ export function ReceiptUpload() {
         commandId: ids.next(),
         chosen,
         memory: new Map(products.map((product) => [product.name, product])),
+        dates: new Map(),
+        places: new Map(),
+        // The first card to work on opens by itself.
+        open: first < 0 ? null : first,
       });
       setStatus('');
       // Alban, 7.11.2026: match with Open Food Facts right away (ADR-0036).
@@ -194,6 +218,7 @@ export function ReceiptUpload() {
         hash: current.hash,
         lines: receipt.lines.map((line, index) => {
           const found = current.chosen.has(index) ? matching.accepted(index) : undefined;
+          const picked = current.dates.get(index);
           return {
             name: (line.name.trim() === '' ? t.fallbackNames[line.kind] : line.name).slice(0, 120),
             kind: line.kind,
@@ -205,8 +230,9 @@ export function ReceiptUpload() {
             priceRappen: line.priceRappen,
             discountRappen: line.discountRappen,
             isFood: isFood(line),
-            ...(current.chosen.has(index)
-              ? { location: (matchCategoryByName(line.name) ?? fallbackCategory()).defaultLocation }
+            ...(current.chosen.has(index) ? { location: placeOf(current, index, line) } : {}),
+            ...(current.chosen.has(index) && picked !== null && picked !== undefined
+              ? { expiresOn: picked }
               : {}),
             ...(found === undefined ? {} : { gtin: found.gtin, productName: found.name }),
           };
@@ -225,6 +251,20 @@ export function ReceiptUpload() {
   }
 
   const receipt = review?.receipt;
+  const doneOf = (index: number) => {
+    const line = receipt?.lines[index];
+    return stepsDone({
+      asksProduct: line !== undefined && isPacked(line),
+      productConfirmed: matching.accepted(index) !== undefined,
+      datePicked: (review?.dates.get(index) ?? null) !== null,
+    });
+  };
+  /** Ticked food lines, in list order: the articles with four steps. */
+  const cards =
+    review === null || receipt === undefined
+      ? []
+      : receipt.lines.flatMap((line, index) => (hasSteps(review, index, line) ? [index] : []));
+  const completeCount = cards.filter((index) => isComplete(doneOf(index))).length;
   const extras =
     receipt === undefined
       ? null
@@ -276,56 +316,100 @@ export function ReceiptUpload() {
                 )}
           </p>
           <MatchPanel matching={matching} />
+          {cards.length === 0 ? null : (
+            <div className="space-y-1.5">
+              <p id="receipt-complete" className="text-sm font-semibold">
+                {t.steps.overall(completeCount, cards.length)}
+              </p>
+              <div
+                role="progressbar"
+                aria-labelledby="receipt-complete"
+                aria-valuemin={0}
+                aria-valuemax={cards.length}
+                aria-valuenow={completeCount}
+                className="h-1.5 overflow-hidden rounded-full bg-surface-muted"
+              >
+                <div
+                  className="h-full rounded-full bg-basil-700 transition-[width]"
+                  style={{ width: `${String((completeCount / cards.length) * 100)}%` }}
+                />
+              </div>
+            </div>
+          )}
           <GroupedList>
-            {receipt.lines.map((line, index) =>
-              line.kind !== 'item' ? null : (
+            {receipt.lines.map((line, index) => {
+              if (line.kind !== 'item') {
+                return null;
+              }
+              const withSteps = hasSteps(review, index, line);
+              const place = placeOf(review, index, line);
+              const date = review.dates.get(index);
+              const accepted = withSteps ? matching.accepted(index) : undefined;
+              return (
                 <GroupedListItem key={`${String(index)}-${line.name}`} inset="check">
-                  <div className="flex items-center gap-2 pr-2">
-                    <label className="flex min-h-14 min-w-0 flex-1 cursor-pointer items-center gap-3 py-2 pl-4">
-                      <input
-                        type="checkbox"
-                        checked={review.chosen.has(index)}
-                        onChange={() => {
-                          const chosen = new Set(review.chosen);
-                          if (!chosen.delete(index)) {
-                            chosen.add(index);
-                          }
-                          setReview({ ...review, chosen });
-                        }}
-                        className="size-6 shrink-0 accent-basil-700"
-                      />
-                      <span className="min-w-0 flex-1">
-                        <span className="line-clamp-2 block font-semibold break-words">
-                          {line.name}
-                        </span>
-                        <span className="block truncate text-sm text-ink-muted">
-                          {[
-                            amountText(line),
-                            line.discountRappen < 0
-                              ? t.instead(money.format(line.priceRappen, { currency: false }))
-                              : undefined,
-                            isFood(line) ? undefined : t.notFood,
-                          ]
-                            .filter(Boolean)
-                            .join(' · ')}
-                        </span>
-                        <PriceHint hint={priceHint(line, review.memory.get(line.name), money)} />
-                      </span>
-                    </label>
-                    <PriceField
-                      name={line.name}
-                      value={paid(line)}
-                      onChange={(price) => {
-                        setReview({ ...review, receipt: withPrice(receipt, index, price) });
-                      }}
-                    />
-                  </div>
-                  {review.chosen.has(index) ? (
-                    <MatchRow matching={matching} index={index} name={line.name} />
-                  ) : null}
+                  <ArticleCard
+                    index={index}
+                    line={line}
+                    checked={review.chosen.has(index)}
+                    withSteps={withSteps}
+                    onCheck={() => {
+                      const chosen = new Set(review.chosen);
+                      if (!chosen.delete(index)) {
+                        chosen.add(index);
+                      }
+                      setReview({
+                        ...review,
+                        chosen,
+                        open: review.open === index ? null : review.open,
+                      });
+                    }}
+                    open={review.open === index}
+                    onToggle={() => {
+                      setReview({ ...review, open: review.open === index ? null : index });
+                    }}
+                    onNext={() => {
+                      setReview({
+                        ...review,
+                        open: nextIncomplete(cards, index, (other) => isComplete(doneOf(other))),
+                      });
+                    }}
+                    done={doneOf(index)}
+                    shownName={accepted?.name ?? line.name}
+                    subline={[
+                      amountText(line),
+                      line.discountRappen < 0
+                        ? t.instead(money.format(line.priceRappen, { currency: false }))
+                        : undefined,
+                      isFood(line) ? undefined : t.notFood,
+                    ]
+                      .filter(Boolean)
+                      .join(' · ')}
+                    priceText={money.format(paid(line), { currency: false })}
+                    priceHint={
+                      <PriceHint hint={priceHint(line, review.memory.get(line.name), money)} />
+                    }
+                    matching={matching}
+                    asksProduct={isPacked(line)}
+                    today={today}
+                    category={categoryOf(line)}
+                    estimate={suggestedExpiry(categoryOf(line), place, today)}
+                    date={date}
+                    onDate={(value) => {
+                      setReview({ ...review, dates: new Map(review.dates).set(index, value) });
+                    }}
+                    place={place}
+                    onPlace={(value) => {
+                      setReview({ ...review, places: new Map(review.places).set(index, value) });
+                    }}
+                    price={paid(line)}
+                    onPrice={(value) => {
+                      setReview({ ...review, receipt: withPrice(receipt, index, value) });
+                    }}
+                    amount={amountText(line)}
+                  />
                 </GroupedListItem>
-              ),
-            )}
+              );
+            })}
           </GroupedList>
           {extras === null || extras === 0 ? null : (
             <p className="text-sm text-ink-muted">{t.extras(money.format(extras))}</p>

@@ -33,9 +33,25 @@ test('uploads a receipt PDF, shows names and prices and takes the food over', as
   await expect(
     review.getByRole('checkbox', { name: /Coop Pouletbrust.*statt 10\.40/ }),
   ).toBeChecked();
+  // Every food line is an article card; the first one is open, none is complete yet.
+  await expect(review.getByText('Vollständig: 0 von 2 Artikeln')).toBeVisible();
+  const semmeli = review.getByRole('button', { name: /Semmeli 80G.*2 von 4 erledigt/ });
+  await expect(semmeli).toHaveAttribute('aria-expanded', 'true');
+  const poulet = review.getByRole('button', { name: /Coop Pouletbrust.*3 von 4 erledigt.*8\.30/ });
+  await expect(poulet).toHaveAttribute('aria-expanded', 'false');
+  await poulet.click();
+  await expect(semmeli).toHaveAttribute('aria-expanded', 'false');
   await expect(
     review.getByRole('button', { name: /Preis von Coop Pouletbrust.*jetzt 8\.30/ }),
   ).toBeVisible();
+  // Loose goods have no barcode to confirm.
+  await expect(review.getByText('Offen verkauft, hier brauchst du keinen Barcode.')).toBeVisible();
+  // A date of your own completes the article; the progress follows.
+  await review.getByLabel('Haltbar bis').fill('01.12.2026');
+  await expect(
+    review.getByRole('button', { name: /Coop Pouletbrust.*4 von 4 erledigt/ }),
+  ).toBeVisible();
+  await expect(review.getByText('Vollständig: 1 von 2 Artikeln')).toBeVisible();
   await expect(
     review.getByRole('checkbox', { name: /Shampoo Classic.*kein Lebensmittel/ }),
   ).not.toBeChecked();

@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto';
-import { IsoDateTimeSchema, type Id, type OperationInput } from '@fridgeai/core';
+import { IsoDateTimeSchema, LocalDateSchema, type Id, type OperationInput } from '@fridgeai/core';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { ensureLocalHousehold } from './bootstrap';
 import type { FridgeDb } from './db';
@@ -78,6 +78,32 @@ const receipt = (hash = 'a'.repeat(64)): OperationInput<'receipts.import'> => ({
 });
 
 describe('receipts.import (ADR-0028)', () => {
+  it('takes the date and place the person chose; the others get the category estimate', async () => {
+    const base = receipt();
+    const [chicken, yoghurt, ...rest] = base.lines;
+    if (chicken === undefined || yoghurt === undefined) {
+      throw new Error('fixture');
+    }
+    const result = await inventory['receipts.import']({
+      ...base,
+      lines: [
+        { ...chicken, location: 'freezer', expiresOn: LocalDateSchema.parse('2027-02-01') },
+        yoghurt,
+        ...rest,
+      ],
+    });
+    const { items } = await inventory['inventory.list']({ householdId });
+    expect(result.itemIds).toHaveLength(2);
+    const picked = items.find((item) => item.name === 'Coop Pouletbrust');
+    expect(picked).toMatchObject({
+      location: 'freezer',
+      expiresOn: '2027-02-01',
+      expirySource: 'manual',
+    });
+    const estimated = items.find((item) => item.name === 'Joghurt Mocca');
+    expect(estimated?.expirySource).toBe('category_estimate');
+  });
+
   it('stores the receipt and its lines and adds the chosen items with the price paid', async () => {
     const result = await inventory['receipts.import'](receipt());
     expect(result.duplicate).toBe(false);

@@ -578,6 +578,34 @@ export const messages = {
         'Diesen Barcode kennt Open Food Facts nicht. Der Artikel kommt mit dem Namen vom Bon.',
       scanInvalid: 'Das war kein Barcode. Versuch es nochmals.',
     },
+    /** The four steps of an article card (Alban, 7.11.2026). */
+    steps: {
+      names: { product: 'Produkt', date: 'Datum', place: 'Ort', price: 'Preis' },
+      /** Spoken for the little marks under an article. */
+      markDone: 'erledigt',
+      markOpen: 'offen',
+      progress: (done: number) => `${String(done)} von 4 erledigt`,
+      overall: (done: number, total: number) =>
+        `Vollständig: ${String(done)} von ${String(total)} Artikeln`,
+      toggle: (name: string, open: boolean) =>
+        `${name}, ${open ? 'Schritte schliessen' : 'Schritte öffnen'}`,
+      productTitle: 'Produkt',
+      dateTitle: 'Haltbar bis',
+      placeTitle: 'Lagerort',
+      priceTitle: 'Preis und Menge',
+      quantity: (amount: string) => `Menge: ${amount}`,
+      next: 'Weiter',
+      checking: 'rettich sucht das Produkt …',
+      loose: 'Offen verkauft, hier brauchst du keinen Barcode.',
+      per: { '100g': 'pro 100 g', '100ml': 'pro 100 ml' },
+      facts: {
+        kcal: (value: string) => `${value} kcal`,
+        fat: (value: string) => `Fett ${value} g`,
+        sugars: (value: string) => `Zucker ${value} g`,
+        salt: (value: string) => `Salz ${value} g`,
+      },
+      nutriScore: (grade: string) => `Nutri-Score ${grade}`,
+    },
     intro:
       'Wähl das PDF deines Kassenbons (Coop- oder Migros-App), einen Screenshot (z. B. Lidl Plus) oder ein Foto. rettich liest ihn auf deinem Gerät, die Datei wird nicht gespeichert.',
     choose: 'PDF oder Foto wählen',

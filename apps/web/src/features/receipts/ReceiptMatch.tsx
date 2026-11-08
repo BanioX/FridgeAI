@@ -1,4 +1,9 @@
-import { parseScannedCode, type OperationOutput } from '@fridgeai/core';
+import {
+  parseScannedCode,
+  type Nutrition,
+  type OperationOutput,
+  type ProductLookup,
+} from '@fridgeai/core';
 import { Check, ScanBarcode, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useAppData } from '../../app/AppData';
@@ -6,8 +11,10 @@ import { messages } from '../../app/messages.de-CH';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { BarcodeScanner } from '../scan/BarcodeScanner';
+import { nutritionFacts } from './receipt-steps';
 
 const t = messages.receiptUpload.match;
+const steps = messages.receiptUpload.steps;
 
 export type ReceiptMatch = NonNullable<OperationOutput<'receipts.matchLine'>['match']>;
 
@@ -18,6 +25,9 @@ interface LineMatch {
   match: Found;
   /** Pack picture, once the barcode was looked up (stored on the device as a data URL). */
   image?: string;
+  /** Facts per 100 g/ml and Nutri-Score of the product, for the preview in the article card. */
+  nutrition?: Nutrition;
+  nutriScore?: 'a' | 'b' | 'c' | 'd' | 'e';
 }
 
 interface MatchState {
@@ -32,6 +42,17 @@ interface MatchState {
   phase: 'idle' | 'running' | 'done' | 'unavailable';
   done: number;
   total: number;
+}
+
+/** Picture and facts of a looked-up product, as far as there are any. */
+function preview(
+  looked: { product: ProductLookup | null; image: string | undefined } | undefined,
+): Pick<LineMatch, 'image' | 'nutrition' | 'nutriScore'> {
+  return {
+    ...(looked?.image === undefined ? {} : { image: looked.image }),
+    ...(looked?.product?.nutrition === undefined ? {} : { nutrition: looked.product.nutrition }),
+    ...(looked?.product?.nutriScore === undefined ? {} : { nutriScore: looked.product.nutriScore }),
+  };
 }
 
 const IDLE: MatchState = {
@@ -71,6 +92,30 @@ export function useReceiptMatching() {
     return { product: found?.product ?? null, image };
   }
 
+  /**
+   * The picture is stored in the background after the first lookup (catalog cache), so it is
+   * usually not there yet when the hit shows. Ask again a few times, on the device only.
+   */
+  async function pictureLater(index: number, gtin: ReceiptMatch['gtin'], mine: number) {
+    for (const wait of [500, 1500, 3500]) {
+      await new Promise((resolve) => setTimeout(resolve, wait));
+      if (run.current !== mine) {
+        return;
+      }
+      const image = (await inventory['products.image']({ householdId, gtin }).catch(() => null))
+        ?.image?.dataUrl;
+      if (image !== undefined) {
+        setState((previous) => {
+          const found = previous.matches.get(index);
+          return found === undefined || found.match.gtin !== gtin
+            ? previous
+            : { ...previous, matches: new Map(previous.matches).set(index, { ...found, image }) };
+        });
+        return;
+      }
+    }
+  }
+
   async function start(lines: readonly { index: number; name: string }[]) {
     const mine = (run.current += 1);
     const current = () => run.current === mine;
@@ -85,15 +130,18 @@ export function useReceiptMatching() {
       );
       unavailable ||= result.openDatabase === 'unavailable';
       const { match } = result;
-      const image = match === undefined ? undefined : (await lookup(match.gtin)).image;
+      const looked = match === undefined ? undefined : await lookup(match.gtin);
       if (!current()) {
         return;
+      }
+      if (match !== undefined && looked?.image === undefined) {
+        void pictureLater(line.index, match.gtin, mine);
       }
       setState((previous) => {
         const matches = new Map(previous.matches);
         const decisions = new Map(previous.decisions);
         if (match !== undefined) {
-          matches.set(line.index, { match, ...(image === undefined ? {} : { image }) });
+          matches.set(line.index, { match, ...preview(looked) });
           // Confirmed on an earlier receipt: no need to ask again.
           if (match.source === 'household') {
             decisions.set(line.index, 'yes');
@@ -123,6 +171,9 @@ export function useReceiptMatching() {
       return;
     }
     const { product, image } = await lookup(gtin);
+    if (product !== null && image === undefined) {
+      void pictureLater(index, gtin, run.current);
+    }
     setState((previous) => {
       const scanNotes = new Map(previous.scanNotes);
       if (product === null) {
@@ -141,10 +192,7 @@ export function useReceiptMatching() {
       return {
         ...previous,
         // The person scanned this very pack: that is the confirmation.
-        matches: new Map(previous.matches).set(index, {
-          match,
-          ...(image === undefined ? {} : { image }),
-        }),
+        matches: new Map(previous.matches).set(index, { match, ...preview({ product, image }) }),
         decisions: new Map(previous.decisions).set(index, 'yes'),
         scanNotes,
         scanning: null,
@@ -206,23 +254,56 @@ export function MatchPanel({ matching }: { matching: ReceiptMatching }) {
 
 const SOURCE_LABEL = { household: t.known, scan: t.scanned } as const;
 
-/** Under a receipt line: the hit with «Ist es das?», or «Barcode scannen» when there is none. */
-export function MatchRow({
+/** Key values per 100 g/ml and the Nutri-Score chip, in one compact line. */
+function Facts({ found }: { found: LineMatch }) {
+  const facts = nutritionFacts(found.nutrition);
+  if (facts === null && found.nutriScore === undefined) {
+    return null;
+  }
+  return (
+    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-ink-muted">
+      {facts === null ? null : (
+        <p>
+          <span>{steps.per[facts.basis]}: </span>
+          {facts.values.map((value) => steps.facts[value.key](value.text)).join(' · ')}
+        </p>
+      )}
+      {found.nutriScore === undefined ? null : (
+        <span className="rounded-full bg-surface-muted px-2.5 py-0.5 font-semibold whitespace-nowrap text-ink">
+          {steps.nutriScore(found.nutriScore.toUpperCase())}
+        </span>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Step «Produkt» of an article card: the hit shown larger (picture, name, brand, size, key values)
+ * with «Ist es das?» «Ja»/«Nein», or «Barcode scannen» when there is none.
+ */
+export function ProductStep({
   matching,
   index,
   name,
+  asks,
 }: {
   matching: ReceiptMatching;
   index: number;
   name: string;
+  /** False for loose produce and weighed goods: nothing to confirm. */
+  asks: boolean;
 }) {
   const found = matching.matches.get(index);
   const decision = matching.decisions.get(index);
   const note = matching.scanNotes.get(index);
 
+  if (!asks) {
+    return <p className="text-sm text-ink-muted">{steps.loose}</p>;
+  }
+
   if (matching.scanning === index) {
     return (
-      <div className="space-y-2 pr-4 pb-4 pl-14">
+      <div className="space-y-2">
         <BarcodeScanner
           onCode={(raw) => {
             void matching.scanned(index, raw);
@@ -250,22 +331,23 @@ export function MatchRow({
           : t.maybe
         : SOURCE_LABEL[match.source];
     return (
-      <div className="space-y-2 pr-4 pb-3 pl-14">
-        <div className="flex items-center gap-3">
+      <div className="space-y-3">
+        <div className="flex items-start gap-3">
           {image === undefined ? null : (
             <img
               src={image}
               alt=""
-              className="size-10 shrink-0 rounded-lg bg-white object-contain"
+              className="size-16 shrink-0 rounded-xl bg-white object-contain"
             />
           )}
           <p className="min-w-0 flex-1 text-sm">
             <span className="block text-ink-muted">{label}</span>
-            <span className="line-clamp-2 block font-semibold break-words">
+            <span className="line-clamp-3 block font-semibold break-words">
               {[match.name, match.brand, match.packSize].filter(Boolean).join(' · ')}
             </span>
           </p>
         </div>
+        <Facts found={found} />
         <div className="flex items-center gap-2">
           <span className="mr-auto text-sm font-semibold">
             {decision === 'yes' ? t.taken : t.question}
@@ -303,10 +385,12 @@ export function MatchRow({
   }
 
   if (!matching.asked.has(index) && decision !== 'no') {
-    return null;
+    return matching.phase === 'running' ? (
+      <p className="text-sm text-ink-muted">{steps.checking}</p>
+    ) : null;
   }
   return (
-    <div className="flex flex-wrap items-center gap-2 pr-4 pb-3 pl-14">
+    <div className="flex flex-wrap items-center gap-2">
       <span className="mr-auto text-sm text-ink-muted">
         {note ?? (decision === 'no' ? t.rejected : t.none)}
       </span>
