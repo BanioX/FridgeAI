@@ -75,6 +75,13 @@ export function AppDataProvider({ children, db }: { children: ReactNode; db?: Fr
           search: rateLimitedSearch(openFoodFactsSearch()),
           localSearch: shippedCatalogSearch(),
         };
+        const inventory = createInventoryHandlers(context);
+        // Items that once landed in «Sonstiges» move to their category as soon as the
+        // recognition knows them; only what nobody touched (ADR-0045). Quiet on failure.
+        void inventory['inventory.recategorize']({
+          commandId: browserIds.next(),
+          householdId: profile.household.id,
+        }).catch(() => undefined);
         setData({
           db: database,
           householdId: profile.household.id,
@@ -82,7 +89,7 @@ export function AppDataProvider({ children, db }: { children: ReactNode; db?: Fr
           ids: browserIds,
           currency: householdCurrency(profile.household),
           today: browserClock.today(),
-          inventory: createInventoryHandlers(context),
+          inventory,
           shopping: createShoppingUseCases(appContext(context)),
           household: createHouseholdHandlers(context),
         });
