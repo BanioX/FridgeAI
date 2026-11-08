@@ -17,14 +17,28 @@ const ROOT_LINES = ['M206 262q14 6 28 3', 'M286 300q-12 6-26 4', 'M222 340q12 5 
  * «Dein Rettich» on Start (ADR-0043): one leaf for each confirmed rescue this month, a bigger
  * radish from stage to stage, and the onyx tile of «Vorbild» at the milestone.
  */
-export function RettichGrowth({ rescues }: { rescues: number }) {
+/**
+ * `centered` stacks the Rettich over its text on one middle axis, e.g. above the two rings of the
+ * «Bilanz» (Alban, 8.11.2026: «Ich will Symmetrie»).
+ */
+export function RettichGrowth({
+  rescues,
+  centered = false,
+}: {
+  rescues: number;
+  centered?: boolean;
+}) {
   const growth = growthOf(rescues);
   const stage = t.stages[growth.stage];
   const scale = SCALE[growth.stage];
   const angles = leafAngles(growth.leaves);
   const model = growth.stage === 'model';
   return (
-    <div className="flex items-center gap-4">
+    <div
+      className={
+        centered ? 'flex flex-col items-center gap-2 text-center' : 'flex items-center gap-4'
+      }
+    >
       <svg
         role="img"
         aria-label={t.label(stage, growth.leaves)}

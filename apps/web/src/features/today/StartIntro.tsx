@@ -76,8 +76,8 @@ export function StartIntro() {
       </section>
 
       <Card className="space-y-3">
-        <RettichGrowth rescues={0} />
-        <p className="text-sm text-ink-muted">{t.growth}</p>
+        <RettichGrowth rescues={0} centered />
+        <p className="text-center text-sm text-ink-muted">{t.growth}</p>
       </Card>
 
       <Card variant="tip">
