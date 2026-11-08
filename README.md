@@ -28,7 +28,7 @@ Local-first PWA für Schweizer Haushalte (WGs, Paare, Familien) gegen Food Waste
 
 ## Was die App heute kann
 
-Unten die Tabs **Start · Vorrat · ＋ Erfassen · Mehr** ([ADR-0031](docs/adr/0031-tab-navigation.md), [ADR-0040](docs/adr/0040-no-recipes.md)). Hinter ＋ liegen alle Wege in den Vorrat, unter «Mehr» Berichte, Nachkaufen und deine Daten. Rezepte gibt es nicht mehr; der freie Platz geht an «Wissen».
+Unten fünf Tabs: **Start · Vorrat · ＋ Erfassen · Wissen · Mehr** ([ADR-0031](docs/adr/0031-tab-navigation.md), [ADR-0041](docs/adr/0041-knowledge-tab.md)). Hinter ＋ liegen alle Wege in den Vorrat, unter «Wissen» was wie lange hält, unter «Mehr» Berichte, Nachkaufen und deine Daten. Rezepte gibt es nicht mehr ([ADR-0040](docs/adr/0040-no-recipes.md)).
 
 | Bereich | Funktion |
 | --- | --- |
@@ -46,6 +46,7 @@ Unten die Tabs **Start · Vorrat · ＋ Erfassen · Mehr** ([ADR-0031](docs/adr/
 | **Produktdaten** | Nach dem Scan: Bild, Marke, Nährwerte, Nutri-Score, Allergene (Open Food Facts, 30 Tage offline); fehlen die Nährwerte, liest Rettich sie aus einem Foto oder Screenshot der Nährwerttabelle, auf dem Gerät |
 | **Nachkaufen** | Unter «Mehr»: «Du hast noch …» gegen Doppelkäufe, abhaken, «In den Vorrat legen» |
 | **Wirkung** | Gerettet (selbst bestätigt: «ohne Rettich im Abfall gelandet») und weggeworfen diesen Monat in CHF und Artikeln, «x % gerettet von allem, was knapp wurde» ([ADR-0039](docs/adr/0039-rescue-confirmed.md)) |
+| **Wissen** | «Kurz erklärt» (Mindesthaltbarkeits- und Verbrauchsdatum, richtig kühlen, einfrieren) und «Haltbarkeit A–Z»: jede Kategorie mit Score 1–10, wie lange sie zu, offen und eingefroren hält, und Tipps; mit Suche |
 | **Mehr** | Berichte, Verlauf, Nachkaufen, App installieren; Daten als JSON exportieren, wieder importieren oder löschen, Datenschutz in Kürze |
 
 **Aussehen:** drei Premium-Töne (Smaragd, Silber, Onyx) nach Apples Human Interface Guidelines, Symbol: ein aufrechter weisser Rettich ([`docs/design.md`](docs/design.md)).

@@ -31,7 +31,13 @@ describe('AppShell', () => {
       within(nav)
         .getAllByRole('link')
         .map((link) => link.textContent),
-    ).toEqual([messages.nav.start, messages.nav.inventory, messages.nav.add, messages.nav.more]);
+    ).toEqual([
+      messages.nav.start,
+      messages.nav.inventory,
+      messages.nav.add,
+      messages.nav.knowledge,
+      messages.nav.more,
+    ]);
     expect(
       within(nav).getByRole('link', { name: messages.nav.start }).getAttribute('aria-current'),
     ).toBe('page');

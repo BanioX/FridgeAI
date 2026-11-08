@@ -51,3 +51,5 @@ Alban, nach den Vorschaubildern: «Ich brauche 5 Menüs. ＋ ist in der Mitte, S
 ## Nachtrag (8.11.2026)
 
 «Kochen» fällt mit allen Rezepten weg ([ADR-0040](0040-no-recipes.md)). Die Leiste ist vorübergehend Start · Vorrat · ＋ · Mehr; der Platz geht an «Wissen».
+
+Seit [ADR-0041](0041-knowledge-tab.md) steht dort «Wissen»: Start · Vorrat · ＋ · Wissen · Mehr.
