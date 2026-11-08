@@ -535,6 +535,11 @@ export const messages = {
       'Was du verwertet oder entsorgt hast, mit dem Anteil am Preis. Einen falschen Eintrag kannst du ändern oder löschen. Beim Löschen kommt die Menge zurück in den Vorrat.',
     periodLegend: 'Zeitraum',
     periods: { month: 'Dieser Monat', quarter: 'Letzte 3 Monate', year: 'Dieses Jahr' },
+    /** Which entries to show; the rings of the «Bilanz» open the journal with one of them. */
+    showLegend: 'Zeigen',
+    show: { all: 'Alle', eaten: 'Verwertet', wasted: 'Entsorgt' },
+    total: (value: string, count: number) =>
+      `Total ${value} · ${count === 1 ? '1 Eintrag' : `${String(count)} Einträge`}`,
     empty: 'In diesem Zeitraum hast du nichts abgeschlossen.',
     estimated: 'geschätzt',
     removeLabel: (name: string) => `Eintrag ${name} löschen`,
