@@ -445,6 +445,16 @@ export const CONTRACT_V1 = {
     input: z.object({ ...commandBase, itemId: IdSchema }),
     output: z.object({ itemId: IdSchema }),
   }),
+  'inventory.recategorize': command({
+    name: 'inventory.recategorize',
+    summary: {
+      de: 'Artikel aus «Sonstiges» neu einordnen, wenn die Erkennung sie inzwischen kennt.',
+      en: 'Sort items out of «Sonstiges» once the recognition knows them.',
+    },
+    scopes: ['inventory:write'],
+    input: z.object({ ...commandBase }),
+    output: z.object({ itemIds: z.array(IdSchema) }),
+  }),
   'inventory.restoreItem': command({
     name: 'inventory.restoreItem',
     summary: {

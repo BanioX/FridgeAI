@@ -45,3 +45,7 @@ Rechtliche Lage (keine Rechtsberatung): Das Lesen öffentlicher Seiten ist eine 
 - `receipts.matchLine` fragt in dieser Reihenfolge: frühere Quittungen des Haushalts, dann der mitgelieferte Katalog, dann Open Food Facts. Ist der Treffer im Katalog sicher, geht kein Produktname mehr ins Netz. Die Quelle heisst dann `catalog`; die App nennt sie wie Open Food Facts, weil die Daten von dort stammen (ODbL, Namensnennung).
 - Die App lädt die Datei (etwa 90 kB gepackt) erst bei der ersten Quittung, der Service Worker hält sie danach offline bereit (`StaleWhileRevalidate`).
 - `retail-ch.json` (Aldi, ohne Barcodes) nutzt die App noch nicht. Ein Treffer ohne Barcode braucht eine Änderung der Schnittstelle (`gtin` optional) und kommt mit der Suche beim Erfassen.
+
+## Alte Artikel neu einordnen
+
+Alban (8.11.2026): «Mache alles selber frisch upgedatet.» Artikel, die früher in «Sonstiges» gelandet sind, ordnet `inventory.recategorize` bei jedem Start der App neu ein, sobald die Erkennung sie kennt. Mit der Kategorie wechseln ihr Ort und das geschätzte Datum. Angefasst wird nur, was niemand geändert hat: noch «Sonstiges», Datum noch geschätzt, Ort noch der Vorrat. Jede Änderung läuft als `inventory.updateItem` mit eigenem Ereignis.

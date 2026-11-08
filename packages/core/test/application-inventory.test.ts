@@ -6,8 +6,10 @@ import {
   createMemoryStorage,
   GtinSchema,
   HouseholdSchema,
+  InventoryItemSchema,
   IsoDateTimeSchema,
   localDate,
+  ProductSchema,
   uuidV7,
   type Id,
   type Storage,
@@ -213,5 +215,60 @@ describe('household.export', () => {
     await expect(exporter['household.export']({ householdId: id(99) })).rejects.toMatchObject({
       code: 'not_found',
     });
+  });
+});
+
+describe('inventory.recategorize', () => {
+  /** An item from before the better recognition: «Sonstiges» in the pantry, date estimated. */
+  async function oldItem(name: string, changes: Record<string, unknown> = {}) {
+    const product = ProductSchema.parse({
+      id: next(),
+      householdId,
+      updatedAt: now,
+      name,
+      categoryId: 'pantry-other',
+      defaultLocation: 'pantry',
+      source: 'receipt',
+    });
+    await storage.products.add(product);
+    const item = InventoryItemSchema.parse({
+      id: next(),
+      householdId,
+      updatedAt: now,
+      productId: product.id,
+      location: 'pantry',
+      quantity: 1,
+      unit: 'pcs',
+      purchasedAt: now,
+      expiresOn: '2026-12-07',
+      expiryKind: 'best_before',
+      expirySource: 'category_estimate',
+      owner: 'shared',
+      status: 'active',
+      ...changes,
+    });
+    await storage.items.add(item);
+    return item.id;
+  }
+
+  it('sorts untouched «Sonstiges» items into the category, its place and a new estimate', async () => {
+    const cherries = await oldItem('Kirschen lose');
+    const unknown = await oldItem('Dingsbums');
+    const datedByHand = await oldItem('Nektarinen', { expirySource: 'manual' });
+    const movedByHand = await oldItem('Pflaumen', { location: 'fridge' });
+    const result = await inventory['inventory.recategorize']({ commandId: next(), householdId });
+    expect(result.itemIds).toEqual([cherries]);
+    const item = await storage.items.get(cherries);
+    expect(item?.location).toBe('fridge');
+    expect(item?.expiresOn).toBe('2026-11-13');
+    const product = item === undefined ? undefined : await storage.products.get(item.productId);
+    expect(product?.categoryId).toBe('produce-fruit');
+    for (const untouched of [unknown, datedByHand, movedByHand]) {
+      expect((await storage.items.get(untouched))?.updatedAt).toBe(now);
+    }
+    // Nothing left to do the second time.
+    expect(
+      (await inventory['inventory.recategorize']({ commandId: next(), householdId })).itemIds,
+    ).toEqual([]);
   });
 });
