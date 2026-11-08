@@ -16,6 +16,8 @@ export interface ReportItem {
   expiryKind?: DateKind | undefined;
   valueRappen: Rappen;
   valueEstimated: boolean;
+  /** Where it was bought (from its receipt); only known shops. */
+  retailer?: Retailer | undefined;
 }
 
 /** A closed item (eaten, shared, thrown away) with the category of its product. */

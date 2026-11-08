@@ -25,6 +25,23 @@ describe('reportPdf', () => {
     }
   });
 
+  it('draws the shop letter of items from a receipt', async () => {
+    const report = sampleReport();
+    expect(report.fridge.items.some((item) => item.retailer === 'coop')).toBe(true);
+    const without = {
+      ...report,
+      fridge: {
+        ...report.fridge,
+        items: report.fridge.items.map((item) => ({ ...item, retailer: undefined })),
+        urgent: report.fridge.urgent.map((item) => ({ ...item, retailer: undefined })),
+      },
+    };
+    // The shop letter and the shop in the detail line make the page content longer.
+    const [with_, plain] = [await render(report), await render(without)];
+    expect(new TextDecoder().decode(with_.slice(0, 5))).toBe('%PDF-');
+    expect(with_.length).toBeGreaterThan(plain.length);
+  });
+
   it('draws an empty report without failing', async () => {
     const empty = buildReport({
       today: localDate('2026-11-07'),

@@ -26,6 +26,7 @@ import { PriceMemoryNote } from '../receipts/PriceMemoryNote';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { ChoiceChips } from '../../ui/ChoiceChips';
+import { ShopBadge } from '../../ui/ShopBadge';
 import { ScoreRing } from '../../ui/ScoreRing';
 import { StatusChip } from '../../ui/StatusChip';
 import { describeDate } from '../../ui/date-text';
@@ -252,6 +253,12 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
             </p>
           )}
           <p className="text-ink-muted">{itemMeta(item)}</p>
+          {item.retailer === undefined ? null : (
+            <p className="mt-0.5 flex items-center gap-2 text-ink-muted">
+              <ShopBadge retailer={item.retailer} size={20} />
+              {t.boughtAt(messages.receiptUpload.retailers[item.retailer])}
+            </p>
+          )}
           <PriceMemoryNote name={item.name} />
           {image === undefined ? null : (
             <a

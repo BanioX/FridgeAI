@@ -7,6 +7,7 @@ import {
   type LocalDate,
   type Report,
   type ReportItem,
+  type Retailer,
   type StorageLocation,
 } from '@fridgeai/core';
 import type { jsPDF } from 'jspdf';
@@ -28,6 +29,8 @@ import {
   PAGE,
   PDF_COLOR as C,
   placeBadge,
+  SHOP_MARK,
+  shopMark,
   ring,
   roundedPicture,
   stack,
@@ -298,6 +301,8 @@ interface ListRow {
   chip: { label: string; tone: Tone };
   /** Fridge, freezer, pantry or reserve, as a badge in the middle of the row. */
   place?: StorageLocation;
+  /** The shop it was bought at, as a small letter tile left of the place badge. */
+  shop?: Retailer;
   value?: string;
 }
 
@@ -348,7 +353,7 @@ function list({ doc, pictures }: Context, rows: readonly ListRow[], y: number): 
       const textX = box.x + 17;
       const chipLeft = right - (valueWidth > 0 ? valueWidth + 4 : 0) - chipWidth;
       // The place badges stand in one column in the middle, the name ends before them.
-      const textEnd =
+      let textEnd =
         row.place === undefined
           ? chipLeft - 4
           : placeBadge(
@@ -357,6 +362,14 @@ function list({ doc, pictures }: Context, rows: readonly ListRow[], y: number): 
               { left: box.x + box.width * 0.47, limit: chipLeft - 3, middle },
               LOCATION_COLOR[row.place],
             ) - 4;
+      // The shop's letter sits left of the place badge; without 30 mm left for the name it stays out.
+      if (row.shop !== undefined && row.shop !== 'other' && row.place !== undefined) {
+        const markLeft = textEnd - SHOP_MARK + 2;
+        if (markLeft - 2 - textX >= 30) {
+          shopMark(doc, row.shop, markLeft, middle);
+          textEnd = markLeft - 2;
+        }
+      }
       const textWidth = textEnd - textX;
       write(
         doc,
@@ -399,9 +412,13 @@ function itemRow(report: Report, item: ReportItem, value?: string): ListRow {
   return {
     icon: emojiOf(item.categoryId),
     name: item.name,
-    detail: formatQuantity(item.quantity, item.unit),
+    detail:
+      item.retailer === undefined
+        ? formatQuantity(item.quantity, item.unit)
+        : `${formatQuantity(item.quantity, item.unit)} · ${messages.receiptUpload.retailers[item.retailer]}`,
     chip: badge,
     place: item.location,
+    ...(item.retailer === undefined ? {} : { shop: item.retailer }),
     ...(value === undefined ? {} : { value }),
   };
 }

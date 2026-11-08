@@ -1,4 +1,5 @@
 import type { InventoryItemView } from '@fridgeai/core';
+import { messages } from '../../app/messages.de-CH';
 import { ItemRow } from '../../ui/ItemRow';
 import type { Tone } from '../../ui/tones';
 import { itemMeta } from './item-meta';
@@ -26,6 +27,14 @@ export function InventoryItemRow({
       status={status}
       chevron={chevron}
       sliced={sliced}
+      shop={
+        item.retailer === undefined
+          ? undefined
+          : {
+              retailer: item.retailer,
+              label: messages.itemDetail.boughtAt(messages.receiptUpload.retailers[item.retailer]),
+            }
+      }
     />
   );
 }

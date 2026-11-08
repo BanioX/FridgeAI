@@ -1,4 +1,6 @@
 import { ChevronRight } from 'lucide-react';
+import type { Retailer } from '@fridgeai/core';
+import { ShopBadge } from './ShopBadge';
 import { StatusChip } from './StatusChip';
 import type { Tone } from './tones';
 
@@ -13,6 +15,8 @@ interface ItemRowProps {
   chevron?: boolean;
   /** Plays the «slice» of the picture (two halves fly apart) after a swipe. */
   sliced?: boolean;
+  /** Where it was bought (from its receipt): the shop letter before the meta line, `label` for screen readers. */
+  shop?: { retailer: Retailer; label: string } | undefined;
 }
 
 /**
@@ -27,6 +31,7 @@ export function ItemRow({
   status,
   chevron = false,
   sliced = false,
+  shop,
 }: ItemRowProps) {
   const picture =
     image === undefined ? (
@@ -72,7 +77,15 @@ export function ItemRow({
       <div className="flex min-w-0 flex-1 items-center gap-3 max-[359px]:flex-col max-[359px]:items-start max-[359px]:gap-1">
         <div className="min-w-0 flex-1 max-[359px]:w-full">
           <p className="truncate font-semibold">{name}</p>
-          <p className="truncate text-sm text-ink-muted">{meta}</p>
+          <p className="flex items-center gap-1.5 text-sm text-ink-muted">
+            {shop === undefined ? null : (
+              <>
+                <ShopBadge retailer={shop.retailer} size={16} />
+                <span className="sr-only">{shop.label}. </span>
+              </>
+            )}
+            <span className="truncate">{meta}</span>
+          </p>
         </div>
         <StatusChip tone={status.tone}>{status.label}</StatusChip>
       </div>
