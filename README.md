@@ -41,7 +41,7 @@ Unten fünf Tabs: **Start · Vorrat · ＋ Erfassen · Kochen · Mehr** ([ADR-00
 | **Abschliessen** | Gegessen, weitergegeben (an wen), weggeworfen (warum) – ganz oder in sinnvollen Portionen (⅛ Kuchen, ⅓ Käse, 2 von 4 Joghurts) |
 | **Öffnungsregel** | «Nach dem Öffnen innert 21 Tagen» verkürzt das Datum automatisch |
 | **Einfrieren** | Umlagern mit neu geschätztem Datum |
-| **Kühlschrank-Check** | Einmal pro Woche jeden Artikel kurz bestätigen: noch da, halb, gegessen oder weggeworfen |
+| **Kühlschrank-Check** | Einmal pro Woche jeden heiklen Artikel kurz bestätigen: noch da, halb, gegessen oder weggeworfen; Robustes wie Getränke und ungeöffnete Saucen lässt er aus |
 | **Korrigieren** | Rückgängig nach Gegessen/Weggeworfen, dazu «Nachkaufen» mit einem Tipp; Name, Kategorie, Ort, Datum, Menge und Preis ändern; Artikel löschen; im «Verlauf» unter «Mehr» Gegessenes, Weitergegebenes und Weggeworfenes nachträglich ändern oder löschen |
 | **Produktdaten** | Nach dem Scan: Bild, Marke, Nährwerte, Nutri-Score, Allergene (Open Food Facts, 30 Tage offline); fehlen die Nährwerte, liest Rettich sie aus einem Foto oder Screenshot der Nährwerttabelle, auf dem Gerät |
 | **Kochen** | Bis zu zehn Rezepte, die retten, was bald abläuft (drei davon auf «Start»); alle Rezepte, zuerst was mit deinem Vorrat geht, Filter Feierabend (höchstens 15 Minuten, nichts einkaufen), Schnell, Vegetarisch, Vegan, Eiweissreich; was fehlt, mit einem Tipp zu «Nachkaufen»; nach dem Kochen abbuchen |
