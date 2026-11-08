@@ -19,10 +19,11 @@ import {
   type InputUnit,
   type LocalDate,
   type StorageLocation,
+  type WasteHabit,
   rappen,
 } from '@fridgeai/core';
-import { useId, useRef, useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { useEffect, useId, useRef, useState } from 'react';
+import { ChevronDown, Lightbulb } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { useMoney } from '../../app/money';
@@ -83,6 +84,23 @@ export function AddItemPage() {
   const [unitChoice, setUnitChoice] = useState<InputUnit | null>(null);
   const [containerChoice, setContainerChoice] = useState<Container | '' | null>(null);
   const [dateChoice, setDateChoice] = useState<{ value: LocalDate | null } | null>(null);
+  /** What the household often throws away (ADR-0038), for a hint while adding more of it. */
+  const [habits, setHabits] = useState<readonly WasteHabit[]>([]);
+  useEffect(() => {
+    let active = true;
+    inventory['products.wasteHabits']({ householdId })
+      .then(({ habits: found }) => {
+        if (active) {
+          setHabits(found);
+        }
+      })
+      .catch(() => {
+        // Only a hint: without it the form works the same.
+      });
+    return () => {
+      active = false;
+    };
+  }, [householdId, inventory]);
   /** Cheese, cold cuts or a dip from the counter keep only as long as an open pack. */
   const [bought, setBought] = useState<'packed' | 'loose'>('packed');
   const [priceText, setPriceText] = useState('');
@@ -112,6 +130,8 @@ export function AddItemPage() {
   const unit = unitChoice ?? suggestion.unit;
   const amountValue = amountText ?? formatAmount(suggestion.amount);
   const container = containerChoice ?? portioning.container ?? '';
+  const habit =
+    knownCategory === null ? undefined : habits.find((entry) => entry.categoryId === category.id);
   const looseDays =
     category.soldLoose === true && location === 'fridge' ? category.afterOpeningDays : undefined;
   const loose = bought === 'loose' && looseDays !== undefined;
@@ -328,6 +348,16 @@ export function AddItemPage() {
             onPick={pickFound}
           />
         </div>
+
+        {habit === undefined ? null : (
+          <Card variant="tip" className="flex items-start gap-3">
+            <Lightbulb className="mt-0.5 shrink-0 text-basil-600" size={22} aria-hidden="true" />
+            <p>
+              <strong>{t.habit(habit.times, habit.names)}</strong>
+              {habit.tip === undefined ? null : ` ${habit.tip}`}
+            </p>
+          </Card>
+        )}
 
         {looseDays === undefined ? null : (
           <div className="space-y-2">

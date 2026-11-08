@@ -14,6 +14,7 @@ Damit Mensch und Maschine dasselbe meinen: Wort in der App (de-CH), Name im Code
 | **Vorrat** (Tab) | `inventory` | alles, was im Haushalt ist, über alle Lagerorte | – |
 | **Haltbarkeit** heikel, mittel, robust | `perishability`, `needsWatching` | Wie schnell eine Kategorie verdirbt; der Kühlschrank-Check fragt Robustes mit fernem Datum nicht ab (ADR-0038) | – |
 | **Von der Theke** | `soldLoose`, `openedOn` | Offen gekauft (Käse, Aufschnitt, Dips): hält ab Kauf wie eine geöffnete Packung (ADR-0038) | – |
+| **Das wirfst du oft weg** | `products.wasteHabits`, `wasteHabits` | Kategorie mit mindestens zwei Mal «Weggeworfen» in 90 Tagen; beim Erfassen kommt ein Tipp (ADR-0038) | – |
 | **Lagerort** | `StorageLocation` | `fridge` Kühlschrank, `freezer` Tiefkühler, `pantry` Vorrat, `reserve` Notvorrat | de-DE «Gefrierschrank», «Vorratsschrank» |
 | **Haltbar bis** | `expiresOn` (`LocalDate`, Europe/Zurich) | Kalendertag, an dem etwas abläuft | – |
 | **Mindestens haltbar / Zu verbrauchen** | `DateKind`: `best_before` / `use_by` | MHD darf man prüfen und oft noch essen, Verbrauchsdatum nicht | de-AT «mindestens haltbar bis» |

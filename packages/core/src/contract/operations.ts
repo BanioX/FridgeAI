@@ -249,6 +249,15 @@ export const FrequentProductSchema = z.object({
 });
 export type FrequentProduct = z.infer<typeof FrequentProductSchema>;
 
+/** A category thrown away at least twice lately, with a tip (ADR-0038). */
+export const WasteHabitSchema = z.object({
+  categoryId: CategoryIdSchema,
+  times: z.int().min(1),
+  names: z.array(z.string()),
+  lastOn: LocalDateSchema,
+  tip: z.string().optional(),
+});
+
 export const ExpiryStatusSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('fresh'), daysLeft: z.int() }),
   z.object({ kind: z.literal('soon'), daysLeft: z.int() }),
@@ -615,6 +624,16 @@ export const CONTRACT_V1 = {
     scopes: ['inventory:read'],
     input: z.object({ ...queryBase, limit: z.int().min(1).max(20).default(8) }),
     output: z.object({ products: z.array(FrequentProductSchema) }),
+  }),
+  'products.wasteHabits': query({
+    name: 'products.wasteHabits',
+    summary: {
+      de: 'Was der Haushalt in den letzten drei Monaten mehrmals weggeworfen hat, mit einem Tipp.',
+      en: 'What the household threw away more than once in the last three months, with a tip.',
+    },
+    scopes: ['stats:read'],
+    input: z.object({ ...queryBase }),
+    output: z.object({ habits: z.array(WasteHabitSchema) }),
   }),
   'products.image': query({
     name: 'products.image',
