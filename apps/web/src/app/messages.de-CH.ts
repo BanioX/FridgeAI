@@ -5,6 +5,7 @@ export const messages = {
     start: 'Start',
     inventory: 'Vorrat',
     add: 'Erfassen',
+    knowledge: 'Wissen',
     more: 'Mehr',
   },
   pages: {
@@ -13,6 +14,7 @@ export const messages = {
     add: 'Erfassen',
     receipt: 'Quittung hochladen',
     shopping: 'Nachkaufen',
+    knowledge: 'Wissen',
     more: 'Mehr',
     history: 'Verlauf',
     data: 'Daten und Datenschutz',
@@ -357,6 +359,52 @@ export const messages = {
     remove: (name: string) => `${name} löschen`,
     toInventory: 'In den Vorrat legen',
     failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
+  },
+  /** «Wissen» (ADR-0041): what keeps how long, and how it stays good longer. */
+  knowledge: {
+    intro: 'Was wie lange hält und wie es länger gut bleibt.',
+    explainTitle: 'Kurz erklärt',
+    explain: [
+      {
+        title: 'Mindestens haltbar bis',
+        text: 'Bis zu diesem Datum garantiert der Hersteller die Qualität. Danach ist vieles noch gut: schauen, riechen, probieren. Es ist kein Wegwerfdatum.',
+      },
+      {
+        title: 'Zu verbrauchen bis',
+        text: 'Steht auf leicht Verderblichem wie Hackfleisch, Poulet, Fisch oder Feinkostsalaten. Nach diesem Datum nicht mehr essen, auch wenn es noch gut aussieht.',
+      },
+      {
+        title: 'Richtig kühlen',
+        text: 'Der Kühlschrank hat höchstens 5 °C. Fleisch und Fisch gehören ganz unten über das Gemüsefach, dort ist es am kältesten. In die Tür kommen Getränke, Butter und Saucen.',
+      },
+      {
+        title: 'Einfrieren und auftauen',
+        text: 'Möglichst frisch einfrieren, gut verpackt und mit Datum. Im Kühlschrank auftauen. Rohes, das aufgetaut ist, nicht wieder einfrieren, gekocht geht es wieder.',
+      },
+    ],
+    guideTitle: 'Haltbarkeit A–Z',
+    search: 'Lebensmittel suchen',
+    searchPlaceholder: 'z. B. Joghurt, Pesto, Hackfleisch',
+    noMatch: 'Dazu kenne ich nichts. Versuch ein anderes Wort.',
+    groups: {
+      dairy: 'Milchprodukte',
+      meat: 'Fleisch',
+      fish: 'Fisch',
+      produce: 'Gemüse und Früchte',
+      bakery: 'Brot und Gebäck',
+      prepared: 'Fertiges und Dips',
+      pantry: 'Vorrat',
+      drinks: 'Getränke',
+      frozen: 'Tiefkühl',
+      reserve: 'Notvorrat',
+      non_food: 'Haushalt',
+    },
+    keeps: (time: string, place: string) => `Hält ${time} (${place})`,
+    opened: (time: string) => `offen ${time}`,
+    freezer: (time: string) => `Einfrieren: hält ${time}`,
+    noFreezer: 'Nicht zum Einfrieren',
+    scoreLabel: (score: number, level: string) => `Haltbarkeit ${String(score)} von 10, ${level}`,
+    levels: { high: 'heikel', medium: 'mittel', low: 'robust' },
   },
   more: {
     install: 'Rettich als App',

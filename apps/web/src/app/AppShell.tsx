@@ -1,4 +1,4 @@
-import { CircleEllipsis, House, Plus, Refrigerator, type LucideIcon } from 'lucide-react';
+import { BookOpen, CircleEllipsis, House, Plus, Refrigerator, type LucideIcon } from 'lucide-react';
 import { Link, Outlet, useLocation } from 'react-router';
 import { messages } from './messages.de-CH';
 
@@ -13,13 +13,14 @@ interface NavItem {
 }
 
 /**
- * Five tabs (ADR-0031): Start, Vorrat, ＋ Erfassen in the middle, Kochen, Mehr. Everything else
+ * Five tabs (ADR-0031, ADR-0041): Start, Vorrat, ＋ Erfassen in the middle, Wissen, Mehr. Everything else
  * hangs off «Mehr».
  */
 const navItems: readonly NavItem[] = [
   { to: '/', label: messages.nav.start, icon: House },
   { to: '/inventory', label: messages.nav.inventory, icon: Refrigerator },
   { to: '/add', label: messages.nav.add, icon: Plus, also: ['/inventory/new'], primary: true },
+  { to: '/knowledge', label: messages.nav.knowledge, icon: BookOpen },
   { to: '/more', label: messages.nav.more, icon: CircleEllipsis, also: ['/shopping'] },
 ];
 

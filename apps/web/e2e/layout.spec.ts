@@ -22,6 +22,7 @@ test('no page scrolls sideways on a phone, even with a long «Schnell erfassen»
     '/',
     '/inventory',
     '/add',
+    '/knowledge',
     '/more',
     '/more/reports',
     '/more/history',
