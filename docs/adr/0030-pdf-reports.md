@@ -103,3 +103,16 @@ Alban: «Die Quittung ist wie ein einzelner PDF-Export, quasi ein Quick Summary.
   - Seitenmasse und Fusszeile liegen gemeinsam in `pdf-kit.ts`.
 - **Kern:** Der Bericht liefert neu `impact.wastedItems`, das Weggeworfene einzeln, neuestes zuerst. Ohne Produktnamen steht der Name der Kategorie.
 - **Dateinamen:** `rettich-bericht-JJJJ-MM-TT.pdf` für den ausführlichen Bericht, `rettich-quittung-<art>-JJJJ-MM-TT.pdf` für die Quittungen.
+
+## Nachtrag (8.11.2026): die Onyx-Karte kehrt zurück
+
+Alban zum früheren Entwurf: «Ich liebe das Schwarze im Dashboard, gibt Premium-Look. Und die Kreise ein Augenschmaus.»
+
+- Seit die Quittung ein eigener Kurz-Bericht ist, hat der ausführliche Bericht wieder Platz für die Übersicht.
+- Unter «Dein Bericht» stehen wieder:
+  - die Onyx-Karte mit dem geretteten Betrag;
+  - der Satz «hast du vor dem Abfall gerettet.»;
+  - die Rettungsquote als Ring in Smaragd;
+  - darunter drei gleich grosse Kacheln: Im Vorrat, Weggeworfen, Eingekauft.
+- Danach folgt «Was auffällt». «Pro Monat» beginnt auf Seite 2, damit kein Diagramm zerschnitten wird.
+- `ring` ist zurück in `pdf-kit.ts`, mit Test.

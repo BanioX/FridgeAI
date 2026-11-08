@@ -561,6 +561,12 @@ export const messages = {
         continued: '… Fortsetzung',
       },
       created: (date: string) => `Erstellt am ${date}`,
+      /** The onyx card of the detailed report (Alban, 8.11.2026: «gibt Premium-Look»). */
+      heroSentence: 'hast du vor dem Abfall gerettet.',
+      savedDetail: (kg: string, count: number) => `${kg} Lebensmittel · ${String(count)}× gerettet`,
+      rateLabel: 'gerettet',
+      inStock: 'Im Vorrat',
+      spent: 'Eingekauft',
       saved: 'Gerettet',
       wasted: 'Weggeworfen',
       items: (count: number) => (count === 1 ? '1 Artikel' : `${String(count)} Artikel`),

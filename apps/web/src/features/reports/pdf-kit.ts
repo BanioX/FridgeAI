@@ -402,6 +402,52 @@ export function dashed(
   doc.setLineDashPattern([], 0);
 }
 
+/** A round-capped arc from 12 o'clock, clockwise, over `share` of the circle. */
+function arc(
+  doc: jsPDF,
+  center: { x: number; y: number },
+  radius: number,
+  thickness: number,
+  share: number,
+  color: Rgb,
+): void {
+  const steps = Math.max(12, Math.ceil(share * 144));
+  const point = (step: number) => {
+    const angle = -Math.PI / 2 + (step / steps) * share * 2 * Math.PI;
+    return { x: center.x + radius * Math.cos(angle), y: center.y + radius * Math.sin(angle) };
+  };
+  const start = point(0);
+  const segments: number[][] = [];
+  let last = start;
+  for (let step = 1; step <= steps; step += 1) {
+    const next = point(step);
+    segments.push([next.x - last.x, next.y - last.y]);
+    last = next;
+  }
+  doc.setDrawColor(...color);
+  doc.setLineWidth(thickness);
+  doc.setLineCap('round');
+  doc.setLineJoin('round');
+  doc.lines(segments, start.x, start.y, [1, 1], 'S', false);
+  doc.setLineCap('butt');
+}
+
+/** A ring from 12 o'clock, clockwise: `share` of it in `fill`, the rest in `track`. */
+export function ring(
+  doc: jsPDF,
+  center: { x: number; y: number },
+  radius: number,
+  thickness: number,
+  share: number | null,
+  track: Rgb,
+  fill: Rgb,
+): void {
+  arc(doc, center, radius, thickness, 1, track);
+  if (share !== null && share > 0) {
+    arc(doc, center, radius, thickness, Math.min(1, share), fill);
+  }
+}
+
 /** Two thin rules, the «total» line of a receipt. */
 export function double(doc: jsPDF, from: number, to: number, y: number): void {
   doc.setDrawColor(...PDF_COLOR.ink);
