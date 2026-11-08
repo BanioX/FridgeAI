@@ -51,6 +51,9 @@ export interface Report {
     items: ReportItem[];
   };
   impact: ImpactSummary & {
+    /** Of the saved: what was given away (to neighbours, friends, a fridge) instead of eaten. */
+    sharedRappen: Rappen;
+    sharedCount: number;
     months: { month: string; savedRappen: Rappen; wastedRappen: Rappen }[];
     topWasted: { categoryId: string; count: number; valueRappen: Rappen }[];
     reasons: { reason: WasteReason; count: number }[];
@@ -130,6 +133,7 @@ export function buildReport(input: {
     };
   });
   const wasted = active.filter((outcome) => outcome.outcome === 'wasted');
+  const shared = active.filter((outcome) => outcome.outcome === 'shared_out' && isRescue(outcome));
   const byCategory = new Map<string, { count: number; valueRappen: number }>();
   const byReason = new Map<WasteReason, number>();
   for (const outcome of wasted) {
@@ -174,6 +178,8 @@ export function buildReport(input: {
     },
     impact: {
       ...summarizeImpact(input.outcomes, from, to),
+      sharedRappen: sumRappen(shared.map((outcome) => outcome.valueRappen)),
+      sharedCount: shared.length,
       months,
       topWasted: topBy(byCategory, (entry) => entry.valueRappen, 5).map(([categoryId, entry]) => ({
         categoryId,
