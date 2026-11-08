@@ -1,6 +1,6 @@
 ---
 name: swelper
-generated: swelper 0.1.1
+generated: swelper 0.2.0
 description: Albans Schaltzentrale aus jeder Claude-Code-Sitzung heraus. /swelper status zeigt die Aufträge des aktuellen Kontexts als Baum, /swelper pick zieht einen Auftrag in einen eigenen Worktree, /swelper add legt einen Gedanken in den Trichter, /swelper done meldet einen Auftrag fertig, /swelper report schreibt den Tagesbericht. Use when Alban wants to see, pick, add or finish work in a project that carries .swelper.json.
 ---
 # /swelper
@@ -38,7 +38,7 @@ Werkzeug für Issues: `gh`, wenn vorhanden (`gh issue list --repo BanioX/SWELPER
 1. PR-Link und Branch des Auftrags finden; Prüfungen grün? Sonst sagen, was fehlt.
 2. Quittung erzeugen: `swp receipt` im Worktree, wenn SWELP da ist, sonst Diff-Statistik und Testergebnis. Als Kommentar ins Issue, `ref.pr` setzen.
 3. Status auf `review`, Besitzer `reviewer`. Den Reviewer als Subagent rufen; sein Urteil als Kommentar. Gemergt wird nur nach grüner CI und Urteil «mergen», durch den Dispatcher.
-4. Nach dem Merge: `done`, Faden des Kontexts nachführen (Rettich: `docs/swelp/uebergabe.md`), Worktree entfernen.
+4. Nach dem Merge: `done`, Faden des Kontexts nachführen (Pfad `thread` im Kontext), Worktree entfernen.
 
 ## `report`
 Rufe den Skill `/tagesbericht`.

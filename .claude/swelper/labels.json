@@ -1,7 +1,7 @@
 {
-  "generated": "swelper 0.1.1",
+  "generated": "swelper 0.2.0",
   "swelper": "0.1",
-  "about": "Alle Labels des Rahmens in einer Quelle. Die Werte von lane, status, owner und gate sind dieselben wie in ticket.schema.json; ein Test prüft das.",
+  "about": "Alle Labels des Rahmens in einer Quelle. Die Werte von lane, status, owner und gate sind dieselben wie in ticket.schema.json; ein Test prüft das. Das Label ctx:<kontext> entsteht beim Sync aus dem Kontext des Projekts.",
   "labels": [
     {
       "name": "swelper",
@@ -22,11 +22,6 @@
       "name": "takt:stop",
       "color": "B60205",
       "description": "Steuer-Issue: Not-Aus, jeder Lauf hält an"
-    },
-    {
-      "name": "ctx:rettich",
-      "color": "5319E7",
-      "description": "Kontext Rettich (BanioX/FridgeAI)"
     },
     {
       "name": "lane:dev",
@@ -152,6 +147,11 @@
       "name": "gate:product",
       "color": "B60205",
       "description": "Abweichung vom Produkt oder Plan: Alban entscheidet"
+    },
+    {
+      "name": "ctx:rettich",
+      "color": "5319E7",
+      "description": "Kontext Rettich (BanioX/FridgeAI)"
     }
   ]
 }
