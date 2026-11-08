@@ -2,6 +2,32 @@
 
 Alle Änderungen an FridgeAI, neueste zuerst. Wird mit `pnpm release` erzeugt (ADR-0017).
 
+## [0.9.0] – 2026-11-08
+
+**Berichte wie ein Kontoauszug, Kurz-Berichte als Quittung, und Rettich mit grossem R.**
+- **Berichtsarten:** Kurz-Berichte als Quittung: Wirkung, Läuft bald ab (1, 3, 7 oder eigene Tage), Weggeworfen, Kühlschrank, Tiefkühler, Vorrat. Der ausführliche Bericht zeigt keine Quittung.
+- **Schwarze Karte mit Ring:** Der ausführliche Bericht beginnt wieder mit der Onyx-Karte, der Rettungsquote als Ring und drei Kacheln.
+- **Zeiträume wie ein Kontoauszug:** Monats- oder Jahresabschluss am letzten Schweizer Bankwerktag oder frei von–bis, immer als TT.MM.JJJJ.
+- **Sprache und Marke:** «Quittung» statt «Bon», «Abfall» statt «Kübel», «Rettich» mit grossem R. Der Claim lautet «Wirf kein Geld in den Abfall.».
+- **Stabilere Tests:** Die Barrierefreiheits-Prüfung wartet, bis Animationen fertig sind.
+
+### Neu
+
+- periods like a bank statement – closings on the last Swiss bank day, or any range ([#175](https://github.com/BanioX/FridgeAI/pull/175))
+- bring back the onyx card with the rescue ring in the detailed report ([#174](https://github.com/BanioX/FridgeAI/pull/174))
+- report kinds – quick receipts and a detailed report without one ([#173](https://github.com/BanioX/FridgeAI/pull/173))
+- «Abfall» instead of «Kübel», the claim is «Wirf kein Geld in den Abfall.» ([#172](https://github.com/BanioX/FridgeAI/pull/172))
+- the brand is «Rettich» with a capital R ([#170](https://github.com/BanioX/FridgeAI/pull/170))
+- page 1 of the PDF as a Rettich receipt ([#168](https://github.com/BanioX/FridgeAI/pull/168))
+- «Quittung» instead of «Bon», with a note on shop names ([#167](https://github.com/BanioX/FridgeAI/pull/167))
+- the PDF report in the app's design language ([#165](https://github.com/BanioX/FridgeAI/pull/165))
+
+### Dokumentation
+
+- update the handover after #170 ([#171](https://github.com/BanioX/FridgeAI/pull/171))
+- a handover note for the next session ([#169](https://github.com/BanioX/FridgeAI/pull/169))
+- StreamUp funding and the name-and-vision question ([#166](https://github.com/BanioX/FridgeAI/pull/166))
+
 ## [0.8.0] – 2026-11-07
 
 **Eins wegwischen, die Quittung gleicht sich selbst ab, und weniger Schulden.**
