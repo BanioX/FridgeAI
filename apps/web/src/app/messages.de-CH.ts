@@ -732,11 +732,15 @@ export const messages = {
       scanInvalid: 'Das war kein Barcode. Versuch es nochmals.',
     },
     intro:
-      'Lade deine Quittung hoch: das PDF aus der Coop- oder Migros-App, einen Screenshot (z. B. Lidl Plus) oder ein Foto. Rettich liest sie auf deinem Gerät und speichert die Datei nicht.',
+      'Lade deine Quittung hoch: das PDF aus der Coop- oder Migros-App, einen Screenshot (z. B. Lidl Plus) oder ein Foto. Du kannst auch mehrere auf einmal wählen. Rettich liest sie auf deinem Gerät und speichert die Dateien nicht.',
     /** The shops are named only to say where the file comes from (no logos, no partnership). */
     trademarks:
       'Coop, Migros und Lidl Plus sind Marken ihrer Inhaber. Rettich ist mit ihnen nicht verbunden.',
     choose: 'PDF oder Foto wählen',
+    /** Several files chosen at once (Alban, 8.11.2026): one after the other. */
+    progress: (index: number, total: number) => `Quittung ${String(index)} von ${String(total)}`,
+    next: 'Nächste Quittung',
+    skip: 'Diese Quittung überspringen',
     reading: 'Quittung wird gelesen …',
     readingPhoto: 'Foto wird gelesen, das dauert ein paar Sekunden …',
     tooLarge: 'Die Datei ist zu gross für eine Quittung (höchstens 15 MB).',
