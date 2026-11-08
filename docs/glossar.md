@@ -21,11 +21,11 @@ Damit Mensch und Maschine dasselbe meinen: Wort in der App (de-CH), Name im Code
 | **Lagerort** | `StorageLocation` | `fridge` Kühlschrank, `freezer` Tiefkühler, `pantry` Vorrat, `reserve` Notvorrat | de-DE «Gefrierschrank», «Vorratsschrank» |
 | **Haltbar bis** | `expiresOn` (`LocalDate`, Europe/Zurich) | Kalendertag, an dem etwas abläuft | – |
 | **Mindestens haltbar / Zu verbrauchen** | `DateKind`: `best_before` / `use_by` | MHD darf man prüfen und oft noch essen, Verbrauchsdatum nicht | de-AT «mindestens haltbar bis» |
-| **Gerettet** | `rescued`, `canBeRescued`, `isRescue` | verwertet oder weitergegeben und selbst bestätigt «ohne Rettich im Abfall gelandet»; Rettich fragt nur, wenn es auf der Kippe stand (ADR-0039) | – |
+| **Gerettet** | `rescued`, `canBeRescued`, `isRescue` | verwertet und selbst bestätigt «ohne Rettich im Abfall gelandet»; Rettich fragt nur, wenn es auf der Kippe stand (ADR-0039) | – |
 | **Wusstest du?** (Food Fact) | `factFor`, `messages.knowledge.facts` | kurzer Fact nach einer bestätigten Rettung und einmal pro Tag im Tab «Wissen»; Zahlen nur mit Quelle (ADR-0042) | – |
 | **Dein Rettich** (Samen, Keimling, Jungpflanze, Rettich, Vorbild) | `growthOf`, `RettichGrowth` | wächst mit jeder bestätigten Rettung im Monat, ein Blatt pro Rettung; «Vorbild» ab 10 Rettungen; beginnt jeden Monat neu (ADR-0043) | – |
 | **Katalog** (mitgeliefert) | `off-ch.json`, `retail-ch.json`, `localCatalogSearch` | Produktdaten, die mit der App kommen: Open Food Facts (Migros, Coop …) und öffentliche Händlerseiten; Quittungszeilen werden zuerst darin gesucht, auf dem Gerät (ADR-0045) | – |
-| **Abschluss** | `OutcomeEvent` | verwertet, weitergegeben oder entsorgt, mit Menge und Wert | – |
+| **Abschluss** | `OutcomeEvent` | verwertet oder entsorgt, mit Menge und Wert. «Weitergegeben» (`shared_out`) bietet Rettich seit 8.11.2026 nicht mehr an; ältere Einträge zählen als verwertet (ADR-0046) | – |
 | **Verwertet** (nicht «gegessen», Alban 8.11.2026) | `eaten` | genutzt: gegessen, gekocht, gebacken, verbraucht. Rettich zählt nicht, was du isst (ADR-0046) | de-DE gleich |
 | **Entsorgt** (nicht «weggeworfen», Alban 8.11.2026) | `wasted` | im Abfall gelandet, mit freiwilligem Grund (ADR-0046) | de-DE gleich |
 | **Nachkaufen** | `shopping.*`, `ShoppingListItem` | Einkaufsliste | – |

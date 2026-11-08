@@ -170,7 +170,8 @@ export const messages = {
     closed: {
       eaten: (name: string) => `${name}: als verwertet gespeichert.`,
       wasted: (name: string) => `${name}: als entsorgt gespeichert.`,
-      shared_out: (name: string) => `${name}: als weitergegeben gespeichert.`,
+      /** «Weitergegeben» is no longer offered (Alban, 8.11.2026); older entries read as used. */
+      shared_out: (name: string) => `${name}: als verwertet gespeichert.`,
     },
     /** After a confirmed rescue (ADR-0042): factual, no «Danke» (Alban, 8.11.2026). */
     rescued: (name: string, value: string, estimated: boolean) =>
@@ -289,7 +290,7 @@ export const messages = {
     otherPacks: 'Weitere Packungen',
     otherPacksEarlier: 'Eine andere Packung läuft früher ab. Die solltest du zuerst aufbrauchen.',
     whatHappened: 'Was ist damit passiert?',
-    outcomes: { eaten: 'Verwertet', wasted: 'Entsorgt', shared_out: 'Weitergegeben' },
+    outcomes: { eaten: 'Verwertet', wasted: 'Entsorgt', shared_out: 'Verwertet' },
     /** Only a confirmed rescue counts as «gerettet» (ADR-0039). */
     rescueQuestion: 'Ohne Rettich im Abfall gelandet?',
     rescueYes: 'Ja, gerettet',
@@ -299,11 +300,10 @@ export const messages = {
     otherAmount: (unit: string) => `Andere Menge (${unit})`,
     otherInvalid: 'Bitte eine Menge zwischen 0 und dem Rest angeben.',
     why: 'Warum? (freiwillig)',
-    toWhom: 'An wen? (freiwillig)',
     confirm: {
       eaten: 'Als verwertet speichern',
       wasted: 'Als entsorgt speichern',
-      shared_out: 'Als weitergegeben speichern',
+      shared_out: 'Als verwertet speichern',
     },
     left: (rest: string) => `Gespeichert. Noch ${rest} übrig.`,
     undo: 'Rückgängig',
@@ -508,7 +508,7 @@ export const messages = {
   },
   history: {
     intro:
-      'Was du verwertet, weitergegeben oder entsorgt hast, mit dem Anteil am Preis. Einen falschen Eintrag kannst du ändern oder löschen. Beim Löschen kommt die Menge zurück in den Vorrat.',
+      'Was du verwertet oder entsorgt hast, mit dem Anteil am Preis. Einen falschen Eintrag kannst du ändern oder löschen. Beim Löschen kommt die Menge zurück in den Vorrat.',
     periodLegend: 'Zeitraum',
     periods: { month: 'Dieser Monat', quarter: 'Letzte 3 Monate', year: 'Dieses Jahr' },
     empty: 'In diesem Zeitraum hast du nichts abgeschlossen.',
@@ -516,7 +516,6 @@ export const messages = {
     removeLabel: (name: string) => `Eintrag ${name} löschen`,
     changeLabel: (name: string) => `Eintrag ${name} ändern`,
     reason: 'Warum?',
-    recipient: 'An wen?',
     save: 'Speichern',
     changed: (name: string, outcome: string) => `Gespeichert: ${name} ist jetzt «${outcome}».`,
     confirm: 'Eintrag löschen',
@@ -534,13 +533,6 @@ export const messages = {
     did_not_like: 'schmeckt nicht',
     other: 'anderes',
   },
-  shareRecipients: {
-    household: 'Mitbewohner:in',
-    neighbor: 'Nachbarschaft',
-    friends_family: 'Familie, Freunde',
-    donation: 'Spende',
-    public_fridge: 'öffentlicher Kühlschrank',
-  },
   reports: {
     title: 'Berichte als PDF',
     intro: 'Rettich erstellt den Bericht auf deinem Gerät. Teilen oder speichern entscheidest du.',
@@ -549,7 +541,7 @@ export const messages = {
     kinds: {
       impact: {
         label: 'Wirkung',
-        hint: 'Als Quittung: was du gerettet, weitergegeben und entsorgt hast.',
+        hint: 'Als Quittung: was du verwertet, gerettet und entsorgt hast.',
       },
       expiring: {
         label: 'Läuft bald ab',
@@ -625,7 +617,6 @@ export const messages = {
         claim: 'Wirf kein Geld in den Abfall.',
         title: 'So hast du Food Waste reduziert',
         saved: 'GERETTET',
-        shared: 'WEITERGEGEBEN',
         used: 'VERWERTET',
         wasted: 'ENTSORGT',
         inStock: 'IM VORRAT',
@@ -633,7 +624,6 @@ export const messages = {
         rate: 'RETTUNGSQUOTE',
         total: 'TOTAL GERETTET',
         detail: (count: number, kg: string) => `${String(count)}× · ${kg}`,
-        sharedDetail: (count: number) => `${String(count)}× an andere, in «Gerettet» enthalten`,
         thanks: 'Danke fürs Retten.',
         count: 'ARTIKEL',
         weight: 'GEWICHT',
