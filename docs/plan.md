@@ -1,6 +1,6 @@
 # Rettich – MVP-Plan
 
-> **Stand 8.11.2026:** Version 0.10.0 und rund 25 weitere PRs, Release 0.11.0 folgt. Meilenstein A und B sind umgesetzt. Aus D und E sind Barcode, die Quittung als PDF, Screenshot und Foto, «Nachkaufen», die Auszüge, Export und Import vorgezogen. Die Rezepte sind wieder entfernt (ADR-0040). Neu dazu kamen «Wissen», die Haltbarkeit 1–10 und der mitgelieferte Produktkatalog (ADR-0038, ADR-0041, ADR-0045). Meilenstein C (Konto, Sync, Push) ist nicht begonnen. Der Pilot läuft. Stand der Dinge und nächste Schritte: [«Stand nach 200 PRs»](#stand-nach-200-prs).
+> **Stand 8.11.2026:** Version 0.11.0 mit 26 Änderungen seit 0.10.0. Meilenstein A und B sind umgesetzt. Aus D und E sind Barcode, die Quittung als PDF, Screenshot und Foto, «Nachkaufen», die Auszüge, Export und Import vorgezogen. Die Rezepte sind wieder entfernt (ADR-0040). Neu dazu kamen «Wissen», die Haltbarkeit 1–10 und der mitgelieferte Produktkatalog (ADR-0038, ADR-0041, ADR-0045). Meilenstein C (Konto, Sync, Push) ist nicht begonnen. Der Pilot läuft. Stand der Dinge und nächste Schritte: [«Stand nach 200 PRs»](#stand-nach-200-prs).
 >
 > **Status: freigegeben durch Alban am 6. November 2026** («Du machst das, du bist die volle Pipeline. Ich sage, was wir machen, ausführen tust du.»).
 > Grundlagen: [`brief.md`](./brief.md) (Build-Brief), [`blue-ocean.md`](./blue-ocean.md) (Strategie), [`use-cases.md`](./use-cases.md) (Brainstorming), [`architecture.md`](./architecture.md) (Architektur und Skalierung). Offene Fragen: Abschnitt 9.
@@ -44,7 +44,7 @@ Grosses Review am 8.11.2026, Bericht: [`reviews/2026-11-08-200-prs.md`](./review
 
 | # | Schritt | Warum |
 | --- | --- | --- |
-| 1 | Release 0.11.0 mit `pnpm release`, dann Statusmeldung an Alban | Seit 0.10.0 sind mehr als 20 PRs gemergt, die Schwelle liegt bei 10 (ADR-0017). Der Pilot soll einen benannten Stand testen |
+| 1 | ~~Release 0.11.0 mit `pnpm release`, dann Statusmeldung an Alban~~ erledigt am 8.11.2026 | Seit 0.10.0 waren 26 Änderungen gemergt, die Schwelle liegt bei 10 (ADR-0017). Der Pilot soll einen benannten Stand testen |
 | 2 | Quittung: «Vier Schritte pro Artikel» neu auf `main` bauen, danach TD-08 mit der Zeilenliste von Alban | Die Quittung ist der Hauptweg in den Vorrat (Risiko Nr. 1, Erfassungsmüdigkeit) |
 | 3 | Mitgelieferten Katalog zuerst auch bei Barcode und Namenssuche nutzen, erst dann Open Food Facts | Weniger Daten verlassen das Gerät, Treffer auch offline und schneller (TD-17). Es entsteht kein neuer Datenfluss |
 | 4 | Erinnern ohne Server: Zahl am App-Symbol (Badging API) für «Heute retten» | Geht ohne Konto, Push und Kosten ([`ideen/benachrichtigungen.md`](./ideen/benachrichtigungen.md)) |
