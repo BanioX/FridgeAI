@@ -1,14 +1,14 @@
-# rettich 🥬
+# Rettich 🥬
 
 [![CI](https://github.com/BanioX/FridgeAI/actions/workflows/ci.yml/badge.svg)](https://github.com/BanioX/FridgeAI/actions/workflows/ci.yml)
 
 Bis 7.11.2026 hiess die App «FridgeAI». Repo, Paketnamen und Web-Adresse heissen technisch weiter so ([ADR-0032](docs/adr/0032-name-rettich.md)).
 
-**Wirf kein Geld in den Kübel.** rettich, klein geschrieben, wie «rett' ich».
+**Wirf kein Geld in den Kübel.** Rettich, wie «rett' ich».
 
-> **Scan deine Quittung – rettich weiss, was du hast, wem es gehört, wer was schuldet und was du heute retten musst.**
+> **Scan deine Quittung – Rettich weiss, was du hast, wem es gehört, wer was schuldet und was du heute retten musst.**
 
-Local-first PWA für Schweizer Haushalte (WGs, Paare, Familien) gegen Food Waste. Alles funktioniert offline auf dem Gerät; KI-Erkennung läuft über die KI, die du ohnehin nutzt (ChatGPT, Claude, Gemini), ohne Kosten für rettich.
+Local-first PWA für Schweizer Haushalte (WGs, Paare, Familien) gegen Food Waste. Alles funktioniert offline auf dem Gerät; KI-Erkennung läuft über die KI, die du ohnehin nutzt (ChatGPT, Claude, Gemini), ohne Kosten für Rettich.
 
 **Product Owner:** Alban Hyseni · **Stand:** Version 0.6.0 ([Release](https://github.com/BanioX/FridgeAI/releases/tag/v0.6.0), [Änderungen](CHANGELOG.md)), im Pilot ([`docs/pilot.md`](docs/pilot.md)); Teilen im Haushalt folgt · **Lizenz:** proprietär, alle Rechte vorbehalten
 
@@ -43,7 +43,7 @@ Unten fünf Tabs: **Start · Vorrat · ＋ Erfassen · Kochen · Mehr** ([ADR-00
 | **Einfrieren** | Umlagern mit neu geschätztem Datum |
 | **Kühlschrank-Check** | Einmal pro Woche jeden Artikel kurz bestätigen: noch da, halb, gegessen oder weggeworfen |
 | **Korrigieren** | Rückgängig nach Gegessen/Weggeworfen, dazu «Nachkaufen» mit einem Tipp; Name, Kategorie, Ort, Datum, Menge und Preis ändern; Artikel löschen; im «Verlauf» unter «Mehr» Gegessenes, Weitergegebenes und Weggeworfenes nachträglich ändern oder löschen |
-| **Produktdaten** | Nach dem Scan: Bild, Marke, Nährwerte, Nutri-Score, Allergene (Open Food Facts, 30 Tage offline); fehlen die Nährwerte, liest rettich sie aus einem Foto oder Screenshot der Nährwerttabelle, auf dem Gerät |
+| **Produktdaten** | Nach dem Scan: Bild, Marke, Nährwerte, Nutri-Score, Allergene (Open Food Facts, 30 Tage offline); fehlen die Nährwerte, liest Rettich sie aus einem Foto oder Screenshot der Nährwerttabelle, auf dem Gerät |
 | **Kochen** | Bis zu zehn Rezepte, die retten, was bald abläuft (drei davon auf «Start»); alle Rezepte, zuerst was mit deinem Vorrat geht, Filter Feierabend (höchstens 15 Minuten, nichts einkaufen), Schnell, Vegetarisch, Vegan, Eiweissreich; was fehlt, mit einem Tipp zu «Nachkaufen»; nach dem Kochen abbuchen |
 | **Nachkaufen** | Unter «Mehr»: «Du hast noch …» gegen Doppelkäufe, abhaken, «In den Vorrat legen» |
 | **Wirkung** | Gerettet (kurz vor Ablauf gegessen oder weitergegeben) und weggeworfen diesen Monat in CHF und Artikeln, «x % gerettet von allem, was knapp wurde» ([ADR-0033](docs/adr/0033-rescued-means-at-risk.md)) |
@@ -133,7 +133,7 @@ CLAUDE.md            Arbeitsregeln für die KI-Entwicklung
 
 - Daten bleiben auf dem Gerät, bis es Teilen im Haushalt gibt; danach nur innerhalb des Haushalts.
 - Bon- und Barcode-Fotos werden nur im Speicher gelesen, nie gespeichert.
-- Keine KI auf rettich-Kosten. Der frühere «KI-Import» über die eigene KI ist seit 7.11.2026 aus der App entfernt ([ADR-0012](docs/adr/0012-bring-your-own-ai.md)).
+- Keine KI auf Rettich-Kosten. Der frühere «KI-Import» über die eigene KI ist seit 7.11.2026 aus der App entfernt ([ADR-0012](docs/adr/0012-bring-your-own-ai.md)).
 - Strenge Content-Security-Policy, alle Assets selbst gehostet, kein CDN; der E2E-Test schlägt bei jeder CSP-Verletzung fehl.
 - Partner- und KI-Zugriff auf Haushaltsdaten nur mit ausdrücklicher, widerrufbarer Einwilligung; kein Verkauf von Einzeldaten.
 - Datenschutzerklärung in einfacher Sprache als Entwurf: [`docs/privacy.md`](docs/privacy.md) (vor dem öffentlichen Start fachlich prüfen).

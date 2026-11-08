@@ -72,7 +72,7 @@ test('explains a PDF without text and one without articles', async ({ page }) =>
     buffer: textPdf(['Vielen Dank fuer Ihren Besuch']),
   });
   await expect(
-    page.getByText('Auf dieser Quittung hat rettich keine Artikel gefunden.'),
+    page.getByText('Auf dieser Quittung hat Rettich keine Artikel gefunden.'),
   ).toBeVisible();
   await page.getByLabel('PDF oder Foto wählen').setInputFiles({
     name: 'bild.pdf',

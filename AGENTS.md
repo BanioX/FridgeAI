@@ -1,6 +1,6 @@
 # AGENTS.md – Einstieg für KI-Assistenten (Claude Code, Cursor, Codex, Gemini …)
 
-rettich ist eine local-first PWA gegen Food Waste für Schweizer Haushalte. Diese Datei ist die Karte. Die Regeln stehen in [`CLAUDE.md`](./CLAUDE.md) und gelten für jedes Werkzeug, nicht nur für Claude.
+Rettich ist eine local-first PWA gegen Food Waste für Schweizer Haushalte. Diese Datei ist die Karte. Die Regeln stehen in [`CLAUDE.md`](./CLAUDE.md) und gelten für jedes Werkzeug, nicht nur für Claude.
 
 ## Lesereihenfolge vor jeder Änderung
 

@@ -1,4 +1,4 @@
-# rettich – Design-System
+# Rettich – Design-System
 
 > **Leitbild (Alban, 6.11.2026):** grün, food-freundlich, elegant und funktional. Seit 7.11.2026 premium: Smaragd, Silber, Onyx.
 > Umsetzung: Tokens in `apps/web/src/index.css` (`@theme`), Komponenten in `apps/web/src/ui/`.
