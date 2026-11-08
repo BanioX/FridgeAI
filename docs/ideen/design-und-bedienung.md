@@ -52,3 +52,10 @@ Ideen aus der Arbeit an der Apple-Designsprache (ADR-0021). Noch nicht beschloss
 - **Notvorrat als eigene Quittung:** Heute nur im ausführlichen Bericht. Mit Ablaufdaten wichtig für die Vorratsliste des Bundes. Aufwand S.
 - **Mehrere Orte zusammen:** Kühlschrank und Tiefkühler auf einer Quittung, mit Zwischentotal pro Ort. Aufwand S.
 - **Braucht:** nichts Neues; kein Datenfluss nach aussen.
+
+## Verlauf mit Abschlüssen (8.11.2026)
+
+- **Idee:** Der Verlauf unter «Mehr» hat noch «Dieser Monat / Letzte 3 Monate / Dieses Jahr». Er könnte dieselbe Auswahl wie die Berichte bekommen: Monats- und Jahresabschluss per letztem Bankwerktag oder frei von–bis.
+- **Aufwand:** S. `PeriodPicker` ist wiederverwendbar.
+- **Offen:** Alban entscheidet, ob der Verlauf so «bankig» sein soll oder einfach bleibt.
+- **Später, DACH:** Bankwerktage je Land, für Deutschland und Österreich etwa der TARGET2-Kalender. Heute gilt der Schweizer SIC-Kalender für alle.
