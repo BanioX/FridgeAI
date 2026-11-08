@@ -61,7 +61,6 @@ export const ScopeSchema = z.enum([
   'inventory:write',
   'shopping_list:read',
   'shopping_list:write',
-  'recipes:read',
   'stats:read',
   'household:read',
   'household:write',
