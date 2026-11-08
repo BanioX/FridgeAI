@@ -43,10 +43,16 @@ test('uploads a receipt PDF, shows names and prices and takes the food over', as
     review.getByRole('checkbox', { name: /Dreamies mit Lachs.*kein Lebensmittel/ }),
   ).not.toBeChecked();
   await expect(review.getByText('Dazu Tasche, Pfand und Rabatte: CHF 0.40')).toBeVisible();
+  // The button stands at the top, right after the shop chooser and the sum, and again at the bottom.
+  const buttons = page.getByRole('button', { name: '2 Artikel übernehmen' });
+  await expect(buttons).toHaveCount(2);
+  const top = await buttons.first().boundingBox();
+  const firstLine = await review.getByRole('checkbox', { name: /Semmeli 80G/ }).boundingBox();
+  expect(top?.y).toBeLessThan(firstLine?.y ?? 0);
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations).toEqual([]);
 
-  await review.getByRole('button', { name: '2 Artikel übernehmen' }).click();
+  await review.getByRole('button', { name: '2 Artikel übernehmen' }).first().click();
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
   await expect(page.getByText('Coop Pouletbrust 2St. ca. 330g')).toBeVisible();
   await expect(page.getByText('Shampoo Classic')).toHaveCount(0);
@@ -68,7 +74,7 @@ test('uploads a receipt PDF, shows names and prices and takes the food over', as
   await page
     .getByLabel('PDF oder Foto wählen')
     .setInputFiles({ name: 'bon.pdf', mimeType: 'application/pdf', buffer: COOP });
-  await page.getByRole('button', { name: '2 Artikel übernehmen' }).click();
+  await page.getByRole('button', { name: '2 Artikel übernehmen' }).first().click();
   await expect(page.getByText('Diese Quittung hast du schon übernommen.')).toBeVisible();
 });
 
@@ -136,7 +142,7 @@ test('reads a receipt screenshot on the device', async ({ page }) => {
   await expect(review.getByText('Summe stimmt: CHF 12.25')).toBeVisible();
   await expect(review.getByRole('checkbox', { name: /Nashi Birnen.*4 Stück/ })).toBeChecked();
   await expect(review.getByRole('checkbox', { name: /Men Shampoo/ })).not.toBeChecked();
-  await expect(review.getByRole('button', { name: '2 Artikel übernehmen' })).toBeEnabled();
+  await expect(review.getByRole('button', { name: '2 Artikel übernehmen' }).first()).toBeEnabled();
 });
 
 test('a misread price is corrected with a tap and the sum is checked again', async ({ page }) => {
@@ -186,15 +192,15 @@ test('remembers prices: «zuletzt …» and «… % teurer als sonst» on the ne
   };
   // Invented receipts; «Coop» is in the product name, so the shop is recognised.
   let review = await upload(semmeli('01.11.26', 'Coop Semmeli 80G 2.0 0.70 1.40 0 A', '1.40'));
-  await review.getByRole('button', { name: '1 Artikel übernehmen' }).click();
+  await review.getByRole('button', { name: '1 Artikel übernehmen' }).first().click();
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
   review = await upload(semmeli('03.11.26', 'Coop Semmeli 80G 2.0 0.85 1.70 0 A', '1.70'));
   await expect(review.getByText('zuletzt 0.70/Stück bei Coop')).toBeVisible();
-  await review.getByRole('button', { name: '1 Artikel übernehmen' }).click();
+  await review.getByRole('button', { name: '1 Artikel übernehmen' }).first().click();
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
   review = await upload(semmeli('06.11.26', 'Coop Semmeli 80G 1.0 0.95 0.95 0 A', '0.95'));
   await expect(review.getByText('22 % teurer als sonst')).toBeVisible();
-  await review.getByRole('button', { name: '1 Artikel übernehmen' }).click();
+  await review.getByRole('button', { name: '1 Artikel übernehmen' }).first().click();
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
 
   // The item page and the add form remember too (dates in the text, the 120-day window aside).
@@ -211,51 +217,117 @@ test('remembers prices: «zuletzt …» and «… % teurer als sonst» on the ne
   await expect(page.getByText(/Zuletzt 0\.95 bei Coop/)).toBeVisible();
 });
 
-test('takes several receipts chosen at once, one after the other', async ({ page }) => {
-  const second = textPdf([
-    'Musterdorf Bahnhof',
-    '06.11.26 08:15 00124 00456790 002 0001235',
-    'Artikel Menge Preis Aktion Total Zusatz',
-    'Naturaplan Bio Vollmilch 1L 1.0 1.95 1.95 0 A',
-    'Total CHF 1.95',
-    'Twint 1.95',
-  ]);
+// A second invented receipt whose sum does not match: it must come first and stand open.
+const SECOND = textPdf([
+  'Musterdorf Bahnhof',
+  '06.11.26 08:15 00124 00456790 002 0001235',
+  'Artikel Menge Preis Aktion Total Zusatz',
+  'Naturaplan Bio Vollmilch 1L 1.0 1.95 1.95 0 A',
+  'Total CHF 2.95',
+  'Twint 2.95',
+]);
+
+test('reviews several receipts on one page and takes them all with one button', async ({
+  page,
+}) => {
   // Phone width: the shop tabs do not fit and must scroll on their own.
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/add/receipt');
   await page.getByLabel('PDF oder Foto wählen').setInputFiles([
     { name: 'eins.pdf', mimeType: 'application/pdf', buffer: COOP },
-    { name: 'leer.pdf', mimeType: 'application/pdf', buffer: textPdf(['Danke']) },
-    { name: 'zwei.pdf', mimeType: 'application/pdf', buffer: second },
+    { name: 'zwei.pdf', mimeType: 'application/pdf', buffer: SECOND },
   ]);
-  await expect(page.getByText('Quittung 1 von 3')).toBeVisible();
-  await page.getByRole('button', { name: '2 Artikel übernehmen' }).click();
+  const coop = page.getByRole('region', { name: /Coop · Musterstadt Zentrum · 05\.11\.2026/ });
+  const dorf = page.getByRole('region', { name: /Musterdorf Bahnhof · 06\.11\.2026/ });
+  await expect(coop).toBeVisible();
+  await expect(dorf).toBeVisible();
 
-  // The second file has no articles: say so and go on with the next one.
-  await expect(page.getByText('Quittung 2 von 3')).toBeVisible();
-  await expect(
-    page.getByText('Auf dieser Quittung hat Rettich keine Artikel gefunden.'),
-  ).toBeVisible();
-  await page.getByRole('button', { name: 'Nächste Quittung' }).click();
+  // The receipt with the wrong sum comes first, is marked and stands open; the other is folded.
+  const dorfBox = await dorf.boundingBox();
+  const coopBox = await coop.boundingBox();
+  expect(dorfBox?.y).toBeLessThan(coopBox?.y ?? 0);
+  await expect(dorf.getByText('Summe prüfen')).toBeVisible();
+  const dorfToggle = dorf.getByRole('button', { name: /Musterdorf Bahnhof/ });
+  const coopToggle = coop.getByRole('button', { name: /Musterstadt Zentrum/ });
+  await expect(dorfToggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(coopToggle).toHaveAttribute('aria-expanded', 'false');
+  await expect(coop.getByRole('checkbox', { name: /Semmeli 80G/ })).toBeHidden();
 
-  await expect(page.getByText('Quittung 3 von 3')).toBeVisible();
-  // Read as «Laden»: one tap tells Rettich it was Coop.
-  const review = page.getByRole('region', { name: /Musterdorf Bahnhof · 06\.11\.2026/ });
-  await expect(review.getByRole('radio', { name: 'Laden' })).toBeChecked();
+  // Fold and unfold.
+  await coopToggle.click();
+  await expect(coopToggle).toHaveAttribute('aria-expanded', 'true');
+  await expect(coop.getByRole('checkbox', { name: /Semmeli 80G/ })).toBeVisible();
+  await expect(coop.getByText('Summe stimmt: CHF 15.55')).toBeVisible();
+  await coopToggle.click();
+  await expect(coopToggle).toHaveAttribute('aria-expanded', 'false');
+
   // The shop tabs scroll on their own; the page never scrolls sideways.
-  await review.locator('label', { has: page.getByRole('radio', { name: 'Lidl' }) }).click();
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
-    true,
-  );
-  await review.locator('label', { has: page.getByRole('radio', { name: 'Coop' }) }).click();
-  await expect(review.getByRole('radio', { name: 'Coop' })).toBeChecked();
-  await expect(
-    page.getByRole('region', { name: /^Coop · Musterdorf Bahnhof · 06\.11\.2026/ }),
-  ).toBeVisible();
+  await expect(dorf.getByRole('radio', { name: 'Laden' })).toBeChecked();
+  await dorf.locator('label', { has: page.getByRole('radio', { name: 'Lidl' }) }).click();
+  await dorf.locator('label', { has: page.getByRole('radio', { name: 'Coop' }) }).click();
+  await expect(dorf.getByRole('radio', { name: 'Coop' })).toBeChecked();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
-  await expect(page.getByRole('button', { name: 'Diese Quittung überspringen' })).toHaveCount(0);
-  await review.getByRole('button', { name: '1 Artikel übernehmen' }).click();
+
+  // One button for all, at the top and at the bottom; nothing is left out.
+  const all = page.getByRole('button', { name: 'Alle übernehmen · 3 Artikel aus 2 Quittungen' });
+  await expect(all).toHaveCount(2);
+  await all.first().click();
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
   await expect(page.getByText('Naturaplan Bio Vollmilch 1L')).toBeVisible();
   await expect(page.getByText('Coop Pouletbrust 2St. ca. 330g')).toBeVisible();
+});
+
+test('a receipt left out is not taken, and a known one shows as «schon erfasst»', async ({
+  page,
+}) => {
+  await page.goto('/add/receipt');
+  const files = page.getByLabel('PDF oder Foto wählen');
+  await files.setInputFiles({ name: 'alt.pdf', mimeType: 'application/pdf', buffer: COOP });
+  await page.getByRole('button', { name: '2 Artikel übernehmen' }).first().click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
+
+  // The same receipt again, a new one, and the new one twice (same file under two names).
+  await page.goto('/add/receipt');
+  await files.setInputFiles([
+    { name: 'alt.pdf', mimeType: 'application/pdf', buffer: COOP },
+    { name: 'neu.pdf', mimeType: 'application/pdf', buffer: SECOND },
+    { name: 'neu-kopie.pdf', mimeType: 'application/pdf', buffer: SECOND },
+  ]);
+  await expect(page.getByText('neu-kopie.pdf: schon erfasst')).toBeVisible();
+  const all = page.getByRole('button', { name: 'Alle übernehmen · 3 Artikel aus 2 Quittungen' });
+  await expect(all).toHaveCount(2);
+
+  // Leaving a receipt out takes its articles out of the count.
+  const dorf = page.getByRole('region', { name: /Musterdorf Bahnhof/ });
+  await dorf.getByLabel('Diese Quittung nicht übernehmen').check();
+  await expect(
+    page.getByRole('button', { name: 'Alle übernehmen · 2 Artikel aus 1 Quittung' }),
+  ).toHaveCount(2);
+  await dorf.getByLabel('Diese Quittung nicht übernehmen').uncheck();
+  await all.first().click();
+
+  // The known receipt is reported and left out; the new one went in.
+  await expect(page.getByText('alt.pdf: schon erfasst')).toBeVisible();
+  await expect(page.getByText('1 Artikel aus 1 Quittung übernommen.')).toBeVisible();
+  await expect(page.getByText('Diese Quittung hast du schon übernommen.')).toBeVisible();
+  await page.goto('/inventory');
+  await expect(page.getByText('Naturaplan Bio Vollmilch 1L')).toBeVisible();
+});
+
+test('files that cannot be shown are listed; one receipt left looks like a single one', async ({
+  page,
+}) => {
+  await page.goto('/add/receipt');
+  await page.getByLabel('PDF oder Foto wählen').setInputFiles([
+    { name: 'leer.pdf', mimeType: 'application/pdf', buffer: textPdf(['Danke']) },
+    { name: 'zwei.pdf', mimeType: 'application/pdf', buffer: SECOND },
+  ]);
+  await expect(
+    page.getByText('leer.pdf: Auf dieser Quittung hat Rettich keine Artikel gefunden.'),
+  ).toBeVisible();
+  const review = page.getByRole('region', { name: /Musterdorf Bahnhof/ });
+  await expect(page.getByRole('button', { name: '1 Artikel übernehmen' })).toHaveCount(2);
+  await expect(review.getByRole('checkbox', { name: /Naturaplan Bio Vollmilch/ })).toBeVisible();
+  await expect(page.getByLabel('Diese Quittung nicht übernehmen')).toHaveCount(0);
 });
