@@ -387,6 +387,28 @@ export function chip(doc: jsPDF, value: string, right: number, middle: number, t
   return width;
 }
 
+/**
+ * Where an item lies, as a quiet grey badge with a coloured dot (Alban, 8.11.2026), left-aligned
+ * at `left` so the badges of a list form a column, moved left when it would reach `limit`.
+ * Returns where it starts.
+ */
+export function placeBadge(
+  doc: jsPDF,
+  label: string,
+  at: { left: number; limit: number; middle: number },
+  dot: Rgb,
+): number {
+  const style: TextStyle = { size: 8.5, color: PDF_COLOR.muted, bold: true };
+  const width = measure(doc, label, style) + 9;
+  const left = Math.min(at.left, at.limit - width);
+  const { middle } = at;
+  card(doc, { x: left, y: middle - 2.9, width, height: 5.8 }, PDF_COLOR.oat, 2.9);
+  doc.setFillColor(...dot);
+  doc.circle(left + 3.4, middle, 1.1, 'F');
+  write(doc, label, left + 5.6, middle + 0.1, { ...style, baseline: 'middle' });
+  return left;
+}
+
 /** A dashed rule like on a till receipt. */
 export function dashed(
   doc: jsPDF,

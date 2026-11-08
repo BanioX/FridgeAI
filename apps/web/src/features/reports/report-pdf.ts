@@ -7,6 +7,7 @@ import {
   type LocalDate,
   type Report,
   type ReportItem,
+  type StorageLocation,
 } from '@fridgeai/core';
 import type { jsPDF } from 'jspdf';
 import { messages } from '../../app/messages.de-CH';
@@ -26,6 +27,7 @@ import {
   measure,
   PAGE,
   PDF_COLOR as C,
+  placeBadge,
   ring,
   roundedPicture,
   stack,
@@ -294,6 +296,8 @@ interface ListRow {
   name: string;
   detail: string;
   chip: { label: string; tone: Tone };
+  /** Fridge, freezer, pantry or reserve, as a badge in the middle of the row. */
+  place?: StorageLocation;
   value?: string;
 }
 
@@ -342,7 +346,18 @@ function list({ doc, pictures }: Context, rows: readonly ListRow[], y: number): 
         row.chip.tone,
       );
       const textX = box.x + 17;
-      const textWidth = right - (valueWidth > 0 ? valueWidth + 4 : 0) - chipWidth - 4 - textX;
+      const chipLeft = right - (valueWidth > 0 ? valueWidth + 4 : 0) - chipWidth;
+      // The place badges stand in one column in the middle, the name ends before them.
+      const textEnd =
+        row.place === undefined
+          ? chipLeft - 4
+          : placeBadge(
+              doc,
+              messages.locations[row.place],
+              { left: box.x + box.width * 0.47, limit: chipLeft - 3, middle },
+              LOCATION_COLOR[row.place],
+            ) - 4;
+      const textWidth = textEnd - textX;
       write(
         doc,
         row.name,
@@ -384,8 +399,9 @@ function itemRow(report: Report, item: ReportItem, value?: string): ListRow {
   return {
     icon: emojiOf(item.categoryId),
     name: item.name,
-    detail: `${formatQuantity(item.quantity, item.unit)} · ${messages.locations[item.location]}`,
+    detail: formatQuantity(item.quantity, item.unit),
     chip: badge,
+    place: item.location,
     ...(value === undefined ? {} : { value }),
   };
 }
