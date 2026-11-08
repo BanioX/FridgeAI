@@ -10,6 +10,7 @@ import { ItemRow } from '../../ui/ItemRow';
 import { LocationTile } from '../../ui/LocationTile';
 import { StatusChip } from '../../ui/StatusChip';
 import type { Tone } from '../../ui/tones';
+import { RettichGrowth } from '../today/RettichGrowth';
 
 /*
  * Development-only reference of the design system (route /styleguide, see routes.tsx).
@@ -133,6 +134,15 @@ export function StyleguidePage() {
           <LocationTile location="pantry" label="Vorrat" countLabel="23 Artikel" />
           <LocationTile location="reserve" label="Notvorrat" countLabel="reicht 9 Tage" />
         </div>
+      </section>
+
+      <section className="space-y-3">
+        <h2 className="font-display text-xl font-semibold">Dein Rettich</h2>
+        <Card className="space-y-4">
+          {[0, 1, 3, 6, 10].map((rescues) => (
+            <RettichGrowth key={rescues} rescues={rescues} />
+          ))}
+        </Card>
       </section>
 
       <section className="space-y-3">

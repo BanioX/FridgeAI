@@ -6,12 +6,13 @@ import { useAppData } from '../../app/AppData';
 import { useMoney } from '../../app/money';
 import { messages } from '../../app/messages.de-CH';
 import { Card } from '../../ui/Card';
+import { RettichGrowth } from './RettichGrowth';
 
 const t = messages.today;
 
 /**
- * «Deine Wirkung diesen Monat» (step 6, US-06, ADR-0033): rescued (eaten or given away shortly
- * before expiry) against wasted, in the household currency and items, from `stats.waste`. Ordinary eating is not a
+ * «Deine Wirkung diesen Monat» (step 6, US-06, ADR-0033): the growing Rettich (ADR-0043), then
+ * rescued (confirmed, ADR-0039) against wasted, in the household currency and items, from `stats.waste`. Ordinary eating is not a
  * rescue and does not show. Hidden until something was rescued or thrown away in the period.
  */
 export function ImpactCard({ from, to }: { from: LocalDate; to: LocalDate }) {
@@ -37,6 +38,9 @@ export function ImpactCard({ from, to }: { from: LocalDate; to: LocalDate }) {
   return (
     <Card>
       <h2 className="font-display text-xl font-semibold">{t.impactTitle}</h2>
+      <div className="mt-3">
+        <RettichGrowth rescues={stats.savedCount} />
+      </div>
       <dl className="mt-3 grid grid-cols-2 gap-3">
         <div className="rounded-xl bg-basil-50 p-3">
           <dt className="text-sm font-semibold text-basil-800">{t.saved}</dt>

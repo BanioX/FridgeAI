@@ -21,6 +21,7 @@ Damit Mensch und Maschine dasselbe meinen: Wort in der App (de-CH), Name im Code
 | **Mindestens haltbar / Zu verbrauchen** | `DateKind`: `best_before` / `use_by` | MHD darf man prüfen und oft noch essen, Verbrauchsdatum nicht | de-AT «mindestens haltbar bis» |
 | **Gerettet** | `rescued`, `canBeRescued`, `isRescue` | gegessen oder weitergegeben und selbst bestätigt «ohne Rettich im Abfall gelandet»; Rettich fragt nur, wenn es auf der Kippe stand (ADR-0039) | – |
 | **Wusstest du?** (Food Fact) | `factFor`, `messages.knowledge.facts` | kurzer Fact nach einer bestätigten Rettung und einmal pro Tag im Tab «Wissen»; Zahlen nur mit Quelle (ADR-0042) | – |
+| **Dein Rettich** (Samen, Keimling, Jungpflanze, Rettich, Vorbild) | `growthOf`, `RettichGrowth` | wächst mit jeder bestätigten Rettung im Monat, ein Blatt pro Rettung; «Vorbild» ab 10 Rettungen; beginnt jeden Monat neu (ADR-0043) | – |
 | **Abschluss** | `OutcomeEvent` | gegessen, weitergegeben oder weggeworfen, mit Menge und Wert | – |
 | **Nachkaufen** | `shopping.*`, `ShoppingListItem` | Einkaufsliste | – |
 | **Haushalt** | `Household` | WG, Paar, Familie; hat eine Währung (ADR-0019) | – |

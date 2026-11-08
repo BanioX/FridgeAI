@@ -49,4 +49,7 @@ test('counts a rescue only when the person confirms it on the brink', async ({ p
 
   await page.getByRole('navigation').getByRole('link', { name: 'Start' }).click();
   await expect(page.getByRole('img', { name: '100 % gerettet' })).toBeVisible();
+  // The Rettich grew its first leaf (ADR-0043).
+  await expect(page.getByRole('img', { name: 'Dein Rettich: Keimling, 1 Blatt' })).toBeVisible();
+  await expect(page.getByText('1 Rettung diesen Monat · noch 2 bis Jungpflanze')).toBeVisible();
 });
