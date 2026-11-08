@@ -84,7 +84,7 @@ describe('reportInsights (ADR-0030)', () => {
       /^Nur 30 % gerettet/,
     );
     expect(reportInsights(empty)).toEqual([
-      'Noch wenig Daten. Mit jeder Quittung und jedem Abschluss wird der Bericht genauer.',
+      'Noch wenig Daten. Mit jeder Quittung und jedem Abschluss wird der Auszug genauer.',
     ]);
   });
 });
