@@ -521,6 +521,7 @@ export const messages = {
     yearLabel: 'Jahresabschluss',
     from: 'Von',
     to: 'Bis',
+    calendar: (field: string) => `Kalender für «${field}» öffnen`,
     rangeInvalid: '«Von» muss vor «Bis» liegen, und «Bis» höchstens heute.',
     closingHint: 'Abschluss am letzten Schweizer Bankwerktag, wie bei deinem Kontoauszug.',
     monthNames: [

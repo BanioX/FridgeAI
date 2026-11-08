@@ -4,7 +4,7 @@ import {
   closingYear,
   daysBetween,
   formatSwissDate,
-  LocalDateSchema,
+  parseDateInput,
   type LocalDate,
   type ReportPeriod,
 } from '@fridgeai/core';
@@ -81,7 +81,7 @@ export function rangeOption(
   };
 }
 
-/** What the period picker holds; dates as typed in the native date fields («» while empty). */
+/** What the period picker holds; «Von» and «Bis» as typed, always TT.MM.JJJJ. */
 export interface PeriodState {
   mode: PeriodMode;
   month: string;
@@ -97,15 +97,10 @@ export function initialPeriod(today: LocalDate): PeriodState {
     mode: 'month',
     month: month?.value ?? '',
     year: String(closingMonthOf(today).year),
-    from: month?.period.from ?? today,
-    to: today,
+    from: formatSwissDate(month?.period.from ?? today),
+    to: formatSwissDate(today),
   };
 }
-
-const asDate = (value: string): LocalDate | null => {
-  const parsed = LocalDateSchema.safeParse(value);
-  return parsed.success ? parsed.data : null;
-};
 
 /** The chosen period, or `null` while the range is incomplete or impossible. */
 export function chosenPeriod(state: PeriodState, today: LocalDate): PeriodOption | null {
@@ -115,6 +110,6 @@ export function chosenPeriod(state: PeriodState, today: LocalDate): PeriodOption
     case 'year':
       return yearOptions(today).find((option) => option.value === state.year) ?? null;
     case 'range':
-      return rangeOption(asDate(state.from), asDate(state.to), today);
+      return rangeOption(parseDateInput(state.from, today), parseDateInput(state.to, today), today);
   }
 }

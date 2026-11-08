@@ -1,7 +1,9 @@
-import type { LocalDate } from '@fridgeai/core';
-import { useId } from 'react';
+import { formatSwissDate, parseDateInput, type LocalDate } from '@fridgeai/core';
+import { useId, useState } from 'react';
 import { messages } from '../../app/messages.de-CH';
+import { CalendarButton } from '../../ui/CalendarButton';
 import { ChoiceChips } from '../../ui/ChoiceChips';
+import { nextDateText } from '../../ui/date-text';
 import {
   chosenPeriod,
   monthOptions,
@@ -32,6 +34,8 @@ export function PeriodPicker({
   today: LocalDate;
 }) {
   const id = useId();
+  /** Dots are added while typing digits, until the person types their own separator. */
+  const [typing, setTyping] = useState({ from: true, to: true });
   const invalid = state.mode === 'range' && chosenPeriod(state, today) === null;
   const set = (patch: Partial<PeriodState>) => {
     onChange({ ...state, ...patch });
@@ -78,24 +82,39 @@ export function PeriodPicker({
         </div>
       ) : (
         <div className="space-y-2">
-          <div className="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 min-[480px]:grid-cols-2">
             {(['from', 'to'] as const).map((field) => (
               <div key={field} className="min-w-0 space-y-2">
                 <label htmlFor={`${id}-${field}`} className="block font-semibold">
                   {t[field]}
                 </label>
-                <input
-                  id={`${id}-${field}`}
-                  type="date"
-                  value={state[field]}
-                  max={today}
-                  onChange={(event) => {
-                    set({ [field]: event.target.value });
-                  }}
-                  aria-invalid={invalid}
-                  aria-describedby={invalid ? `${id}-error` : undefined}
-                  className={`${FIELD} px-3 text-base tabular-nums ${invalid ? 'border-today' : 'border-line'}`}
-                />
+                <div className="flex gap-2">
+                  <input
+                    id={`${id}-${field}`}
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="off"
+                    placeholder={messages.dateField.placeholder}
+                    value={state[field]}
+                    onChange={(event) => {
+                      const next = nextDateText(state[field], event.target.value, typing[field]);
+                      setTyping({ ...typing, [field]: next.autoFormatting });
+                      set({ [field]: next.text });
+                    }}
+                    aria-invalid={invalid}
+                    aria-describedby={invalid ? `${id}-error` : undefined}
+                    className={`${FIELD} px-4 text-lg tracking-wide tabular-nums ${invalid ? 'border-today' : 'border-line'}`}
+                  />
+                  <CalendarButton
+                    value={parseDateInput(state[field], today)}
+                    onPick={(date) => {
+                      set({ [field]: formatSwissDate(date) });
+                    }}
+                    today={today}
+                    max={today}
+                    label={t.calendar(t[field])}
+                  />
+                </div>
               </div>
             ))}
           </div>

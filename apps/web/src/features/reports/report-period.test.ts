@@ -65,6 +65,11 @@ describe('report periods like a bank statement', () => {
     expect(chosenPeriod(state, today)?.label).toBe('November 2026 · bis heute');
     expect(chosenPeriod({ ...state, mode: 'range' }, today)?.label).toBe('31.10.2026 – 08.11.2026');
     expect(chosenPeriod({ ...state, mode: 'range', from: '' }, today)).toBeNull();
+    // Typed the Swiss way, whatever language the device speaks.
+    expect(state.from).toBe('31.10.2026');
+    expect(
+      chosenPeriod({ ...state, mode: 'range', from: '1.1.2026', to: '31.03.2026' }, today)?.period,
+    ).toEqual({ from: '2026-01-01', to: '2026-03-31' });
     expect(chosenPeriod({ ...state, mode: 'year', year: '2025' }, today)?.period.to).toBe(
       '2025-12-31',
     );

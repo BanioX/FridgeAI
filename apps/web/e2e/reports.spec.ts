@@ -17,7 +17,9 @@ test('creates a PDF report on the device, opens it in the app and shares it', as
   // Periods like a bank statement: the running month is chosen, a range can go backwards.
   await expect(page.getByLabel('Monatsabschluss')).toHaveValue(/^\d{4}-\d{2}$/);
   await page.getByRole('radio', { name: 'Von – bis' }).check({ force: true });
-  await page.getByLabel('Von', { exact: true }).fill('2030-01-01');
+  // Always TT.MM.JJJJ, whatever language the device speaks.
+  await expect(page.getByLabel('Bis', { exact: true })).toHaveValue(/^\d{2}\.\d{2}\.\d{4}$/);
+  await page.getByLabel('Von', { exact: true }).fill('01.01.2030');
   await expect(page.getByText('«Von» muss vor «Bis» liegen')).toBeVisible();
   await expect(page.getByRole('button', { name: 'PDF erstellen' })).toBeDisabled();
   await page.getByRole('radio', { name: 'Jahr', exact: true }).check({ force: true });
