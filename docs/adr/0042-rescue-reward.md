@@ -22,5 +22,5 @@ Eine Belohnung, die nach Lob klingt, nutzt sich schnell ab und wirkt bei Erwachs
 ## Folgen
 
 - Die Bestätigung lohnt sich sichtbar, ohne die Zahlen aufzublasen.
-- Als Nächstes folgt der wachsende Rettich auf Start: ein Blatt pro Rettung im Monat, «Vorbild» als oberste Stufe bei einem Meilenstein. Er braucht Zeichnungen und kommt in einem eigenen PR.
+- Der wachsende Rettich auf Start folgt in ADR-0043: ein Blatt pro Rettung im Monat, «Vorbild» als oberste Stufe.
 - Neue Facts brauchen nur einen Eintrag im Textkatalog.

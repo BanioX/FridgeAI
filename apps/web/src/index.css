@@ -118,3 +118,19 @@
 @utility slice-b {
   animation: slice-b 350ms ease-out forwards;
 }
+
+/* The newest leaf of the Rettich on Start grows out of its crown (ADR-0043). */
+@keyframes leaf-grow {
+  from {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+}
+@utility leaf-grow {
+  /* The bottom middle of the leaf is where it meets the crown. */
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  @media (prefers-reduced-motion: no-preference) {
+    animation: leaf-grow 600ms ease-out;
+  }
+}
