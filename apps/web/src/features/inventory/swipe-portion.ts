@@ -10,7 +10,7 @@ export interface SwipePortion {
 const EPSILON = 1e-9;
 
 /**
- * What «eins gegessen» means for one item (swipe on the Vorrat list):
+ * What «eins verwertet» means for one item (swipe on the Vorrat list):
  * - pieces: 1, or the rest if less than one is left;
  * - grams and millilitres: one portion if a portion size is known and smaller than what is left,
  *   otherwise the rest. The catalog has no portion sizes yet, so callers pass none today.

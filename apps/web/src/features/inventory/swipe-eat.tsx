@@ -36,7 +36,7 @@ interface Toast {
   eventId: Id | null;
 }
 
-/** Strip text for a row: «Gegessen» with «−1», «1 Portion» or «alles» below. */
+/** Strip text for a row: «Verwertet» with «−1», «1 Portion» or «alles» below. */
 export function swipeLabel(item: Pick<InventoryItemView, 'quantity' | 'unit'>): {
   label: string;
   detail: string;

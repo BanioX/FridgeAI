@@ -59,7 +59,7 @@ export interface Report {
     /** Of the saved: what was given away (to neighbours, friends, a fridge) instead of eaten. */
     sharedRappen: Rappen;
     sharedCount: number;
-    /** Everything thrown away in the period, newest first (for the «Weggeworfen» receipt). */
+    /** Everything thrown away in the period, newest first (for the «Entsorgt» receipt). */
     wastedItems: {
       name: string;
       categoryId: string;

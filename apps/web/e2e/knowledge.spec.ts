@@ -6,7 +6,7 @@ test('explains the dates and finds how long a food keeps', async ({ page }) => {
   await page.getByRole('navigation').getByRole('link', { name: 'Wissen' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Wissen' })).toBeVisible();
   await page.getByText('Zu verbrauchen bis', { exact: true }).click();
-  await expect(page.getByText(/Nach diesem Datum nicht mehr essen/)).toBeVisible();
+  await expect(page.getByText(/Nach diesem Datum nicht mehr verwenden/)).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 
   await page.getByLabel('Lebensmittel suchen').fill('Pesto');

@@ -19,7 +19,7 @@ export interface WasteHabit {
 }
 
 /**
- * «Das wirfst du oft weg» (ADR-0038, Alban 8.11.2026: «Guacamole, Hummus, Mayonnaise oder
+ * «Das entsorgst du oft» (ADR-0038, Alban 8.11.2026: «Guacamole, Hummus, Mayonnaise oder
  * Tomatenmark, die typischen mal gekauft, nie gebraucht»): categories thrown away at least twice
  * in the window, most often first. Only the household's own data, computed on the device.
  */
