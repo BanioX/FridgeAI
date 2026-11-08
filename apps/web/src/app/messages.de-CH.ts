@@ -283,6 +283,10 @@ export const messages = {
     box: 'Schachtel',
   },
   itemDetail: {
+    /** How quickly it spoils (ADR-0038). */
+    perishability: { high: 'Heikel', medium: 'Mittel haltbar', low: 'Robust' },
+    keepsOpen: (days: number) =>
+      days === 1 ? 'offen etwa 1 Tag haltbar' : `offen etwa ${String(days)} Tage haltbar`,
     back: 'Zurück zum Vorrat',
     gone: 'Dieser Artikel ist nicht mehr im Vorrat.',
     bestBefore: 'Mindestens haltbar bis',
