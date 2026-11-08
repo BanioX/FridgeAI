@@ -234,6 +234,14 @@ export const messages = {
     more: 'Mehr Angaben',
     moreWith: (summary: string) => `Mehr Angaben · ${summary}`,
     location: 'Wo lagerst du es?',
+    /** Packed or loose from the counter (ADR-0038). */
+    bought: 'Wie gekauft?',
+    packed: 'Verpackt',
+    loose: 'Von der Theke',
+    looseHint: (days: number) =>
+      days === 1
+        ? 'Offen gekauft hält es etwa 1 Tag. Das Datum ist angepasst.'
+        : `Offen gekauft hält es etwa ${String(days)} Tage. Das Datum ist angepasst.`,
     amount: 'Menge',
     unit: 'Einheit',
     amountInvalid: 'Bitte eine Menge über 0 angeben, z. B. 1.5',

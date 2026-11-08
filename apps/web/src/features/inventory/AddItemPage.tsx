@@ -1,4 +1,5 @@
 import {
+  addDays,
   CATEGORIES,
   categoryById,
   ContainerSchema,
@@ -6,6 +7,7 @@ import {
   fallbackCategory,
   formatSwissDate,
   matchCategoryByName,
+  minLocalDate,
   parseScannedCode,
   portioningOf,
   shelfLifeAt,
@@ -28,6 +30,7 @@ import { messages } from '../../app/messages.de-CH';
 import { BackLink } from '../../ui/BackLink';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
+import { ChoiceChips } from '../../ui/ChoiceChips';
 import { DateField } from '../../ui/DateField';
 import { BarcodeScanner } from '../scan/BarcodeScanner';
 import {
@@ -44,6 +47,10 @@ import { NameSearch, type FoundProduct } from './NameSearch';
 import { PriceMemoryNote } from '../receipts/PriceMemoryNote';
 
 const t = messages.addItem;
+const boughtOptions = [
+  { value: 'packed' as const, label: t.packed },
+  { value: 'loose' as const, label: t.loose },
+];
 const sortedCategories = [...CATEGORIES].sort((a, b) => a.name.de.localeCompare(b.name.de, 'de'));
 const fieldClass = (invalid: boolean, width = 'w-full') =>
   `min-h-12 ${width} rounded-xl border bg-surface px-4 text-lg outline-none focus:border-basil-600 ${
@@ -76,6 +83,8 @@ export function AddItemPage() {
   const [unitChoice, setUnitChoice] = useState<InputUnit | null>(null);
   const [containerChoice, setContainerChoice] = useState<Container | '' | null>(null);
   const [dateChoice, setDateChoice] = useState<{ value: LocalDate | null } | null>(null);
+  /** Cheese, cold cuts or a dip from the counter keep only as long as an open pack. */
+  const [bought, setBought] = useState<'packed' | 'loose'>('packed');
   const [priceText, setPriceText] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -103,8 +112,16 @@ export function AddItemPage() {
   const unit = unitChoice ?? suggestion.unit;
   const amountValue = amountText ?? formatAmount(suggestion.amount);
   const container = containerChoice ?? portioning.container ?? '';
+  const looseDays =
+    category.soldLoose === true && location === 'fridge' ? category.afterOpeningDays : undefined;
+  const loose = bought === 'loose' && looseDays !== undefined;
+  const suggested = suggestedExpiry(category, location, today);
   const expiresOn =
-    dateChoice === null ? suggestedExpiry(category, location, today) : dateChoice.value;
+    dateChoice === null
+      ? loose
+        ? minLocalDate(suggested, addDays(today, looseDays))
+        : suggested
+      : dateChoice.value;
   const amount = parseAmount(amountValue);
   const price = priceText.trim() === '' ? undefined : money.parse(priceText);
 
@@ -233,6 +250,8 @@ export function AddItemPage() {
           : { expirySource: 'gs1_code', expiryKind: dateFromCode.kind }),
         ...(scanned?.gtin === undefined ? {} : { gtin: scanned.gtin }),
         ...(price === undefined ? {} : { priceRappen: price }),
+        // From the counter: open from the day it was bought, the opening rule sets the date.
+        ...(loose ? { openedOn: today } : {}),
       });
       void navigate(`/inventory?location=${location}`);
     } catch {
@@ -309,6 +328,19 @@ export function AddItemPage() {
             onPick={pickFound}
           />
         </div>
+
+        {looseDays === undefined ? null : (
+          <div className="space-y-2">
+            <ChoiceChips
+              legend={t.bought}
+              options={boughtOptions}
+              value={bought}
+              onChange={setBought}
+              segmented
+            />
+            {loose ? <p className="text-sm text-ink-muted">{t.looseHint(looseDays)}</p> : null}
+          </div>
+        )}
 
         <div className="space-y-1.5">
           <DateField

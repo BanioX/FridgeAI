@@ -89,6 +89,11 @@ export const CategorySchema = z
     shelfLifeDays: ShelfLifeDaysSchema,
     /** «Nach dem Öffnen innert N Tagen verbrauchen» – typical days after opening (ADR-0011). */
     afterOpeningDays: z.int().min(0).max(3650).optional(),
+    /**
+     * Also sold loose at the counter (Theke): cheese, cold cuts, salmon, dips. Bought there, it
+     * keeps only as long as an open pack (ADR-0038).
+     */
+    soldLoose: z.boolean().optional(),
     /** Typical price of one pack, used when a receipt price is missing (marked as estimate). */
     avgPriceRappen: RappenSchema.min(0).optional(),
     /** Typical weight of one pack in grams, for the kg counter. */
@@ -107,6 +112,9 @@ export const CategorySchema = z
   })
   .refine((category) => category.isFood || category.group === 'non_food', {
     message: 'Non-food categories belong to the non_food group',
+  })
+  .refine((category) => category.soldLoose !== true || category.afterOpeningDays !== undefined, {
+    message: 'Food sold loose needs a shelf life after opening',
   });
 export type Category = z.infer<typeof CategorySchema>;
 
