@@ -21,7 +21,8 @@ Zuletzt gemergt (alles in v0.10.0):
 3. **TD-02:** Produktsuche und Quittungs-Import nach `packages/core/src/application` ziehen (je ein PR). Die Rezepte sind weg (ADR-0040).
 4. **Feedback von Alban** zu den Schwellen des wachsenden Rettichs (1, 3, 6, 10 Rettungen im Monat, ADR-0043) und zu den Food Facts (ADR-0042). Neue Facts brauchen nur einen Eintrag in `messages.knowledge.facts`; mit einer Zahl nur mit Quelle (ein Test prüft das).
 5. **Release** bei 10 gemergten PRs seit v0.10.0 (`pnpm release --count`).
-6. **Später (Ideen):** der Rettich als Maskottchen in leeren Zuständen und beim Teilen. Illustrationen passend zum Logo, zum Beispiel mit einer Bild-KI erstellt (Albans Abos).
+6. **Swelper und SWELP** (8.11.2026): Alban hat Claude erlaubt, SWELP, Swelper, SWP, SEP und SLP selbständig auszubauen (Standing Orders: `BanioX/SWELPER/standing-orders.md`). Offen zum Mergen: SWELP #6 (Review), #7 (Hygiene), #8 (Wächter, braucht Albans `sep lock`); SWELPER #1 (Gerüst, ADR-0001), #2 (Schemas, Kontext `rettich`). Danach PR 3 bis 5 im Swelper (Paket `swelper` mit `sync`, Stecker, Skills) und zuletzt Rettich einstecken: eigener PR hier, der `.claude/agents` durch erzeugte Dateien ersetzt und `.swelper.json` anlegt. Entwurf: [`docs/ideen/swelper.md`](../ideen/swelper.md).
+7. **Später (Ideen):** der Rettich als Maskottchen in leeren Zuständen und beim Teilen. Illustrationen passend zum Logo, zum Beispiel mit einer Bild-KI erstellt (Albans Abos).
 
 ## Offene Fragen an Alban
 
@@ -33,6 +34,6 @@ Zuletzt gemergt (alles in v0.10.0):
 
 - Jede Arbeit in einem eigenen Worktree, `main` bleibt sauber.
 - Vor jedem Push alle Prüfungen **mit Exit-Code** (L-18), E2E nur bei freiem Port 4173 (L-02, L-15).
-- Axe in E2E nur über `AxeBuilder` aus `e2e/test.ts` (L-19), Daten immer als Textfeld TT.MM.JJJJ (L-20).
+- Axe in E2E nur über `AxeBuilder` aus `e2e/test.ts` (L-19), Daten immer als Textfeld TT.MM.JJJJ (L-21).
 - Hilfs-Agenten nur für klar umrissene Aufgaben. Ihr Ergebnis wird selbst geprüft (L-10). Wer sich nicht zurückmeldet, wird nach einer Stunde übernommen, und der Stand wird zuerst gesichert.
 - Lange Sitzungen kosten mehr Kontext: Nach einem Meilenstein lohnt sich eine neue Sitzung. Diese Datei und `AGENTS.md` reichen zum Weitermachen.
