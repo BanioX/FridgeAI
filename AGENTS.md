@@ -4,6 +4,7 @@ rettich ist eine local-first PWA gegen Food Waste für Schweizer Haushalte. Dies
 
 ## Lesereihenfolge vor jeder Änderung
 
+0. [`docs/swelp/uebergabe.md`](./docs/swelp/uebergabe.md): wo die Arbeit gerade steht und was als Nächstes kommt.
 1. [`CLAUDE.md`](./CLAUDE.md): Sprache, Arbeitsweise, harte Regeln, Befehle, Definition of Done.
 2. [`docs/swelp/README.md`](./docs/swelp/README.md): was der Code darf (Darf), was er bewirkt (Tut, [`nebenwirkungen.md`](./docs/swelp/nebenwirkungen.md)), was wir gelernt haben (Lernt, [`lernbuch.md`](./docs/swelp/lernbuch.md)).
 3. [`docs/schulden.md`](./docs/schulden.md): bekannte Schulden; nichts davon unbemerkt vergrössern.
