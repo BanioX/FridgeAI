@@ -1,28 +1,27 @@
 # Übergabe: wo die Arbeit steht
 
-Für die nächste Sitzung (Mensch oder KI). Claude führt diese Datei am Ende jeder längeren Sitzung nach. Sie ersetzt keine Register, sie zeigt nur den Faden. Stand: 8.11.2026, nach dem grossen Review bei 200 PRs ([Bericht](../reviews/2026-11-08-200-prs.md)). Version 0.10.0 ist die letzte veröffentlichte, Version 0.11.0 folgt direkt nach dem Doku-PR zum Review.
+Für die nächste Sitzung (Mensch oder KI). Claude führt diese Datei am Ende jeder längeren Sitzung nach. Sie ersetzt keine Register, sie zeigt nur den Faden. Stand: 8.11.2026, nach dem grossen Review bei 200 PRs ([Bericht](../reviews/2026-11-08-200-prs.md)). Version 0.11.0 ist die letzte veröffentlichte ([CHANGELOG](../../CHANGELOG.md)).
 
 ## Offen auf GitHub
 
 | PR oder Branch | Was | Nächster Schritt |
 | --- | --- | --- |
-| Doku-PR zum Review (`docs/review-200`) | README, Plan, Architektur, Pilot, Datenschutz, ADR-Index, Schulden, Übergabe, Review-Bericht; dazu der Text «Datenschutz in Kürze» in der App | CI abwarten, mergen, danach `pnpm release` für 0.11.0 |
-| #210 Ziehen auf einen Lagerort-Tab | ausgewählte Artikel auf einen Tab ziehen; langes Drücken in der normalen Liste wählt aus und hebt an | CI abwarten, mergen |
 | `feat/receipt-steps` (kein PR) | vier Schritte pro Artikel beim Quittungs-Abgleich; halbfertiger Stand eines abgebrochenen Hilfs-Agenten, auf altem `main`, über 50 Commits dahinter | schliessen und auf `main` neu bauen (Schritt 2 unten) |
 
-Zuletzt gemergt (seit 0.10.0):
+In Version 0.11.0:
 - SWELPER eingesteckt (ADR-0044);
 - Produktkatalog mit 7'169 Schweizer Produkten und Abgleich auf dem Gerät (ADR-0045);
 - mehrere Quittungen auf einer Seite prüfen und mit einem Knopf übernehmen (#212), «Wo eingekauft?» und die Laden-Buchstaben auf Quittungszeilen und Artikeln;
 - «Verwertet» und «Entsorgt»: Wörter, Wischen in beide Richtungen, zwei Kreise, kein «Weitergegeben» mehr (ADR-0046), Kreise antippen, um im Journal die Einträge zu sehen;
 - Start vor dem ersten Artikel, die «Bilanz» auf einer mittleren Achse (#211), Namen wie bei einer Privatbank (ADR-0047);
-- Auswählen und gemeinsam verschieben.
+- Auswählen und gemeinsam verschieben, auch mit langem Drücken und Ziehen auf einen Lagerort (#207, #210);
+- die Doku nach 200 PRs (#213).
 
 ## Als Nächstes (Vorschlag, in dieser Reihenfolge)
 
 Die Schritte stammen aus dem Review (Abschnitt «Stand nach 200 PRs» im [Plan](../plan.md)). Alban entscheidet, was davon gilt.
 
-1. **Release 0.11.0** mit `pnpm release`, danach Statusmeldung an Alban. Die Schwelle von 10 PRs ist mehr als doppelt überschritten.
+1. ~~Release 0.11.0~~: erledigt am 8.11.2026.
 2. **Vier Schritte pro Artikel** neu auf `main` bauen, danach TD-08. Dabei «Rettich» und «Quittung» beachten, beides prüft der Textkatalog-Test.
 3. **Katalog zuerst auf dem Gerät** auch bei Barcode und Namenssuche (TD-17).
 4. **Zahl am App-Symbol** (Badging API) für «Heute retten», ohne Server.

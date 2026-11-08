@@ -1,6 +1,56 @@
 # Changelog
 
-Alle Änderungen an FridgeAI, neueste zuerst. Wird mit `pnpm release` erzeugt (ADR-0017).
+Alle Änderungen an Rettich (bis 7.11.2026 FridgeAI), neueste zuerst. Wird mit `pnpm release` erzeugt (ADR-0017).
+
+## [0.11.0] – 2026-11-08
+
+**Verwertet und Entsorgt, Wischen wie bei Spotify, die Laden-Buchstaben, mehrere Quittungen auf einmal und Ziehen auf einen Lagerort.**
+- **Verwertet und Entsorgt:** Rettich kennt nur noch diese zwei Abschlüsse, «Weitergegeben» fällt weg. In der Liste wischst du nach links für «Verwertet», nach rechts für «Entsorgt». Die «Bilanz» auf Start zeigt beides als zwei Kreise; ein Tipp auf einen Kreis öffnet die Einträge im «Journal».
+- **Namen wie bei einer Privatbank:** «Heute retten», «Bilanz», «Auszüge», «Gesamtauszug», «Journal» und «Deine Daten».
+- **Läden:** Rettich kennt 7'169 Schweizer Produkte und gleicht Quittungszeilen damit auf dem Gerät ab. Jeder erkannte Laden trägt seinen Buchstaben im Stil seines Schilds, auf der Quittung, bei den Artikeln und in den Auszügen. Fehlt der Laden, fragt Rettich «Wo eingekauft?».
+- **Mehrere Quittungen:** Wähle mehrere auf einmal, prüfe alle auf einer Seite und lege sie mit «Alle übernehmen» in den Vorrat.
+- **Auswählen und Ziehen:** Lang drücken wählt einen Artikel aus. Zieh ihn, oder mehrere, hoch auf einen Lagerort.
+- **Start vor dem ersten Artikel:** die zwei Wege hinein, «So funktioniert Rettich» in drei Schritten und dein Rettich.
+- **Kategorien:** Früchte, Gemüse und «TK» werden erkannt, alte «Sonstiges»-Artikel einsortiert.
+- **Doku nach 200 PRs:** README, Plan, Pilot, Datenschutz und ein Verzeichnis aller Entscheide sind nachgeführt.
+
+### Neu
+
+- long press and drag items onto a storage-location tab ([#210](https://github.com/BanioX/FridgeAI/pull/210))
+- review several receipts on one page, take all with one button ([#212](https://github.com/BanioX/FridgeAI/pull/212))
+- the «Bilanz» on one middle axis ([#211](https://github.com/BanioX/FridgeAI/pull/211))
+- the shop's letter on every receipt line ([#209](https://github.com/BanioX/FridgeAI/pull/209))
+- tap a ring of the «Bilanz» to see what was used or thrown away ([#208](https://github.com/BanioX/FridgeAI/pull/208))
+- select several items and move them together, like iOS ([#207](https://github.com/BanioX/FridgeAI/pull/207))
+- names like a Swiss private bank (ADR-0047) ([#206](https://github.com/BanioX/FridgeAI/pull/206))
+- drop «Weitergegeben», only «Verwertet» and «Entsorgt» ([#205](https://github.com/BanioX/FridgeAI/pull/205))
+- show the shop on items, with the shop letters in each shop's sign style ([#202](https://github.com/BanioX/FridgeAI/pull/202))
+- «Verwertet» and «Entsorgt» as two rings on Start and the receipt ([#204](https://github.com/BanioX/FridgeAI/pull/204))
+- a full Start page before the first item ([#203](https://github.com/BanioX/FridgeAI/pull/203))
+- swipe like Spotify, left «Verwertet», right «Entsorgt» ([#200](https://github.com/BanioX/FridgeAI/pull/200))
+- «verwertet» and «entsorgt» instead of «gegessen» and «weggeworfen» ([#199](https://github.com/BanioX/FridgeAI/pull/199))
+- «Wo eingekauft?» tabs with Rettich shop monograms ([#197](https://github.com/BanioX/FridgeAI/pull/197))
+- 7'169 Swiss products, refreshed with one command ([#198](https://github.com/BanioX/FridgeAI/pull/198))
+- choose several receipts at once, review them one after the other ([#195](https://github.com/BanioX/FridgeAI/pull/195))
+- sort old «Sonstiges» items into their category ([#194](https://github.com/BanioX/FridgeAI/pull/194))
+- match receipt lines in the shipped catalog on the device ([#193](https://github.com/BanioX/FridgeAI/pull/193))
+- collect public product data of Swiss shops (ADR-0045) ([#192](https://github.com/BanioX/FridgeAI/pull/192))
+- plug Rettich into the Swelper as its first context ([#190](https://github.com/BanioX/FridgeAI/pull/190))
+- show where each item lies as a badge in the PDF lists ([#191](https://github.com/BanioX/FridgeAI/pull/191))
+
+### Behoben
+
+- recognise fruit, vegetables, «TK» and cut-off receipt words ([#189](https://github.com/BanioX/FridgeAI/pull/189))
+
+### Dokumentation
+
+- bring the documentation up to date after 200 PRs ([#213](https://github.com/BanioX/FridgeAI/pull/213))
+- write SWELPER in capitals and sync the frame (swelper 0.1.1) ([#196](https://github.com/BanioX/FridgeAI/pull/196))
+- Swelper, die Schaltzentrale als eigener Rahmen, plus Lektion L-21 ([#188](https://github.com/BanioX/FridgeAI/pull/188))
+
+### Wartung
+
+- own the context in .swelper.json (swelper 0.2.0) ([#201](https://github.com/BanioX/FridgeAI/pull/201))
 
 ## [0.10.0] – 2026-11-08
 

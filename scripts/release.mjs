@@ -80,7 +80,7 @@ const section = [
 ].join('\n');
 
 const header =
-  '# Changelog\n\nAlle Änderungen an FridgeAI, neueste zuerst. Wird mit `pnpm release` erzeugt (ADR-0017).\n\n';
+  '# Changelog\n\nAlle Änderungen an Rettich (bis 7.11.2026 FridgeAI), neueste zuerst. Wird mit `pnpm release` erzeugt (ADR-0017).\n\n';
 const previous = existsSync('CHANGELOG.md')
   ? readFileSync('CHANGELOG.md', 'utf8').replace(/^# Changelog\n[\s\S]*?(?=^## \[)/m, '')
   : '';
