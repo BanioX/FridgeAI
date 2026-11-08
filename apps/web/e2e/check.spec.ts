@@ -21,7 +21,7 @@ test('weekly fridge check: half, thrown away, back, still there', async ({ page 
 
   // Soonest date first: the milk, then the hard cheese.
   await expect(page.getByRole('heading', { level: 2, name: 'Vollmilch' })).toBeVisible();
-  await page.getByRole('button', { name: 'Weggeworfen' }).click();
+  await page.getByRole('button', { name: 'Entsorgt' }).click();
 
   await expect(page.getByRole('heading', { level: 2, name: 'Grana Padano' })).toBeFocused();
   await expect(page.getByText('2 von 2')).toBeVisible();

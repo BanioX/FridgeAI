@@ -35,7 +35,7 @@ export const messages = {
   },
   defaults: { householdName: 'Mein Haushalt', memberName: 'Ich' },
   expiry: {
-    doNotEat: 'Nicht mehr essen',
+    doNotEat: 'Nicht mehr verwenden',
     pastBestBefore: (days: number) => (days === 1 ? 'seit gestern' : `seit ${String(days)} Tagen`),
     today: 'heute',
     tomorrow: 'morgen',
@@ -101,7 +101,7 @@ export const messages = {
         `Dein Rettich: ${stage}, ${leaves === 1 ? '1 Blatt' : `${String(leaves)} Blätter`}`,
     },
     saved: 'Gerettet',
-    wasted: 'Weggeworfen',
+    wasted: 'Entsorgt',
     savedShare: (percent: number) => `${String(percent)} % gerettet`,
     ofAtRisk: 'von allem, was knapp wurde',
     savedCount: (count: number) =>
@@ -122,8 +122,8 @@ export const messages = {
     question: 'Ist das noch da?',
     still: 'Noch da',
     half: 'Halb',
-    eaten: 'Gegessen',
-    wasted: 'Weggeworfen',
+    eaten: 'Verwertet',
+    wasted: 'Entsorgt',
     back: 'Zurück',
     empty: 'Im Kühlschrank liegt nichts. Es gibt nichts zu prüfen.',
     doneTitle: 'Fertig, dein Kühlschrank ist aktuell.',
@@ -131,8 +131,8 @@ export const messages = {
       const parts = [
         counts.still > 0 ? `${String(counts.still)} noch da` : '',
         counts.half > 0 ? `${String(counts.half)} halb` : '',
-        counts.eaten > 0 ? `${String(counts.eaten)} gegessen` : '',
-        counts.wasted > 0 ? `${String(counts.wasted)} weggeworfen` : '',
+        counts.eaten > 0 ? `${String(counts.eaten)} verwertet` : '',
+        counts.wasted > 0 ? `${String(counts.wasted)} entsorgt` : '',
       ].filter((part) => part !== '');
       return parts.join(', ');
     },
@@ -146,8 +146,8 @@ export const messages = {
       'Der Bund empfiehlt einen Notvorrat für rund eine Woche und 9 Liter Wasser pro Person.',
     add: 'Hinzufügen',
     closed: {
-      eaten: (name: string) => `${name}: als gegessen gespeichert.`,
-      wasted: (name: string) => `${name}: als weggeworfen gespeichert.`,
+      eaten: (name: string) => `${name}: als verwertet gespeichert.`,
+      wasted: (name: string) => `${name}: als entsorgt gespeichert.`,
       shared_out: (name: string) => `${name}: als weitergegeben gespeichert.`,
     },
     /** After a confirmed rescue (ADR-0042): factual, no «Danke» (Alban, 8.11.2026). */
@@ -164,18 +164,18 @@ export const messages = {
     undoFailed: 'Rückgängig hat nicht geklappt. Bitte versuch es nochmals.',
   },
   swipe: {
-    tip: 'Tipp: Wisch einen Artikel nach links, wenn du eins gegessen hast.',
+    tip: 'Tipp: Wisch einen Artikel nach links, wenn du eins verwertet hast.',
     /** Visually hidden, read after the row name (WCAG 2.5.1: the item page has the buttons). */
-    hint: 'Nach links wischen: eins gegessen. Oder öffne den Artikel für alle Optionen.',
-    /** Strip behind a swiped row: «Gegessen», and below it how much. */
-    action: 'Gegessen',
+    hint: 'Nach links wischen: eins verwertet. Oder öffne den Artikel für alle Optionen.',
+    /** Strip behind a swiped row: «Verwertet», and below it how much. */
+    action: 'Verwertet',
     piece: '−1',
     portion: '1 Portion',
     rest: 'alles',
-    /** «1 Glace gegessen» for whole pieces. */
-    eatenPieces: (count: number, name: string) => `${String(count)} ${name} gegessen`,
-    /** «Reis: 250 g gegessen» for amounts and fractions. */
-    eatenAmount: (name: string, amount: string) => `${name}: ${amount} gegessen`,
+    /** «1 Glace verwertet» for whole pieces. */
+    eatenPieces: (count: number, name: string) => `${String(count)} ${name} verwertet`,
+    /** «Reis: 250 g verwertet» for amounts and fractions. */
+    eatenAmount: (name: string, amount: string) => `${name}: ${amount} verwertet`,
     failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
   },
   addItem: {
@@ -187,9 +187,9 @@ export const messages = {
     more: 'Mehr Angaben',
     moreWith: (summary: string) => `Mehr Angaben · ${summary}`,
     location: 'Wo lagerst du es?',
-    /** «Das wirfst du oft weg» (ADR-0038): from the household's own history, on the device. */
+    /** «Das entsorgst du oft» (ADR-0038): from the household's own history, on the device. */
     habit: (times: number, names: readonly string[]) =>
-      `${names.slice(0, 3).join(', ')}: in den letzten 3 Monaten ${String(times)}× weggeworfen.`,
+      `${names.slice(0, 3).join(', ')}: in den letzten 3 Monaten ${String(times)}× entsorgt.`,
     /** Packed or loose from the counter (ADR-0038). */
     bought: 'Wie gekauft?',
     packed: 'Verpackt',
@@ -261,9 +261,9 @@ export const messages = {
     estimated: '(geschätzt)',
     openedOn: (date: string) => `Geöffnet am ${date}`,
     otherPacks: 'Weitere Packungen',
-    otherPacksEarlier: 'Eine andere Packung läuft früher ab. Die solltest du zuerst essen.',
+    otherPacksEarlier: 'Eine andere Packung läuft früher ab. Die solltest du zuerst aufbrauchen.',
     whatHappened: 'Was ist damit passiert?',
-    outcomes: { eaten: 'Gegessen', wasted: 'Weggeworfen', shared_out: 'Weitergegeben' },
+    outcomes: { eaten: 'Verwertet', wasted: 'Entsorgt', shared_out: 'Weitergegeben' },
     /** Only a confirmed rescue counts as «gerettet» (ADR-0039). */
     rescueQuestion: 'Ohne Rettich im Abfall gelandet?',
     rescueYes: 'Ja, gerettet',
@@ -275,8 +275,8 @@ export const messages = {
     why: 'Warum? (freiwillig)',
     toWhom: 'An wen? (freiwillig)',
     confirm: {
-      eaten: 'Als gegessen speichern',
-      wasted: 'Als weggeworfen speichern',
+      eaten: 'Als verwertet speichern',
+      wasted: 'Als entsorgt speichern',
       shared_out: 'Als weitergegeben speichern',
     },
     left: (rest: string) => `Gespeichert. Noch ${rest} übrig.`,
@@ -386,11 +386,11 @@ export const messages = {
     explain: [
       {
         title: 'Mindestens haltbar bis',
-        text: 'Bis zu diesem Datum garantiert der Hersteller die Qualität. Danach ist vieles noch gut: schauen, riechen, probieren. Es ist kein Wegwerfdatum.',
+        text: 'Bis zu diesem Datum garantiert der Hersteller die Qualität. Danach ist vieles noch gut: schauen, riechen, probieren. Es heisst nicht: entsorgen.',
       },
       {
         title: 'Zu verbrauchen bis',
-        text: 'Steht auf leicht Verderblichem wie Hackfleisch, Poulet, Fisch oder Feinkostsalaten. Nach diesem Datum nicht mehr essen, auch wenn es noch gut aussieht.',
+        text: 'Steht auf leicht Verderblichem wie Hackfleisch, Poulet, Fisch oder Feinkostsalaten. Nach diesem Datum nicht mehr verwenden, auch wenn es noch gut aussieht.',
       },
       {
         title: 'Richtig kühlen',
@@ -431,11 +431,11 @@ export const messages = {
      */
     facts: [
       'Rund ein Drittel der Lebensmittelverluste der Schweiz entsteht in den Haushalten (BAFU).',
-      'Mindestens haltbar bis ist kein Wegwerfdatum: Joghurt, Hartkäse und Teigwaren sind danach oft noch gut.',
+      'Mindestens haltbar bis heisst nicht «entsorgen»: Joghurt, Hartkäse und Teigwaren sind danach oft noch gut.',
       'Brot vom Vortag wird zu Fotzelschnitten, Croûtons oder Paniermehl.',
       'Äpfel und Bananen geben Reifegas ab. Getrennt gelagert reift das übrige Obst langsamer.',
       'Frische Kräuter halten länger in einem Glas Wasser, wie ein Blumenstrauss.',
-      'Hartkäse mit wenig Schimmel: grosszügig wegschneiden. Weichkäse, Joghurt und Brot mit Schimmel ganz wegwerfen.',
+      'Hartkäse mit wenig Schimmel: grosszügig wegschneiden. Weichkäse, Joghurt und Brot mit Schimmel ganz entsorgen.',
       'Suppe, Sauce, Tomatenmark und Pesto lassen sich portionsweise einfrieren, zum Beispiel im Eiswürfelbehälter.',
       'Am kältesten ist es im Kühlschrank unten über dem Gemüsefach. Dort gehören Fleisch und Fisch hin.',
       'Welke Rüebli und schlapper Salat werden in kaltem Wasser oft wieder knackig.',
@@ -448,7 +448,7 @@ export const messages = {
       'In Safari unten auf «Teilen» tippen, dann «Zum Home-Bildschirm». Danach startet Rettich wie eine App, auch offline.',
     installOther: 'Im Browser-Menü «App installieren» oder «Zum Startbildschirm» wählen.',
     reportsDetail: 'Kühlschrank, Wirkung und Einkäufe zum Teilen',
-    historyDetail: 'Gegessen und weggeworfen: ansehen, ändern, löschen',
+    historyDetail: 'Verwertet und entsorgt: ansehen, ändern, löschen',
     shoppingDetail: 'Was du wieder brauchst',
     dataDetail: 'Exportieren, löschen, was mit deinen Daten passiert',
   },
@@ -482,7 +482,7 @@ export const messages = {
   },
   history: {
     intro:
-      'Was du gegessen, weitergegeben oder weggeworfen hast, mit dem Anteil am Preis. Einen falschen Eintrag kannst du ändern oder löschen. Beim Löschen kommt die Menge zurück in den Vorrat.',
+      'Was du verwertet, weitergegeben oder entsorgt hast, mit dem Anteil am Preis. Einen falschen Eintrag kannst du ändern oder löschen. Beim Löschen kommt die Menge zurück in den Vorrat.',
     periodLegend: 'Zeitraum',
     periods: { month: 'Dieser Monat', quarter: 'Letzte 3 Monate', year: 'Dieses Jahr' },
     empty: 'In diesem Zeitraum hast du nichts abgeschlossen.',
@@ -523,14 +523,14 @@ export const messages = {
     kinds: {
       impact: {
         label: 'Wirkung',
-        hint: 'Als Quittung: was du gerettet, weitergegeben und weggeworfen hast.',
+        hint: 'Als Quittung: was du gerettet, weitergegeben und entsorgt hast.',
       },
       expiring: {
         label: 'Läuft bald ab',
         hint: 'Als Quittung: alles, was in den nächsten Tagen abläuft.',
       },
       wasted: {
-        label: 'Weggeworfen',
+        label: 'Entsorgt',
         hint: 'Als Quittung: was im Abfall gelandet ist, mit Grund und Wert.',
       },
       fridge: {
@@ -616,9 +616,9 @@ export const messages = {
             : `Läuft in den nächsten ${String(days)} Tagen ab`,
         expiringTotal: 'TOTAL IN GEFAHR',
         expiringEmpty: 'Nichts läuft in dieser Zeit ab. Stark!',
-        wastedTitle: 'Was weggeworfen wurde',
-        wastedTotal: 'TOTAL WEGGEWORFEN',
-        wastedEmpty: 'Nichts weggeworfen. Stark!',
+        wastedTitle: 'Was entsorgt wurde',
+        wastedTotal: 'TOTAL ENTSORGT',
+        wastedEmpty: 'Nichts entsorgt. Stark!',
         placeTitle: (place: string) => `Im ${place}`,
         placeTotal: 'TOTAL WERT',
         placeEmpty: 'Hier ist gerade nichts.',
@@ -632,12 +632,12 @@ export const messages = {
       inStock: 'Im Vorrat',
       spent: 'Eingekauft',
       saved: 'Gerettet',
-      wasted: 'Weggeworfen',
+      wasted: 'Entsorgt',
       items: (count: number) => (count === 1 ? '1 Artikel' : `${String(count)} Artikel`),
       receipts: (count: number) => (count === 1 ? '1 Quittung' : `${String(count)} Quittungen`),
       insights: 'Was auffällt',
       months: 'Pro Monat',
-      urgent: 'Jetzt essen',
+      urgent: 'Jetzt verwerten',
       wasteTop: 'Was im Abfall landet',
       byCategory: 'Nach Lebensmittel',
       reasons: 'Warum',
@@ -649,7 +649,7 @@ export const messages = {
       estimated: '* geschätzt aus dem Durchschnittspreis der Kategorie',
       footer: 'Erstellt auf deinem Gerät mit Rettich · Wirf kein Geld in den Abfall.',
       page: (page: number, pages: number) => `Seite ${String(page)} von ${String(pages)}`,
-      noWaste: 'Nichts weggeworfen. Stark!',
+      noWaste: 'Nichts entsorgt. Stark!',
       noUrgent: 'Nichts läuft in den nächsten drei Tagen ab.',
       none: 'Keine Daten in diesem Zeitraum.',
     },
@@ -660,15 +660,15 @@ export const messages = {
       low: (percent: number) =>
         `Nur ${String(percent)} % gerettet. Der Kühlschrank-Check auf «Heute» hilft, nichts zu vergessen.`,
       topWaste: (category: string, count: number, value: string) =>
-        `Am meisten weggeworfen: ${category} (${String(count)}×, ${value}).`,
+        `Am meisten entsorgt: ${category} (${String(count)}×, ${value}).`,
       reason: (reason: string) => `Häufigster Grund: ${reason}.`,
       tips: {
         expired: 'Tipp: «Heute retten» zeigt jeden Tag, was bald abläuft.',
-        spoiled: 'Tipp: Den Kühlschrank auf 5 °C stellen und Offenes zuerst essen.',
+        spoiled: 'Tipp: Den Kühlschrank auf 5 °C stellen und Offenes zuerst aufbrauchen.',
         too_much: 'Tipp: Kleinere Packungen kaufen oder rechtzeitig einfrieren.',
         forgotten: 'Tipp: Der Kühlschrank-Check auf «Heute» erinnert dich jede Woche.',
-        did_not_like: 'Tipp: Unter «Kochen» findest du andere Ideen für die Reste.',
-        other: 'Tipp: Ein Grund beim Wegwerfen hilft, das Muster zu erkennen.',
+        did_not_like: 'Tipp: Weniger davon kaufen oder rechtzeitig weitergeben.',
+        other: 'Tipp: Ein Grund beim Entsorgen hilft, das Muster zu erkennen.',
       },
       urgent: (count: number) =>
         count === 1

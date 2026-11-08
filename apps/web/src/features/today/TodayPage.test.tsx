@@ -61,7 +61,7 @@ describe('TodayPage', () => {
     expect(screen.queryByText(messages.today.welcomeTitle)).toBeNull();
   });
 
-  it('shows «Nicht mehr essen» for use-by items past their date', async () => {
+  it('shows «Nicht mehr verwenden» for use-by items past their date', async () => {
     const db = testDb();
     await seedDb(db, [
       { name: 'Hackfleisch', location: 'fridge', inDays: -1, expiryKind: 'use_by' },

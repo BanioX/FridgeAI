@@ -22,7 +22,7 @@ const sampleItems: { emoji: string; name: string; meta: string; tone: Tone; labe
     name: 'Pouletbrust',
     meta: '300 g · Kühlschrank',
     tone: 'danger',
-    label: 'Nicht mehr essen',
+    label: 'Nicht mehr verwenden',
   },
   { emoji: '🥛', name: 'Vollmilch', meta: '1 l · Kühlschrank', tone: 'today', label: 'heute' },
   { emoji: '🥬', name: 'Blattspinat', meta: '250 g · Kühlschrank', tone: 'soon', label: 'morgen' },
@@ -122,7 +122,7 @@ export function StyleguidePage() {
         <Leaf className="mt-0.5 shrink-0 text-basil-600" size={22} aria-hidden="true" />
         <p>
           <strong>Oft noch gut:</strong> Schauen, riechen, probieren. Das Mindesthaltbarkeitsdatum
-          ist kein Wegwerfdatum.
+          heisst nicht «entsorgen».
         </p>
       </Card>
 
@@ -166,7 +166,7 @@ export function StyleguidePage() {
           <StatusChip tone="fresh">frisch</StatusChip>
           <StatusChip tone="soon">in 2 Tagen</StatusChip>
           <StatusChip tone="today">heute</StatusChip>
-          <StatusChip tone="danger">Nicht mehr essen</StatusChip>
+          <StatusChip tone="danger">Nicht mehr verwenden</StatusChip>
           <StatusChip tone="ice">eingefroren</StatusChip>
           <StatusChip tone="wheat">Vorrat</StatusChip>
           <StatusChip tone="olive">Notvorrat</StatusChip>

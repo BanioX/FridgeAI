@@ -67,7 +67,7 @@ describe('reportInsights (ADR-0030)', () => {
     });
     expect(lines).toEqual([
       'Du hast 62 % gerettet. Da geht noch etwas.',
-      'Am meisten weggeworfen: Brot (2×, CHF 5.50).',
+      'Am meisten entsorgt: Brot (2×, CHF 5.50).',
       'Häufigster Grund: vergessen. Tipp: Der Kühlschrank-Check auf «Heute» erinnert dich jede Woche.',
       '1 Artikel ist abgelaufen oder läuft in 3 Tagen ab.',
       'Am meisten ausgegeben bei Coop: CHF 61.55.',

@@ -29,7 +29,7 @@ const tabId = (location: StorageLocation) => `tab-${location}`;
 const panelId = (location: StorageLocation) => `panel-${location}`;
 
 /**
- * After an item was closed on its detail page: «Mozzarella: als gegessen gespeichert.» with undo
+ * After an item was closed on its detail page: «Mozzarella: als verwertet gespeichert.» with undo
  * and, once it is used up or gone, «Nachkaufen» with one tap (ADR-0031). The notice lives in the
  * history entry, so it disappears once the person moves on.
  */
