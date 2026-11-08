@@ -384,6 +384,10 @@ export function ReceiptUpload() {
                         <PriceHint hint={priceHint(line, review.memory.get(line.name), money)} />
                       </span>
                     </label>
+                    {/* The shop on every line (Alban, 8.11.2026); it changes with «Wo eingekauft?». */}
+                    {receipt.retailer === 'other' ? null : (
+                      <ShopBadge retailer={receipt.retailer} size={22} />
+                    )}
                     <PriceField
                       name={line.name}
                       value={paid(line)}
