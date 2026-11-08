@@ -32,7 +32,7 @@ Unten fünf Tabs: **Start · Vorrat · ＋ Erfassen · Wissen · Mehr** ([ADR-00
 
 | Bereich | Funktion |
 | --- | --- |
-| **Start** | Was bald abläuft, Wert im Kühlschrank in CHF, deine Wirkung diesen Monat |
+| **Start** | Was bald abläuft, Wert im Kühlschrank in CHF, deine Wirkung diesen Monat; ohne Vorrat eine Einführung mit den zwei Wegen hinein (Quittung, Artikel), «So funktioniert Rettich» in drei Schritten, deinem Rettich und «Wusstest du?» |
 | **Vorrat** | Kühlschrank, Tiefkühler, Vorrat, Notvorrat (bis 100 Jahre); auf der Artikelseite «Weitere Packungen» desselben Produkts mit Datum und dem Hinweis, welche zuerst weg muss |
 | **Erfassen** | Name genügt: Kategorie, Lagerort, Menge, Verpackung und Ablaufdatum werden vorgeschlagen; Eier im 6er/10er, Datumsfeld mit Schnellwahl und Eintippen; «Schnell erfassen»: die eigenen Standardartikel mit einem Tipp; Suche beim Tippen wie «Coop Weggli» (eigene Produkte und Open Food Facts Schweiz) |
 | **Bon hochladen** | PDF, Screenshot oder Foto des Kassenbons (Coop, Migros, Aldi, Lidl, Denner) auf dem Gerät auslesen: Produktname, Menge, bezahlter Preis mit Aktion, Summenprüfung; Lebensmittel angehakt, mit Preis in den Vorrat; derselbe Bon nie doppelt; Preis-Erinnerung «12 % teurer als sonst» |
