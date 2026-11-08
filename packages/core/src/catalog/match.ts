@@ -44,10 +44,83 @@ const indexed = CATEGORIES.map((category) => ({
 }));
 
 /**
+ * Flavour and origin words: «Glace Schokolade», «Eistee Pfirsich», «Appenzeller Bratspeck». They
+ * name the product only when nothing else does («Pfirsiche», «Appenzeller ¼ Laib»).
+ */
+const WEAK_WORDS = new Set(
+  [
+    'schokolade',
+    'schoko',
+    'chocolat',
+    'vanille',
+    'karamell',
+    'caramel',
+    'honig',
+    'appenzeller',
+    'emmentaler',
+    'gruyere',
+    'tilsiter',
+  ].map(normalizeFoodText),
+);
+const WEAK_CATEGORIES = new Set(['pantry-spices']);
+const isWeak = (category: Category, keyword: string) =>
+  category.group === 'produce' || WEAK_CATEGORIES.has(category.id) || WEAK_WORDS.has(keyword);
+
+/** «TK», «tiefgekühlt», «surgelé»: frozen, whatever the rest says. */
+const FROZEN_MARKERS = new Set([
+  'tk',
+  'tiefgekuehlt',
+  'tiefkuehl',
+  'surgele',
+  'surgeles',
+  'gefroren',
+]);
+
+/**
+ * Receipts cut words off: «Schmelzkäses.» is a keyword with a letter or two after it, «Knobla.» the
+ * start of a keyword with at most four letters missing. Only for words and keywords of five
+ * letters or more, and only when nothing else fits.
+ */
+const MIN_CUT = 5;
+const cutOff = (word: string, keyword: string) =>
+  keyword.length >= MIN_CUT &&
+  ((word.length >= MIN_CUT && keyword.length - word.length <= 4 && keyword.startsWith(word)) ||
+    word.slice(0, -1).endsWith(keyword) ||
+    word.slice(0, -2).endsWith(keyword));
+
+interface Hit {
+  category: Category;
+  score: number;
+}
+/** Added to the score of a keyword that is not a flavour or origin word. */
+const STRONG = 100;
+
+function bestMatch(words: readonly string[], normalized: string, cut: boolean): Hit | null {
+  let best: Hit | null = null;
+  for (const { category, keywords } of indexed) {
+    for (const keyword of keywords) {
+      const matches = keyword.includes(' ')
+        ? ` ${normalized} `.includes(` ${keyword} `)
+        : words.some((word) =>
+            cut ? cutOff(word, keyword) : word === keyword || word.endsWith(keyword),
+          );
+      // Weak words count as short as possible, so any other keyword beats them.
+      const score = matches ? (isWeak(category, keyword) ? 0 : STRONG) + keyword.length : -1;
+      if (score >= 0 && (best === null || score > best.score)) {
+        best = { category, score };
+      }
+    }
+  }
+  return best;
+}
+
+/**
  * Guesses the category from a product name («Vollmilch», «M-Budget Bratwurst»). German compounds
  * carry their meaning at the end (Voll-milch, Basmati-reis), so a keyword matches a whole word or
- * the end of a word; multi-word keywords match as a phrase. The longest keyword wins.
- * Full receipt matching with learned aliases follows in step 4d.
+ * the end of a word; multi-word keywords match as a phrase. The longest keyword wins, flavour and
+ * origin words only when nothing else matches, and a product named before a comma wins over the
+ * flavour after it. Cut-off receipt words match a long keyword inside
+ * them, and «TK» moves the guess to the freezer.
  */
 export function matchCategoryByName(name: string): Category | null {
   const normalized = normalizeFoodText(name);
@@ -55,16 +128,17 @@ export function matchCategoryByName(name: string): Category | null {
     return null;
   }
   const words = normalized.split(' ');
-  let best: { category: Category; score: number } | null = null;
-  for (const { category, keywords } of indexed) {
-    for (const keyword of keywords) {
-      const matches = keyword.includes(' ')
-        ? ` ${normalized} `.includes(` ${keyword} `)
-        : words.some((word) => word === keyword || word.endsWith(keyword));
-      if (matches && (best === null || keyword.length > best.score)) {
-        best = { category, score: keyword.length };
-      }
-    }
+  // «Pouletbrüstli, Curry-Mohn», «Rührkuchen, Zitrone»: the product comes before the comma.
+  const head = normalizeFoodText(name.split(',')[0] ?? '');
+  const headHit = head === normalized ? null : bestMatch(head.split(' '), head, false);
+  const found =
+    (headHit !== null && headHit.score >= STRONG ? headHit.category : null) ??
+    bestMatch(words, normalized, false)?.category ??
+    bestMatch(words, normalized, true)?.category ??
+    null;
+  if (!words.some((word) => FROZEN_MARKERS.has(word)) || found?.group === 'frozen') {
+    return found;
   }
-  return best?.category ?? null;
+  // «TK Erbsen», «TK Hähnchen-Cordon Bleu»: vegetables to frozen vegetables, the rest to meals.
+  return byId.get(found?.group === 'produce' ? 'frozen-vegetables' : 'frozen-meals') ?? found;
 }
