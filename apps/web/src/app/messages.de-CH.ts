@@ -295,9 +295,12 @@ export const messages = {
   },
   itemDetail: {
     /** How quickly it spoils (ADR-0038). */
-    perishability: { high: 'Heikel', medium: 'Mittel haltbar', low: 'Robust' },
+    perishability: { high: 'heikel', medium: 'mittel', low: 'robust' },
+    /** Haltbarkeit 1 to 10, 10 = keeps longest (Alban, 8.11.2026). */
+    score: (score: number) => `Haltbarkeit ${String(score)}/10`,
+    scoreLabel: (score: number, level: string) => `Haltbarkeit ${String(score)} von 10, ${level}`,
     keepsOpen: (days: number) =>
-      days === 1 ? 'offen etwa 1 Tag haltbar' : `offen etwa ${String(days)} Tage haltbar`,
+      days === 1 ? 'Offen etwa 1 Tag haltbar' : `Offen etwa ${String(days)} Tage haltbar`,
     back: 'Zurück zum Vorrat',
     gone: 'Dieser Artikel ist nicht mehr im Vorrat.',
     bestBefore: 'Mindestens haltbar bis',

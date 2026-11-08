@@ -1,6 +1,7 @@
 import {
   categoryById,
-  perishability,
+  perishabilityOf,
+  shelfScore,
   expiryStatus,
   fallbackCategory,
   isFreezable,
@@ -24,6 +25,7 @@ import { PriceMemoryNote } from '../receipts/PriceMemoryNote';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { ChoiceChips } from '../../ui/ChoiceChips';
+import { ScoreRing } from '../../ui/ScoreRing';
 import { StatusChip } from '../../ui/StatusChip';
 import { describeDate } from '../../ui/date-text';
 import { expiryBadge } from '../../ui/expiry-badge';
@@ -113,6 +115,9 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
     item.location,
   );
   const canMove = item.location === 'freezer' || isFreezable(category);
+  // Haltbarkeit 1 to 10 (ADR-0038): an open pack scores by its days after opening.
+  const score = shelfScore(category, { opened: item.openedOn !== undefined });
+  const level = perishabilityOf(score);
 
   async function run(action: () => Promise<string | null>) {
     if (busy) {
@@ -260,18 +265,23 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
                 {t.openedOn(describeDate(item.openedOn))}
               </p>
             )}
-            <p className="mt-1 text-sm text-ink-muted">
-              {[
-                t.perishability[perishability(category)],
-                item.openedOn === undefined && category.afterOpeningDays !== undefined
-                  ? t.keepsOpen(category.afterOpeningDays)
-                  : null,
-              ]
-                .filter((part) => part !== null)
-                .join(' · ')}
-            </p>
           </div>
           <StatusChip tone={badge.tone}>{badge.label}</StatusChip>
+        </div>
+        <div className="mt-4 flex items-center gap-3 border-t border-line pt-4">
+          <ScoreRing
+            score={score}
+            level={level}
+            label={t.scoreLabel(score, t.perishability[level])}
+          />
+          <div>
+            <p className="font-semibold">
+              {t.score(score)} · {t.perishability[level]}
+            </p>
+            {item.openedOn === undefined && category.afterOpeningDays !== undefined ? (
+              <p className="text-sm text-ink-muted">{t.keepsOpen(category.afterOpeningDays)}</p>
+            ) : null}
+          </div>
         </div>
       </Card>
 
