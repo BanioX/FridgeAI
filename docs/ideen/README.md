@@ -22,6 +22,7 @@ Brainstorming, laufend gepflegt (CLAUDE.md: «Ideen unterwegs»). Hier steht, wa
 | [`markt-und-timing.md`](./markt-und-timing.md) | Food Waste in Zahlen, Ziele 2030, Konkurrenz, Abo-Kennzahlen |
 | [`mitbewerber-yazio.md`](./mitbewerber-yazio.md) | YAZIO geprüft: Zahlen, Datenquellen (Schweizer Nährwertdatenbank), Suche in Stufen, Wachstum ohne Werbebudget |
 | [`masterplan-bewertung.md`](./masterplan-bewertung.md) | Albans Masterplan: übernommen, später, Entscheide, Regeln |
+| [`schaltzentrale.md`](./schaltzentrale.md) | Trichter, Dispatcher, Stecker, Takt: ein Grundgerüst, mit dem Alban Ideen an Fach-Agenten verteilt; Stufenplan, geprüfte Fakten, offene Entscheide |
 
 **Produkt-Prioritäten** (Alban, 6.11.2026):
 

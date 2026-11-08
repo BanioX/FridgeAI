@@ -16,7 +16,8 @@ Zuletzt gemergt: «Quittung» statt «Bon» (#167), PDF-Seite 1 als Rettich-Quit
 2. **Scanner:** «Code aus Foto lesen» und die Nummer von Hand hinter «Andere Wege» legen. Dabei die Quittungs-E2E anpassen, sie nutzen die Nummer.
 3. **TD-02:** Produktsuche, Quittungs-Import und Rezepte nach `packages/core/src/application` ziehen (je ein PR).
 4. **Release** bei 10 gemergten PRs seit v0.8.0 (`pnpm release --count`).
-5. **Später (Ideen):** der Rettich als Maskottchen in leeren Zuständen und beim Teilen. Illustrationen passend zum Logo, zum Beispiel mit einer Bild-KI erstellt (Albans Abos).
+5. **Schaltzentrale** (Albans Wunsch vom 8.11.2026): Vorschlag in [`docs/ideen/schaltzentrale.md`](../ideen/schaltzentrale.md), sieben Fragen an Alban offen. Nach seinem Entscheid: PR 1 (ADR-0038, Doku) bis PR 5 (Takt) wie dort beschrieben, in einer Woche mit freiem Wochenbalken.
+6. **Später (Ideen):** der Rettich als Maskottchen in leeren Zuständen und beim Teilen. Illustrationen passend zum Logo, zum Beispiel mit einer Bild-KI erstellt (Albans Abos).
 
 ## Offene Fragen an Alban
 
