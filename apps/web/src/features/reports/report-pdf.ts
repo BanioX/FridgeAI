@@ -15,21 +15,25 @@ import { expiryBadge } from '../../ui/expiry-badge';
 import { formatQuantity } from '../../ui/quantity-text';
 import type { Tone } from '../../ui/tones';
 import {
+  barcode,
   bars,
   card,
   chip,
   columns,
+  dashed,
+  double,
   emoji,
   ground,
   measure,
   PDF_COLOR as C,
-  ring,
+  receiptPaper,
   roundedPicture,
   stack,
   write,
   type BarRow,
   type PdfPictures,
   type Rgb,
+  type TextStyle,
 } from './pdf-kit';
 import { reportInsights } from './report-insights';
 
@@ -93,14 +97,12 @@ export async function reportPdf(
   };
 
   ground(doc);
-  let y = header(ctx, options);
-  y = hero(ctx, y + 8);
-  y = keyFigures(ctx, y + 6);
-  y = insights(ctx, report, money, y + 6);
-  months(ctx, y + 12);
+  receipt(ctx, options);
 
-  y = newPage(doc);
-  y = urgent(ctx, y);
+  let y = details(doc, options, newPage(doc));
+  y = insights(ctx, report, money, y + 6);
+  y = months(ctx, room(doc, y + 12, 96));
+  y = urgent(ctx, room(doc, y + 12, 34));
   y = waste(ctx, y + 12);
   y = places(ctx, y + 12);
   inventory(ctx, y + 12);
@@ -126,96 +128,141 @@ function room(doc: jsPDF, y: number, height: number): number {
   return y + height > FOOTER - 6 ? newPage(doc) : y;
 }
 
-/** App icon and «rettich», the date on the right, then the large title and the household. */
-function header(
-  { doc, pictures }: Context,
+/**
+ * Page 1: the report as a till receipt («So hast du Food Waste reduziert»), on its own so it can
+ * be shared alone: what was saved and given away, what was thrown away, the rescue rate and the
+ * total, in a typewriter font on torn paper. The paper is as long as its content and stands in
+ * the middle of the page: a first pass only measures, the second draws.
+ */
+function receipt(
+  ctx: Context,
   options: { household: string; period: string; createdOn: LocalDate },
+): void {
+  const width = 98;
+  const x = (PAGE.width - width) / 2;
+  const height = receiptLines(ctx, options, x, width, 0, false);
+  const top = Math.max(TOP, (FOOTER - height) / 2);
+  receiptPaper(ctx.doc, { x, y: top, width, height });
+  receiptLines(ctx, options, x, width, top, true);
+}
+
+/** Lays out the receipt from `top`; draws only when `paint`. Returns the height of the paper. */
+function receiptLines(
+  { doc, report, amount, pictures }: Context,
+  options: { household: string; period: string; createdOn: LocalDate },
+  x: number,
+  width: number,
+  top: number,
+  paint: boolean,
 ): number {
-  const size = 10;
-  const top = 14;
-  if (pictures.logo === undefined) {
-    card(doc, { x: PAGE.margin, y: top, width: size, height: size }, C.smaragd, 2.6);
-    write(doc, 'r', PAGE.margin + size / 2, top + size / 2, {
-      size: 14,
-      color: C.white,
-      bold: true,
-      align: 'center',
-      baseline: 'middle',
-    });
-  } else {
-    roundedPicture(doc, pictures.logo, { x: PAGE.margin, y: top, size }, 2.6);
+  const r = t.receipt;
+  const left = x + 9;
+  const right = x + width - 9;
+  const center = PAGE.width / 2;
+  const mono = (size: number, color: Rgb = C.ink, bold = false): TextStyle => ({
+    size,
+    color,
+    bold,
+    font: 'courier',
+  });
+  const text = (value: string, at: number, y: number, style: TextStyle, room?: number) => {
+    if (paint) {
+      write(doc, value, at, y, style, room);
+    }
+  };
+  const rule = (kind: 'dashed' | 'double', y: number) => {
+    if (paint) {
+      (kind === 'dashed' ? dashed : double)(doc, left, right, y);
+    }
+  };
+
+  let y = top + 12;
+  const logo = 15;
+  if (paint) {
+    if (pictures.logo === undefined) {
+      card(doc, { x: center - logo / 2, y, width: logo, height: logo }, C.smaragd, 3.8);
+    } else {
+      roundedPicture(doc, pictures.logo, { x: center - logo / 2, y, size: logo }, 3.8);
+    }
   }
-  write(doc, 'rettich', PAGE.margin + size + 3, top + size / 2, {
-    size: 14,
-    color: C.onyx,
-    bold: true,
-    baseline: 'middle',
-  });
-  write(doc, t.created(formatSwissDate(options.createdOn)), PAGE.margin + CONTENT, top + size / 2, {
-    size: 9,
-    color: C.muted,
+  y += logo + 8;
+  text('Rettich', center, y, { size: 19, color: C.onyx, bold: true, align: 'center' });
+  y += 5.5;
+  text(r.claim, center, y, { ...mono(8.5, C.muted), align: 'center' });
+  y += 7;
+  rule('dashed', y);
+  y += 7;
+  text(r.title, center, y, { ...mono(9.5, C.ink, true), align: 'center' });
+  y += 6;
+  const meta = [options.household, options.period, t.created(formatSwissDate(options.createdOn))];
+  for (const line of meta) {
+    text(line, center, y, { ...mono(8.5, C.muted), align: 'center' }, right - left);
+    y += 4.4;
+  }
+  y += 2.6;
+  rule('dashed', y);
+  y += 8;
+
+  const post = (label: string, value: string, color: Rgb = C.ink, bold = false) => {
+    text(label, left, y, mono(10, color, bold), right - left - 32);
+    text(value, right, y, { ...mono(10, color, bold), align: 'right' });
+    y += 4.6;
+  };
+  const note = (value: string) => {
+    text(`  ${value}`, left, y, mono(8.5, C.muted), right - left);
+    y += 6;
+  };
+  const impact = report.impact;
+  post(r.saved, amount(impact.savedRappen), C.smaragd, true);
+  note(r.detail(impact.savedCount, kg(impact.savedGrams)));
+  post(r.shared, amount(impact.sharedRappen));
+  note(r.sharedDetail(impact.sharedCount));
+  post(r.wasted, amount(impact.wastedRappen), C.today, true);
+  note(r.detail(impact.wastedCount, kg(impact.wastedGrams)));
+  y += 1;
+  rule('dashed', y);
+  y += 8;
+  post(r.inStock, amount(report.fridge.valueRappen));
+  note(t.items(report.fridge.itemCount));
+  post(r.spent, amount(report.shopping.spentRappen));
+  note(t.receipts(report.shopping.receiptCount));
+  y += 1;
+  rule('double', y);
+  y += 9;
+  const share = impact.savedShare;
+  text(r.rate, left, y, mono(10.5, C.ink, true));
+  text(share === null ? '–' : `${String(Math.round(share * 100))} %`, right, y, {
+    ...mono(10.5, C.ink, true),
     align: 'right',
-    baseline: 'middle',
   });
-  write(doc, t.heading, PAGE.margin, 41, { size: 30, color: C.onyx, bold: true });
-  write(doc, `${options.household} · ${options.period}`, PAGE.margin, 48.5, {
+  y += 8;
+  text(r.total, left, y, mono(12.5, C.smaragd, true));
+  text(amount(impact.savedRappen), right, y, { ...mono(12.5, C.smaragd, true), align: 'right' });
+  y += 5;
+  rule('double', y);
+
+  // Foot: a decorative barcode and a thank-you.
+  y += 14;
+  if (paint) {
+    barcode(
+      doc,
+      { x: center - 30, y, width: 60, height: 11 },
+      `${options.household}|${options.period}|${options.createdOn}`,
+    );
+  }
+  y += 18;
+  text(r.thanks, center, y, { ...mono(9, C.ink), align: 'center' });
+  return y + 12 - top;
+}
+
+/** The large title of the detail pages, like the pages of the app. */
+function details(doc: jsPDF, options: { household: string; period: string }, y: number): number {
+  write(doc, t.heading, PAGE.margin, y + 8, { size: 28, color: C.onyx, bold: true });
+  write(doc, `${options.household} · ${options.period}`, PAGE.margin, y + 15.5, {
     size: 11,
     color: C.muted,
   });
-  return 50;
-}
-
-/** The onyx card of the app: the money saved, a sentence, and the rescue rate as a ring. */
-function hero({ doc, report, amount }: Context, y: number): number {
-  const height = 48;
-  card(doc, { x: PAGE.margin, y, width: CONTENT, height }, C.onyx);
-  const left = PAGE.margin + 9;
-  write(doc, amount(report.impact.savedRappen), left, y + 21, {
-    size: 34,
-    color: C.white,
-    bold: true,
-  });
-  write(doc, t.heroSentence, left, y + 30.5, { size: 13, color: C.white });
-  write(doc, t.savedDetail(kg(report.impact.savedGrams), report.impact.savedCount), left, y + 39, {
-    size: 9.5,
-    color: C.silver,
-  });
-  const center = { x: PAGE.margin + CONTENT - 25, y: y + height / 2 };
-  const share = report.impact.savedShare;
-  ring(doc, center, 14, 3.8, share, C.onyxRaised, C.smaragdMid);
-  write(
-    doc,
-    share === null ? '–' : `${String(Math.round(share * 100))} %`,
-    center.x,
-    center.y - 1.4,
-    { size: 15, color: C.white, bold: true, align: 'center', baseline: 'middle' },
-  );
-  write(doc, t.rateLabel, center.x, center.y + 5, {
-    size: 8,
-    color: C.silver,
-    align: 'center',
-    baseline: 'middle',
-  });
-  return y + height;
-}
-
-/** Three white cards of equal size: label, value and detail on the same lines in each. */
-function keyFigures({ doc, report, amount }: Context, y: number): number {
-  const tiles: [string, string, string, Rgb][] = [
-    [t.inStock, amount(report.fridge.valueRappen), t.items(report.fridge.itemCount), C.ink],
-    [t.wasted, amount(report.impact.wastedRappen), kg(report.impact.wastedGrams), C.today],
-    [t.spent, amount(report.shopping.spentRappen), t.receipts(report.shopping.receiptCount), C.ink],
-  ];
-  const width = (CONTENT - GUTTER * (tiles.length - 1)) / tiles.length;
-  const height = 29.5;
-  tiles.forEach(([label, value, detail, color], index) => {
-    const x = PAGE.margin + index * (width + GUTTER);
-    card(doc, { x, y, width, height });
-    write(doc, label, x + 6, y + 8.5, { size: 9, color: C.muted, bold: true }, width - 12);
-    write(doc, value, x + 6, y + 18.5, { size: 17, color, bold: true }, width - 12);
-    write(doc, detail, x + 6, y + 24.6, { size: 9, color: C.muted }, width - 12);
-  });
-  return y + height;
+  return y + 17;
 }
 
 /** «Was auffällt» as a tip card like «Kühlschrank-Check»: green title, one line per finding. */
@@ -251,9 +298,9 @@ function insights({ doc }: Context, report: Report, money: Money, y: number): nu
 }
 
 /** Saved and wasted per month as columns in a white card, legend in the card's top row. */
-function months({ doc, report, amount }: Context, y: number): void {
+function months({ doc, report, amount }: Context, y: number): number {
   const start = section(doc, t.months, y);
-  const height = Math.min(80, FOOTER - 6 - start);
+  const height = 80;
   const box = { x: PAGE.margin, y: start, width: CONTENT, height };
   card(doc, box);
   const legend: [string, Rgb][] = [
@@ -283,6 +330,7 @@ function months({ doc, report, amount }: Context, y: number): void {
     // Whole numbers on the axis: «15», not «15.00».
     (value) => amount(value, { currency: false }).replace(/[.,]00$/, ''),
   );
+  return start + height;
 }
 
 interface ListRow {

@@ -120,6 +120,8 @@ const ReportSchema = z.object({
     wastedGrams: z.number().min(0),
     estimated: z.boolean(),
     savedShare: z.number().min(0).max(1).nullable(),
+    sharedRappen: RappenSchema,
+    sharedCount: z.int().min(0),
     months: z.array(
       z.object({ month: z.string(), savedRappen: RappenSchema, wastedRappen: RappenSchema }),
     ),
