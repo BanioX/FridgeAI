@@ -45,7 +45,7 @@ Unten fünf Tabs: **Start · Vorrat · ＋ Erfassen · Wissen · Mehr** ([ADR-00
 | **Korrigieren** | Rückgängig nach Gegessen/Weggeworfen, dazu «Nachkaufen» mit einem Tipp; Name, Kategorie, Ort, Datum, Menge und Preis ändern; Artikel löschen; im «Verlauf» unter «Mehr» Gegessenes, Weitergegebenes und Weggeworfenes nachträglich ändern oder löschen |
 | **Produktdaten** | Nach dem Scan: Bild, Marke, Nährwerte, Nutri-Score, Allergene (Open Food Facts, 30 Tage offline); fehlen die Nährwerte, liest Rettich sie aus einem Foto oder Screenshot der Nährwerttabelle, auf dem Gerät |
 | **Nachkaufen** | Unter «Mehr»: «Du hast noch …» gegen Doppelkäufe, abhaken, «In den Vorrat legen» |
-| **Wirkung** | Gerettet (selbst bestätigt: «ohne Rettich im Abfall gelandet») und weggeworfen diesen Monat in CHF und Artikeln, «x % gerettet von allem, was knapp wurde» ([ADR-0039](docs/adr/0039-rescue-confirmed.md)) |
+| **Wirkung** | Gerettet (selbst bestätigt: «ohne Rettich im Abfall gelandet») und weggeworfen diesen Monat in CHF und Artikeln, «x % gerettet von allem, was knapp wurde» ([ADR-0039](docs/adr/0039-rescue-confirmed.md)). Nach einer Rettung: «Gerettet: Joghurt, CHF 2.10», der Monat bis heute und ein «Wusstest du?» ([ADR-0042](docs/adr/0042-rescue-reward.md)) |
 | **Wissen** | «Kurz erklärt» (Mindesthaltbarkeits- und Verbrauchsdatum, richtig kühlen, einfrieren) und «Haltbarkeit A–Z»: jede Kategorie mit Score 1–10, wie lange sie zu, offen und eingefroren hält, und Tipps; mit Suche |
 | **Mehr** | Berichte, Verlauf, Nachkaufen, App installieren; Daten als JSON exportieren, wieder importieren oder löschen, Datenschutz in Kürze |
 

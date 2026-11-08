@@ -20,6 +20,7 @@ Damit Mensch und Maschine dasselbe meinen: Wort in der App (de-CH), Name im Code
 | **Haltbar bis** | `expiresOn` (`LocalDate`, Europe/Zurich) | Kalendertag, an dem etwas abläuft | – |
 | **Mindestens haltbar / Zu verbrauchen** | `DateKind`: `best_before` / `use_by` | MHD darf man prüfen und oft noch essen, Verbrauchsdatum nicht | de-AT «mindestens haltbar bis» |
 | **Gerettet** | `rescued`, `canBeRescued`, `isRescue` | gegessen oder weitergegeben und selbst bestätigt «ohne Rettich im Abfall gelandet»; Rettich fragt nur, wenn es auf der Kippe stand (ADR-0039) | – |
+| **Wusstest du?** (Food Fact) | `factFor`, `messages.knowledge.facts` | kurzer Fact nach einer bestätigten Rettung und einmal pro Tag im Tab «Wissen»; Zahlen nur mit Quelle (ADR-0042) | – |
 | **Abschluss** | `OutcomeEvent` | gegessen, weitergegeben oder weggeworfen, mit Menge und Wert | – |
 | **Nachkaufen** | `shopping.*`, `ShoppingListItem` | Einkaufsliste | – |
 | **Haushalt** | `Household` | WG, Paar, Familie; hat eine Währung (ADR-0019) | – |

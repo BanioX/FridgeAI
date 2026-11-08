@@ -168,6 +168,12 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
           eventId: result.eventId,
           name: item.name,
           outcome,
+          ...(result.rescued
+            ? {
+                rescuedRappen: result.valueRappen,
+                ...(result.valueEstimated ? { estimated: true as const } : {}),
+              }
+            : {}),
         };
         void navigate(`/inventory?location=${item.location}`, { state: { closed } });
         return null;

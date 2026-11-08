@@ -1,8 +1,11 @@
 import { ChevronDown, Search } from 'lucide-react';
 import { useId, useState } from 'react';
+import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
+import { Card } from '../../ui/Card';
 import { GroupedList, GroupedListItem } from '../../ui/GroupedList';
 import { ScoreRing } from '../../ui/ScoreRing';
+import { factFor } from './food-facts';
 import { describeDays, shelfGuide, type GuideEntry } from './shelf-guide';
 
 const t = messages.knowledge;
@@ -57,6 +60,7 @@ function Entry({ entry }: { entry: GuideEntry }) {
  * A–Z» from the catalog with the shelf score, the days open and frozen, and the tips.
  */
 export function KnowledgePage() {
+  const { today } = useAppData();
   const searchId = useId();
   const [query, setQuery] = useState('');
   const groups = shelfGuide(query);
@@ -67,6 +71,13 @@ export function KnowledgePage() {
         <h1 className="large-title">{messages.pages.knowledge}</h1>
         <p className="mt-1 text-ink-muted">{t.intro}</p>
       </div>
+
+      {/* One food fact a day (ADR-0042), the same as after a rescue on that seed. */}
+      <Card variant="tip">
+        <p>
+          <strong>{t.didYouKnow}</strong> {factFor(today)}
+        </p>
+      </Card>
 
       <section aria-labelledby={`${searchId}-explain`} className="space-y-3">
         <h2 id={`${searchId}-explain`} className="font-display text-xl font-semibold">

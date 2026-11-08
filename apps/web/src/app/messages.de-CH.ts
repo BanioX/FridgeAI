@@ -135,6 +135,10 @@ export const messages = {
       wasted: (name: string) => `${name}: als weggeworfen gespeichert.`,
       shared_out: (name: string) => `${name}: als weitergegeben gespeichert.`,
     },
+    /** After a confirmed rescue (ADR-0042): factual, no «Danke» (Alban, 8.11.2026). */
+    rescued: (name: string, value: string, estimated: boolean) =>
+      `Gerettet: ${name}, ${estimated ? 'etwa ' : ''}${value}.`,
+    monthSaved: (value: string) => `Diesen Monat gerettet: ${value}`,
     deleted: (name: string) => `${name} gelöscht.`,
     undo: 'Rückgängig',
     rebuy: 'Nachkaufen',
@@ -405,6 +409,23 @@ export const messages = {
     noFreezer: 'Nicht zum Einfrieren',
     scoreLabel: (score: number, level: string) => `Haltbarkeit ${String(score)} von 10, ${level}`,
     levels: { high: 'heikel', medium: 'mittel', low: 'robust' },
+    didYouKnow: 'Wusstest du?',
+    /**
+     * Food facts (ADR-0042): tips without numbers, and only numbers with a checked source (L-17).
+     * One appears after a confirmed rescue and one a day on «Wissen».
+     */
+    facts: [
+      'Rund ein Drittel der Lebensmittelverluste der Schweiz entsteht in den Haushalten (BAFU).',
+      'Mindestens haltbar bis ist kein Wegwerfdatum: Joghurt, Hartkäse und Teigwaren sind danach oft noch gut.',
+      'Brot vom Vortag wird zu Fotzelschnitten, Croûtons oder Paniermehl.',
+      'Äpfel und Bananen geben Reifegas ab. Getrennt gelagert reift das übrige Obst langsamer.',
+      'Frische Kräuter halten länger in einem Glas Wasser, wie ein Blumenstrauss.',
+      'Hartkäse mit wenig Schimmel: grosszügig wegschneiden. Weichkäse, Joghurt und Brot mit Schimmel ganz wegwerfen.',
+      'Suppe, Sauce, Tomatenmark und Pesto lassen sich portionsweise einfrieren, zum Beispiel im Eiswürfelbehälter.',
+      'Am kältesten ist es im Kühlschrank unten über dem Gemüsefach. Dort gehören Fleisch und Fisch hin.',
+      'Welke Rüebli und schlapper Salat werden in kaltem Wasser oft wieder knackig.',
+      'Aus Gemüseschalen und Strünken wird eine Bouillon: auskochen, absieben, fertig.',
+    ],
   },
   more: {
     install: 'Rettich als App',

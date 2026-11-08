@@ -104,6 +104,15 @@ describe('outcomes', () => {
     const saved = await eat(yoghurt.itemId, true);
     expect(saved.rescued).toBe(true);
     expect((await storage.outcomes.get(saved.eventId))?.rescued).toBe(true);
+    // Its value comes back for «Gerettet: Joghurt, etwa CHF …» (ADR-0042): no price, an estimate.
+    expect(saved.valueRappen).toBeGreaterThan(0);
+    expect(saved.valueEstimated).toBe(true);
+    const priced = await add({ name: 'Mozzarella', expiresOn: '2026-11-05', priceRappen: 210 });
+    expect(await eat(priced.itemId, true)).toMatchObject({
+      rescued: true,
+      valueRappen: 210,
+      valueEstimated: false,
+    });
     // … and none without the confirmation.
     const quark = await add({ name: 'Quark', expiresOn: '2026-11-06' });
     expect((await eat(quark.itemId, false)).rescued).toBe(false);

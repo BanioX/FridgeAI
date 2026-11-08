@@ -489,6 +489,10 @@ export const CONTRACT_V1 = {
       remainingQuantity: z.number().min(0),
       /** Whether it counts as rescued. */
       rescued: z.boolean(),
+      /** Value of what was closed, e.g. for «Gerettet: CHF 2.10». */
+      valueRappen: RappenSchema.min(0),
+      /** No price from a receipt: the value is the category estimate («etwa CHF 1.20»). */
+      valueEstimated: z.boolean(),
     }),
   }),
   'inventory.undoOutcome': command({
