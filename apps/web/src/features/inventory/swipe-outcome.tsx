@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
 import { formatQuantity } from '../../ui/quantity-text';
+import type { SwipeSide } from '../../ui/SwipeAction';
 import { swipePortion } from './swipe-portion';
 
 /** The toast stays this long; a new swipe replaces it earlier. */
@@ -11,7 +12,10 @@ const TOAST_MS = 5000;
 const SEEN_KEY = 'fridgeai:swipe-tip-seen';
 
 /** Id of the visually hidden hint that rows point to with `aria-describedby`. */
-export const SWIPE_HINT_ID = 'swipe-eat-hint';
+export const SWIPE_HINT_ID = 'swipe-outcome-hint';
+
+/** What a swipe records: to the left «Verwertet», to the right «Entsorgt». */
+type SwipeOutcome = 'eaten' | 'wasted';
 
 function readSeen(): boolean {
   try {
@@ -36,20 +40,15 @@ interface Toast {
   eventId: Id | null;
 }
 
-/** Strip text for a row: «Verwertet» with «−1», «1 Portion» or «alles» below. */
-export function swipeLabel(item: Pick<InventoryItemView, 'quantity' | 'unit'>): {
-  label: string;
-  detail: string;
-} {
-  return { label: messages.swipe.action, detail: messages.swipe[swipePortion(item).kind] };
-}
-
 /**
- * Swipe to eat one portion of an item: records it with `inventory.recordOutcome` and offers undo
- * in a short toast. `tip` is the one-line hint above a list until a visit after the first swipe.
+ * Swipe an item (Alban, 8.11.2026): to the left it is «Verwertet» (eaten, cooked,
+ * used up), to the right «Entsorgt». Each swipe takes one portion (`swipePortion`: a piece, a
+ * portion or the rest), records it with `inventory.recordOutcome` and offers undo in a short
+ * toast. `sides(item)` goes straight into `SwipeAction`; `tip` is the one-line hint above a list
+ * until a visit after the first swipe.
  */
-export function useSwipeEat(): {
-  eat: (item: InventoryItemView) => void;
+export function useSwipeOutcome(): {
+  sides: (item: InventoryItemView) => { end: SwipeSide; start: SwipeSide };
   tip: ReactNode;
   toast: ReactNode;
 } {
@@ -72,8 +71,8 @@ export function useSwipeEat(): {
     };
   }, [toast]);
 
-  const eat = useCallback(
-    (item: InventoryItemView) => {
+  const record = useCallback(
+    (item: InventoryItemView, outcome: SwipeOutcome) => {
       const portion = swipePortion(item);
       void (async () => {
         try {
@@ -81,14 +80,18 @@ export function useSwipeEat(): {
             commandId: ids.next(),
             householdId,
             itemId: item.id,
-            outcome: 'eaten',
+            outcome,
             quantity: portion.quantity,
           });
           writeSeen();
           const text =
             portion.kind === 'piece'
-              ? messages.swipe.eatenPieces(portion.quantity, item.name)
-              : messages.swipe.eatenAmount(item.name, formatQuantity(portion.quantity, item.unit));
+              ? messages.swipe.pieces(portion.quantity, item.name, outcome)
+              : messages.swipe.amount(
+                  item.name,
+                  formatQuantity(portion.quantity, item.unit),
+                  outcome,
+                );
           setToast({ key: Date.now(), text, eventId: result.eventId });
         } catch {
           setToast({ key: Date.now(), text: messages.swipe.failed, eventId: null });
@@ -96,6 +99,29 @@ export function useSwipeEat(): {
       })();
     },
     [householdId, ids, inventory],
+  );
+
+  const sides = useCallback(
+    (item: InventoryItemView) => {
+      const detail = messages.swipe[swipePortion(item).kind];
+      return {
+        end: {
+          label: messages.swipe.outcomes.eaten,
+          detail,
+          onCommit: () => {
+            record(item, 'eaten');
+          },
+        },
+        start: {
+          label: messages.swipe.outcomes.wasted,
+          detail,
+          onCommit: () => {
+            record(item, 'wasted');
+          },
+        },
+      };
+    },
+    [record],
   );
 
   const undo = async (eventId: Id) => {
@@ -119,7 +145,7 @@ export function useSwipeEat(): {
 
   const undoId = toast?.eventId ?? null;
   return {
-    eat,
+    sides,
     tip: (
       <>
         <p id={SWIPE_HINT_ID} className="sr-only">

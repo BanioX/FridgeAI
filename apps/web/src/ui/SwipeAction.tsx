@@ -1,4 +1,4 @@
-import { Check } from 'lucide-react';
+import { Check, Trash2, type LucideIcon } from 'lucide-react';
 import {
   useEffect,
   useRef,
@@ -24,9 +24,9 @@ function prefersReducedMotion(): boolean {
     : false;
 }
 
-function vibrate(): void {
+function vibrate(ms: number): void {
   if ('vibrate' in navigator) {
-    navigator.vibrate(15);
+    navigator.vibrate(ms);
   }
 }
 
@@ -41,30 +41,51 @@ interface Gesture {
   lastX: number;
   lastTime: number;
   speed: number;
+  /** Whether the row is past the commit point, for one haptic tick when it gets there. */
+  armed: boolean;
 }
 
-interface SwipeActionProps {
-  /** Text below the check in the strip behind the row, e.g. «Verwertet». */
+/** One side of a swipe: what is behind the row and what happens when it commits. */
+export interface SwipeSide {
+  /** Text under the icon, e.g. «Verwertet» or «Entsorgt». */
   label: string;
   /** Smaller second line, e.g. «−1». */
   detail?: string;
   /** Called once when the swipe commits. */
   onCommit: () => void;
+}
+
+/** The two sides (Alban, 8.11.2026): their colour and icon are fixed. */
+const LOOK = {
+  // Swiped to the left: the strip shows on the right. Smaragd, like every «done» in Rettich.
+  end: { icon: Check, className: 'bg-basil-700', align: 'right-0' },
+  // Swiped to the right: the strip shows on the left. Red, like «Abgelaufen».
+  start: { icon: Trash2, className: 'bg-danger', align: 'left-0' },
+} satisfies Record<string, { icon: LucideIcon; className: string; align: string }>;
+
+interface SwipeActionProps {
+  /** Right to left: green, «Verwertet». */
+  end: SwipeSide;
+  /** Left to right: red, «Entsorgt». */
+  start?: SwipeSide | undefined;
   /** The row; a function gets `sliced` for a short moment after the commit (for the picture). */
   children: ReactNode | ((state: { sliced: boolean }) => ReactNode);
 }
 
 /**
- * Swipe a row to the left to do one thing with it (Apple «Mail»-style, for eating one portion).
- * The row follows the finger over a basil strip; past 40 % of its width, or with a fast flick,
- * the action commits and the row springs back. A tap still reaches the link inside, a drag never
- * does. It is a shortcut only: the same action must exist as plain buttons elsewhere (WCAG 2.5.1).
+ * Swipe a row to do one thing with it: to the left over a green strip
+ * («Verwertet»), to the right over a red one («Entsorgt»). The row follows the finger; past 40 %
+ * of its width, or with a fast flick, the action commits and the row springs back. At the commit
+ * point the icon grows and the phone ticks once, so you feel when letting go counts. A tap still
+ * reaches the link inside, a drag never does. It is a shortcut only: the same actions exist as
+ * plain buttons on the item page (WCAG 2.5.1).
  */
-export function SwipeAction({ label, detail, onCommit, children }: SwipeActionProps) {
+export function SwipeAction({ end, start, children }: SwipeActionProps) {
   const gesture = useRef<Gesture | null>(null);
   const dragged = useRef(false);
   const timer = useRef<number | undefined>(undefined);
   const [offset, setOffset] = useState(0);
+  const [armed, setArmed] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [sliced, setSliced] = useState(false);
 
@@ -78,6 +99,7 @@ export function SwipeAction({ label, detail, onCommit, children }: SwipeActionPr
   const finish = () => {
     gesture.current = null;
     setDragging(false);
+    setArmed(false);
     setOffset(0);
   };
 
@@ -98,6 +120,7 @@ export function SwipeAction({ label, detail, onCommit, children }: SwipeActionPr
       lastX: event.clientX,
       lastTime: event.timeStamp,
       speed: 0,
+      armed: false,
     };
   };
 
@@ -131,8 +154,17 @@ export function SwipeAction({ label, detail, onCommit, children }: SwipeActionPr
     }
     current.lastX = event.clientX;
     current.lastTime = event.timeStamp;
-    // Only to the left, and never further than the row is wide.
-    setOffset(Math.max(Math.min(dx, 0), -current.width));
+    // Never further than the row is wide, and to the right only when there is a «start» side.
+    const next = Math.max(Math.min(dx, start === undefined ? 0 : current.width), -current.width);
+    const past = current.width > 0 && Math.abs(next) >= current.width * COMMIT_SHARE;
+    if (past !== current.armed) {
+      current.armed = past;
+      setArmed(past);
+      if (past) {
+        vibrate(8);
+      }
+    }
+    setOffset(next);
   };
 
   const onPointerUp = (event: PointerEvent<HTMLDivElement>) => {
@@ -141,14 +173,16 @@ export function SwipeAction({ label, detail, onCommit, children }: SwipeActionPr
       return;
     }
     const dx = event.clientX - current.startX;
-    const far = current.width > 0 && -dx >= current.width * COMMIT_SHARE;
-    const flick = -dx >= FLICK_DISTANCE && -current.speed >= FLICK_SPEED;
-    const commit = current.mode === 'drag' && (far || flick);
+    const side = dx < 0 ? end : start;
+    const far = current.width > 0 && Math.abs(dx) >= current.width * COMMIT_SHARE;
+    const flick = Math.abs(dx) >= FLICK_DISTANCE && Math.abs(current.speed) >= FLICK_SPEED;
+    const sameWay = Math.sign(current.speed) === Math.sign(dx);
+    const commit = current.mode === 'drag' && side !== undefined && (far || (flick && sameWay));
     finish();
     if (!commit) {
       return;
     }
-    vibrate();
+    vibrate(15);
     if (!prefersReducedMotion()) {
       setSliced(true);
       window.clearTimeout(timer.current);
@@ -156,7 +190,7 @@ export function SwipeAction({ label, detail, onCommit, children }: SwipeActionPr
         setSliced(false);
       }, SLICE_MS);
     }
-    onCommit();
+    side.onCommit();
   };
 
   // A drag ends over the link, too: that click must not open the item page.
@@ -168,7 +202,11 @@ export function SwipeAction({ label, detail, onCommit, children }: SwipeActionPr
     }
   };
 
-  const revealed = Math.max(0, -offset);
+  const revealed = Math.abs(offset);
+  const which = offset < 0 ? 'end' : 'start';
+  const side = which === 'end' ? end : start;
+  const look = LOOK[which];
+  const Icon = look.icon;
   const progress = Math.min(1, revealed / 80);
   // The row's own content fades as it slides away, so its clipped edge never competes with the
   // action (docs/design.md, «Immer sauber ausgerichtet»).
@@ -181,28 +219,34 @@ export function SwipeAction({ label, detail, onCommit, children }: SwipeActionPr
         Behind the row. Its content is always centred in the uncovered part, icon above text, and
         the text only shows once it fits whole: never clipped, never off-centre (docs/design.md).
       */}
-      <div
-        aria-hidden="true"
-        className={`absolute inset-0 bg-basil-700 text-white transition-opacity ${settle}`}
-        style={{ opacity: revealed > 0 ? 1 : 0 }}
-      >
+      {side === undefined ? null : (
         <div
-          className={`@container absolute inset-y-0 right-0 flex items-center justify-center overflow-hidden transition-[width] ${settle}`}
-          style={{ width: `${String(revealed)}px` }}
+          aria-hidden="true"
+          className={`absolute inset-0 text-white transition-opacity ${look.className} ${settle}`}
+          style={{ opacity: revealed > 0 ? 1 : 0 }}
         >
-          <div className="flex flex-col items-center gap-0.5" style={{ opacity: progress }}>
-            <Check size={22} strokeWidth={3} />
-            <span className="hidden text-sm leading-tight font-semibold whitespace-nowrap @min-[6rem]:block">
-              {label}
-            </span>
-            {detail === undefined ? null : (
-              <span className="hidden text-xs leading-tight whitespace-nowrap @min-[6rem]:block">
-                {detail}
+          <div
+            className={`@container absolute inset-y-0 flex items-center justify-center overflow-hidden transition-[width] ${look.align} ${settle}`}
+            style={{ width: `${String(revealed)}px` }}
+          >
+            <div className="flex flex-col items-center gap-0.5" style={{ opacity: progress }}>
+              <Icon
+                size={22}
+                strokeWidth={2.75}
+                className={`transition-transform duration-150 ${armed ? 'scale-125' : 'scale-100'}`}
+              />
+              <span className="hidden text-sm leading-tight font-semibold whitespace-nowrap @min-[6rem]:block">
+                {side.label}
               </span>
-            )}
+              {side.detail === undefined ? null : (
+                <span className="hidden text-xs leading-tight whitespace-nowrap @min-[6rem]:block">
+                  {side.detail}
+                </span>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
       <div
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}

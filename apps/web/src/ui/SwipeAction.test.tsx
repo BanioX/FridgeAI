@@ -5,12 +5,16 @@ import { SwipeAction } from './SwipeAction';
 
 const WIDTH = 300;
 
-function setup() {
+function setup({ withStart = true } = {}) {
   const onCommit = vi.fn();
+  const onWaste = vi.fn();
   const onOpen = vi.fn();
   render(
     <MemoryRouter>
-      <SwipeAction label="Verwertet" detail="−1" onCommit={onCommit}>
+      <SwipeAction
+        end={{ label: 'Verwertet', detail: '−1', onCommit }}
+        start={withStart ? { label: 'Entsorgt', detail: '−1', onCommit: onWaste } : undefined}
+      >
         <Link
           to="/x"
           onClick={(event) => {
@@ -33,7 +37,7 @@ function setup() {
       clientY: y,
     });
   };
-  return { onCommit, onOpen, target, pointer };
+  return { onCommit, onWaste, onOpen, target, pointer };
 }
 
 describe('SwipeAction', () => {
@@ -47,15 +51,27 @@ describe('SwipeAction', () => {
     vi.restoreAllMocks();
   });
 
-  it('commits when dragged past 40 % of the row to the left, and does not open the link', () => {
-    const { onCommit, onOpen, target, pointer } = setup();
+  it('commits «Verwertet» when dragged past 40 % to the left, and does not open the link', () => {
+    const { onCommit, onWaste, onOpen, target, pointer } = setup();
     pointer('pointerDown', 250);
     pointer('pointerMove', 200);
     pointer('pointerMove', 100);
     pointer('pointerUp', 100);
     fireEvent.click(target);
     expect(onCommit).toHaveBeenCalledTimes(1);
+    expect(onWaste).not.toHaveBeenCalled();
     expect(onOpen).not.toHaveBeenCalled();
+  });
+
+  it('commits «Entsorgt» when dragged past 40 % to the right', () => {
+    const { onCommit, onWaste, target, pointer } = setup();
+    pointer('pointerDown', 50);
+    pointer('pointerMove', 100);
+    pointer('pointerMove', 200);
+    pointer('pointerUp', 200);
+    fireEvent.click(target);
+    expect(onWaste).toHaveBeenCalledTimes(1);
+    expect(onCommit).not.toHaveBeenCalled();
   });
 
   it('springs back below the threshold', () => {
@@ -77,8 +93,8 @@ describe('SwipeAction', () => {
     expect(onCommit).not.toHaveBeenCalled();
   });
 
-  it('ignores a drag to the right', () => {
-    const { onCommit, pointer } = setup();
+  it('ignores a drag to the right when there is no «start» side', () => {
+    const { onCommit, pointer } = setup({ withStart: false });
     pointer('pointerDown', 50);
     pointer('pointerMove', 200);
     pointer('pointerUp', 280);

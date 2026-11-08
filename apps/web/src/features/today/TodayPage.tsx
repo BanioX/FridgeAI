@@ -12,7 +12,7 @@ import { Card } from '../../ui/Card';
 import { expiryBadge } from '../../ui/expiry-badge';
 import { GROUPED_ROW_LINK, GroupedList, GroupedListItem } from '../../ui/GroupedList';
 import { InventoryItemRow } from '../inventory/InventoryItemRow';
-import { SWIPE_HINT_ID, swipeLabel, useSwipeEat } from '../inventory/swipe-eat';
+import { SWIPE_HINT_ID, useSwipeOutcome } from '../inventory/swipe-outcome';
 import { SwipeAction } from '../../ui/SwipeAction';
 import { checkDue, readLastCheck } from '../check/check-state';
 import { ImpactCard } from './ImpactCard';
@@ -24,7 +24,7 @@ const MORE_LINK =
 export function TodayPage() {
   const { householdId, inventory, today } = useAppData();
   const money = useMoney();
-  const swipe = useSwipeEat();
+  const swipe = useSwipeOutcome();
   // Read once per visit; a finished check writes it before coming back here.
   const [lastCheck] = useState(readLastCheck);
   const all = useLiveQuery(
@@ -116,12 +116,7 @@ export function TodayPage() {
             <GroupedList>
               {urgent.slice(0, URGENT_LIMIT).map((item) => (
                 <GroupedListItem key={item.id}>
-                  <SwipeAction
-                    {...swipeLabel(item)}
-                    onCommit={() => {
-                      swipe.eat(item);
-                    }}
-                  >
+                  <SwipeAction {...swipe.sides(item)}>
                     {({ sliced }) => (
                       <Link
                         to={`/inventory/${item.id}`}
