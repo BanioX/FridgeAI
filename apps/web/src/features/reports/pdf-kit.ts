@@ -4,7 +4,8 @@ import type { Tone } from '../../ui/tones';
 /**
  * A small drawing kit for the PDF report (ADR-0030) in the app's own design language
  * (docs/design.md): silver ground, white cards without borders and with a soft shadow, Smaragd
- * for what matters, the same status chips as the app and the food emoji of the app. Vector
+ * for what matters, the same status chips as the app and the food emoji of the app, and the
+ * receipt paper of the cover. Vector
  * only, except the pictures the device draws (logo, emoji). Everything lines up on one axis and
  * no text is ever clipped («Immer sauber ausgerichtet»): long labels are shortened with «…».
  */
@@ -55,10 +56,12 @@ export interface TextStyle {
   bold?: boolean;
   align?: 'left' | 'center' | 'right';
   baseline?: 'alphabetic' | 'middle' | 'top';
+  /** Helvetica by default; Courier for the receipt. */
+  font?: 'helvetica' | 'courier';
 }
 
 function applyFont(doc: jsPDF, style: TextStyle): void {
-  doc.setFont('helvetica', style.bold === true ? 'bold' : 'normal');
+  doc.setFont(style.font ?? 'helvetica', style.bold === true ? 'bold' : 'normal');
   doc.setFontSize(style.size);
   doc.setTextColor(...style.color);
 }
@@ -186,51 +189,6 @@ function bar(
   const radius = Math.min(corner ?? Infinity, width / 2, height / 2);
   doc.setFillColor(...color);
   doc.roundedRect(x, y, width, height, radius, radius, 'F');
-}
-
-/** A ring from 12 o'clock, clockwise: `share` of it in `fill`, the rest in `track`. */
-export function ring(
-  doc: jsPDF,
-  center: { x: number; y: number },
-  radius: number,
-  thickness: number,
-  share: number | null,
-  track: Rgb,
-  fill: Rgb,
-): void {
-  arc(doc, center, radius, thickness, 1, track);
-  if (share !== null && share > 0) {
-    arc(doc, center, radius, thickness, Math.min(1, share), fill);
-  }
-}
-
-function arc(
-  doc: jsPDF,
-  center: { x: number; y: number },
-  radius: number,
-  thickness: number,
-  share: number,
-  color: Rgb,
-): void {
-  const steps = Math.max(12, Math.ceil(share * 144));
-  const point = (step: number) => {
-    const angle = -Math.PI / 2 + (step / steps) * share * 2 * Math.PI;
-    return { x: center.x + radius * Math.cos(angle), y: center.y + radius * Math.sin(angle) };
-  };
-  const start = point(0);
-  const segments: number[][] = [];
-  let last = start;
-  for (let step = 1; step <= steps; step += 1) {
-    const next = point(step);
-    segments.push([next.x - last.x, next.y - last.y]);
-    last = next;
-  }
-  doc.setDrawColor(...color);
-  doc.setLineWidth(thickness);
-  doc.setLineCap('round');
-  doc.setLineJoin('round');
-  doc.lines(segments, start.x, start.y, [1, 1], 'S', false);
-  doc.setLineCap('butt');
 }
 
 /**
@@ -426,4 +384,94 @@ export function chip(doc: jsPDF, value: string, right: number, middle: number, t
     baseline: 'middle',
   });
   return width;
+}
+
+/** A dashed rule like on a till receipt. */
+export function dashed(
+  doc: jsPDF,
+  from: number,
+  to: number,
+  y: number,
+  color: Rgb = PDF_COLOR.silver,
+): void {
+  doc.setDrawColor(...color);
+  doc.setLineWidth(0.25);
+  doc.setLineDashPattern([1.2, 1], 0);
+  doc.line(from, y, to, y);
+  doc.setLineDashPattern([], 0);
+}
+
+/** Two thin rules, the «total» line of a receipt. */
+export function double(doc: jsPDF, from: number, to: number, y: number): void {
+  doc.setDrawColor(...PDF_COLOR.ink);
+  doc.setLineWidth(0.25);
+  doc.line(from, y, to, y);
+  doc.line(from, y + 0.9, to, y + 0.9);
+}
+
+/** The outline of receipt paper with torn, zig-zag edges at the top and the bottom. */
+function paperOutline(box: { x: number; y: number; width: number; height: number }): number[][] {
+  const tooth = 3;
+  const depth = 1.4;
+  const teeth = Math.max(1, Math.round(box.width / tooth));
+  const step = box.width / teeth;
+  const segments: number[][] = [];
+  // Top edge, left to right, starting at the top-left corner.
+  for (let index = 0; index < teeth; index += 1) {
+    segments.push([step / 2, -depth], [step / 2, depth]);
+  }
+  segments.push([0, box.height]);
+  // Bottom edge, right to left.
+  for (let index = 0; index < teeth; index += 1) {
+    segments.push([-step / 2, depth], [-step / 2, -depth]);
+  }
+  return segments;
+}
+
+/** White receipt paper with torn edges and a soft shadow, on the silver ground. */
+export function receiptPaper(
+  doc: jsPDF,
+  box: { x: number; y: number; width: number; height: number },
+): void {
+  const shadows: [number, Rgb][] = [
+    [1.4, [234, 236, 239]],
+    [0.7, [226, 229, 232]],
+  ];
+  for (const [offset, color] of shadows) {
+    doc.setFillColor(...color);
+    doc.lines(paperOutline(box), box.x, box.y + offset, [1, 1], 'F', true);
+  }
+  doc.setFillColor(...PDF_COLOR.white);
+  doc.lines(paperOutline(box), box.x, box.y, [1, 1], 'F', true);
+}
+
+/**
+ * A decorative barcode made from `seed` (the same report always gets the same bars). It encodes
+ * nothing and carries no data; it only makes the receipt look like one.
+ */
+export function barcode(
+  doc: jsPDF,
+  box: { x: number; y: number; width: number; height: number },
+  seed: string,
+): void {
+  let state = 2166136261;
+  for (const char of seed) {
+    state = Math.imul(state ^ char.charCodeAt(0), 16777619) >>> 0;
+  }
+  const next = () => {
+    state = Math.imul(state ^ (state >>> 15), 2246822507) >>> 0;
+    state = Math.imul(state ^ (state >>> 13), 3266489909) >>> 0;
+    return (state >>> 0) / 4294967296;
+  };
+  doc.setFillColor(...PDF_COLOR.ink);
+  let at = box.x;
+  let bar = true;
+  while (at < box.x + box.width) {
+    const width = 0.3 + Math.floor(next() * 3) * 0.3;
+    if (bar) {
+      doc.rect(at, box.y, Math.min(width, box.x + box.width - at), box.height, 'F');
+    }
+    at += width;
+    bar = !bar;
+  }
 }

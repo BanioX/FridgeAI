@@ -67,3 +67,17 @@ Alban: «Mit dem Layout nicht zufrieden, eventuell fancy Grafiken oder Diagramme
   - Lange Texte werden mit «…» gekürzt, nie angeschnitten.
 - **Test:** `report-pdf.test.ts` zeichnet den erfundenen WG-Halbjahresbericht aus `report-sample.ts`; `REPORT_PDF_OUT=… pnpm vitest run report-pdf` legt ihn als Datei ab.
 - Im Bericht heisst es «Quittungen» statt «Bons» (Glossar).
+
+## Nachtrag (8.11.2026): Seite 1 ist eine Quittung
+
+Alban: «Cool wäre, wenn mein PDF auch wie eine Quittung aussieht: So hast du Food Waste reduziert, so viel wurde entsorgt, so viel weggegeben. Es sollte halt einen Premium-Feel haben.»
+
+- **Seite 1** ist eine Rettich-Quittung auf silbernem Grund:
+  - weisses Papier mit gezackten Abrisskanten und weichem Schatten, so lang wie sein Inhalt und mittig auf der Seite;
+  - oben das Logo und «Wirf kein Geld in den Kübel.», darunter «So hast du Food Waste reduziert» mit Haushalt, Zeitraum und Datum;
+  - Posten in Schreibmaschinenschrift (Courier): Gerettet, Weitergegeben (in «Gerettet» enthalten), Entsorgt, Im Vorrat, Eingekauft;
+  - zwischen Doppellinien Rettungsquote und «Total gerettet»;
+  - unten ein dekorativer Strichcode, der nichts enthält, und «Danke fürs Retten.».
+- Die Seite lässt sich allein teilen. Onyx-Karte und Kacheln fallen weg, ihre Zahlen stehen auf der Quittung.
+- **Ab Seite 2** folgt «Dein Bericht» mit «Was auffällt», «Pro Monat», «Jetzt essen», «Was im Kübel landet», «Vorrat und Einkäufe» und «Alles im Vorrat». Ein Abschnitt beginnt nur dann auf einer neuen Seite, wenn er nicht mehr ganz passt.
+- **Kern:** Der Bericht kennt neu `sharedRappen` und `sharedCount`, also den geretteten Teil, der weitergegeben statt gegessen wurde. Wer frische Ware verschenkt, ist grosszügig, rettet aber nichts (ADR-0033).
