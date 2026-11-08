@@ -164,18 +164,20 @@ export const messages = {
     undoFailed: 'Rückgängig hat nicht geklappt. Bitte versuch es nochmals.',
   },
   swipe: {
-    tip: 'Tipp: Wisch einen Artikel nach links, wenn du eins verwertet hast.',
+    tip: 'Tipp: Wisch nach links, wenn du etwas verwertet hast, nach rechts, wenn du es entsorgt hast.',
     /** Visually hidden, read after the row name (WCAG 2.5.1: the item page has the buttons). */
-    hint: 'Nach links wischen: eins verwertet. Oder öffne den Artikel für alle Optionen.',
-    /** Strip behind a swiped row: «Verwertet», and below it how much. */
-    action: 'Verwertet',
+    hint: 'Nach links wischen: verwertet. Nach rechts wischen: entsorgt. Oder öffne den Artikel für alle Optionen.',
+    /** The strips behind a swiped row, like Spotify (Alban, 8.11.2026). */
+    outcomes: { eaten: 'Verwertet', wasted: 'Entsorgt' },
     piece: '−1',
     portion: '1 Portion',
     rest: 'alles',
-    /** «1 Glace verwertet» for whole pieces. */
-    eatenPieces: (count: number, name: string) => `${String(count)} ${name} verwertet`,
+    /** «1 Glace verwertet» or «1 Glace entsorgt» for whole pieces. */
+    pieces: (count: number, name: string, outcome: 'eaten' | 'wasted') =>
+      `${String(count)} ${name} ${outcome === 'eaten' ? 'verwertet' : 'entsorgt'}`,
     /** «Reis: 250 g verwertet» for amounts and fractions. */
-    eatenAmount: (name: string, amount: string) => `${name}: ${amount} verwertet`,
+    amount: (name: string, amount: string, outcome: 'eaten' | 'wasted') =>
+      `${name}: ${amount} ${outcome === 'eaten' ? 'verwertet' : 'entsorgt'}`,
     failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
   },
   addItem: {
