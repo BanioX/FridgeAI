@@ -54,7 +54,7 @@ test('exports the data, deletes everything after asking and imports the export a
     mimeType: 'application/json',
     buffer: Buffer.from('{"format":"other"}'),
   });
-  await expect(page.getByRole('status')).toHaveText(/^Diese Datei ist kein rettich-Export\./);
+  await expect(page.getByRole('status')).toHaveText(/^Diese Datei ist kein Rettich-Export\./);
   await picker.setInputFiles({
     name: json.suggestedFilename(),
     mimeType: 'application/json',

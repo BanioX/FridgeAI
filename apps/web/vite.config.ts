@@ -46,7 +46,7 @@ export default defineConfig({
         ],
       },
       manifest: {
-        name: 'rettich',
+        name: 'Rettich',
         short_name: 'Rettich',
         description: 'Wissen, was im Kühlschrank ist, und nichts mehr wegwerfen.',
         lang: 'de-CH',

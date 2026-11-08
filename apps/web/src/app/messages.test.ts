@@ -25,6 +25,12 @@ describe('messages.de-CH', () => {
     }
   });
 
+  it('writes the brand «Rettich» with a capital R (Alban, 8.11.2026; ADR-0032)', () => {
+    for (const [path, text] of texts(messages, 'messages')) {
+      expect(text, path).not.toMatch(/(?<![\w/@.-])rettich(?![\w]|\.app|-bericht)/);
+    }
+  });
+
   it('uses «ss» instead of «ß»', () => {
     for (const [path, text] of texts(messages, 'messages')) {
       expect(text, path).not.toContain('ß');
