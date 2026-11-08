@@ -90,7 +90,7 @@ const ReportItemSchema = z.object({
   quantity: QuantitySchema,
   unit: UnitSchema,
   expiresOn: LocalDateSchema,
-  /** «zu verbrauchen bis» or «mindestens haltbar bis», so a report can say «Nicht mehr essen». */
+  /** «zu verbrauchen bis» or «mindestens haltbar bis», so a report can say «Nicht mehr verwenden». */
   expiryKind: DateKindSchema.optional(),
   valueRappen: RappenSchema,
   valueEstimated: z.boolean(),
@@ -342,7 +342,7 @@ export const CONTRACT_V1 = {
   'inventory.listExpiring': query({
     name: 'inventory.listExpiring',
     summary: {
-      de: 'Was bald abläuft und zuerst gegessen werden sollte.',
+      de: 'Was bald abläuft und zuerst verwertet werden sollte.',
       en: 'Food that expires soon and should be eaten first.',
     },
     scopes: ['inventory:read'],
@@ -438,7 +438,7 @@ export const CONTRACT_V1 = {
   'inventory.deleteItem': command({
     name: 'inventory.deleteItem',
     summary: {
-      de: 'Falsch erfassten Artikel löschen; zählt nicht als weggeworfen.',
+      de: 'Falsch erfassten Artikel löschen; zählt nicht als entsorgt.',
       en: 'Delete an item entered by mistake; it does not count as wasted.',
     },
     scopes: ['inventory:write'],
@@ -468,7 +468,7 @@ export const CONTRACT_V1 = {
   'inventory.recordOutcome': command({
     name: 'inventory.recordOutcome',
     summary: {
-      de: 'Artikel als gegessen, weitergegeben oder weggeworfen markieren (ganz oder teilweise).',
+      de: 'Artikel als verwertet, weitergegeben oder entsorgt markieren (ganz oder teilweise).',
       en: 'Mark an item as eaten, shared or wasted, fully or partly.',
     },
     scopes: ['inventory:write'],
@@ -511,7 +511,7 @@ export const CONTRACT_V1 = {
   'inventory.undoOutcome': command({
     name: 'inventory.undoOutcome',
     summary: {
-      de: 'Gegessen, Weitergegeben oder Weggeworfen rückgängig machen; die Menge kommt zurück.',
+      de: 'Verwertet, Weitergegeben oder Entsorgt rückgängig machen; die Menge kommt zurück.',
       en: 'Undo eaten, shared or wasted; the quantity goes back to the item.',
     },
     scopes: ['inventory:write'],
@@ -521,7 +521,7 @@ export const CONTRACT_V1 = {
   'inventory.changeOutcome': command({
     name: 'inventory.changeOutcome',
     summary: {
-      de: 'Einen Eintrag korrigieren: gegessen, weitergegeben oder weggeworfen, Grund oder Empfänger. Menge, Wert und Datum bleiben.',
+      de: 'Einen Eintrag korrigieren: verwertet, weitergegeben oder entsorgt, Grund oder Empfänger. Menge, Wert und Datum bleiben.',
       en: 'Correct an entry: eaten, shared or wasted, reason or recipient. Amount, value and date stay.',
     },
     scopes: ['inventory:write'],
@@ -544,7 +544,7 @@ export const CONTRACT_V1 = {
   'inventory.history': query({
     name: 'inventory.history',
     summary: {
-      de: 'Verlauf: was gegessen, weitergegeben oder weggeworfen wurde, neueste zuerst.',
+      de: 'Verlauf: was verwertet, weitergegeben oder entsorgt wurde, neueste zuerst.',
       en: 'History: what was eaten, shared or wasted, newest first.',
     },
     scopes: ['inventory:read'],
@@ -659,7 +659,7 @@ export const CONTRACT_V1 = {
   'products.wasteHabits': query({
     name: 'products.wasteHabits',
     summary: {
-      de: 'Was der Haushalt in den letzten drei Monaten mehrmals weggeworfen hat, mit einem Tipp.',
+      de: 'Was der Haushalt in den letzten drei Monaten mehrmals entsorgt hat, mit einem Tipp.',
       en: 'What the household threw away more than once in the last three months, with a tip.',
     },
     scopes: ['stats:read'],
@@ -749,7 +749,7 @@ export const CONTRACT_V1 = {
   'stats.waste': query({
     name: 'stats.waste',
     summary: {
-      de: 'Gerettet (kurz vor Ablauf gegessen oder weitergegeben) und weggeworfen in CHF, kg und Anzahl für einen Zeitraum.',
+      de: 'Gerettet (kurz vor Ablauf verwertet oder weitergegeben) und entsorgt in CHF, kg und Anzahl für einen Zeitraum.',
       en: 'Food rescued (eaten or shared shortly before expiry) and wasted in CHF, kg and count for a period.',
     },
     scopes: ['stats:read'],
@@ -792,7 +792,7 @@ export const CONTRACT_V1 = {
   'reports.build': query({
     name: 'reports.build',
     summary: {
-      de: 'Bericht: Kühlschrank jetzt, gerettet und weggeworfen pro Monat, Gründe, Einkäufe.',
+      de: 'Bericht: Kühlschrank jetzt, gerettet und entsorgt pro Monat, Gründe, Einkäufe.',
       en: 'Report: fridge now, saved and wasted per month, reasons, spending per shop.',
     },
     scopes: ['stats:read'],

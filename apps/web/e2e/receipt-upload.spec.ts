@@ -201,3 +201,52 @@ test('remembers prices: «zuletzt …» and «… % teurer als sonst» on the ne
   await page.getByText('Mehr Angaben').click();
   await expect(page.getByText(/Zuletzt 0\.95 bei Coop/)).toBeVisible();
 });
+
+test('takes several receipts chosen at once, one after the other', async ({ page }) => {
+  const second = textPdf([
+    'Musterdorf Bahnhof',
+    '06.11.26 08:15 00124 00456790 002 0001235',
+    'Artikel Menge Preis Aktion Total Zusatz',
+    'Naturaplan Bio Vollmilch 1L 1.0 1.95 1.95 0 A',
+    'Total CHF 1.95',
+    'Twint 1.95',
+  ]);
+  // Phone width: the shop tabs do not fit and must scroll on their own.
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/add/receipt');
+  await page.getByLabel('PDF oder Foto wählen').setInputFiles([
+    { name: 'eins.pdf', mimeType: 'application/pdf', buffer: COOP },
+    { name: 'leer.pdf', mimeType: 'application/pdf', buffer: textPdf(['Danke']) },
+    { name: 'zwei.pdf', mimeType: 'application/pdf', buffer: second },
+  ]);
+  await expect(page.getByText('Quittung 1 von 3')).toBeVisible();
+  await page.getByRole('button', { name: '2 Artikel übernehmen' }).click();
+
+  // The second file has no articles: say so and go on with the next one.
+  await expect(page.getByText('Quittung 2 von 3')).toBeVisible();
+  await expect(
+    page.getByText('Auf dieser Quittung hat Rettich keine Artikel gefunden.'),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Nächste Quittung' }).click();
+
+  await expect(page.getByText('Quittung 3 von 3')).toBeVisible();
+  // Read as «Laden»: one tap tells Rettich it was Coop.
+  const review = page.getByRole('region', { name: /Musterdorf Bahnhof · 06\.11\.2026/ });
+  await expect(review.getByRole('radio', { name: 'Laden' })).toBeChecked();
+  // The shop tabs scroll on their own; the page never scrolls sideways.
+  await review.locator('label', { has: page.getByRole('radio', { name: 'Lidl' }) }).click();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(
+    true,
+  );
+  await review.locator('label', { has: page.getByRole('radio', { name: 'Coop' }) }).click();
+  await expect(review.getByRole('radio', { name: 'Coop' })).toBeChecked();
+  await expect(
+    page.getByRole('region', { name: /^Coop · Musterdorf Bahnhof · 06\.11\.2026/ }),
+  ).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await expect(page.getByRole('button', { name: 'Diese Quittung überspringen' })).toHaveCount(0);
+  await review.getByRole('button', { name: '1 Artikel übernehmen' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
+  await expect(page.getByText('Naturaplan Bio Vollmilch 1L')).toBeVisible();
+  await expect(page.getByText('Coop Pouletbrust 2St. ca. 330g')).toBeVisible();
+});

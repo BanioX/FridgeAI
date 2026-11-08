@@ -48,6 +48,7 @@ Alles in diesem Parkplatz wartet auf den Pilot und seine Zahlen.
 | P21 | **Geteilter Haushalt, ungleich diszipliniert**: eine Person trägt alles nach, die andere nie | Gut gelöst ein Vorteil, an dem Vorrats-Apps sonst scheitern: Der Bestand bleibt brauchbar, auch wenn nicht alle mitmachen | Konten und Sync (P6, P3). Gestaltung: siehe «P21 im Detail» | geparkt, Teile gebaut |
 | P22 | **Von selbst erfasst**: Etiketten mit RFID oder NFC wie bei Decathlon, ein Kamera- oder Sensor-Modul, Rettich als Anbieter oder Lizenzgeber | Kein Aufwand mehr für die Person | Hardware bindet viel Kapital und rechnet sich bei Lebensmitteln kaum. Günstigere Wege zum selben Ziel: P1 und P10. Siehe «P22 im Detail» | geparkt, Vision |
 | P23 | **Stammdaten-Pools** der Hersteller (GDSN, GS1 Schweiz trustbox) | Geprüfte Produktdaten mit Bild, Nährwerten und Allergenen, auch für Eigenmarken; so baut YAZIO seine «verifizierten» Produkte ([`mitbewerber-yazio.md`](./mitbewerber-yazio.md)) | Mitgliedschaft und Vertrag bei GS1 Schweiz, Kosten, Nutzungsrechte für eine App | geparkt |
+| P24 | **Laden-Monogramme vor dem öffentlichen Start kurz prüfen lassen**: Rettich zeigt den Laden als eigenes Monogramm (Onyx-Kachel, silberner Serifen-Buchstabe, Smaragd-Linie), gleich für alle Läden, neben dem ausgeschriebenen Namen | Laden auf einen Blick erkennbar, ohne fremde Marken (Alban, 8.11.2026: «Ich will die Laden Logik … in unserer eigenen Design Language») | Kein Händler-Logo, keine Händlerfarben; der Name des Ladens dient nur als Angabe, wo gekauft wurde. Vor dem Start mit einer Fachperson bestätigen | geparkt |
 
 ## P1 im Detail: Migros und Coop als Partner
 
@@ -169,6 +170,8 @@ Stand: 7.11.2026, aufbauend auf [`monetarisierung.md`](./monetarisierung.md) und
 | 4. **Förderung und Impact** | öffentliche Hand, Stiftungen | messbar weniger Food Waste | Kennzahlen aus dem Pilot (P16) | parallel |
 | 5. **Team-Lizenz** | Firmen | Büro-Kühlschrank (P17) | Konten, Vertrieb | später |
 | 6. **Lizenz der Rettich-Logik** | Händler, Gerätehersteller | Vorrats-Modul in deren App oder Gerät (P22) | Pilotzahlen, stabile Schnittstelle (P11), Vertrag | spät |
+| 7. **Bezahlte Dashboards** | Haushalte (Pro), Firmen, Gemeinden | tiefere Auswertungen: Verwertet und Entsorgt über Monate, pro Laden, pro Person (ADR-0046) | Konten (P6), Pilotzahlen | nach Pro |
+| 8. **Werbung ohne Tracking** | Händler, Marken | Hinweise passend zum Vorrat, auf dem Gerät ausgewählt, ohne Profil (ADR-0046) | Albans Entscheid: heute verspricht Rettich «keine Werbung» | offen |
 
 **Kandidaten für Pro:** Allergene pro Person (P19), Spaces (P20), Berichte, mehrere Personen.
 
@@ -186,7 +189,7 @@ Stand: 7.11.2026, aufbauend auf [`monetarisierung.md`](./monetarisierung.md) und
 ## Kleinere Packung, konkret (8.11.2026)
 
 - **Idee (Alban):** «Dieses Produkt gibt es auch in kleineren Grössen.» Beim Erfassen oder auf der Einkaufsliste nennt Rettich die konkrete kleinere Packung mit Preis, zum Beispiel die Tomatenmark-Tube statt der Dose.
-- **Heute:** Der allgemeine Tipp der Kategorie kommt, sobald du dort zweimal etwas weggeworfen hast (ADR-0038).
+- **Heute:** Der allgemeine Tipp der Kategorie kommt, sobald du dort zweimal etwas entsorgt hast (ADR-0038).
 - **Braucht:** Packungsgrössen und Preise pro Produkt. Diese gibt es nur bei den Händlern oder in Open Food Facts (Grösse ja, Preis nein). Mit echten Händlerdaten wäre das eine Partner-Anbindung, die heute nur als Mock erlaubt ist.
 - **Wert:** hoch, ein klarer USP («Rettich rät dir zur richtigen Grösse»), zusammen mit Händler-Partnerschaften (P-Einträge oben).
 
@@ -194,6 +197,7 @@ Stand: 7.11.2026, aufbauend auf [`monetarisierung.md`](./monetarisierung.md) und
 
 | Datum | Änderung |
 | --- | --- |
+| 8.11.2026 | Säulen 7 und 8 (bezahlte Dashboards, Werbung ohne Tracking) aus Albans Nachricht zu «verwertet» und «entsorgt» (ADR-0046). |
 | 7.11.2026 | P16 mit StreamUp (United Against Waste, Foodways) ergänzt; Abschnitt «Name und Vision» zu Rettich und FridgeAI. |
 | 7.11.2026 | P23 (Stammdaten-Pools) aus der YAZIO-Analyse. |
 | 7.11.2026 | Aus Albans Brainstorming: P19 (Allergene), P20 (Spaces), P21 (ungleiche Disziplin), P22 (von selbst erfasst, Etiketten, Lizenz). Dazu «Fokus jetzt», die Brainstorming-Regel und Säule 6 (Lizenz). |

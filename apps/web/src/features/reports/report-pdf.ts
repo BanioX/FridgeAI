@@ -406,8 +406,8 @@ function itemRow(report: Report, item: ReportItem, value?: string): ListRow {
   };
 }
 
-/** «Jetzt essen»: what expires within three days, as in «Läuft bald ab» on Start. */
-/** «Jetzt essen» stays in one piece: it moves to the next page whole when that is enough. */
+/** «Jetzt verwerten»: what expires within three days, as in «Läuft bald ab» on Start. */
+/** «Jetzt verwerten» stays in one piece: it moves to the next page whole when that is enough. */
 function urgent(ctx: Context, y: number): number {
   const { doc, report } = ctx;
   const height = 5 + Math.max(14, report.fridge.urgent.length * ROW);

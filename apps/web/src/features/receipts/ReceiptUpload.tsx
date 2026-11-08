@@ -11,6 +11,7 @@ import {
   type ParsedReceipt,
   type ParsedReceiptLine,
   type Rappen,
+  type Retailer,
 } from '@fridgeai/core';
 import { FileText } from 'lucide-react';
 import { useState } from 'react';
@@ -20,6 +21,7 @@ import { messages } from '../../app/messages.de-CH';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { GroupedList, GroupedListItem } from '../../ui/GroupedList';
+import { ShopBadge } from '../../ui/ShopBadge';
 import { formatAmount } from '../inventory/add-item';
 import { MatchPanel, MatchRow, useReceiptMatching } from './ReceiptMatch';
 import { useMoney } from '../../app/money';
@@ -33,6 +35,9 @@ const t = messages.receiptUpload;
 const MAX_BYTES = 15 * 1024 * 1024;
 
 const isPdf = (file: File) => file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
+
+/** The order of the shop tabs: the big Swiss shops first, «Laden» for any other. */
+const SHOPS: readonly Retailer[] = ['coop', 'migros', 'denner', 'aldi', 'lidl', 'other'];
 
 interface Review {
   receipt: ParsedReceipt;
@@ -113,7 +118,8 @@ function purchasedAt(receipt: ParsedReceipt) {
 /**
  * «Quittung hochladen» (ADR-0028): a receipt PDF, photo or screenshot is read on the device, the lines show with name and
  * price paid, food is ticked, and «übernehmen» stores the receipt and puts the ticked items into
- * the inventory with their price.
+ * the inventory with their price. Several files at once (Alban, 8.11.2026) come one after the
+ * other, each with its own review; «übernehmen» or «überspringen» leads to the next.
  */
 export function ReceiptUpload() {
   const { householdId, ids, inventory } = useAppData();
@@ -121,7 +127,32 @@ export function ReceiptUpload() {
   const [status, setStatus] = useState('');
   const [busy, setBusy] = useState(false);
   const [review, setReview] = useState<Review | null>(null);
+  /** Files still waiting after the one on screen, and where the person is among all of them. */
+  const [queue, setQueue] = useState<readonly File[]>([]);
+  const [position, setPosition] = useState<{ index: number; total: number } | null>(null);
   const matching = useReceiptMatching();
+
+  function start(files: readonly File[]) {
+    const [first, ...rest] = files;
+    if (first === undefined) {
+      return;
+    }
+    setQueue(rest);
+    setPosition(files.length > 1 ? { index: 1, total: files.length } : null);
+    void read(first);
+  }
+
+  /** The next file, or the inventory when none is left. */
+  function next() {
+    const [file, ...rest] = queue;
+    if (file === undefined) {
+      void navigate('/inventory');
+      return;
+    }
+    setQueue(rest);
+    setPosition((current) => (current === null ? null : { ...current, index: current.index + 1 }));
+    void read(file);
+  }
   const money = useMoney();
 
   async function read(file: File) {
@@ -216,7 +247,7 @@ export function ReceiptUpload() {
         setStatus(t.duplicate);
         return;
       }
-      void navigate('/inventory');
+      next();
     } catch {
       setStatus(t.saveFailed);
     } finally {
@@ -241,23 +272,33 @@ export function ReceiptUpload() {
           accept="application/pdf,.pdf,image/*"
           disabled={busy}
           className="sr-only"
+          multiple
           onChange={(event) => {
-            const file = event.target.files?.[0];
+            const files = [...(event.target.files ?? [])];
             event.target.value = '';
-            if (file !== undefined) {
-              void read(file);
-            }
+            start(files);
           }}
         />
       </label>
+      {position === null ? null : (
+        <p className="mt-3 text-sm font-semibold text-ink-muted">
+          {t.progress(position.index, position.total)}
+        </p>
+      )}
       <p role="status" className="mt-2 text-sm font-semibold text-basil-800">
         {status}
       </p>
+      {review === null && !busy && queue.length > 0 ? (
+        <Button fullWidth variant="secondary" onClick={next}>
+          {t.next}
+        </Button>
+      ) : null}
       {review === null ? <p className="text-xs text-ink-muted">{t.trademarks}</p> : null}
 
       {review === null || receipt === undefined ? null : (
         <section aria-labelledby="receipt-title" className="mt-4 space-y-3">
-          <h2 id="receipt-title" className="font-semibold">
+          <h2 id="receipt-title" className="flex items-center gap-2 font-semibold">
+            <ShopBadge retailer={receipt.retailer} />
             {[
               t.retailers[receipt.retailer],
               receipt.storeName,
@@ -266,6 +307,36 @@ export function ReceiptUpload() {
               .filter(Boolean)
               .join(' · ')}
           </h2>
+          {/* min-w-0: a fieldset is as wide as its content otherwise; `relative` on each tab keeps its
+              sr-only radio inside the scrolling row (else it widens the page, like #34). */}
+          <fieldset className="min-w-0">
+            <legend className="mb-2 text-sm font-semibold text-ink-muted">{t.shopQuestion}</legend>
+            <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+              {SHOPS.map((shop) => (
+                <label
+                  key={shop}
+                  className={`relative flex min-h-11 shrink-0 cursor-pointer items-center gap-2 rounded-full border py-1 pr-3 pl-1 text-sm font-semibold has-focus-visible:outline-2 has-focus-visible:outline-basil-600 ${
+                    receipt.retailer === shop
+                      ? 'border-basil-700 bg-basil-50 text-basil-800'
+                      : 'border-line bg-surface text-ink'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="shop"
+                    value={shop}
+                    checked={receipt.retailer === shop}
+                    onChange={() => {
+                      setReview({ ...review, receipt: { ...receipt, retailer: shop } });
+                    }}
+                    className="sr-only"
+                  />
+                  <ShopBadge retailer={shop} size={30} />
+                  {t.retailers[shop]}
+                </label>
+              ))}
+            </div>
+          </fieldset>
           <p className={`text-sm ${receipt.sumCheck === 'ok' ? 'text-basil-800' : 'text-today'}`}>
             {receipt.sumCheck === 'ok' || receipt.totalRappen === null
               ? receipt.totalRappen === null
@@ -340,6 +411,11 @@ export function ReceiptUpload() {
           >
             {t.take(review.chosen.size)}
           </Button>
+          {queue.length > 0 ? (
+            <Button fullWidth variant="ghost" disabled={busy} onClick={next}>
+              {t.skip}
+            </Button>
+          ) : null}
         </section>
       )}
     </Card>

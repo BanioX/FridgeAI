@@ -44,7 +44,7 @@ interface Gesture {
 }
 
 interface SwipeActionProps {
-  /** Text below the check in the strip behind the row, e.g. «Gegessen». */
+  /** Text below the check in the strip behind the row, e.g. «Verwertet». */
   label: string;
   /** Smaller second line, e.g. «−1». */
   detail?: string;

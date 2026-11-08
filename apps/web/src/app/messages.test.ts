@@ -37,6 +37,12 @@ describe('messages.de-CH', () => {
     }
   });
 
+  it('says «verwertet» and «entsorgt», never «gegessen» or «weggeworfen» (ADR-0046)', () => {
+    for (const [path, text] of texts(messages, 'messages')) {
+      expect(text, path).not.toMatch(/gegessen|weggeworfen|wegwerf|\b(essen|isst)\b/i);
+    }
+  });
+
   it('uses «ss» instead of «ß»', () => {
     for (const [path, text] of texts(messages, 'messages')) {
       expect(text, path).not.toContain('ß');

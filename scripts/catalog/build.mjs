@@ -3,7 +3,7 @@
 //   apps/web/public/catalog/retail-ch.json  facts from shop websites (today ALDI SUISSE)
 // One product per line, so a refresh shows as a readable diff.
 //
-//   node scripts/catalog/build.mjs <off.jsonl> <aldi.jsonl>
+//   node scripts/catalog/build.mjs <off.jsonl> <aldi.jsonl>   («-» keeps that file as it is)
 import { readFileSync, writeFileSync } from 'node:fs';
 
 const [offFile, aldiFile] = process.argv.slice(2);
@@ -22,7 +22,7 @@ const clean = (text) =>
 
 // Open Food Facts: one row per barcode, with every Swiss shop that sells it.
 const byCode = new Map();
-for (const product of lines(offFile)) {
+for (const product of offFile === '-' ? [] : lines(offFile)) {
   const name = clean(product.product_name_de) ?? clean(product.product_name);
   if (!/^\d{8,14}$/.test(product.code ?? '') || name === null) continue;
   const known = byCode.get(product.code);
@@ -39,9 +39,12 @@ for (const product of lines(offFile)) {
     shops: new Set([product._store]),
   });
 }
-const off = [...byCode.values()]
-  .map((row) => [row.gtin, row.name, row.brand, row.size, row.hints, [...row.shops].sort()])
-  .sort((a, b) => a[1].localeCompare(b[1], 'de'));
+const off =
+  offFile === '-'
+    ? null
+    : [...byCode.values()]
+        .map((row) => [row.gtin, row.name, row.brand, row.size, row.hints, [...row.shops].sort()])
+        .sort((a, b) => a[1].localeCompare(b[1], 'de'));
 
 // Shop websites: facts only, no images, no texts (ADR-0045). Food only: a product needs one of
 // the shop's food categories (Aldi's «Aktionen» also hold boots and lamps).
@@ -64,20 +67,24 @@ const FOOD = new Set([
   'Retour aux sources (Bio)',
   'Früchte & Gemüse',
 ]);
-const retail = lines(aldiFile)
-  .filter((row) => clean(row.name) !== null && row.sku !== undefined)
-  .filter((row) => (row.categories ?? []).some((category) => FOOD.has(category)))
-  .map((row) => [
-    `aldi:${row.sku}`,
-    clean(row.name).slice(0, 120),
-    clean(row.brand)?.slice(0, 80) ?? null,
-    clean(row.size)?.slice(0, 30) ?? null,
-    (row.categories ?? []).filter((category) => category !== 'Aktionen').slice(0, 3),
-    ['aldi'],
-  ])
-  .sort((a, b) => a[1].localeCompare(b[1], 'de'));
+const retail =
+  aldiFile === '-'
+    ? null
+    : lines(aldiFile)
+        .filter((row) => clean(row.name) !== null && row.sku !== undefined)
+        .filter((row) => (row.categories ?? []).some((category) => FOOD.has(category)))
+        .map((row) => [
+          `aldi:${row.sku}`,
+          clean(row.name).slice(0, 120),
+          clean(row.brand)?.slice(0, 80) ?? null,
+          clean(row.size)?.slice(0, 30) ?? null,
+          (row.categories ?? []).filter((category) => category !== 'Aktionen').slice(0, 3),
+          ['aldi'],
+        ])
+        .sort((a, b) => a[1].localeCompare(b[1], 'de'));
 
-const write = (file, header, rows) =>
+const write = (file, header, rows) => {
+  if (rows === null) return;
   writeFileSync(
     `${OUT}/${file}`,
     `{${Object.entries(header)
@@ -86,6 +93,8 @@ const write = (file, header, rows) =>
       rows.map((row) => JSON.stringify(row)).join(',\n') +
       '\n]}\n',
   );
+  process.stdout.write(`${file}: ${String(rows.length)} products\n`);
+};
 
 write(
   'off-ch.json',
@@ -100,7 +109,4 @@ write(
   'retail-ch.json',
   { built: today, source: 'Public product pages of www.aldi-suisse.ch (facts only, ADR-0045)' },
   retail,
-);
-process.stdout.write(
-  `off-ch.json: ${String(off.length)} products, retail-ch.json: ${String(retail.length)}\n`,
 );

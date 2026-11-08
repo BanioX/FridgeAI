@@ -26,12 +26,12 @@ test('eats part of a cheese, opens it and throws the rest away with a reason', a
   await expect(page.getByText(/^Geöffnet am/)).toBeVisible();
 
   await choose(page, '⅓ · 100 g');
-  await page.getByRole('button', { name: 'Als gegessen speichern' }).click();
+  await page.getByRole('button', { name: 'Als verwertet speichern' }).click();
   await expect(page.getByRole('status')).toHaveText('Gespeichert. Noch 200 g übrig.');
 
-  await choose(page, 'Weggeworfen');
+  await choose(page, 'Entsorgt');
   await choose(page, 'vergessen');
-  await page.getByRole('button', { name: 'Als weggeworfen speichern' }).click();
+  await page.getByRole('button', { name: 'Als entsorgt speichern' }).click();
 
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
   await expect(page.getByRole('link', { name: /Grana Padano/ })).toHaveCount(0);
@@ -61,17 +61,17 @@ test('a wrong tap can be undone, in part and in full', async ({ page }) => {
   await page.getByRole('link', { name: /Grana Padano/ }).click();
 
   await choose(page, '⅓ · 100 g');
-  await page.getByRole('button', { name: 'Als gegessen speichern' }).click();
+  await page.getByRole('button', { name: 'Als verwertet speichern' }).click();
   await expect(page.getByRole('status')).toHaveText('Gespeichert. Noch 200 g übrig.');
   await page.getByRole('button', { name: 'Rückgängig' }).click();
   await expect(page.getByRole('status')).toHaveText('Rückgängig gemacht. Wieder 300 g da.');
   await expect(page.getByRole('button', { name: 'Rückgängig' })).toHaveCount(0);
   await expect(page.getByText('300 g · Kühlschrank')).toBeVisible();
 
-  await choose(page, 'Weggeworfen');
-  await page.getByRole('button', { name: 'Als weggeworfen speichern' }).click();
+  await choose(page, 'Entsorgt');
+  await page.getByRole('button', { name: 'Als entsorgt speichern' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
-  await expect(page.getByRole('status')).toHaveText('Grana Padano: als weggeworfen gespeichert.');
+  await expect(page.getByRole('status')).toHaveText('Grana Padano: als entsorgt gespeichert.');
   await expect(page.getByRole('link', { name: /Grana Padano/ })).toHaveCount(0);
   const notice = await new AxeBuilder({ page }).analyze();
   expect(notice.violations).toEqual([]);
@@ -90,7 +90,7 @@ test('a free amount larger than what is left is refused', async ({ page }) => {
 
   await page.getByLabel(/Andere Menge/).fill('5000');
   await expect(page.getByText('Bitte eine Menge zwischen 0 und dem Rest angeben.')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Als gegessen speichern' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Als verwertet speichern' })).toBeDisabled();
 });
 
 test('corrects date, date kind, quantity and value of an item', async ({ page }) => {
@@ -181,9 +181,9 @@ test('offers «Nachkaufen» after an item is used up', async ({ page }) => {
   await page.getByLabel('Was ist es?').fill('Mozzarella');
   await page.getByRole('button', { name: 'Speichern', exact: true }).click();
   await page.getByRole('link', { name: /Mozzarella/ }).click();
-  await page.getByRole('button', { name: 'Als gegessen speichern' }).click();
+  await page.getByRole('button', { name: 'Als verwertet speichern' }).click();
 
-  await expect(page.getByRole('status')).toHaveText('Mozzarella: als gegessen gespeichert.');
+  await expect(page.getByRole('status')).toHaveText('Mozzarella: als verwertet gespeichert.');
   await page.getByRole('button', { name: 'Nachkaufen' }).click();
   await expect(page.getByRole('status')).toHaveText('Mozzarella steht bei «Nachkaufen».');
   await expect(page.getByRole('button', { name: 'Nachkaufen' })).toHaveCount(0);

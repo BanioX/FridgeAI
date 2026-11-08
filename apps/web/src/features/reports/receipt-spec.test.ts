@@ -43,7 +43,7 @@ describe('receiptSpec', () => {
     expect(receipt.totals.map((post) => [post.label, post.value])).toEqual([
       ['ARTIKEL', '5'],
       ['GEWICHT', '1.0 kg'],
-      ['TOTAL WEGGEWORFEN', chf(350 + 420 + 350 + 245 + 350)],
+      ['TOTAL ENTSORGT', chf(350 + 420 + 350 + 245 + 350)],
     ]);
   });
 
