@@ -10,7 +10,7 @@ Damit Mensch und Maschine dasselbe meinen: Wort in der App (de-CH), Name im Code
 | **Bankwerktag** | `isSwissBankDay`, `swissBankHolidays` | Montag bis Freitag ohne Bankfeiertage des Schweizer Zahlungsverkehrs (SIC); 24.12. und 31.12. zählen | DE/AT: TARGET2-Kalender, später je Land |
 | **Kurz-Bericht** (Quittung im PDF) | `ReportKind`, `receiptSpec`, `receiptPdf` | Ein PDF im Look einer Quittung zu einem Thema: Wirkung, Läuft bald ab, Weggeworfen, ein Ort. Der ausführliche Bericht zeigt keine Quittung (ADR-0030) | – |
 | **SWELP** | `swelp` | Albans Protokoll-Set «Darf, Tut, Lernt»: Scoped Work, Side Effect, Self Learning Protocols ([`BanioX/swelp`](https://github.com/BanioX/swelp)); in Rettich gelebt in [`docs/swelp/`](./swelp/README.md) | – |
-| **Swelper** (Alban 8.11.2026) | `swelper`, `/swelper`, `.swelper.json` | Albans Schaltzentrale als eigener Rahmen: Trichter, Dispatcher, Stecker, Kontexte; führt SWELP über Agenten aus ([`docs/ideen/swelper.md`](./ideen/swelper.md)) | – |
+| **SWELPER** (Alban 8.11.2026) | `swelper`, `/swelper`, `.swelper.json` | Albans Schaltzentrale als eigener Rahmen: Trichter, Dispatcher, Stecker, Kontexte; führt SWELP über Agenten aus ([`docs/ideen/swelper.md`](./ideen/swelper.md)) | – |
 | **Quittung** (nicht «Bon», Alban 7.11.2026) | `receipt`, `receipts.import`, `receipts.matchLine` | Kassenzettel eines Einkaufs, als PDF, Screenshot oder Foto | de-DE «Kassenbon», de-AT «Kassabon» oder «Rechnung» |
 | **Abfall** (nicht «Kübel», Alban 8.11.2026) | `wasted` | wohin weggeworfene Lebensmittel gehen; Claim «Wirf kein Geld in den Abfall.» | de-DE auch «Müll», de-CH auch «Kehricht» |
 | **Vorrat** (Tab) | `inventory` | alles, was im Haushalt ist, über alle Lagerorte | – |

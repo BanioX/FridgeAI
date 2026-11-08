@@ -1,6 +1,6 @@
 ---
 name: legal
-generated: swelper 0.1.0
+generated: swelper 0.1.1
 description: Use proactively whenever data newly leaves a device, personal data is touched, a licence is added, a consent or retention question arises, or a claim could mislead. Checks against the context's privacy and licence rules, Swiss nDSG and EU GDPR. Writes only into contexts/<kontext>/out/recht/.
 model: sonnet
 effort: high
