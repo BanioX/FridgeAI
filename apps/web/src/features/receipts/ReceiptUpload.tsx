@@ -113,7 +113,8 @@ function purchasedAt(receipt: ParsedReceipt) {
 /**
  * «Quittung hochladen» (ADR-0028): a receipt PDF, photo or screenshot is read on the device, the lines show with name and
  * price paid, food is ticked, and «übernehmen» stores the receipt and puts the ticked items into
- * the inventory with their price.
+ * the inventory with their price. Several files at once (Alban, 8.11.2026) come one after the
+ * other, each with its own review; «übernehmen» or «überspringen» leads to the next.
  */
 export function ReceiptUpload() {
   const { householdId, ids, inventory } = useAppData();
@@ -121,7 +122,32 @@ export function ReceiptUpload() {
   const [status, setStatus] = useState('');
   const [busy, setBusy] = useState(false);
   const [review, setReview] = useState<Review | null>(null);
+  /** Files still waiting after the one on screen, and where the person is among all of them. */
+  const [queue, setQueue] = useState<readonly File[]>([]);
+  const [position, setPosition] = useState<{ index: number; total: number } | null>(null);
   const matching = useReceiptMatching();
+
+  function start(files: readonly File[]) {
+    const [first, ...rest] = files;
+    if (first === undefined) {
+      return;
+    }
+    setQueue(rest);
+    setPosition(files.length > 1 ? { index: 1, total: files.length } : null);
+    void read(first);
+  }
+
+  /** The next file, or the inventory when none is left. */
+  function next() {
+    const [file, ...rest] = queue;
+    if (file === undefined) {
+      void navigate('/inventory');
+      return;
+    }
+    setQueue(rest);
+    setPosition((current) => (current === null ? null : { ...current, index: current.index + 1 }));
+    void read(file);
+  }
   const money = useMoney();
 
   async function read(file: File) {
@@ -216,7 +242,7 @@ export function ReceiptUpload() {
         setStatus(t.duplicate);
         return;
       }
-      void navigate('/inventory');
+      next();
     } catch {
       setStatus(t.saveFailed);
     } finally {
@@ -241,18 +267,27 @@ export function ReceiptUpload() {
           accept="application/pdf,.pdf,image/*"
           disabled={busy}
           className="sr-only"
+          multiple
           onChange={(event) => {
-            const file = event.target.files?.[0];
+            const files = [...(event.target.files ?? [])];
             event.target.value = '';
-            if (file !== undefined) {
-              void read(file);
-            }
+            start(files);
           }}
         />
       </label>
+      {position === null ? null : (
+        <p className="mt-3 text-sm font-semibold text-ink-muted">
+          {t.progress(position.index, position.total)}
+        </p>
+      )}
       <p role="status" className="mt-2 text-sm font-semibold text-basil-800">
         {status}
       </p>
+      {review === null && !busy && queue.length > 0 ? (
+        <Button fullWidth variant="secondary" onClick={next}>
+          {t.next}
+        </Button>
+      ) : null}
       {review === null ? <p className="text-xs text-ink-muted">{t.trademarks}</p> : null}
 
       {review === null || receipt === undefined ? null : (
@@ -340,6 +375,11 @@ export function ReceiptUpload() {
           >
             {t.take(review.chosen.size)}
           </Button>
+          {queue.length > 0 ? (
+            <Button fullWidth variant="ghost" disabled={busy} onClick={next}>
+              {t.skip}
+            </Button>
+          ) : null}
         </section>
       )}
     </Card>
