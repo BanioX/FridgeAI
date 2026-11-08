@@ -66,7 +66,7 @@ interface Context {
 }
 
 /**
- * The detailed report («Ausführlich») as an A4 PDF on the device (ADR-0030), in the design
+ * The detailed report («Gesamtauszug») as an A4 PDF on the device (ADR-0030), in the design
  * language of the app: silver ground, white cards with a soft shadow, the large title, lists
  * like «Vorrat» with the food emoji and the same status chips. «Was auffällt», the months, what to
  * eat now, what is wasted and why, where the value and the money are, then everything in stock.
@@ -423,7 +423,7 @@ function itemRow(report: Report, item: ReportItem, value?: string): ListRow {
   };
 }
 
-/** «Jetzt verwerten»: what expires within three days, as in «Läuft bald ab» on Start. */
+/** «Jetzt verwerten»: what expires within three days, as in «Heute retten» on Start. */
 /** «Jetzt verwerten» stays in one piece: it moves to the next page whole when that is enough. */
 function urgent(ctx: Context, y: number): number {
   const { doc, report } = ctx;

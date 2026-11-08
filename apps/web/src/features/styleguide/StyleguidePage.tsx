@@ -104,7 +104,7 @@ export function StyleguidePage() {
       </Card>
 
       <section className="space-y-3">
-        <h2 className="font-display text-xl font-semibold">Läuft bald ab</h2>
+        <h2 className="font-display text-xl font-semibold">Heute retten</h2>
         <GroupedList>
           {sampleItems.map((item) => (
             <GroupedListItem key={item.name}>

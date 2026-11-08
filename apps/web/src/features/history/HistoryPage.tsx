@@ -49,7 +49,7 @@ function details(entry: Entry, money: Money): [string, string] {
  * «Verlauf» under «Mehr»: what was «Verwertet» or «Entsorgt», newest first, with its share of the
  * price. Older «Weitergegeben» entries show as «Verwertet» (Alban, 8.11.2026). A wrong entry is
  * corrected (outcome, reason) or deleted with one
- * confirmation: then the amount goes back to the item and statistics, reports and «Deine Wirkung»
+ * confirmation: then the amount goes back to the item and statistics, statements and the «Bilanz»
  * no longer count it.
  */
 export function HistoryPage() {

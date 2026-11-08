@@ -20,16 +20,16 @@ Für den ersten Pilot mit Alban und einer weiteren Person. Stand: v0.6.0. Claude
 | 2–6 | Nach dem Einkauf den **Bon hochladen** (＋, dann «Bon hochladen»: PDF aus der Coop- oder Migros-App, Lidl-Screenshot oder Foto) | Stimmen Namen und Preise, stimmt die Summe? |
 | 2–6 | Nach dem Einkauf die Standardartikel mit **«Schnell erfassen»** eintragen | Reicht ein Tipp, stimmen Menge und Ort? |
 | 2–6 | Im Tab **«Kochen»** etwas kochen (auch mit Filter «Feierabend»), danach **«Zutaten abbuchen»** | Passen die Ideen zu dem, was weg muss? |
-| 2–6 | Hast du etwas falsch eingetragen? Unter «Mehr» › **«Verlauf»** ändern oder löschen | Findest du den Eintrag schnell? |
-| 7 | Den **Kühlschrank-Check** auf «Start» machen, unter «Mehr» einen **Bericht als PDF** erstellen, «Deine Wirkung diesen Monat» ansehen, einmal «Alles exportieren» | Würdest du die App weiter nutzen? Was nervt? |
+| 2–6 | Hast du etwas falsch eingetragen? Unter «Mehr» › **«Journal»** ändern oder löschen | Findest du den Eintrag schnell? |
+| 7 | Den **Kühlschrank-Check** auf «Start» machen, unter «Mehr» einen **Auszug als PDF** erstellen, die «Bilanz» des Monats auf «Start» ansehen, einmal «Alles exportieren» | Würdest du die App weiter nutzen? Was nervt? |
 
 ## Neues Symbol, neues Handy oder neue Adresse
 
 Das iPhone übernimmt Symbol und Namen einer Web-App nur beim Hinzufügen zum Home-Bildschirm. Wer das alte «FridgeAI»-Symbol hat, legt rettich neu hin. **Wer das alte Symbol löscht, löscht meist auch dessen Daten.** Darum in dieser Reihenfolge:
 
-1. In der alten App: «Mehr» › «Daten und Datenschutz» › **«Alles exportieren (JSON)»**, die Datei in «Dateien» sichern.
+1. In der alten App: «Mehr» › «Deine Daten» › **«Alles exportieren (JSON)»**, die Datei in «Dateien» sichern.
 2. In Safari die Adresse öffnen, einmal neu laden, «Teilen» › «Zum Home-Bildschirm».
-3. Die neue App öffnen: «Mehr» › «Daten und Datenschutz» › **«Daten importieren (JSON)»**, die Datei wählen, «Ja, übernehmen».
+3. Die neue App öffnen: «Mehr» › «Deine Daten» › **«Daten importieren (JSON)»**, die Datei wählen, «Ja, übernehmen».
 4. Erst wenn alles stimmt, das alte Symbol löschen.
 
 Genauso geht es beim Handywechsel und später beim Umzug auf rettich.app.
