@@ -65,3 +65,28 @@ Alban: «Oder man kauft eine Riesenpackung, aber benutzt sie selten. Da vielleic
 - **Beim Erfassen** einer solchen Kategorie steht oben eine Tipp-Karte, zum Beispiel: «Tzatziki, Hummus Natur: in den letzten 3 Monaten 2× weggeworfen. Offen hält ein Dip nur wenige Tage: lieber die kleine Packung kaufen.»
 - **Nur eigene Daten**, berechnet auf dem Gerät. Nichts verlässt es.
 - **Konkrete kleinere Produkte** mit Preisen bleiben im Parkplatz, weil sie Daten der Händler brauchen.
+
+## Nachtrag (8.11.2026): Score von 1 bis 10
+
+Alban: «Score von 1 bis 10, entweder nach verderblich oder haltbar. Was macht mehr Sinn?» Entscheid: **Haltbarkeit, 10 = hält am längsten.**
+- **Warum Haltbarkeit:** «Haltbar» steht auf jeder Packung, und eine hohe Zahl liest man als gut.
+
+**Der Score** (`shelfScore`) kommt aus den Tagen, ungeöffnet am besten Ort, in etwa doppelten Schritten:
+
+| Score | hält bis | Beispiele |
+| --- | --- | --- |
+| 1 | 2 Tage | Hackfleisch |
+| 2 | 4 Tage | Fertiggerichte |
+| 3 | 1 Woche | Milch, Salat |
+| 4 | 2 Wochen | Joghurt, Hummus |
+| 5 | 1 Monat | Hartkäse, Eier |
+| 6 | 2 Monate | Butter |
+| 7 | 6 Monate | Saft |
+| 8 | 1 Jahr | Getränke, Saucen |
+| 9 | 3 Jahre | Pasta, Konserven |
+| 10 | länger | Notvorrat |
+
+- **Geöffnet** zählen die Tage nach dem Öffnen: Hummus fällt auf 2, Tomatenmark auf 3, Mayonnaise auf 5.
+- **Mit Verbrauchsdatum** höchstens 3.
+- **Die drei Stufen** sind Bereiche des Scores: heikel 1–4, mittel 5–6, robust 7–10. Am Kühlschrank-Check ändert sich nichts.
+- **Die Artikelseite** zeigt einen kleinen Ring wie im Bericht, mit «Haltbarkeit 4/10 · heikel». Rot heisst heikel, Weizen mittel, Smaragd robust.

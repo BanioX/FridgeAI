@@ -12,7 +12,7 @@ Damit Mensch und Maschine dasselbe meinen: Wort in der App (de-CH), Name im Code
 | **Quittung** (nicht «Bon», Alban 7.11.2026) | `receipt`, `receipts.import`, `receipts.matchLine` | Kassenzettel eines Einkaufs, als PDF, Screenshot oder Foto | de-DE «Kassenbon», de-AT «Kassabon» oder «Rechnung» |
 | **Abfall** (nicht «Kübel», Alban 8.11.2026) | `wasted` | wohin weggeworfene Lebensmittel gehen; Claim «Wirf kein Geld in den Abfall.» | de-DE auch «Müll», de-CH auch «Kehricht» |
 | **Vorrat** (Tab) | `inventory` | alles, was im Haushalt ist, über alle Lagerorte | – |
-| **Haltbarkeit** heikel, mittel, robust | `perishability`, `needsWatching` | Wie schnell eine Kategorie verdirbt; der Kühlschrank-Check fragt Robustes mit fernem Datum nicht ab (ADR-0038) | – |
+| **Haltbarkeit** 1–10 (heikel 1–4, mittel 5–6, robust 7–10) | `shelfScore`, `perishability`, `needsWatching` | Wie lange eine Kategorie hält, 10 = am längsten; geöffnet zählen die Tage nach dem Öffnen; der Kühlschrank-Check fragt Robustes mit fernem Datum nicht ab (ADR-0038) | – |
 | **Von der Theke** | `soldLoose`, `openedOn` | Offen gekauft (Käse, Aufschnitt, Dips): hält ab Kauf wie eine geöffnete Packung (ADR-0038) | – |
 | **Das wirfst du oft weg** | `products.wasteHabits`, `wasteHabits` | Kategorie mit mindestens zwei Mal «Weggeworfen» in 90 Tagen; beim Erfassen kommt ein Tipp (ADR-0038) | – |
 | **Lagerort** | `StorageLocation` | `fridge` Kühlschrank, `freezer` Tiefkühler, `pantry` Vorrat, `reserve` Notvorrat | de-DE «Gefrierschrank», «Vorratsschrank» |
