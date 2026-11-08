@@ -525,7 +525,8 @@ export const messages = {
     privacyPoints: [
       'Dein Vorrat, deine Liste und deine Statistik bleiben auf diesem Gerät.',
       'Beim Scannen geht nur die Barcode-Nummer an Open Food Facts, damit Name, Nährwerte und Bild kommen.',
-      'Nach dem Auslesen einer Quittung gehen nur die Produktnamen an Open Food Facts, ohne Preise, Laden und Datum.',
+      'Suchst du nach einem Namen, gehen ab drei Buchstaben nur die getippten Wörter an Open Food Facts.',
+      'Quittungszeilen sucht Rettich zuerst auf dem Gerät. Nur ohne sicheren Treffer geht der Produktname an Open Food Facts, ohne Preise, Laden und Datum.',
       'Fotos von Quittungen und Codes werden nur gelesen, nie gespeichert.',
       'Kein Konto, kein Tracking, keine Werbung.',
     ],
