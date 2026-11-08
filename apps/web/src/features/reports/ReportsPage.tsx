@@ -2,7 +2,7 @@ import { messages } from '../../app/messages.de-CH';
 import { BackLink } from '../../ui/BackLink';
 import { ReportCard } from './ReportCard';
 
-/** «Berichte als PDF» under «Mehr» (ADR-0030, ADR-0031). */
+/** «Auszüge» under «Mehr» (ADR-0030, ADR-0031). */
 export function ReportsPage() {
   return (
     <div className="space-y-6 pb-8">

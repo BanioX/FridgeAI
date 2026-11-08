@@ -11,10 +11,10 @@ test('deletes a wrong «Entsorgt» from the history, the food comes back', async
   // Wait until it is saved: the Vorrat page confirms it (a reload too early would lose it).
   await expect(page.getByRole('status')).toHaveText('Joghurt: als entsorgt gespeichert.');
 
-  // From «Deine Wirkung» on Start to the history.
+  // From the «Bilanz» on Start to the journal.
   await page.getByRole('navigation').getByRole('link', { name: 'Start' }).click();
-  await page.getByRole('link', { name: 'Verlauf ansehen' }).click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Verlauf' })).toBeVisible();
+  await page.getByRole('link', { name: 'Journal ansehen' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Journal' })).toBeVisible();
   const entry = page.getByRole('listitem').filter({ hasText: 'Joghurt' });
   await expect(entry).toContainText('Entsorgt');
   await expect(entry).toContainText('vergessen');

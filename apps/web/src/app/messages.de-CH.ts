@@ -16,8 +16,8 @@ export const messages = {
     shopping: 'Nachkaufen',
     knowledge: 'Wissen',
     more: 'Mehr',
-    history: 'Verlauf',
-    data: 'Daten und Datenschutz',
+    history: 'Journal',
+    data: 'Deine Daten',
     addItem: 'Artikel erfassen',
     check: 'Kühlschrank-Check',
   },
@@ -77,8 +77,8 @@ export const messages = {
   today: {
     valueLabel: 'liegen gerade in deinem Kühlschrank',
     estimated: 'teilweise geschätzt',
-    expiringTitle: 'Läuft bald ab',
-    expiringEmpty: 'Nichts läuft in den nächsten 3 Tagen ab. Gut gemacht!',
+    expiringTitle: 'Heute retten',
+    expiringEmpty: 'Nichts läuft in den nächsten 3 Tagen ab.',
     showAll: (count: number) => `Alle anzeigen (${String(count)})`,
     /** Start before the first item (Alban, 8.11.2026). */
     intro: {
@@ -104,7 +104,8 @@ export const messages = {
       ],
       growth: 'Mit jeder Rettung wächst er.',
     },
-    impactTitle: 'Deine Wirkung diesen Monat',
+    /** «Bilanz November» (ADR-0047): what this month closed, like a statement. */
+    impactTitle: (month: string) => `Bilanz ${month}`,
     growth: {
       title: 'Dein Rettich',
       stages: {
@@ -473,13 +474,13 @@ export const messages = {
     installIos:
       'In Safari unten auf «Teilen» tippen, dann «Zum Home-Bildschirm». Danach startet Rettich wie eine App, auch offline.',
     installOther: 'Im Browser-Menü «App installieren» oder «Zum Startbildschirm» wählen.',
-    reportsDetail: 'Kühlschrank, Wirkung und Einkäufe zum Teilen',
+    reportsDetail: 'Bilanz, Vorrat und Einkäufe als PDF, zum Teilen',
     historyDetail: 'Verwertet und entsorgt: ansehen, ändern, löschen',
     shoppingDetail: 'Was du wieder brauchst',
     dataDetail: 'Exportieren, löschen, was mit deinen Daten passiert',
   },
   household: {
-    data: 'Deine Daten',
+    data: 'Mitnehmen und löschen',
     dataText:
       'Alles bleibt auf diesem Gerät. Mit einem Export nimmst du deine Daten auf ein neues Gerät mit. Ein Konto zum Teilen mit Mitbewohner:innen kommt später.',
     exportJson: 'Alles exportieren (JSON)',
@@ -523,7 +524,7 @@ export const messages = {
     removedBack: (name: string) => `Eintrag gelöscht. ${name} ist wieder im Vorrat.`,
     removed: 'Eintrag gelöscht.',
     failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
-    link: 'Verlauf ansehen',
+    link: 'Journal ansehen',
   },
   wasteReasons: {
     expired: 'abgelaufen',
@@ -534,13 +535,13 @@ export const messages = {
     other: 'anderes',
   },
   reports: {
-    title: 'Berichte als PDF',
-    intro: 'Rettich erstellt den Bericht auf deinem Gerät. Teilen oder speichern entscheidest du.',
-    kindLegend: 'Welcher Bericht?',
-    /** Short reports are receipts; «Ausführlich» is the full report (Alban, 8.11.2026). */
+    title: 'Auszüge',
+    intro: 'Rettich erstellt den Auszug auf deinem Gerät. Teilen oder speichern entscheidest du.',
+    kindLegend: 'Welcher Auszug?',
+    /** Short statements are receipts; «Gesamtauszug» is the full one (Alban, 8.11.2026). */
     kinds: {
       impact: {
-        label: 'Wirkung',
+        label: 'Bilanz',
         hint: 'Als Quittung: was du verwertet, gerettet und entsorgt hast.',
       },
       expiring: {
@@ -561,8 +562,8 @@ export const messages = {
       },
       pantry: { label: 'Vorrat', hint: 'Als Quittung: alles im Vorrat, mit Datum und Wert.' },
       full: {
-        label: 'Ausführlich',
-        hint: 'Der ganze Bericht mit Diagrammen und Listen, ohne Quittung.',
+        label: 'Gesamtauszug',
+        hint: 'Der ganze Auszug mit Diagrammen und Listen, ohne Quittung.',
       },
     },
     daysLegend: 'Wie viele Tage voraus?',
@@ -601,21 +602,21 @@ export const messages = {
     create: 'PDF erstellen',
     creating: 'PDF wird erstellt …',
     view: {
-      back: 'Berichte',
+      back: 'Auszüge',
       share: 'Teilen',
-      rendering: 'Bericht wird geöffnet …',
+      rendering: 'Auszug wird geöffnet …',
       page: (page: number, pages: number) => `${String(page)} von ${String(pages)}`,
-      gone: 'Dieser Bericht ist nicht mehr offen. Erstell ihn einfach neu.',
+      gone: 'Dieser Auszug ist nicht mehr offen. Erstell ihn einfach neu.',
       failed:
-        'Der Bericht lässt sich hier nicht anzeigen. Über «Teilen» kannst du ihn trotzdem öffnen.',
+        'Der Auszug lässt sich hier nicht anzeigen. Über «Teilen» kannst du ihn trotzdem öffnen.',
     },
     failed: 'Das PDF liess sich nicht erstellen. Bitte versuch es nochmals.',
     pdf: {
-      heading: 'Dein Bericht',
+      heading: 'Dein Auszug',
       /** The short reports as till receipts; the detailed report has none (Alban, 8.11.2026). */
       receipt: {
         claim: 'Wirf kein Geld in den Abfall.',
-        title: 'So hast du Food Waste reduziert',
+        title: 'Deine Bilanz',
         saved: 'GERETTET',
         used: 'VERWERTET',
         wasted: 'ENTSORGT',
@@ -632,10 +633,10 @@ export const messages = {
             ? 'Läuft heute oder morgen ab'
             : `Läuft in den nächsten ${String(days)} Tagen ab`,
         expiringTotal: 'TOTAL IN GEFAHR',
-        expiringEmpty: 'Nichts läuft in dieser Zeit ab. Stark!',
+        expiringEmpty: 'Nichts läuft in dieser Zeit ab.',
         wastedTitle: 'Was entsorgt wurde',
         wastedTotal: 'TOTAL ENTSORGT',
-        wastedEmpty: 'Nichts entsorgt. Stark!',
+        wastedEmpty: 'Nichts entsorgt.',
         placeTitle: (place: string) => `Im ${place}`,
         placeTotal: 'TOTAL WERT',
         placeEmpty: 'Hier ist gerade nichts.',
@@ -666,7 +667,7 @@ export const messages = {
       estimated: '* geschätzt aus dem Durchschnittspreis der Kategorie',
       footer: 'Erstellt auf deinem Gerät mit Rettich · Wirf kein Geld in den Abfall.',
       page: (page: number, pages: number) => `Seite ${String(page)} von ${String(pages)}`,
-      noWaste: 'Nichts entsorgt. Stark!',
+      noWaste: 'Nichts entsorgt.',
       noUrgent: 'Nichts läuft in den nächsten drei Tagen ab.',
       none: 'Keine Daten in diesem Zeitraum.',
     },
@@ -692,7 +693,7 @@ export const messages = {
           ? '1 Artikel ist abgelaufen oder läuft in 3 Tagen ab.'
           : `${String(count)} Artikel sind abgelaufen oder laufen in 3 Tagen ab.`,
       shop: (shop: string, value: string) => `Am meisten ausgegeben bei ${shop}: ${value}.`,
-      nothing: 'Noch wenig Daten. Mit jeder Quittung und jedem Abschluss wird der Bericht genauer.',
+      nothing: 'Noch wenig Daten. Mit jeder Quittung und jedem Abschluss wird der Auszug genauer.',
     },
   },
   priceMemory: {

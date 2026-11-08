@@ -47,3 +47,7 @@ Die App versteht sie über Kategorien und Quittungs-Wörter (`catalog/receipt-wo
 | Peperoni | Paprika |
 | Rahm | Sahne, Obers |
 | Nüsslisalat | Feldsalat, Vogerlsalat |
+| **Heute retten** (früher «Läuft bald ab» auf Start) | `urgentItems`, `today.expiringTitle` | was in den nächsten drei Tagen abläuft, zuoberst auf Start (ADR-0047) | – |
+| **Bilanz** (früher «Deine Wirkung») | `ImpactCard`, `stats.waste` | Verwertet und Entsorgt als zwei Kreise, darunter Gerettet, pro Monat («Bilanz November») (ADR-0046, ADR-0047) | – |
+| **Auszug, Gesamtauszug** (früher «Bericht», «Ausführlich») | `ReportKind`, `reports.build` | PDF zu einem Zeitraum wie ein Kontoauszug; Kurz-Auszüge als Quittung, der Gesamtauszug mit Diagrammen (ADR-0030, ADR-0047) | – |
+| **Journal** (früher «Verlauf») | `inventory.history` | jeder Abschluss, neueste zuerst, ändern und löschen (ADR-0047) | – |

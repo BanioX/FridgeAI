@@ -1,6 +1,6 @@
 import type { ExpiryStatus, InventoryItemView } from '@fridgeai/core';
 
-/** «Läuft bald ab» on «Start» shows at most this many rows. */
+/** «Heute retten» on «Start» shows at most this many rows. */
 export const URGENT_LIMIT = 5;
 
 type ExpiringItem = InventoryItemView & { status: ExpiryStatus };

@@ -12,8 +12,12 @@ import { RettichGrowth } from './RettichGrowth';
 
 const t = messages.today;
 
+/** «November» for any day in November, for «Bilanz November». */
+const monthName = (day: LocalDate) =>
+  messages.reports.monthNames[Number(day.slice(5, 7)) - 1] ?? '';
+
 /**
- * «Deine Wirkung diesen Monat» (step 6, US-06): the growing Rettich (ADR-0043), then «Verwertet»
+ * «Bilanz November» (step 6, US-06, ADR-0047): the growing Rettich (ADR-0043), then «Verwertet»
  * and «Entsorgt» as two rings (ADR-0046), and below what was rescued: confirmed rescues of food
  * at risk (ADR-0033, ADR-0039). Hidden until something was closed in the period.
  */
@@ -39,7 +43,7 @@ export function ImpactCard({ from, to }: { from: LocalDate; to: LocalDate }) {
 
   return (
     <Card>
-      <h2 className="font-display text-xl font-semibold">{t.impactTitle}</h2>
+      <h2 className="font-display text-xl font-semibold">{t.impactTitle(monthName(from))}</h2>
       <div className="mt-3">
         <RettichGrowth rescues={stats.savedCount} />
       </div>

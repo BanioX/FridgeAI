@@ -12,10 +12,8 @@ test('exports the data, deletes everything after asking and imports the export a
   await expect(page.getByRole('heading', { level: 1, name: 'Mehr' })).toBeVisible();
   await expect(page.getByText('Schnittstelle')).toHaveCount(0);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
-  await page.getByRole('link', { name: /^Daten und Datenschutz/ }).click();
-  await expect(
-    page.getByRole('heading', { level: 1, name: 'Daten und Datenschutz' }),
-  ).toBeVisible();
+  await page.getByRole('link', { name: /^Deine Daten/ }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Deine Daten' })).toBeVisible();
   await expect(page.getByText('Kein Konto, kein Tracking, keine Werbung.')).toBeVisible();
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations).toEqual([]);

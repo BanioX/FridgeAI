@@ -29,8 +29,8 @@ const customDays = (text: string) => {
 };
 
 /**
- * «Berichte als PDF» (ADR-0030): choose what the report is about. The short reports come as a
- * receipt, «Ausführlich» as the full report. Rettich builds the PDF on the device and opens it
+ * «Auszüge» (ADR-0030, ADR-0047): choose what the report is about. The short reports come as a
+ * receipt, «Gesamtauszug» as the full report. Rettich builds the PDF on the device and opens it
  * inside the app; sharing is a tap away there.
  */
 export function ReportCard() {
