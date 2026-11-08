@@ -54,12 +54,14 @@ export function ImpactCard({ from, to }: { from: LocalDate; to: LocalDate }) {
             share: ringShare(used, wasted),
             value: money.format(stats.usedRappen),
             detail: t.wastedCount(stats.usedCount),
+            to: '/more/history?outcome=eaten',
           }}
           wasted={{
             label: t.wasted,
             share: ringShare(wasted, used),
             value: money.format(stats.wastedRappen),
             detail: t.wastedCount(stats.wastedCount),
+            to: '/more/history?outcome=wasted',
           }}
         />
       </div>
