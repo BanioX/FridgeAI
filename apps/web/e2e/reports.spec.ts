@@ -1,6 +1,5 @@
-import AxeBuilder from '@axe-core/playwright';
 import { readFile } from 'node:fs/promises';
-import { expect, test } from './test';
+import { AxeBuilder, expect, test } from './test';
 
 test('creates a PDF report on the device, opens it in the app and shares it', async ({ page }) => {
   for (const name of ['Joghurt', 'Vollmilch']) {

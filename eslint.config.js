@@ -114,4 +114,22 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    // Axe waits for transitions to end before it measures colours (L-19).
+    files: ['apps/web/e2e/**/*.ts'],
+    ignores: ['apps/web/e2e/test.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@axe-core/playwright',
+              message: "Import AxeBuilder from './test': it waits until animations have ended.",
+            },
+          ],
+        },
+      ],
+    },
+  },
 );

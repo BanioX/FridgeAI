@@ -1,5 +1,4 @@
-import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from './test';
+import { AxeBuilder, expect, test } from './test';
 
 // An invented nutrition table, drawn in the browser as a Migipedia screenshot would look.
 const TABLE = [
