@@ -23,6 +23,8 @@ export interface AppContext {
   catalog?: ProductCatalog;
   /** Name search in open databases; none = household only. */
   search?: ProductSearch;
+  /** Name search in the catalog shipped with the app, on the device (ADR-0045). */
+  localSearch?: ProductSearch;
 }
 
 /** One contract operation, implemented. */

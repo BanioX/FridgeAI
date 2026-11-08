@@ -43,6 +43,12 @@ export default defineConfig({
             handler: 'CacheFirst',
             options: { cacheName: 'ocr-engine', expiration: { maxEntries: 2 } },
           },
+          // The product catalog (ADR-0045): kept after the first receipt, refreshed in the background.
+          {
+            urlPattern: ({ url }) => url.pathname.includes('/catalog/'),
+            handler: 'StaleWhileRevalidate',
+            options: { cacheName: 'catalog', expiration: { maxEntries: 4 } },
+          },
         ],
       },
       manifest: {
