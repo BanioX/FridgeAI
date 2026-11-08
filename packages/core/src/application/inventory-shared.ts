@@ -3,6 +3,7 @@ import type { Category } from '../catalog/category';
 import type { InventoryItemView } from '../contract/operations';
 import type { Id } from '../ids';
 import type { InventoryItem, Product } from '../model/inventory';
+import type { Retailer } from '../model/primitives';
 import type { Storage } from '../ports/storage';
 import { CommandError } from './command';
 
@@ -28,7 +29,11 @@ export function factsOf(source: ProductFacts | undefined): ProductFacts {
   };
 }
 
-export function toView(item: InventoryItem, product: Product | undefined): InventoryItemView {
+export function toView(
+  item: InventoryItem,
+  product: Product | undefined,
+  retailer?: Retailer,
+): InventoryItemView {
   const category = categoryOf(product);
   return {
     id: item.id,
@@ -51,7 +56,42 @@ export function toView(item: InventoryItem, product: Product | undefined): Inven
     ...factsOf(product),
     ...(product === undefined ? {} : { productSource: product.source }),
     ...(product?.gtin === undefined ? {} : { gtin: product.gtin }),
+    ...(retailer === undefined ? {} : { retailer }),
   };
+}
+
+/**
+ * Item id → the shop it was bought at (item → receipt line → receipt). Loads lines and receipts
+ * once; soft-deleted rows and the unknown shop «other» give no entry.
+ */
+export async function retailersOfItems(
+  storage: Storage,
+  householdId: Id,
+  items: readonly InventoryItem[],
+): Promise<Map<Id, Retailer>> {
+  const bought = items.filter((item) => item.receiptLineId !== undefined);
+  const result = new Map<Id, Retailer>();
+  if (bought.length === 0) {
+    return result;
+  }
+  const [lines, receipts] = await Promise.all([
+    storage.receiptLines.ofHousehold(householdId),
+    storage.receipts.ofHousehold(householdId),
+  ]);
+  const lineById = new Map(
+    lines.filter((line) => line.deletedAt === undefined).map((line) => [line.id, line]),
+  );
+  const receiptById = new Map(
+    receipts.filter((receipt) => receipt.deletedAt === undefined).map((r) => [r.id, r]),
+  );
+  for (const item of bought) {
+    const line = item.receiptLineId === undefined ? undefined : lineById.get(item.receiptLineId);
+    const retailer = line === undefined ? undefined : receiptById.get(line.receiptId)?.retailer;
+    if (retailer !== undefined && retailer !== 'other') {
+      result.set(item.id, retailer);
+    }
+  }
+  return result;
 }
 
 /** The item if it is still at home and belongs to the household; else a `CommandError`. */

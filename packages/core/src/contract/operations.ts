@@ -94,6 +94,8 @@ const ReportItemSchema = z.object({
   expiryKind: DateKindSchema.optional(),
   valueRappen: RappenSchema,
   valueEstimated: z.boolean(),
+  /** Where it was bought, from its receipt; absent when unknown («other») or not from a receipt. */
+  retailer: RetailerSchema.optional(),
 });
 const ReportSchema = z.object({
   today: LocalDateSchema,
@@ -218,6 +220,8 @@ export const InventoryItemViewSchema = z.object({
   productSource: ProductSourceSchema.optional(),
   /** Barcode of the product, e.g. to ask for its picture (`products.image`). */
   gtin: GtinSchema.optional(),
+  /** Where it was bought, from its receipt; absent when unknown («other») or not from a receipt. */
+  retailer: RetailerSchema.optional(),
 });
 export type InventoryItemView = z.infer<typeof InventoryItemViewSchema>;
 

@@ -123,6 +123,71 @@ describe('insight queries on memory storage', () => {
     expect(report.shopping.receiptCount).toBe(0);
   });
 
+  /** An item that came from a receipt of `retailer` (line and receipt written like the import). */
+  async function addBought(name: string, retailer: 'coop' | 'other', deleted = false): Promise<Id> {
+    const { itemId } = await add(name);
+    const receiptId = next();
+    const lineId = next();
+    await storage.receipts.add({
+      id: receiptId,
+      householdId,
+      updatedAt: now,
+      retailer,
+      purchasedAt: now,
+      totalRappen: rappen(150),
+      source: 'pdf',
+      hash: 'b'.repeat(64),
+      createdBy: actor,
+      ...(deleted ? { deletedAt: now } : {}),
+    });
+    await storage.receiptLines.add({
+      id: lineId,
+      householdId,
+      updatedAt: now,
+      receiptId,
+      position: 0,
+      rawText: name,
+      name,
+      kind: 'item',
+      isFood: true,
+      quantity: 1,
+      unit: 'pcs',
+      priceRappen: rappen(150),
+      discountRappen: rappen(0),
+      assignedTo: 'shared',
+      includedInInventory: true,
+    });
+    const item = await storage.items.get(itemId);
+    if (item === undefined) {
+      throw new Error('item missing');
+    }
+    await storage.items.put({ ...item, receiptLineId: lineId });
+    return itemId;
+  }
+
+  it('shows the shop on items from a receipt, in the list and in the report', async () => {
+    const coop = await addBought('Vollmilch', 'coop');
+    const other = await addBought('Brot', 'other');
+    const gone = await addBought('Butter', 'coop', true);
+    await add('Joghurt');
+    const { items } = await inventory['inventory.list']({ householdId });
+    const retailerOf = (id: Id) => items.find((item) => item.id === id)?.retailer;
+    expect(retailerOf(coop)).toBe('coop');
+    expect(retailerOf(other)).toBeUndefined();
+    expect(retailerOf(gone)).toBeUndefined();
+    expect(items.filter((item) => item.retailer !== undefined)).toHaveLength(1);
+
+    const report = await inventory['reports.build']({
+      householdId,
+      from: localDate('2026-11-01'),
+      to: localDate('2026-11-07'),
+    });
+    const shops = Object.fromEntries(report.fridge.items.map((i) => [i.name, i.retailer]));
+    expect(shops).toMatchObject({ Vollmilch: 'coop' });
+    expect(shops.Brot).toBeUndefined();
+    expect(shops.Joghurt).toBeUndefined();
+  });
+
   it('products.wasteHabits names what was thrown away at least twice, with a tip (ADR-0038)', async () => {
     const throwAway = async (name: string, outcome: 'wasted' | 'eaten' = 'wasted') => {
       const { itemId } = await add(name);

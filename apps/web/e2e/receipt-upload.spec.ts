@@ -50,6 +50,15 @@ test('uploads a receipt PDF, shows names and prices and takes the food over', as
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
   await expect(page.getByText('Coop Pouletbrust 2St. ca. 330g')).toBeVisible();
   await expect(page.getByText('Shampoo Classic')).toHaveCount(0);
+  // The shop's monogram stands on the row, with its name as text for screen readers.
+  const row = page.getByRole('link', { name: /Coop Pouletbrust/ });
+  await expect(row).toContainText('Gekauft bei Coop');
+  const vorrat = await new AxeBuilder({ page }).analyze();
+  expect(vorrat.violations).toEqual([]);
+  await row.click();
+  await expect(page.getByText('Gekauft bei Coop')).toBeVisible();
+  const detail = await new AxeBuilder({ page }).analyze();
+  expect(detail.violations).toEqual([]);
   // Bread goes to the pantry tab.
   await page.goto('/inventory?location=pantry');
   await expect(page.getByText('Semmeli 80G')).toBeVisible();

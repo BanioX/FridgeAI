@@ -262,6 +262,8 @@ export const messages = {
     useBy: 'Zu verbrauchen bis',
     estimated: '(geschätzt)',
     openedOn: (date: string) => `Geöffnet am ${date}`,
+    /** The shop an item was bought at (from its receipt), next to the shop monogram. */
+    boughtAt: (shop: string) => `Gekauft bei ${shop}`,
     otherPacks: 'Weitere Packungen',
     otherPacksEarlier: 'Eine andere Packung läuft früher ab. Die solltest du zuerst aufbrauchen.',
     whatHappened: 'Was ist damit passiert?',

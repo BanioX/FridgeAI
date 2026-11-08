@@ -409,6 +409,28 @@ export function placeBadge(
   return left;
 }
 
+/** Side of the shop monogram in the lists, in mm. */
+export const SHOP_MARK = 4.2;
+
+/**
+ * The Rettich monogram of a shop (see `ui/ShopBadge.tsx`): an onyx tile, the white capital of the
+ * shop and the emerald line under it. `left` is the tile's left edge; returns nothing.
+ */
+export function shopMark(doc: jsPDF, letter: string, left: number, middle: number): void {
+  const top = middle - SHOP_MARK / 2;
+  doc.setFillColor(...PDF_COLOR.onyx);
+  doc.roundedRect(left, top, SHOP_MARK, SHOP_MARK, 1.2, 1.2, 'F');
+  write(doc, letter, left + SHOP_MARK / 2, middle - 0.25, {
+    size: 7,
+    color: PDF_COLOR.white,
+    bold: true,
+    align: 'center',
+    baseline: 'middle',
+  });
+  doc.setFillColor(...PDF_COLOR.smaragdMid);
+  doc.roundedRect(left + SHOP_MARK / 2 - 0.9, top + SHOP_MARK - 0.95, 1.8, 0.4, 0.2, 0.2, 'F');
+}
+
 /** A dashed rule like on a till receipt. */
 export function dashed(
   doc: jsPDF,
