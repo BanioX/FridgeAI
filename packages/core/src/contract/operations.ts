@@ -204,6 +204,8 @@ export const InventoryItemViewSchema = z.object({
   packageSize: PackageSizeSchema.optional(),
   /** Set once the pack is open; the expiry date then follows the opening rule. */
   openedOn: LocalDateSchema.optional(),
+  /** When it came home, e.g. for «Gerettet» only on food that kept longer (ADR-0039). */
+  purchasedAt: IsoDateTimeSchema,
   /** Product facts, e.g. from Open Food Facts after a scan (step 10b, ODbL). */
   brand: z.string().optional(),
   packSize: z.string().optional(),
@@ -468,14 +470,27 @@ export const CONTRACT_V1 = {
         wasteReason: WasteReasonSchema.optional(),
         /** Who got it (only with `shared_out`). */
         sharedWith: ShareRecipientSchema.optional(),
+        /**
+         * «Ohne Rettich im Abfall gelandet» (ADR-0039): counts as rescued only if the item could
+         * be rescued (`canBeRescued`), never for wasted food.
+         */
+        rescued: z.boolean().optional(),
       })
       .refine((input) => input.wasteReason === undefined || input.outcome === 'wasted', {
         message: 'A waste reason only fits wasted food',
       })
       .refine((input) => input.sharedWith === undefined || input.outcome === 'shared_out', {
         message: 'A recipient only fits shared food',
+      })
+      .refine((input) => input.rescued !== true || input.outcome !== 'wasted', {
+        message: 'Thrown away food is not rescued',
       }),
-    output: z.object({ eventId: IdSchema, remainingQuantity: z.number().min(0) }),
+    output: z.object({
+      eventId: IdSchema,
+      remainingQuantity: z.number().min(0),
+      /** Whether it counts as rescued. */
+      rescued: z.boolean(),
+    }),
   }),
   'inventory.undoOutcome': command({
     name: 'inventory.undoOutcome',

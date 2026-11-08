@@ -488,12 +488,12 @@ describe('inventory.changeOutcome', () => {
     handlers['inventory.changeOutcome']({ commandId: ids.next(), householdId, eventId, ...fields });
 
   it('turns a wrong «weggeworfen» into «gegessen»: value and date stay, the item follows', async () => {
-    // Expires in two days: at risk, so once it counts as eaten it is a rescue (ADR-0033).
+    // Its last day: eaten and confirmed, a rescue (ADR-0039).
     const { itemId } = await add({
       name: 'Joghurt',
       quantity: 4,
       priceRappen: 400,
-      expiresOn: '2026-11-08',
+      expiresOn: '2026-11-06',
     });
     const first = await handlers['inventory.recordOutcome']({
       commandId: ids.next(),
@@ -501,6 +501,7 @@ describe('inventory.changeOutcome', () => {
       itemId,
       outcome: 'eaten',
       quantity: 1,
+      rescued: true,
     });
     const last = await handlers['inventory.recordOutcome']({
       commandId: ids.next(),
@@ -519,8 +520,9 @@ describe('inventory.changeOutcome', () => {
     expect(after).toMatchObject({ outcome: 'eaten', valueRappen: 300, at: before?.at });
     expect(after?.wasteReason).toBeUndefined();
     expect(await db.items.get(itemId)).toMatchObject({ status: 'eaten' });
+    // A corrected entry was never confirmed as a rescue: eaten, but not «gerettet».
     expect(await handlers['stats.waste'](november())).toMatchObject({
-      savedRappen: 400,
+      savedRappen: 100,
       wastedRappen: 0,
     });
 
@@ -805,13 +807,13 @@ describe('products.lookup', () => {
 });
 
 describe('stats.waste', () => {
-  it('sums this period: eaten and shared at risk as rescued, wasted separately', async () => {
-    // Expires in two days: at risk, so eating and sharing it rescue it (ADR-0033).
+  it('sums this period: confirmed rescues as rescued, wasted separately', async () => {
+    // Its last day: eaten and shared with «Ja, gerettet», a rescue (ADR-0039).
     const { itemId } = await add({
       name: 'Joghurt',
       quantity: 4,
       priceRappen: 400,
-      expiresOn: '2026-11-08',
+      expiresOn: '2026-11-06',
     });
     for (const outcome of ['eaten', 'shared_out', 'wasted'] as const) {
       await handlers['inventory.recordOutcome']({
@@ -820,6 +822,7 @@ describe('stats.waste', () => {
         itemId,
         outcome,
         quantity: 1,
+        ...(outcome === 'wasted' ? {} : { rescued: true }),
       });
     }
     // Still fresh: eating it is consumption and counts nowhere here.

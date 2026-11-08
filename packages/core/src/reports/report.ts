@@ -29,6 +29,7 @@ export type ReportOutcome = Pick<
   | 'at'
   | 'deletedAt'
   | 'atRisk'
+  | 'rescued'
 > & {
   categoryId: string;
   /** The product's name, for lists of what was thrown away. */

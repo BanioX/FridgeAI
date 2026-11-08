@@ -141,10 +141,18 @@ export const OutcomeEventSchema = z
      * date (ADR-0033). Missing on entries from before 7.11.2026, which then never count as rescued.
      */
     atRisk: z.boolean().optional(),
+    /**
+     * The person confirmed it: without Rettich it would have ended in the bin (ADR-0039). Only
+     * this counts as «gerettet»; offered only when the food really was on the brink.
+     */
+    rescued: z.boolean().optional(),
     /** Owner of the item at that moment (snapshot for per-person statistics). */
     owner: OwnerSchema,
     at: IsoDateTimeSchema,
     by: IdSchema,
+  })
+  .refine((event) => event.rescued !== true || event.outcome !== 'wasted', {
+    message: 'Thrown away food is not rescued',
   })
   .refine((event) => event.wasteReason === undefined || event.outcome === 'wasted', {
     message: 'A waste reason only fits wasted food',

@@ -68,6 +68,7 @@ export function sampleReport(): Report {
     valueEstimated: false,
     at: IsoDateTimeSchema.parse(`${day}T18:00:00.000Z`),
     atRisk: kind !== 'wasted',
+    ...(kind === 'wasted' ? {} : { rescued: true }),
     ...extra,
   });
   const outcomes = [
