@@ -38,12 +38,16 @@ export function ReportCard() {
         from: periodStart(period, today),
         to: today,
       });
-      const { reportPdf } = await import('./report-pdf');
+      const [{ reportPdf }, { loadPdfPictures }] = await Promise.all([
+        import('./report-pdf'),
+        import('./pdf-assets'),
+      ]);
       const blob = await reportPdf(report, {
         household: messages.defaults.householdName,
         period: t.periods[period],
         createdOn: today,
         money,
+        pictures: await loadPdfPictures(),
       });
       openReport({
         file: new File([blob], `rettich-bericht-${today}.pdf`, { type: 'application/pdf' }),

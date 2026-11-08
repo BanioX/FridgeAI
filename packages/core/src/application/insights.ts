@@ -157,6 +157,7 @@ export function createInsightQueries({ storage, clock }: AppContext) {
           quantity: item.quantity,
           unit: item.unit,
           expiresOn: item.expiresOn,
+          expiryKind: item.expiryKind,
           valueRappen: value.valueRappen,
           valueEstimated: value.estimated,
         };
