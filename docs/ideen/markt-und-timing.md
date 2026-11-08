@@ -10,7 +10,7 @@ Stand: 7.11.2026, Websuche mit Quellen. Viele Zahlen stammen aus Berichten über
 | Haushalte Schweiz | rund 1 Mio. t (ältere BAFU-Zahl), ETH 2019: 663'000 t; rund 38 % der Umweltbelastung | [SRF](https://www.srf.ch/news/schweiz/food-waste-in-der-schweiz-schweizer-haushalte-werfen-eine-million-tonnen-lebensmittel-weg), [ETH/BAFU](https://www.bafu.admin.ch/content/dam/bafu/de/dokumente/abfall/externe-studien-berichte/lebensmittelverluste-in-der-schweiz-umweltbelastung-und-verminderungspotenzial.pdf.download.pdf/ETH-Bericht_Foodwaste_FINAL.pdf) |
 | Wert pro Haushalt Schweiz | **rund CHF 600 pro Jahr** | [WWF/Interface 2021](https://www.wwf.ch/sites/default/files/doc-2021-07/2021_05_20_Grundlagendokument_FoodWaste_WWF_INTERFACE.pdf) |
 | Ausgaben für Lebensmittel | **CHF 638 pro Haushalt und Monat** | [BFS HABE 2023](https://dam-api.bfs.admin.ch/hub/api/dam/assets/36192815/master) |
-| Anteil, der im Kübel landet | rund 8 % (CHF 600 von CHF 7'656 pro Jahr) | eigene Rechnung |
+| Anteil, der im Abfall landet | rund 8 % (CHF 600 von CHF 7'656 pro Jahr) | eigene Rechnung |
 | Preisniveau Lebensmittel Schweiz | 61 % über dem EU-Schnitt, höchstes in Europa | [Eurostat via CSO](https://www.cso.ie/en/releasesandpublications/ep/p-cpl/pricelevelsoffoodbeveragesandtobacco2024howirelandcompares/food) (2024) |
 | Deutschland, Haushalte | 76 kg pro Person | [Thünen via cleanthinking](https://www.cleanthinking.de/?p=1074350) |
 | Österreich, Haushalte | 69 kg pro Person, Wert rund EUR 400 pro Person und Jahr | [BMLUK](https://www.bmluk.gv.at/themen/abfall-und-kreislaufwirtschaft/abfallvermeidung/lebensmittel/neue-kampagne-lebensmittel-retten.html) |

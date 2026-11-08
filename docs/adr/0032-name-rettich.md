@@ -51,3 +51,10 @@ Alban: «Wir wechseln doch auf Rettich statt rettich. Es macht mehr mit dem Auge
 - **Klein bleiben** technische Namen: Dateinamen (`rettich-bericht-….pdf`, `rettich-….json`), Kennungen im Code, die Domain (`rettich.app`, Parkplatz P8) sowie Repo, Pakete und Datenbank (`fridgeai`).
 - Ältere ADRs bleiben, wie sie geschrieben wurden.
 
+## Nachtrag (8.11.2026): «Abfall» statt «Kübel»
+
+Alban: «Ich mag das Wort Kübel nicht.» Er hat gewählt: «Abfall». Das Wort ist Hochdeutsch und in der Schweiz, in Deutschland und in Österreich gebräuchlich.
+
+- Der Claim heisst jetzt **«Wirf kein Geld in den Abfall.»**
+- Texte sagen «Abfall», zum Beispiel «Was im Abfall landet». Ein Test im Textkatalog prüft das.
+

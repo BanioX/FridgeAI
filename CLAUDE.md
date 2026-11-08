@@ -3,7 +3,7 @@
 Kurzfassung der Regeln. Vollständiger Brief: [`docs/brief.md`](docs/brief.md) · Plan: [`docs/plan.md`](docs/plan.md) · Strategie: [`docs/blue-ocean.md`](docs/blue-ocean.md) · Use Cases: [`docs/use-cases.md`](docs/use-cases.md) · Entscheide: [`docs/adr/`](docs/adr/).
 Karte für alle KI-Werkzeuge: [`AGENTS.md`](AGENTS.md) · SWELP (Darf, Tut, Lernt): [`docs/swelp/`](docs/swelp/) · Schulden: [`docs/schulden.md`](docs/schulden.md) · Glossar: [`docs/glossar.md`](docs/glossar.md).
 
-**Name:** Rettich, mit grossem R («rett' ich»; Alban, 8.11.2026: «Es macht mehr mit dem Auge»). Technische Namen (Dateinamen, Kennungen, Domain) bleiben klein. Claim: «Wirf kein Geld in den Kübel.» Bis 7.11.2026 hiess die App «FridgeAI»; Repo, Pakete `@fridgeai/*`, Datenbank und Web-Adresse bleiben technisch so (ADR-0032).
+**Name:** Rettich, mit grossem R («rett' ich»; Alban, 8.11.2026: «Es macht mehr mit dem Auge»). Technische Namen (Dateinamen, Kennungen, Domain) bleiben klein. Claim: «Wirf kein Geld in den Abfall.» Bis 7.11.2026 hiess die App «FridgeAI»; Repo, Pakete `@fridgeai/*`, Datenbank und Web-Adresse bleiben technisch so (ADR-0032).
 
 **Produkt:** Local-first PWA für Schweizer Haushalte (WGs, Paare). «Scan deine Quittung – Rettich weiss, was du hast, wem es gehört, wer was schuldet und was du heute retten musst.» Product Owner: Alban Hyseni.
 
