@@ -23,6 +23,10 @@ import { factFor } from '../knowledge/food-facts';
 import { GROUPED_ROW_LINK, GroupedList, GroupedListItem } from '../../ui/GroupedList';
 import { InventoryItemRow } from './InventoryItemRow';
 import { locationOrder } from './item-meta';
+import { SelectableRow } from './SelectableRow';
+import { SelectionBar } from './SelectionBar';
+import { useMoveSelected } from './use-move-selected';
+import { useSelection } from './use-selection';
 import { SWIPE_HINT_ID, useSwipeOutcome } from './swipe-outcome';
 
 const tabId = (location: StorageLocation) => `tab-${location}`;
@@ -183,6 +187,8 @@ export function InventoryPage() {
   const selected: StorageLocation = parsed.success ? parsed.data : 'fridge';
 
   const swipe = useSwipeOutcome();
+  const selection = useSelection(selected);
+  const mover = useMoveSelected();
 
   const items = useLiveQuery(
     async () => (await inventory['inventory.list']({ householdId })).items,
@@ -216,10 +222,31 @@ export function InventoryPage() {
     items?.filter((item) => item.location === location).length ?? 0;
   const visible = items?.filter((item) => item.location === selected) ?? [];
   const t = messages.inventory;
+  // Only what is listed counts: an item that left the tab cannot stay selected.
+  const chosen = visible.filter((item) => selection.ids.has(item.id));
+  const allChosen = visible.length > 0 && chosen.length === visible.length;
+
+  const moveChosen = async (to: StorageLocation) => {
+    if (mover.busy || chosen.length === 0) {
+      return;
+    }
+    if (await mover.move(chosen, to)) {
+      selection.stop();
+    }
+  };
 
   return (
-    <div className="space-y-5 pb-8">
-      <h1 className="large-title">{messages.pages.inventory}</h1>
+    <div className={`space-y-5 ${chosen.length > 0 ? 'pb-44' : 'pb-8'}`}>
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="large-title">{messages.pages.inventory}</h1>
+        <button
+          type="button"
+          onClick={selection.active ? selection.stop : selection.start}
+          className="-mr-2 inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl px-2 font-semibold text-basil-700 transition-colors hover:bg-surface-muted"
+        >
+          {selection.active ? t.select.done : t.select.enter}
+        </button>
+      </div>
 
       <ClosedNotice />
 
@@ -282,43 +309,88 @@ export function InventoryPage() {
           </div>
         ) : (
           <div className="space-y-2">
-            {swipe.tip}
+            {selection.active ? (
+              <button
+                type="button"
+                onClick={() => {
+                  if (allChosen) {
+                    selection.clear();
+                  } else {
+                    selection.selectAll(visible.map((item) => item.id));
+                  }
+                }}
+                className="inline-flex min-h-11 items-center rounded-xl font-semibold text-basil-700"
+              >
+                {allChosen ? t.select.none : t.select.all}
+              </button>
+            ) : (
+              swipe.tip
+            )}
             <GroupedList>
-              {visible.map((item) => (
-                <GroupedListItem key={item.id}>
-                  <SwipeAction {...swipe.sides(item)}>
-                    {({ sliced }) => (
-                      <Link
-                        to={`/inventory/${item.id}`}
-                        aria-describedby={SWIPE_HINT_ID}
-                        className={GROUPED_ROW_LINK}
+              {visible.map((item) => {
+                const status = expiryBadge(
+                  expiryStatus(
+                    item.expiresOn,
+                    today,
+                    item.expiryKind,
+                    soonThresholdFor(item.location),
+                  ),
+                  item.expiresOn,
+                  today,
+                  item.location,
+                );
+                if (selection.active) {
+                  const picked = selection.ids.has(item.id);
+                  return (
+                    <GroupedListItem
+                      key={item.id}
+                      inset="check"
+                      className={picked ? 'bg-basil-50' : ''}
+                    >
+                      <SelectableRow
+                        name={item.name}
+                        selected={picked}
+                        onToggle={() => {
+                          selection.toggle(item.id);
+                        }}
                       >
-                        <InventoryItemRow
-                          chevron
-                          sliced={sliced}
-                          item={item}
-                          status={expiryBadge(
-                            expiryStatus(
-                              item.expiresOn,
-                              today,
-                              item.expiryKind,
-                              soonThresholdFor(item.location),
-                            ),
-                            item.expiresOn,
-                            today,
-                            item.location,
-                          )}
-                        />
-                      </Link>
-                    )}
-                  </SwipeAction>
-                </GroupedListItem>
-              ))}
+                        <InventoryItemRow item={item} status={status} />
+                      </SelectableRow>
+                    </GroupedListItem>
+                  );
+                }
+                return (
+                  <GroupedListItem key={item.id}>
+                    <SwipeAction {...swipe.sides(item)}>
+                      {({ sliced }) => (
+                        <Link
+                          to={`/inventory/${item.id}`}
+                          aria-describedby={SWIPE_HINT_ID}
+                          className={GROUPED_ROW_LINK}
+                        >
+                          <InventoryItemRow chevron sliced={sliced} item={item} status={status} />
+                        </Link>
+                      )}
+                    </SwipeAction>
+                  </GroupedListItem>
+                );
+              })}
             </GroupedList>
           </div>
         )}
       </div>
       {swipe.toast}
+      {mover.toast}
+      {chosen.length > 0 ? (
+        <SelectionBar
+          count={chosen.length}
+          from={selected}
+          busy={mover.busy}
+          onMove={(to) => {
+            void moveChosen(to);
+          }}
+        />
+      ) : null}
     </div>
   );
 }
