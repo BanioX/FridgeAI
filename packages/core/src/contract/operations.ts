@@ -122,6 +122,16 @@ const ReportSchema = z.object({
     savedShare: z.number().min(0).max(1).nullable(),
     sharedRappen: RappenSchema,
     sharedCount: z.int().min(0),
+    wastedItems: z.array(
+      z.object({
+        name: z.string(),
+        categoryId: z.string(),
+        on: LocalDateSchema,
+        valueRappen: RappenSchema,
+        grams: z.number().min(0).optional(),
+        reason: WasteReasonSchema.optional(),
+      }),
+    ),
     months: z.array(
       z.object({ month: z.string(), savedRappen: RappenSchema, wastedRappen: RappenSchema }),
     ),

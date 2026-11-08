@@ -29,7 +29,11 @@ export type ReportOutcome = Pick<
   | 'at'
   | 'deletedAt'
   | 'atRisk'
-> & { categoryId: string };
+> & {
+  categoryId: string;
+  /** The product's name, for lists of what was thrown away. */
+  name?: string;
+};
 
 export interface ReportPurchase {
   retailer: Retailer;
@@ -54,6 +58,15 @@ export interface Report {
     /** Of the saved: what was given away (to neighbours, friends, a fridge) instead of eaten. */
     sharedRappen: Rappen;
     sharedCount: number;
+    /** Everything thrown away in the period, newest first (for the «Weggeworfen» receipt). */
+    wastedItems: {
+      name: string;
+      categoryId: string;
+      on: LocalDate;
+      valueRappen: Rappen;
+      grams?: number | undefined;
+      reason?: WasteReason | undefined;
+    }[];
     months: { month: string; savedRappen: Rappen; wastedRappen: Rappen }[];
     topWasted: { categoryId: string; count: number; valueRappen: Rappen }[];
     reasons: { reason: WasteReason; count: number }[];
@@ -180,6 +193,16 @@ export function buildReport(input: {
       ...summarizeImpact(input.outcomes, from, to),
       sharedRappen: sumRappen(shared.map((outcome) => outcome.valueRappen)),
       sharedCount: shared.length,
+      wastedItems: [...wasted]
+        .sort((a, b) => b.at.localeCompare(a.at))
+        .map((outcome) => ({
+          name: outcome.name ?? outcome.categoryId,
+          categoryId: outcome.categoryId,
+          on: toLocalDate(outcome.at),
+          valueRappen: outcome.valueRappen,
+          ...(outcome.grams === undefined ? {} : { grams: outcome.grams }),
+          ...(outcome.wasteReason === undefined ? {} : { reason: outcome.wasteReason }),
+        })),
       months,
       topWasted: topBy(byCategory, (entry) => entry.valueRappen, 5).map(([categoryId, entry]) => ({
         categoryId,

@@ -479,9 +479,43 @@ export const messages = {
   reports: {
     title: 'Berichte als PDF',
     intro: 'Rettich erstellt den Bericht auf deinem Gerät. Teilen oder speichern entscheidest du.',
+    kindLegend: 'Welcher Bericht?',
+    /** Short reports are receipts; «Ausführlich» is the full report (Alban, 8.11.2026). */
+    kinds: {
+      impact: {
+        label: 'Wirkung',
+        hint: 'Als Quittung: was du gerettet, weitergegeben und weggeworfen hast.',
+      },
+      expiring: {
+        label: 'Läuft bald ab',
+        hint: 'Als Quittung: alles, was in den nächsten Tagen abläuft.',
+      },
+      wasted: {
+        label: 'Weggeworfen',
+        hint: 'Als Quittung: was im Abfall gelandet ist, mit Grund und Wert.',
+      },
+      fridge: {
+        label: 'Kühlschrank',
+        hint: 'Als Quittung: alles im Kühlschrank, mit Datum und Wert.',
+      },
+      freezer: {
+        label: 'Tiefkühler',
+        hint: 'Als Quittung: alles im Tiefkühler, mit Datum und Wert.',
+      },
+      pantry: { label: 'Vorrat', hint: 'Als Quittung: alles im Vorrat, mit Datum und Wert.' },
+      full: {
+        label: 'Ausführlich',
+        hint: 'Der ganze Bericht mit Diagrammen und Listen, ohne Quittung.',
+      },
+    },
+    daysLegend: 'Wie viele Tage voraus?',
+    days: { one: '1 Tag', three: '3 Tage', seven: '7 Tage', custom: 'Eigene' },
+    customDays: 'Anzahl Tage (1 bis 60)',
+    nextDays: (days: number) => (days === 1 ? 'heute und morgen' : `nächste ${String(days)} Tage`),
+    now: 'Stand heute',
     periodLegend: 'Zeitraum',
     periods: { month: 'Dieser Monat', quarter: 'Letzte 3 Monate', year: 'Dieses Jahr' },
-    reportTitle: (period: string) => `Bericht · ${period}`,
+    reportTitle: (kind: string, detail: string) => `${kind} · ${detail}`,
     create: 'PDF erstellen',
     creating: 'PDF wird erstellt …',
     view: {
@@ -496,7 +530,7 @@ export const messages = {
     failed: 'Das PDF liess sich nicht erstellen. Bitte versuch es nochmals.',
     pdf: {
       heading: 'Dein Bericht',
-      /** Page 1 of the PDF: the report as a till receipt (Alban, 8.11.2026). */
+      /** The short reports as till receipts; the detailed report has none (Alban, 8.11.2026). */
       receipt: {
         claim: 'Wirf kein Geld in den Kübel.',
         title: 'So hast du Food Waste reduziert',
@@ -510,6 +544,21 @@ export const messages = {
         detail: (count: number, kg: string) => `${String(count)}× · ${kg}`,
         sharedDetail: (count: number) => `${String(count)}× an andere, in «Gerettet» enthalten`,
         thanks: 'Danke fürs Retten.',
+        count: 'ARTIKEL',
+        weight: 'GEWICHT',
+        expiringTitle: (days: number) =>
+          days === 1
+            ? 'Läuft heute oder morgen ab'
+            : `Läuft in den nächsten ${String(days)} Tagen ab`,
+        expiringTotal: 'TOTAL IN GEFAHR',
+        expiringEmpty: 'Nichts läuft in dieser Zeit ab. Stark!',
+        wastedTitle: 'Was weggeworfen wurde',
+        wastedTotal: 'TOTAL WEGGEWORFEN',
+        wastedEmpty: 'Nichts weggeworfen. Stark!',
+        placeTitle: (place: string) => `Im ${place}`,
+        placeTotal: 'TOTAL WERT',
+        placeEmpty: 'Hier ist gerade nichts.',
+        continued: '… Fortsetzung',
       },
       created: (date: string) => `Erstellt am ${date}`,
       saved: 'Gerettet',

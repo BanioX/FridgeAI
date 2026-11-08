@@ -81,3 +81,25 @@ Alban: «Cool wäre, wenn mein PDF auch wie eine Quittung aussieht: So hast du F
 - Die Seite lässt sich allein teilen. Onyx-Karte und Kacheln fallen weg, ihre Zahlen stehen auf der Quittung.
 - **Ab Seite 2** folgt «Dein Bericht» mit «Was auffällt», «Pro Monat», «Jetzt essen», «Was im Kübel landet», «Vorrat und Einkäufe» und «Alles im Vorrat». Ein Abschnitt beginnt nur dann auf einer neuen Seite, wenn er nicht mehr ganz passt.
 - **Kern:** Der Bericht kennt neu `sharedRappen` und `sharedCount`, also den geretteten Teil, der weitergegeben statt gegessen wurde. Wer frische Ware verschenkt, ist grosszügig, rettet aber nichts (ADR-0033).
+
+## Nachtrag (8.11.2026): Berichtsarten, Quittung und ausführlicher Bericht getrennt
+
+Alban: «Die Quittung ist wie ein einzelner PDF-Export, quasi ein Quick Summary. Das andere ist ausführlicher. Es sollte verschiedene Kategorien von Berichten geben … Die Quittung ist sexy und cool, aber das grosse Summary darf die Quittung dann nicht zeigen. Also quasi eigene Report- bzw. PDF-Sprache.»
+
+- **Sieben Berichtsarten** unter «Berichte als PDF», gewählt mit Chips. Unter der Wahl steht in einem Satz, was kommt.
+  - Als **Quittung** (Kurz-Bericht, eine Seite, wenn es passt):
+    - **Wirkung:** die bisherige Quittung;
+    - **Läuft bald ab:** 1, 3 oder 7 Tage oder eine eigene Zahl von 1 bis 60, Abgelaufenes eingeschlossen;
+    - **Weggeworfen:** jeder Artikel mit Datum, Grund und Wert, dazu Anzahl, Gewicht und Total;
+    - **Kühlschrank**, **Tiefkühler**, **Vorrat:** alles an diesem Ort mit Menge, Datum und Wert.
+  - **Ausführlich:** der ganze Bericht mit Diagrammen und Listen, ohne Quittung.
+- **Zeitraum** gibt es nur, wo er zählt: bei Wirkung, Weggeworfen und Ausführlich. Die anderen zeigen den Stand heute.
+- **Zwei Sprachen, sauber getrennt:**
+  - Die Quittung bleibt Papier, Courier, Doppellinien und Strichcode. Ist eine Liste länger als eine Seite, läuft sie auf weiteren Papierstücken mit «… Fortsetzung» weiter; nichts wird abgeschnitten.
+  - Der ausführliche Bericht hat einen eigenen Kopf wie die App: Symbol und «Rettich» links, das Datum rechts, eine Haarlinie, darunter gross «Dein Bericht».
+- **Technik:**
+  - `receipt-spec.ts` legt rein fest, was auf einer Quittung steht, und ist ohne Zeichnen getestet.
+  - `receipt-pdf.ts` zeichnet jede Quittung.
+  - Seitenmasse und Fusszeile liegen gemeinsam in `pdf-kit.ts`.
+- **Kern:** Der Bericht liefert neu `impact.wastedItems`, das Weggeworfene einzeln, neuestes zuerst. Ohne Produktnamen steht der Name der Kategorie.
+- **Dateinamen:** `rettich-bericht-JJJJ-MM-TT.pdf` für den ausführlichen Bericht, `rettich-quittung-<art>-JJJJ-MM-TT.pdf` für die Quittungen.

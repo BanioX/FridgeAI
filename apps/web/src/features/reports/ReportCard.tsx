@@ -1,5 +1,5 @@
 import { FileText } from 'lucide-react';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { useMoney } from '../../app/money';
@@ -9,25 +9,51 @@ import { Card } from '../../ui/Card';
 import { ChoiceChips } from '../../ui/ChoiceChips';
 import { openReport } from './current-report';
 import { periodStart, type Period } from './period';
+import { REPORT_KINDS, usesPeriod, type ReportKind } from './receipt-spec';
 
 const t = messages.reports;
 
+const kindOptions = REPORT_KINDS.map((value) => ({ value, label: t.kinds[value].label }));
 const periodOptions = (Object.keys(t.periods) as Period[]).map((value) => ({
   value,
   label: t.periods[value],
 }));
+type DaysChoice = keyof typeof t.days;
+const DAYS: Record<Exclude<DaysChoice, 'custom'>, number> = { one: 1, three: 3, seven: 7 };
+const daysOptions = (Object.keys(t.days) as DaysChoice[]).map((value) => ({
+  value,
+  label: t.days[value],
+}));
+
+/** The typed number of days, kept between 1 and 60; 3 while the field is empty. */
+const customDays = (text: string) => {
+  const value = Number.parseInt(text, 10);
+  return Number.isNaN(value) ? 3 : Math.min(60, Math.max(1, value));
+};
 
 /**
- * «Berichte als PDF» (ADR-0030): choose a period, rettich builds the PDF on the
- * device and opens it inside the app; sharing is a tap away there.
+ * «Berichte als PDF» (ADR-0030): choose what the report is about. The short reports come as a
+ * receipt, «Ausführlich» as the full report. Rettich builds the PDF on the device and opens it
+ * inside the app; sharing is a tap away there.
  */
 export function ReportCard() {
   const { householdId, inventory, today } = useAppData();
   const money = useMoney();
   const navigate = useNavigate();
+  const daysId = useId();
+  const [kind, setKind] = useState<ReportKind>('impact');
   const [period, setPeriod] = useState<Period>('month');
+  const [daysChoice, setDaysChoice] = useState<DaysChoice>('three');
+  const [daysText, setDaysText] = useState('14');
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState('');
+
+  const days = daysChoice === 'custom' ? customDays(daysText) : DAYS[daysChoice];
+  const detail = usesPeriod(kind)
+    ? t.periods[period]
+    : kind === 'expiring'
+      ? t.nextDays(days)
+      : t.now;
 
   async function create() {
     setBusy(true);
@@ -35,23 +61,27 @@ export function ReportCard() {
     try {
       const report = await inventory['reports.build']({
         householdId,
-        from: periodStart(period, today),
+        from: periodStart(usesPeriod(kind) ? period : 'month', today),
         to: today,
       });
-      const [{ reportPdf }, { loadPdfPictures }] = await Promise.all([
-        import('./report-pdf'),
-        import('./pdf-assets'),
-      ]);
-      const blob = await reportPdf(report, {
-        household: messages.defaults.householdName,
-        period: t.periods[period],
-        createdOn: today,
-        money,
-        pictures: await loadPdfPictures(),
-      });
+      const { loadPdfPictures } = await import('./pdf-assets');
+      const pictures = await loadPdfPictures();
+      const options = { household: messages.defaults.householdName, createdOn: today, pictures };
+      let blob: Blob;
+      if (kind === 'full') {
+        const { reportPdf } = await import('./report-pdf');
+        blob = await reportPdf(report, { ...options, period: detail, money });
+      } else {
+        const [{ receiptPdf }, { receiptSpec }] = await Promise.all([
+          import('./receipt-pdf'),
+          import('./receipt-spec'),
+        ]);
+        blob = await receiptPdf(receiptSpec(report, kind, { money, days }), { ...options, detail });
+      }
+      const name = kind === 'full' ? 'rettich-bericht' : `rettich-quittung-${kind}`;
       openReport({
-        file: new File([blob], `rettich-bericht-${today}.pdf`, { type: 'application/pdf' }),
-        title: t.reportTitle(t.periods[period]),
+        file: new File([blob], `${name}-${today}.pdf`, { type: 'application/pdf' }),
+        title: t.reportTitle(t.kinds[kind].label, detail),
       });
       void navigate('/more/reports/view');
     } catch {
@@ -61,15 +91,51 @@ export function ReportCard() {
   }
 
   return (
-    <Card className="space-y-4">
+    <Card className="space-y-5">
       <p className="text-ink-muted">{t.intro}</p>
-      <ChoiceChips
-        legend={t.periodLegend}
-        options={periodOptions}
-        value={period}
-        onChange={setPeriod}
-        segmented
-      />
+      <div className="space-y-2">
+        <ChoiceChips legend={t.kindLegend} options={kindOptions} value={kind} onChange={setKind} />
+        <p className="text-sm text-ink-muted">{t.kinds[kind].hint}</p>
+      </div>
+      {usesPeriod(kind) ? (
+        <ChoiceChips
+          legend={t.periodLegend}
+          options={periodOptions}
+          value={period}
+          onChange={setPeriod}
+          segmented
+        />
+      ) : null}
+      {kind === 'expiring' ? (
+        <div className="space-y-3">
+          <ChoiceChips
+            legend={t.daysLegend}
+            options={daysOptions}
+            value={daysChoice}
+            onChange={setDaysChoice}
+            segmented
+          />
+          {daysChoice === 'custom' ? (
+            <div className="space-y-2">
+              <label htmlFor={daysId} className="font-semibold">
+                {t.customDays}
+              </label>
+              <input
+                id={daysId}
+                type="text"
+                inputMode="numeric"
+                autoComplete="off"
+                maxLength={2}
+                value={daysText}
+                onChange={(event) => {
+                  setDaysText(event.target.value.replace(/\D/g, ''));
+                }}
+                className="min-h-12 w-full rounded-xl border border-line bg-surface px-4 text-lg tabular-nums outline-none focus:border-basil-600"
+              />
+            </div>
+          ) : null}
+        </div>
+      ) : null}
       <Button icon={FileText} fullWidth disabled={busy} onClick={() => void create()}>
         {busy ? t.creating : t.create}
       </Button>
