@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 import { AxeBuilder, expect, test } from './test';
 
 test.use({ viewport: { width: 390, height: 844 } });
@@ -90,4 +90,146 @@ test('moves what fits and names what does not belong there', async ({ page }) =>
   );
   await expect(page.getByRole('checkbox', { name: 'Vollmilch' })).toBeChecked();
   await expect(page.getByText('1 ausgewählt')).toBeVisible();
+});
+
+test('drags the selected items onto a storage-location tab', async ({ page }) => {
+  for (const name of ['Eier', 'Saft']) {
+    await addToFridge(page, name);
+  }
+  await page.goto('/inventory?location=fridge');
+  await page.getByRole('button', { name: 'Auswählen' }).click();
+  await page.getByText('Eier', { exact: true }).click();
+  await page.getByText('Saft', { exact: true }).click();
+  await expect(page.getByText('2 ausgewählt')).toBeVisible();
+
+  const row = page.getByText('Eier', { exact: true });
+  const vorrat = page.getByRole('tab', { name: /Vorrat/ });
+  // L-24: wait until the rows stand still before the gesture.
+  await expect
+    .poll(async () => {
+      const first = await row.boundingBox();
+      await page.waitForTimeout(100);
+      return JSON.stringify(first) === JSON.stringify(await row.boundingBox());
+    })
+    .toBe(true);
+
+  const box = async (target: Locator) => {
+    const found = await target.boundingBox();
+    expect(found).not.toBeNull();
+    return found ?? { x: 0, y: 0, width: 0, height: 0 };
+  };
+  const from = await box(row);
+  const to = await box(vorrat);
+  const drag = async (endX: number, endY: number) => {
+    await page.mouse.move(from.x + 10, from.y + 5);
+    await page.mouse.down();
+    await page.waitForTimeout(400);
+    await page.mouse.move(endX, endY, { steps: 12 });
+  };
+
+  // Released outside the tabs: nothing changes, and the long press did not toggle the rows.
+  await drag(200, 700);
+  await expect(page.getByText('2 Artikel', { exact: true })).toBeVisible();
+  await page.mouse.up();
+  await expect(page.getByText('2 Artikel', { exact: true })).toHaveCount(0);
+  await expect(page.getByText('2 ausgewählt')).toBeVisible();
+  await expect(page.getByRole('status')).toHaveCount(0);
+  await expect(page.getByRole('tab', { name: /Kühlschrank/ })).toContainText('2');
+
+  // Released on «Vorrat»: both items move.
+  await drag(to.x + to.width / 2, to.y + to.height / 2);
+  await expect(page.getByText('2 Artikel', { exact: true })).toBeVisible();
+  await page.mouse.up();
+  await expect(page.getByRole('status')).toHaveText('2 Artikel liegen jetzt im Vorrat.');
+  await vorrat.click();
+  await expect(page.getByRole('link', { name: /Eier/ })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Saft/ })).toBeVisible();
+});
+
+test('a long press in the normal list starts select mode and the drag', async ({ page }) => {
+  for (const name of ['Eier', 'Saft']) {
+    await addToFridge(page, name);
+  }
+  await page.goto('/inventory?location=fridge');
+  const row = page.getByRole('link', { name: /Eier/ });
+  await expect(row).toBeVisible();
+  await expect
+    .poll(async () => {
+      const first = await row.boundingBox();
+      await page.waitForTimeout(100);
+      return JSON.stringify(first) === JSON.stringify(await row.boundingBox());
+    })
+    .toBe(true);
+  const from = await row.boundingBox();
+  expect(from).not.toBeNull();
+  const x = (from?.x ?? 0) + 120;
+  const y = (from?.y ?? 0) + (from?.height ?? 0) / 2;
+
+  // Long press without moving: select mode with the row chosen, the item page stays closed.
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.waitForTimeout(600);
+  await page.mouse.up();
+  await expect(page.getByText('1 ausgewählt')).toBeVisible();
+  await expect(page.getByRole('checkbox', { name: 'Eier' })).toBeChecked();
+  await expect(page).toHaveURL(/\/inventory\?location=fridge/);
+
+  // Leave select mode, then hold and drag from the normal list onto «Vorrat».
+  await page.getByRole('button', { name: 'Fertig' }).click();
+  await expect(page.getByRole('link', { name: /Eier/ })).toBeVisible();
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.waitForTimeout(600);
+  const vorrat = page.getByRole('tab', { name: /Vorrat/ });
+  const tab = await vorrat.boundingBox();
+  expect(tab).not.toBeNull();
+  await page.mouse.move((tab?.x ?? 0) + (tab?.width ?? 0) / 2, (tab?.y ?? 0) + 20, { steps: 12 });
+  await page.mouse.up();
+  await expect(page.getByRole('status')).toHaveText('Eier liegt jetzt im Vorrat.');
+  await vorrat.click();
+  await expect(page.getByRole('link', { name: /Eier/ })).toBeVisible();
+});
+
+test.describe('with a finger', () => {
+  test.use({ hasTouch: true });
+
+  // A real touch drag, sent through the browser's input pipeline: without cancelling touchmove on
+  // the held row (which select mode replaces), the browser would pan the list and cancel the drag.
+  test('a long press and a drag up onto a tab moves the item', async ({ page }) => {
+    for (const name of ['Eier', 'Saft']) {
+      await addToFridge(page, name);
+    }
+    await page.goto('/inventory?location=fridge');
+    const row = page.getByRole('link', { name: /Eier/ });
+    await expect(row).toBeVisible();
+    await expect
+      .poll(async () => {
+        const first = await row.boundingBox();
+        await page.waitForTimeout(100);
+        return JSON.stringify(first) === JSON.stringify(await row.boundingBox());
+      })
+      .toBe(true);
+    const from = await row.boundingBox();
+    const tab = await page.getByRole('tab', { name: /Vorrat/ }).boundingBox();
+    expect(from).not.toBeNull();
+    expect(tab).not.toBeNull();
+    const x = (from?.x ?? 0) + 120;
+    const y = (from?.y ?? 0) + (from?.height ?? 0) / 2;
+    const toX = (tab?.x ?? 0) + (tab?.width ?? 0) / 2;
+    const toY = (tab?.y ?? 0) + (tab?.height ?? 0) / 2;
+
+    const cdp = await page.context().newCDPSession(page);
+    const touch = (type: 'touchStart' | 'touchMove' | 'touchEnd', at: { x: number; y: number }) =>
+      cdp.send('Input.dispatchTouchEvent', {
+        type,
+        touchPoints: type === 'touchEnd' ? [] : [{ x: Math.round(at.x), y: Math.round(at.y) }],
+      });
+    await touch('touchStart', { x, y });
+    await page.waitForTimeout(700);
+    for (let step = 1; step <= 12; step += 1) {
+      await touch('touchMove', { x: x + ((toX - x) * step) / 12, y: y + ((toY - y) * step) / 12 });
+    }
+    await touch('touchEnd', { x: toX, y: toY });
+    await expect(page.getByRole('status')).toHaveText('Eier liegt jetzt im Vorrat.');
+  });
 });
