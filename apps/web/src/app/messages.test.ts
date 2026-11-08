@@ -43,6 +43,13 @@ describe('messages.de-CH', () => {
     }
   });
 
+  it('speaks calmly: no buzzwords, no English «Food Waste», no exclamation marks (ADR-0047)', () => {
+    for (const [path, text] of texts(messages, 'messages')) {
+      expect(text, path).not.toMatch(/\b(smart|insights?|hub|magic|journey|food waste)\b/i);
+      expect(text, path).not.toMatch(/![^=]/);
+    }
+  });
+
   it('uses «ss» instead of «ß»', () => {
     for (const [path, text] of texts(messages, 'messages')) {
       expect(text, path).not.toContain('ß');

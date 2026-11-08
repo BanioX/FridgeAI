@@ -11,7 +11,7 @@ import { exportFileName, saveFile } from './export-files';
 const t = messages.household;
 
 /**
- * «Daten und Datenschutz» under «Mehr»: the person's data (export as JSON, bring an export back,
+ * «Deine Daten» under «Mehr»: the person's data (export as JSON, bring an export back,
  * delete everything, ADR-0020) and privacy in plain words. Sharing with flatmates arrives with
  * accounts (step 7).
  */

@@ -10,10 +10,10 @@ test('creates a PDF report on the device, opens it in the app and shares it', as
   }
 
   await page.getByRole('navigation').getByRole('link', { name: 'Mehr' }).click();
-  await page.getByRole('link', { name: /^Berichte als PDF/ }).click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Berichte als PDF' })).toBeVisible();
-  // The short reports are receipts; «Ausführlich» is the full report with a period.
-  await page.getByRole('radio', { name: 'Ausführlich' }).check({ force: true });
+  await page.getByRole('link', { name: /^Auszüge/ }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Auszüge' })).toBeVisible();
+  // The short reports are receipts; «Gesamtauszug» is the full report with a period.
+  await page.getByRole('radio', { name: 'Gesamtauszug' }).check({ force: true });
   // Periods like a bank statement: the running month is chosen, a range can go backwards.
   await expect(page.getByLabel('Monatsabschluss')).toHaveValue(/^\d{4}-\d{2}$/);
   await page.getByRole('radio', { name: 'Von – bis' }).check({ force: true });
@@ -29,7 +29,7 @@ test('creates a PDF report on the device, opens it in the app and shares it', as
   // The report opens inside the app, page by page.
   await page.getByRole('button', { name: 'PDF erstellen' }).click();
   await expect(
-    page.getByRole('heading', { level: 1, name: /^Ausführlich · Jahr \d{4} · bis heute$/ }),
+    page.getByRole('heading', { level: 1, name: /^Gesamtauszug · Jahr \d{4} · bis heute$/ }),
   ).toBeVisible();
   await expect(page.getByRole('img', { name: /^1 von \d+$/ })).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
@@ -45,8 +45,8 @@ test('creates a PDF report on the device, opens it in the app and shares it', as
   expect(pdf.toString('latin1')).toContain('Rettich');
   expect(pdf.length).toBeGreaterThan(2000);
   // Back like in a banking app: to the report choice.
-  await page.getByRole('button', { name: 'Berichte' }).click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Berichte als PDF' })).toBeVisible();
+  await page.getByRole('button', { name: 'Auszüge' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Auszüge' })).toBeVisible();
 
   // A quick receipt: what expires within a chosen number of days. No period to choose.
   await page.getByRole('radio', { name: 'Läuft bald ab' }).check({ force: true });

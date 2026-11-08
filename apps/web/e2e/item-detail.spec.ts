@@ -44,7 +44,7 @@ test('eats part of a cheese, opens it and throws the rest away with a reason', a
     }
   });
   await page.getByRole('navigation').getByRole('link', { name: 'Start' }).click();
-  await expect(page.getByRole('heading', { name: 'Deine Wirkung diesen Monat' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /^Bilanz [A-ZÄÖÜ][a-zäöü]+$/ })).toBeVisible();
   // A third used, the rest thrown away: one entry each in the two rings (ADR-0046). The cheese
   // was still fresh, so eating it is no rescue (ADR-0033).
   await expect(
@@ -178,7 +178,7 @@ test('deletes an item entered by mistake, with undo, without counting it as wast
   await expect(page.getByRole('status')).toHaveText('Testjoghurt gelöscht.');
   await page.getByRole('navigation').getByRole('link', { name: 'Start' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Start' })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Deine Wirkung diesen Monat' })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: /^Bilanz [A-ZÄÖÜ][a-zäöü]+$/ })).toHaveCount(0);
 });
 
 test('offers «Nachkaufen» after an item is used up', async ({ page }) => {

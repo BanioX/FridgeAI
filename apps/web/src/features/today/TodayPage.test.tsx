@@ -33,7 +33,7 @@ describe('TodayPage', () => {
     const how = screen.getByRole('region', { name: t.howTitle });
     expect(within(how).getAllByRole('heading', { level: 3 })).toHaveLength(t.steps.length);
     expect(screen.getByText(messages.knowledge.didYouKnow)).toBeDefined();
-    // Nothing in stock yet: no empty «Läuft bald ab» list.
+    // Nothing in stock yet: no empty «Heute retten» list.
     expect(screen.queryByText(messages.today.expiringTitle)).toBeNull();
     expect(screen.queryByText('Lagerorte')).toBeNull();
   });
