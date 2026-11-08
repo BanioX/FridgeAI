@@ -121,6 +121,8 @@ export const messages = {
         `Dein Rettich: ${stage}, ${leaves === 1 ? '1 Blatt' : `${String(leaves)} Blätter`}`,
     },
     saved: 'Gerettet',
+    /** The two rings (ADR-0046): everything used, and what was thrown away. */
+    used: 'Verwertet',
     wasted: 'Entsorgt',
     savedShare: (percent: number) => `${String(percent)} % gerettet`,
     ofAtRisk: 'von allem, was knapp wurde',
@@ -622,6 +624,7 @@ export const messages = {
         title: 'So hast du Food Waste reduziert',
         saved: 'GERETTET',
         shared: 'WEITERGEGEBEN',
+        used: 'VERWERTET',
         wasted: 'ENTSORGT',
         inStock: 'IM VORRAT',
         spent: 'EINGEKAUFT',

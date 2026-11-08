@@ -10,6 +10,7 @@ import {
 import { messages } from '../../app/messages.de-CH';
 import type { Money } from '../../app/money-format';
 import { expiryBadge } from '../../ui/expiry-badge';
+import { ringShare } from '../../ui/ring-share';
 import { formatQuantity } from '../../ui/quantity-text';
 
 /** The short reports, each a receipt (Alban, 8.11.2026); «full» is the detailed report. */
@@ -55,6 +56,14 @@ export interface ReceiptSpec {
   totals: ReceiptPost[];
   /** Shown instead of the posts when there are none. */
   empty?: string;
+  /** Two rings above the posts: «Verwertet» and «Entsorgt» (ADR-0046), share 0–1. */
+  rings?: { used: ReceiptRing; wasted: ReceiptRing };
+}
+
+export interface ReceiptRing {
+  label: string;
+  share: number;
+  value: string;
 }
 
 const t = messages.reports.pdf.receipt;
@@ -87,8 +96,26 @@ export function receiptSpec(
     case 'impact': {
       const impact = report.impact;
       const share = impact.savedShare;
+      const used = { rappen: impact.usedRappen, count: impact.usedCount };
+      const wasted = { rappen: impact.wastedRappen, count: impact.wastedCount };
       return {
         title: t.title,
+        ...(used.count + wasted.count === 0
+          ? {}
+          : {
+              rings: {
+                used: {
+                  label: t.used,
+                  share: ringShare(used, wasted),
+                  value: amount(impact.usedRappen),
+                },
+                wasted: {
+                  label: t.wasted,
+                  share: ringShare(wasted, used),
+                  value: amount(impact.wastedRappen),
+                },
+              },
+            }),
         sections: [
           [
             {

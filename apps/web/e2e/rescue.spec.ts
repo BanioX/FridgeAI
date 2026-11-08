@@ -48,7 +48,10 @@ test('counts a rescue only when the person confirms it on the brink', async ({ p
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 
   await page.getByRole('navigation').getByRole('link', { name: 'Start' }).click();
-  await expect(page.getByRole('img', { name: '100 % gerettet' })).toBeVisible();
+  // Rescued and used up: all of it «Verwertet» in the rings (ADR-0046), and 100 % of what was
+  // at risk was rescued.
+  await expect(page.getByRole('img', { name: /^Verwertet: 100 %/ })).toBeVisible();
+  await expect(page.getByText(/100 % gerettet von allem, was knapp wurde/)).toBeVisible();
   // The Rettich grew its first leaf (ADR-0043).
   await expect(page.getByRole('img', { name: 'Dein Rettich: Keimling, 1 Blatt' })).toBeVisible();
   await expect(page.getByText('1 Rettung diesen Monat · noch 2 bis Jungpflanze')).toBeVisible();

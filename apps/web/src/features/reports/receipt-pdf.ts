@@ -19,7 +19,7 @@ import {
   type Rgb,
   type TextStyle,
 } from './pdf-kit';
-import type { ReceiptPost, ReceiptSpec } from './receipt-spec';
+import type { ReceiptPost, ReceiptRing, ReceiptSpec } from './receipt-spec';
 
 const t = messages.reports.pdf;
 const WIDTH = 98;
@@ -64,7 +64,7 @@ export async function receiptPdf(
   });
 
   const head = header(spec, options, options.pictures ?? {});
-  const body: Block[] = [];
+  const body: Block[] = spec.rings === undefined ? [] : [rings(spec.rings)];
   spec.sections.forEach((section, index) => {
     if (index > 0) {
       body.push(rule('dashed'));
@@ -222,6 +222,60 @@ function foot(options: { household: string; detail: string; createdOn: LocalDate
         `${options.household}|${options.detail}|${options.createdOn}`,
       );
       write(doc, t.receipt.thanks, CENTER, y + 28, { ...mono(9, C.ink), align: 'center' });
+    },
+  };
+}
+
+/** An arc from `from` to `to` (radians, 0 = right, clockwise on the page) as short strokes. */
+function arc(doc: jsPDF, cx: number, cy: number, r: number, from: number, to: number) {
+  const steps = Math.max(2, Math.ceil((to - from) / (Math.PI / 48)));
+  const points = Array.from({ length: steps + 1 }, (_, index) => {
+    const angle = from + ((to - from) * index) / steps;
+    return [cx + r * Math.cos(angle), cy + r * Math.sin(angle)] as const;
+  });
+  const [first] = points;
+  if (first === undefined) {
+    return;
+  }
+  const segments = points.slice(1).map(([x, y], index) => {
+    const [px, py] = points[index] ?? first;
+    return [x - px, y - py];
+  });
+  doc.lines(segments, first[0], first[1], [1, 1], 'S', false);
+}
+
+/**
+ * «Verwertet» in onyx and «Entsorgt» in red as two round rings (Alban, 8.11.2026), side by side
+ * under the title: the share in the middle, the label and the amount below.
+ */
+function rings(pair: { used: ReceiptRing; wasted: ReceiptRing }): Block {
+  const radius = 8.5;
+  const stroke = 2.2;
+  return {
+    height: 4 + 2 * radius + 12,
+    draw: (doc, top) => {
+      const cy = top + 2 + radius;
+      const drawOne = (ring: ReceiptRing, cx: number, color: Rgb) => {
+        doc.setLineWidth(stroke);
+        doc.setDrawColor(...C.surfaceMuted);
+        doc.circle(cx, cy, radius, 'S');
+        if (ring.share > 0) {
+          doc.setDrawColor(...color);
+          doc.setLineCap('round');
+          const start = -Math.PI / 2;
+          arc(doc, cx, cy, radius, start, start + 2 * Math.PI * Math.min(1, ring.share));
+          doc.setLineCap('butt');
+        }
+        const percent = `${String(Math.round(ring.share * 100))} %`;
+        write(doc, percent, cx, cy + 1.2, { ...mono(9, C.ink, true), align: 'center' });
+        write(doc, ring.label, cx, cy + radius + 5.5, {
+          ...mono(7.5, color, true),
+          align: 'center',
+        });
+        write(doc, ring.value, cx, cy + radius + 9.5, { ...mono(8, C.ink), align: 'center' });
+      };
+      drawOne(pair.used, CENTER - 22, C.onyx);
+      drawOne(pair.wasted, CENTER + 22, C.today);
     },
   };
 }

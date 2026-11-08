@@ -122,6 +122,8 @@ const ReportSchema = z.object({
     wastedGrams: z.number().min(0),
     estimated: z.boolean(),
     savedShare: z.number().min(0).max(1).nullable(),
+    usedRappen: RappenSchema,
+    usedCount: z.int().min(0),
     sharedRappen: RappenSchema,
     sharedCount: z.int().min(0),
     wastedItems: z.array(
@@ -762,6 +764,9 @@ export const CONTRACT_V1 = {
       /** Rescued: eaten or shared while at risk (ADR-0033); ordinary eating is not counted. */
       savedCount: z.int().min(0),
       wastedCount: z.int().min(0),
+      /** «Verwertet» (ADR-0046): eaten, cooked or given away, rescued or not. */
+      usedRappen: RappenSchema.min(0),
+      usedCount: z.int().min(0),
       estimated: z.boolean(),
     }),
   }),

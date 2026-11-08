@@ -18,6 +18,12 @@ export interface ImpactSummary {
   estimated: boolean;
   /** Rescued share of everything at risk (rescued + wasted, by value), 0–1; null without any. */
   savedShare: number | null;
+  /**
+   * «Verwertet» (ADR-0046): everything eaten, cooked or given away, rescued or not. With
+   * «Entsorgt» it gives the two rings (Alban, 8.11.2026).
+   */
+  usedRappen: Rappen;
+  usedCount: number;
 }
 
 type OutcomeLike = Pick<
@@ -103,6 +109,7 @@ export function summarizeImpact(
   });
   const saved = inPeriod.filter(isRescue);
   const wasted = inPeriod.filter((outcome) => outcome.outcome === 'wasted');
+  const used = inPeriod.filter((outcome) => outcome.outcome !== 'wasted');
   const value = (list: readonly OutcomeLike[]) => sumRappen(list.map((item) => item.valueRappen));
   const grams = (list: readonly OutcomeLike[]) =>
     list.reduce((total, item) => total + (item.grams ?? 0), 0);
@@ -116,7 +123,9 @@ export function summarizeImpact(
     wastedGrams: grams(wasted),
     savedCount: saved.length,
     wastedCount: wasted.length,
-    estimated: [...saved, ...wasted].some((outcome) => outcome.valueEstimated),
+    usedRappen: value(used),
+    usedCount: used.length,
+    estimated: [...used, ...wasted].some((outcome) => outcome.valueEstimated),
     savedShare:
       saved.length + wasted.length === 0
         ? null
