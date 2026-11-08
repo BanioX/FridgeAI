@@ -71,7 +71,9 @@ test('explains a PDF without text and one without articles', async ({ page }) =>
     mimeType: 'application/pdf',
     buffer: textPdf(['Vielen Dank fuer Ihren Besuch']),
   });
-  await expect(page.getByText('Auf dieser Quittung hat rettich keine Artikel gefunden.')).toBeVisible();
+  await expect(
+    page.getByText('Auf dieser Quittung hat rettich keine Artikel gefunden.'),
+  ).toBeVisible();
   await page.getByLabel('PDF oder Foto wählen').setInputFiles({
     name: 'bild.pdf',
     mimeType: 'application/pdf',

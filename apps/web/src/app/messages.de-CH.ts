@@ -605,7 +605,8 @@ export const messages = {
     intro:
       'Lade deine Quittung hoch: das PDF aus der Coop- oder Migros-App, einen Screenshot (z. B. Lidl Plus) oder ein Foto. rettich liest sie auf deinem Gerät und speichert die Datei nicht.',
     /** The shops are named only to say where the file comes from (no logos, no partnership). */
-    trademarks: 'Coop, Migros und Lidl Plus sind Marken ihrer Inhaber. rettich ist mit ihnen nicht verbunden.',
+    trademarks:
+      'Coop, Migros und Lidl Plus sind Marken ihrer Inhaber. rettich ist mit ihnen nicht verbunden.',
     choose: 'PDF oder Foto wählen',
     reading: 'Quittung wird gelesen …',
     readingPhoto: 'Foto wird gelesen, das dauert ein paar Sekunden …',
@@ -613,7 +614,8 @@ export const messages = {
     noText:
       'In diesem PDF steht kein lesbarer Text, es ist wohl ein eingescanntes Bild. Mach stattdessen ein Foto oder einen Screenshot.',
     noLines: 'Auf dieser Quittung hat rettich keine Artikel gefunden.',
-    failed: 'Die Datei liess sich nicht lesen. Versuch es nochmals oder mit einer anderen Quittung.',
+    failed:
+      'Die Datei liess sich nicht lesen. Versuch es nochmals oder mit einer anderen Quittung.',
     sumOk: (total: string) => `Summe stimmt: ${total}`,
     sumMismatch: (read: string, total: string) =>
       `Die Summe stimmt nicht: gelesen ${read}, auf der Quittung ${total}. Tipp auf einen falschen Preis, um ihn zu korrigieren.`,
