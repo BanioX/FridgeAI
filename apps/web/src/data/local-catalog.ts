@@ -6,7 +6,7 @@ export const CATALOG_URL = `${import.meta.env.BASE_URL}catalog/off-ch.json`;
 type Load = () => Promise<Response>;
 
 /**
- * The shipped catalog as a name search on the device. The file (about 90 kB packed) is fetched
+ * The shipped catalog as a name search on the device. The file (about 210 kB packed) is fetched
  * on the first search only and then kept in memory; the service worker keeps it for offline use.
  * When it cannot be loaded, the search says `unavailable` and tries again next time.
  */
