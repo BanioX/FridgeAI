@@ -1,6 +1,6 @@
-# rettich – MVP-Plan
+# Rettich – MVP-Plan
 
-> **Stand 7.11.2026:** Version 0.6.0. Meilenstein B ist weitgehend umgesetzt, Teile von D und E sind vorgezogen (Bon-Scan, Barcode, Rezepte, Berichte, Export und Import). Der Pilot läuft.
+> **Stand 8.11.2026:** Version 0.10.0 und rund 25 weitere PRs, Release 0.11.0 folgt. Meilenstein A und B sind umgesetzt. Aus D und E sind Barcode, die Quittung als PDF, Screenshot und Foto, «Nachkaufen», die Auszüge, Export und Import vorgezogen. Die Rezepte sind wieder entfernt (ADR-0040). Neu dazu kamen «Wissen», die Haltbarkeit 1–10 und der mitgelieferte Produktkatalog (ADR-0038, ADR-0041, ADR-0045). Meilenstein C (Konto, Sync, Push) ist nicht begonnen. Der Pilot läuft. Stand der Dinge und nächste Schritte: [«Stand nach 200 PRs»](#stand-nach-200-prs).
 >
 > **Status: freigegeben durch Alban am 6. November 2026** («Du machst das, du bist die volle Pipeline. Ich sage, was wir machen, ausführen tust du.»).
 > Grundlagen: [`brief.md`](./brief.md) (Build-Brief), [`blue-ocean.md`](./blue-ocean.md) (Strategie), [`use-cases.md`](./use-cases.md) (Brainstorming), [`architecture.md`](./architecture.md) (Architektur und Skalierung). Offene Fragen: Abschnitt 9.
@@ -17,17 +17,43 @@
 - **Reihenfolge nach Risiko:** Haushalt, Sync und Push kommen vor Kostenteilung, Barcode, Import, Einkaufsliste und Rezepten. Begründung:
   1. Sync ist das grösste technische Risiko. Je früher er läuft, desto billiger sind Korrekturen am Datenmodell.
   2. Push braucht einen Server und ist eines deiner Hauptziele.
-  3. Die Basis-Features sind Red Ocean. Pilot-WGs sollen früh das testen, womit rettich gewinnen will.
+  3. Die Basis-Features sind Red Ocean. Pilot-WGs sollen früh das testen, womit Rettich gewinnen will.
   4. Nach Schritt 9 ist ein **Pilot-Alpha** mit 1 bis 2 WGs möglich: Vorrat, Bon-Scan, Haushalt, Push, Kostenteilung, Rette-Kreis.
   - *Bedingung:* Der Backend-Entscheid (Frage 1) fällt spätestens am Ende von Meilenstein B. Wenn nicht, ziehe ich Meilenstein D vor. Der Plan funktioniert in beiden Reihenfolgen.
 
 | Meilenstein | Schritte | Ergebnis |
 | --- | --- | --- |
-| **A – Fundament** | 1–2 | Monorepo, CI, Domänenmodell, Schnittstelle für API/MCP, Haltbarkeit |
-| **B – Lokaler Vorrat & Bon-Scan** | 3–6 | Offline-Vorrat ohne Konto mit Startseite (was heute zu retten ist), Bon-Foto → Review → Vorrat, Status und Wirkungs-Dashboard |
-| **C – Haushalt, Push & USP** | 7–9 | Konto, Haushalt, Sync, Push-Erinnerungen, Kostenteilung, Rette-Kreis → **Pilot-Alpha** |
-| **D – Basis komplett** | 10–11 | Barcode, Migros-CSV/Coop-PDF, Einkaufsliste, Rezepte |
-| **E – Release-Reife** | 12 | Export/Löschen, Datenschutz, Entitlements, PWA-Feinschliff → **Pilot mit 3–5 WGs** |
+| **A – Fundament** | 1–2 | Monorepo, CI, Domänenmodell, Schnittstelle für API/MCP, Haltbarkeit (**fertig**, ausser 2i) |
+| **B – Lokaler Vorrat & Bon-Scan** | 3–6 | Offline-Vorrat ohne Konto mit Startseite (was heute zu retten ist), Bon-Foto → Review → Vorrat, Status und Wirkungs-Dashboard (**fertig**, ausser Trend, pro Person und Schweizer Durchschnitt in 6c) |
+| **C – Haushalt, Push & USP** | 7–9 | Konto, Haushalt, Sync, Push-Erinnerungen, Kostenteilung, Rette-Kreis → **Pilot-Alpha** (**nicht begonnen**) |
+| **D – Basis komplett** | 10–11 | Barcode und Quittung als PDF (umgesetzt), Migros-CSV (offen), Einkaufsliste (lokal umgesetzt); Rezepte entfernt (ADR-0040) |
+| **E – Release-Reife** | 12 | Export/Löschen, Datenschutz, Entitlements, PWA-Feinschliff → **Pilot mit 3–5 WGs** (12a lokal, 12c teilweise, 12b offen) |
+
+---
+
+## Stand nach 200 PRs
+
+Grosses Review am 8.11.2026, Bericht: [`reviews/2026-11-08-200-prs.md`](./reviews/2026-11-08-200-prs.md). Der Plan oben bleibt der Rahmen. Seit dem Plan sind dazugekommen:
+
+- «Wissen» statt «Kochen» (ADR-0041), Haltbarkeit 1–10 (ADR-0038), «Von der Theke», «Das wirfst du oft weg».
+- «Gerettet» nur auf Bestätigung, mit Belohnung und wachsendem Rettich (ADR-0039, ADR-0042, ADR-0043).
+- Der mitgelieferte Produktkatalog mit 7'169 Schweizer Produkten (ADR-0045), mehrere Quittungen auf einer Seite (#212), «Wo eingekauft?» und die Laden-Buchstaben.
+- Die Auszüge wie ein Kontoauszug (ADR-0030), «Verwertet» und «Entsorgt» statt «Weitergegeben» (ADR-0046), Wischen in beide Richtungen, Auswählen und die Namen wie bei einer Privatbank (ADR-0047).
+
+**Die nächsten 10 Schritte** sind ein Vorschlag an Alban. Nichts davon kostet Geld oder schickt neue Daten vom Gerät, ausser wo es dasteht.
+
+| # | Schritt | Warum |
+| --- | --- | --- |
+| 1 | Release 0.11.0 mit `pnpm release`, dann Statusmeldung an Alban | Seit 0.10.0 sind mehr als 20 PRs gemergt, die Schwelle liegt bei 10 (ADR-0017). Der Pilot soll einen benannten Stand testen |
+| 2 | Quittung: «Vier Schritte pro Artikel» neu auf `main` bauen, danach TD-08 mit der Zeilenliste von Alban | Die Quittung ist der Hauptweg in den Vorrat (Risiko Nr. 1, Erfassungsmüdigkeit) |
+| 3 | Mitgelieferten Katalog zuerst auch bei Barcode und Namenssuche nutzen, erst dann Open Food Facts | Weniger Daten verlassen das Gerät, Treffer auch offline und schneller (TD-17). Es entsteht kein neuer Datenfluss |
+| 4 | Erinnern ohne Server: Zahl am App-Symbol (Badging API) für «Heute retten» | Geht ohne Konto, Push und Kosten ([`ideen/benachrichtigungen.md`](./ideen/benachrichtigungen.md)) |
+| 5 | Bundle-Diät und Budget im CI: jsPDF-Zusätze und `retail-ch.json` aus dem Cache nehmen, Budget für Start-JS und Vorab-Cache | Spart rund 380 kB im Vorab-Cache; das Budget verlangt der Plan (Abschnitt 8) (TD-15, TD-16, TD-18) |
+| 6 | Tests für Quittung, Scan und Journal auf Komponentenebene | Heute nur über E2E geprüft, bei belegtem Port fehlt jede Prüfung (TD-19, TD-06) |
+| 7 | TD-02 abbauen: Produktsuche und Quittungs-Import nach `packages/core/src/application`, je ein PR | Danach liegen alle Anwendungsfälle in der Logikschicht, Konten und Sync kommen ohne Umbau (ADR-0034) |
+| 8 | Werkzeuge: vite-plugin-pwa 2, TypeScript 7 auf einem Probe-Branch, TD-05 entscheiden, alte Branches löschen | Weniger Rauschen und Schulden, alles gratis |
+| 9 | Sync-ADR (HLC, Feld-LWW, Outbox mit `commandId`) und die reine Logik in `packages/core` mit Konflikt-Tests | Grösstes technisches Risiko (Abschnitt 0). Öffnet Teilen im Haushalt und Konten nach dem Pilot, ohne Hosting-Kosten. Server und Hosting entscheidet Alban |
+| 10 | Datenschutz-Entwurf (`privacy.md`) fachlich prüfen lassen, Kontaktadresse eintragen | Vor jedem öffentlichen Start nötig (Plan 12d). Die Prüfung der Laden-Buchstaben (P24) gehört dazu. Entscheidet Alban |
 
 ---
 
@@ -67,7 +93,7 @@ Kleine bis mittlere Entscheide, die ich selbst treffe und als ADR festhalte. Wen
                                       (Claude u. a.)
 ```
 
-1. **Use-Case-Schicht:** Jede Aktion ist ein benannter Command (`inventory.addItem`, `inventory.consume`, `shopping.addItem`, `rescue.offer`) oder eine Query (`inventory.listExpiring`, `recipes.suggest`, `stats.waste`, `balances.get`), mit Zod-Schema für Ein- und Ausgabe. Die PWA ruft genau diese auf, nie direkt die Datenbank.
+1. **Use-Case-Schicht:** Jede Aktion ist ein benannter Command (`inventory.addItem`, `inventory.consume`, `shopping.addItem`, `rescue.offer`) oder eine Query (`inventory.listExpiring`, `stats.waste`, `balances.get`), mit Zod-Schema für Ein- und Ausgabe. Die PWA ruft genau diese auf, nie direkt die Datenbank.
 2. **Ein Schema, drei Formate:** Aus denselben Zod-Schemas entstehen später OpenAPI für die REST-API und die Tool-Definitionen für den MCP-Server (Zod 4 erzeugt JSON Schema direkt). Ein Test im MVP stellt sicher, dass das jederzeit funktioniert.
 3. **Domain Events:** Jede Änderung erzeugt ein Event (`item.added`, `item.expiring_soon`, `item.consumed`, `item.used_up`, `shopping_list.item_added`, `receipt.imported`, `rescue.offered`). Im MVP treiben sie Push und Dashboards. Später werden daraus Webhooks für Partner, z. B. `item.used_up` → Nachkauf-Angebot.
 4. **Idempotenz:** Jeder Command trägt eine `commandId`. Das braucht der Offline-Sync ohnehin, die API bekommt es dadurch gratis.
@@ -75,7 +101,7 @@ Kleine bis mittlere Entscheide, die ich selbst treffe und als ADR festhalte. Wen
 6. **Zugriff nur mit Einwilligung:** Partner und KI-Assistenten bekommen Zugriff nur über OAuth mit klaren Rechten (z. B. `inventory:read`, `shopping_list:write`), pro Haushalt erteilt, jederzeit widerrufbar, protokolliert. Kein Verkauf von Einzeldaten.
 7. **Versionierung:** Schnittstelle und Events tragen eine Version (`v1`). Breaking Changes nur mit neuer Version.
 
-**Beispiele für spätere MCP-Tools:** `list_expiring_items`, `get_inventory`, `suggest_recipes`, `add_to_shopping_list`, `mark_item_eaten`. Damit geht dann: «Hey Claude, was muss ich heute essen, bevor es abläuft?» Die Smart-Home-Idee aus ATL1 (Alexa, Google Home) und das spätere Hardware-Modul nutzen dieselbe API, sie sind einfach weitere Clients.
+**Beispiele für spätere MCP-Tools:** `list_expiring_items`, `get_inventory`, `get_balance`, `add_to_shopping_list`, `mark_item_used` (ADR-0046: «verwertet»). Damit geht dann: «Hey Claude, was muss ich heute essen, bevor es abläuft?» Die Smart-Home-Idee aus ATL1 (Alexa, Google Home) und das spätere Hardware-Modul nutzen dieselbe API, sie sind einfach weitere Clients.
 
 **Was davon im MVP gebaut wird:** Punkte 1, 3, 4, 5 vollständig, Punkt 2 als Test, Punkt 6 als Datenmodell (Rechte, Einwilligungen) ohne öffentlichen Endpunkt. REST-API, MCP-Server und Webhooks laufen serverseitig auf den synchronisierten Daten und folgen in v1 (Frage 12).
 
@@ -122,7 +148,7 @@ Weiterhin gilt: **Salden und Food-Waste-Metriken werden berechnet, nicht gespeic
 - **US-18 Offline gleichzeitig ändern:** Pro Feld gewinnt die spätere Änderung, niemand verliert ganze Datensätze.
 - **US-19 Lernende Zuordnung:** Korrektur «M-BUDGET VOLLMILCH» → «Milch» wird beim nächsten Bon automatisch vorgeschlagen.
 - **US-20 Rückgängig:** Statuswechsel 10 Sekunden per Toast, danach im Verlauf rückgängig machbar.
-- **US-21 Retten-Digest:** Einmal täglich zur gewählten Zeit eine Zusammenfassung der bald ablaufenden Artikel mit einer Rezeptidee; dringende Fälle (Verbrauchsdatum heute) zusätzlich einzeln; Ruhezeiten werden respektiert.
+- **US-21 Retten-Digest:** Einmal täglich zur gewählten Zeit eine Zusammenfassung der bald ablaufenden Artikel mit einem Tipp aus «Wissen» (Haltbarkeit, Einfrieren); dringende Fälle (Verbrauchsdatum heute) zusätzlich einzeln; Ruhezeiten werden respektiert.
 - **US-22 Kühlschrank-Check:** Einmal pro Woche schlägt die App einen 30-Sekunden-Check vor: Artikel als Karten, wischen «noch da / weg / halb».
 
 Weitere Use Cases (Push-Typen, Dashboards, Partner) stehen in [`use-cases.md`](./use-cases.md).
@@ -153,11 +179,11 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 - 2a: **Geld und IDs**: Typ `Rappen` (Zod-Brand), `parseChf`/`formatChf` für alle Bon-Schreibweisen (`3.95`, `-.95`, `1'234.50`, `CHF 12.–`, `0.80-`), `allocate`/`splitEvenly` (Largest Remainder, rotierender Rest-Rappen), UUIDv7 ohne Dependency; Property-Tests; ADR-0003 (Local-first, IDs), ADR-0004 (Geld)
 - 2b: `model.ts` und Zod-Schemas für alle Entitäten (inkl. Abschnitt 3), `LocalDate`/`IsoDateTime`
 - 2c: Europe/Zurich, «Tage bis Ablauf»; **Kategorien-Katalog** (rund 40 Schweizer Alltagskategorien mit Haltbarkeit pro Lagerort, `dateKind`, `freezable`, Reste-/Lagertipps, Emoji, Durchschnittspreis und -gewicht, Quellen dokumentiert); `estimateExpiry()`
-- 2d: Ports (`ReceiptOcrEngine`, `BarcodeScanner`, `ProductCatalog`, `RecipeProvider`, `RebuyProvider`, `DeliveryProvider`, `RetailerReceiptSource`, `SyncAdapter`, `NotificationService`, `Clock`, `IdGenerator`), Mocks für die Partner-Ports
-- 2e: **Schnittstelle v1**: Command-/Query-Registry mit Zod-Ein-/Ausgabe, Domain Events, `commandId`; Test, der aus der Schnittstelle JSON Schema erzeugt (Beweis für spätere OpenAPI/MCP-Tauglichkeit); ADR-0005 (Contract-first, API/MCP) — umgesetzt: 32 Operationen, 20 Event-Typen (inkl. `products.setNutrition`/`product.nutrition_set`, `inventory.history`, `inventory.changeOutcome`/`outcome.changed`, `household.import`/`household.imported`, `recipes.list`, `receipts.import`, `prices.memory`, `reports.build`, `inventory.open`/`item.opened`, `products.lookup`, `products.image`, `products.frequent`, `products.search`, `recipes.get`, `inventory.updateItem`/`item.updated`, `inventory.deleteItem`/`restoreItem`, `household.export`/`delete`, `inventory.undoOutcome`/`outcome.undone`, Gründe beim Abschliessen)
+- 2d: Ports (`ReceiptOcrEngine`, `BarcodeScanner`, `ProductCatalog`, `RebuyProvider`, `DeliveryProvider`, `RetailerReceiptSource`, `SyncAdapter`, `NotificationService`, `Clock`, `IdGenerator`), Mocks für die Partner-Ports
+- 2e: **Schnittstelle v1**: Command-/Query-Registry mit Zod-Ein-/Ausgabe, Domain Events, `commandId`; Test, der aus der Schnittstelle JSON Schema erzeugt (Beweis für spätere OpenAPI/MCP-Tauglichkeit); ADR-0005 (Contract-first, API/MCP) — umgesetzt: 32 Operationen und 20 Event-Typen (Stand 8.11.2026; `recipes.*` sind seit ADR-0040 entfernt, neu sind `receipts.matchLine`, `products.wasteHabits` und `inventory.recategorize`) (inkl. `products.setNutrition`/`product.nutrition_set`, `inventory.history`, `inventory.changeOutcome`/`outcome.changed`, `household.import`/`household.imported`, `receipts.import`, `prices.memory`, `reports.build`, `inventory.open`/`item.opened`, `products.lookup`, `products.image`, `products.frequent`, `products.search`, `inventory.updateItem`/`item.updated`, `inventory.deleteItem`/`restoreItem`, `household.export`/`delete`, `inventory.undoOutcome`/`outcome.undone`, Gründe beim Abschliessen)
 - 2f: **GS1-Codes lesen** (ADR-0006): EAN/UPC, GS1 DataMatrix und GS1 Digital Link (QR) mit Ablaufdatum (AI 17/15), Charge, Gewicht; vorausschauend für «GS1 Sunrise 2027»
 - 2h: **Notvorrat** als vierter Lagerort (ADR-0007): Haltbarkeit bis 100 Jahre, Warnung 90 Tage vorher, Schnellwahl passend zum Zeithorizont (`expiryPresets`), Monats-/Jahresrechnung, Kategorien für gefriergetrocknete Mahlzeiten, Notrationen und Trinkwasser
-- 2i: **Scan-Sitzung** für die Modi «Schnell» (erster sicherer Barcode) und «Gründlich» (Packung langsam drehen, bis Barcode und Ablaufdatum über mehrere Bilder bestätigt sind)
+- 2i: **Scan-Sitzung** für die Modi «Schnell» (erster sicherer Barcode) und «Gründlich» (Packung langsam drehen, bis Barcode und Ablaufdatum über mehrere Bilder bestätigt sind) (offen: weder Logik noch Kamera gebaut)
 - 2j: **Öffnungsregel:** `openedOn` und «nach dem Öffnen innert N Tagen» pro Kategorie oder vom Etikett; gültig ist das frühere Datum
 - 2g: Ablaufdatum aus Etikett-Text erkennen («zu verbrauchen bis», «mindestens haltbar bis», FR/IT) als Grundlage für «Datum fotografieren» (v1)
 - **Delegation:** O für Modell, Geld, Ports und Schnittstelle. S entwirft den Kategorien-Katalog, ich prüfe ihn (besonders Verbrauchsdatum-Kategorien). H für Tabellentests.
@@ -169,7 +195,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 
 #### Schritt 3 – Lokaler Vorrat und Startseite (US-04, US-13, US-14, US-15)
 - 3a: Dexie-Schema, Repositories hinter Interfaces, Event-Log und Outbox lokal, Migrations-Tests (`fake-indexeddb`), automatischer lokaler Haushalt
-- 3b: App-Shell (Navigation seit 7.11.2026: **Start · Vorrat · ＋ Erfassen · Kochen · Mehr**, ADR-0031; vorher Heute · Vorrat · Scannen · Liste · Haushalt), Vorrat mit **vier Tabs** (Kühlschrank, Tiefkühler, Vorrat, Notvorrat), Sortierung nach Ablauf, Filter «Läuft bald ab»
+- 3b: App-Shell (Navigation seit 8.11.2026: **Start · Vorrat · ＋ Erfassen · Wissen · Mehr**, ADR-0031, ADR-0041; vorher stand an vierter Stelle «Kochen»), Vorrat mit **vier Tabs** (Kühlschrank, Tiefkühler, Vorrat, Notvorrat), Sortierung nach Ablauf, Filter «Läuft bald ab»
 - 3c: **Startseite «Heute retten»** (UC-01): was heute/morgen abläuft, Wert im Kühlschrank in CHF (UC-03), Badge; Verbrauchsdatum-Warnungen
 - 3d: Manuelle Erfassung mit **sinnvollen Mengen** (g, kg, ml, dl, l, Stück, Becher, Packung, Flasche, Dose, Glas, Bund; Packungsgrösse wie «Becher à 180 g»), Autovervollständigung und Standardartikeln (UC-07; umgesetzt: «Schnell erfassen» mit `products.frequent`, ein Tipp speichert wie beim letzten Mal), Bearbeiten, Verschieben mit Neuberechnung; **Datumsfeld gemäss [`design.md`](./design.md#datumsfeld-ablaufdatum)**: Vorschlag vorausgewählt, Schnellwahl passend zum Zeithorizont (Tage bis 50 Jahre), Tippen `dd.mm.yyyy` mit automatischen Punkten und Live-Vorschau, nativer Kalender; Offline-Cache der App-Shell; E2E «Artikel erfassen» und «Offline neu laden»
 - **Delegation:** O für 3a (sync-kritisch), S für 3b bis 3d nach meinen Komponenten-Schnittstellen.
@@ -177,9 +203,9 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 
 #### Schritt 4 – Bon-Pipeline in `core` (US-01, Logik)
 - 4a: Normalisierung (Umlaute, Abkürzungen, OCR-Verwechslungen `0/O`, `1/l`, `,/.`), Händlererkennung, Zeilenklassifikation, Rabatt einer Position zuordnen, Plausibilität «Summe der Positionen = Total» (umgesetzt: allgemeiner Leser `parseReceiptText` für Coop, Migros, Aldi, Lidl, Denner, ADR-0027)
-- 4b: Migros-Parser + 5 Fixtures
-- 4c: Coop-Parser + 5 Fixtures, generischer Fallback-Parser
-- 4d: Produkt-/Kategorie-Matching (Synonymliste, Trigram-Fuzzy-Match ohne Dependency, `ProductAlias`-Lerntabelle) (teilweise umgesetzt: Bon-Wörter aus echten Coop-, Migros- und Lidl-Bons in `catalog/receipt-words.ts`, Kategorie «Tierfutter»)
+- 4b: Migros-Parser + 5 Fixtures (ersetzt durch den allgemeinen Leser `parseReceiptText`, ADR-0027)
+- 4c: Coop-Parser + 5 Fixtures, generischer Fallback-Parser (ersetzt durch den allgemeinen Leser `parseReceiptText`, ADR-0027)
+- 4d: Produkt-/Kategorie-Matching (Synonymliste, Trigram-Fuzzy-Match ohne Dependency, `ProductAlias`-Lerntabelle) (umgesetzt: Abgleich zuerst mit dem, was der Haushalt gelernt hat, dann im mitgelieferten Katalog auf dem Gerät, erst dann bei Open Food Facts, ADR-0036, ADR-0045; `ProductAlias` offen)
 - **Fixtures:** synthetisch, OCR-Text statt Bilder, Randfälle Rabatt, Pfand, Gewichtsartikel, Mehrfachmenge, OCR-Fehler, Tragtasche. Keine echten Personendaten.
 - **Delegation:** O für Klassifikation und Matching, S für die Händler-Parser nach meinem Interface, H für Fixtures.
 
@@ -193,12 +219,12 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 #### Schritt 5b – KI-Import «mit eigener KI erfassen» (ADR-0012, Stufe 1) – **am 7.11.2026 aus der App entfernt** (Alban: kaum genutzt, untergräbt Premium)
 - Auftrag (Prompt) zum Kopieren mit festem Antwortformat; Parser für die KI-Antwort (Zeilen oder JSON) in `core`, streng geprüft
 - «Einfügen» → Review-Liste → übernehmen; derselbe Posteingang wie später MCP und Bon-Scan
-- Kein Server, keine Kosten für rettich
+- Kein Server, keine Kosten für Rettich
 
-#### Schritt 6 – Abschliessen, Wirkungs-Dashboard, Kühlschrank-Check (US-06, US-20, US-22)
+#### Schritt 6 – Abschliessen, Bilanz, Kühlschrank-Check (US-06, US-20, US-22)
 - 6a: `core/metrics`: gerettet/weggeworfen in CHF und kg pro Person und Haushalt, Schätzwerte klar markiert
-- 6b: Aktionen gegessen/weitergegeben/weggeworfen mit **Grund beim Wegwerfen** (abgelaufen, verdorben, zu viel gekauft, vergessen, schmeckt nicht) und **Empfänger beim Weitergeben** (Haushalt, Nachbarschaft, Familie/Freunde, Spende, öffentlicher Kühlschrank), ganz oder teilweise: **Anteile ¼ · ½ · ¾ · alles** bei Gramm, Milliliter und einzelnen Stücken, **«1 von 4»** bei Packungen mit mehreren Stück; «Geöffnet» setzt die Öffnungsregel; Rückgängig (umgesetzt, dazu «Verlauf» unter «Mehr»: Einträge nachträglich ändern oder löschen)
-- 6c: **Wirkungs-Dashboard** (D-01, D-02): Woche/Monat, Trend, pro Person, Vergleich mit dem Schweizer Durchschnitt (D-03); **Kühlschrank-Check** (UC-04) (umgesetzt: Kühlschrank-Check mit «Noch da · Halb · Gegessen · Weggeworfen» und «Zurück», ADR-0022; Dashboard bisher als Monatskarte auf «Start»; «gerettet» zählt nur, was kurz vor Ablauf gegessen oder weitergegeben wurde, ADR-0033)
+- 6b: Abschliessen als «Verwertet» oder «Entsorgt» (ADR-0046) mit **Grund beim Entsorgen** (abgelaufen, verdorben, zu viel gekauft, vergessen, schmeckt nicht), ganz oder teilweise («Weitergegeben» gibt es seit 8.11.2026 nicht mehr, alte Einträge zählen als verwertet): **Anteile ¼ · ½ · ¾ · alles** bei Gramm, Milliliter und einzelnen Stücken, **«1 von 4»** bei Packungen mit mehreren Stück; «Geöffnet» setzt die Öffnungsregel; Rückgängig (umgesetzt, dazu «Journal» unter «Mehr»: Einträge nachträglich ändern oder löschen; Wischen nach links «Verwertet», nach rechts «Entsorgt»)
+- 6c: **Wirkungs-Dashboard** (D-01, D-02): Woche/Monat, Trend, pro Person, Vergleich mit dem Schweizer Durchschnitt (D-03); **Kühlschrank-Check** (UC-04) (umgesetzt: Kühlschrank-Check mit «Noch da · Halb · Verwertet · Entsorgt» und «Zurück», ADR-0022; die «Bilanz» des Monats mit zwei Kreisen auf Start und als Auszug, ADR-0046, ADR-0047; «gerettet» nur auf Bestätigung, ADR-0039; offen: Trend, pro Person, Schweizer Durchschnitt)
 - **Delegation:** O für 6a, S für 6b und 6c.
 
 **→ Statusmeldung an dich nach Meilenstein B.**
@@ -236,17 +262,17 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 ### Meilenstein D – Basis komplett
 
 #### Schritt 10 – Barcode & Händler-Import (US-02, US-03)
-- 10a: Barcode-Adapter (`barcode-detector` mit ZXing als WebAssembly, selbst gehostet, ADR-0014; umgesetzt: Kamera, Foto, Eintippen, Datum aus GS1-Code) für EAN-13/EAN-8/UPC **und GS1 DataMatrix / QR (Digital Link)**; **Scan-Modi «Schnell» und «Gründlich»** (wählbar, Fortschritt «Barcode ✓ · Datum …», Haptik bei Treffern); enthält der Code ein Ablaufdatum, wird es automatisch übernommen (`expirySource: gs1_code`); nutzt den Kamera-Adapter aus 5a
-- 10b: `ProductCatalog`-Adapter für Open Food Facts mit lokalem Cache (umgesetzt: Adapter, 30-Tage-Cache, Fakten am Produkt; Anzeige folgt); übernimmt **Name, Marke, Packungsgrösse, Nährwerte, Kalorien, Nutri-Score und Allergene** und zeigt sie auf der Produktseite (kein Kalorien-Tagebuch); manuelle Erfassung bei keinem Treffer, «Schon im Vorrat: 2 Stk.», Quellenangabe gemäss OFF-Lizenz (ODbL); optional Open Food Repo (EPFL) als zweite Quelle für Schweizer Produkte, falls API und Bedingungen bestätigt sind (siehe [`data-sources.md`](./data-sources.md))
-- 10c: Migros-CSV-Parser (papaparse) + Fixtures
-- 10d: Coop-PDF-Textextraktion (pdfjs-dist, selbst gehostet) + Parser + Fixtures
-- 10e: Import-UI, Duplikaterkennung über Bon-/Zeilen-Hash, Default «letzte 14 Tage angehakt», danach dieselbe Review wie beim Foto
+- 10a: Barcode-Adapter (`barcode-detector` mit ZXing als WebAssembly, selbst gehostet, ADR-0014; umgesetzt: Kamera, Foto, Eintippen, Datum aus GS1-Code) für EAN-13/EAN-8/UPC **und GS1 DataMatrix / QR (Digital Link)**; **Scan-Modi «Schnell» und «Gründlich»** (offen; wählbar, Fortschritt «Barcode ✓ · Datum …», Haptik bei Treffern); enthält der Code ein Ablaufdatum, wird es automatisch übernommen (`expirySource: gs1_code`); nutzt den Kamera-Adapter aus 5a
+- 10b: `ProductCatalog`-Adapter für Open Food Facts mit lokalem Cache (umgesetzt: Adapter, 30-Tage-Cache, Fakten am Produkt; Anzeige umgesetzt: Produktseite mit Bild, Marke, Nährwerten, Nutri-Score und Allergenen; Nährwerte auch aus einem Foto); übernimmt **Name, Marke, Packungsgrösse, Nährwerte, Kalorien, Nutri-Score und Allergene** und zeigt sie auf der Produktseite (kein Kalorien-Tagebuch); manuelle Erfassung bei keinem Treffer, «Schon im Vorrat: 2 Stk.», Quellenangabe gemäss OFF-Lizenz (ODbL); optional Open Food Repo (EPFL) als zweite Quelle für Schweizer Produkte, falls API und Bedingungen bestätigt sind (siehe [`data-sources.md`](./data-sources.md))
+- 10c: Migros-CSV-Parser (papaparse) + Fixtures (offen)
+- 10d: Coop-PDF-Textextraktion (pdfjs-dist, selbst gehostet) + Parser + Fixtures (umgesetzt mit dem allgemeinen Leser: PDF aus der Coop- und Migros-App, ADR-0027, ADR-0028)
+- 10e: Import-UI, Duplikaterkennung über Bon-/Zeilen-Hash, Default «letzte 14 Tage angehakt», danach dieselbe Review wie beim Foto (umgesetzt: dieselbe Quittung nie doppelt, mehrere Quittungen auf einer Seite prüfen, «Alle übernehmen»)
 - **Delegation:** S für Adapter und Parser, O für Hash-/Duplikatlogik und Datenschutz-Review (Frage 3a). *Hängt stark von echten Beispieldateien ab (Frage 7).*
 
-#### Schritt 11 – Einkaufsliste & Rezepte (US-07, US-08)
+#### Schritt 11 – Einkaufsliste (US-07); Rezepte (US-08) entfernt
 - 11a: Geteilte Einkaufsliste; Abhaken → «In den Vorrat legen?»; **Doppelkauf-Warnung** (E-02) (umgesetzt: lokale Liste «Nachkaufen» unter «Mehr» mit Abhaken, Löschen, Doppelkauf-Hinweis und «In den Vorrat legen»; «geteilt» mit Schritt 7)
-- 11b: `RecipeProvider` mit kuratierter JSON-Sammlung (rund 30 Schweizer Alltagsgerichte, selbst geschrieben), Ranking nach bald ablaufenden Zutaten; Rezeptidee im Digest (umgesetzt: Schema, Rangfolge nach Dringlichkeit, nie nach dem Verbrauchsdatum, `recipes.suggest`/`recipes.get`, erste Rezepte)
-- 11c: Rezept-Ansicht mit 3 Vorschlägen, fehlende Zutaten auf die Liste, **nach dem Kochen abbuchen** (R-03) (umgesetzt: «Rette heute» auf «Start» und im Tab «Kochen» mit «Alle Rezepte» und Feierabend-Filter, ADR-0031; Rezeptseite mit «Da» und «Fehlt», Fehlendes auf die Liste, nach dem Kochen abbuchen mit «Alles · Halb · Nichts», ADR-0023)
+- 11b: **Am 8.11.2026 entfernt** (ADR-0040), den letzten Stand mit Rezepten hat der Tag v0.9.0. Ursprünglich: `RecipeProvider` mit kuratierter JSON-Sammlung (rund 30 Schweizer Alltagsgerichte, selbst geschrieben), Ranking nach bald ablaufenden Zutaten; Rezeptidee im Digest (umgesetzt: Schema, Rangfolge nach Dringlichkeit, nie nach dem Verbrauchsdatum, `recipes.suggest`/`recipes.get`, erste Rezepte)
+- 11c: **Am 8.11.2026 entfernt** (ADR-0040). Ursprünglich: Rezept-Ansicht mit 3 Vorschlägen, fehlende Zutaten auf die Liste, **nach dem Kochen abbuchen** (R-03) (umgesetzt: «Rette heute» auf «Start» und im Tab «Kochen» mit «Alle Rezepte» und Feierabend-Filter, ADR-0031; Rezeptseite mit «Da» und «Fehlt», Fehlendes auf die Liste, nach dem Kochen abbuchen mit «Alles · Halb · Nichts», ADR-0023)
 - **Delegation:** S für 11a und 11c, O für das Ranking, H für Rezeptdaten nach Schema.
 
 **→ Statusmeldung an dich nach Meilenstein D.**
@@ -256,10 +282,10 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 ### Meilenstein E – Release-Reife
 
 #### Schritt 12 – Datenschutz, Entitlements, PWA (US-12)
-- 12a: Export (JSON und CSV) und Löschen (lokal komplett; Konto und Server-Daten inkl. Regel für Haushalte mit weiteren Mitgliedern) (umgesetzt lokal: `household.export`, `household.import` (Export zurückholen, ersetzt alles; nötig vor dem Wechsel auf rettich.app), `household.delete`, Oberfläche unter «Mehr» › «Daten und Datenschutz»; vorgezogen für den Pilot)
-- 12b: Entitlements `free | pro` als reine Funktion plus Hook; Partner-Mocks in einer Entwickler-Ansicht
-- 12c: PWA-Feinschliff: Icons, Installationshinweis, Offline-Check, Content-Security-Policy, Lighthouse-Check im CI
-- 12d: `docs/privacy.md` (Entwurf in einfacher Sprache, von dir/Fachperson zu prüfen), a11y-Durchgang, Pilot-Checkliste, bekannte Einschränkungen (umgesetzt: Entwurf `docs/privacy.md` nach dem tatsächlichen Verhalten der App, Pilot-Checkliste und Grenzen in `docs/pilot.md`)
+- 12a: Export (JSON und CSV) und Löschen (lokal komplett; Konto und Server-Daten inkl. Regel für Haushalte mit weiteren Mitgliedern) (umgesetzt lokal: `household.export`, `household.import` (Export zurückholen, ersetzt alles; nötig vor dem Wechsel auf rettich.app), `household.delete`, Oberfläche unter «Mehr» › «Deine Daten»; vorgezogen für den Pilot)
+- 12b: (offen) Entitlements `free | pro` als reine Funktion plus Hook; Partner-Mocks in einer Entwickler-Ansicht
+- 12c: PWA-Feinschliff: Icons, Installationshinweis, Offline-Check, Content-Security-Policy, Lighthouse-Check im CI (umgesetzt: Icons, Installationshinweis, CSP mit E2E-Prüfung; offen: Lighthouse im CI, Dunkelmodus)
+- 12d: `docs/privacy.md` (Entwurf in einfacher Sprache, von dir/Fachperson zu prüfen), a11y-Durchgang, Pilot-Checkliste, bekannte Einschränkungen (umgesetzt: Entwurf `docs/privacy.md` nach dem tatsächlichen Verhalten der App, Pilot-Checkliste und Grenzen in `docs/pilot.md`; der Entwurf wurde am 8.11.2026 auf den Stand der App nachgeführt)
 - **Delegation:** S für 12b und 12c, O für Löschlogik, CSP und Datenschutz-Doku, H für Icons und Texte.
 
 **→ MVP fertig, Pilot mit 3–5 WGs.**
@@ -273,7 +299,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 - Native Apps mit Capacitor (lokale Benachrichtigungen ohne Server, App-Store-Präsenz)
 - Bezahl-Abo, Haushalts-Challenges, «Darf ich?»-Anfrage, Allergene-Filter, Französisch
 - Optional serverseitiges OCR/LLM (Opt-in)
-- **MCP-Connector für Claude und ChatGPT** (ADR-0012, Stufe 2): Foto in der KI-App → Vorschlag im rettich-Posteingang → Link «In rettich öffnen» → bestätigen; dazu Werkzeuge «Was läuft bald ab?», «Rezeptideen», «Auf die Einkaufsliste»
+- **MCP-Connector für Claude und ChatGPT** (ADR-0012, Stufe 2): Foto in der KI-App → Vorschlag im Rettich-Posteingang → Link «In Rettich öffnen» → bestätigen; dazu Werkzeuge «Was läuft bald ab?», «Rezeptideen», «Auf die Einkaufsliste»
 - **Native Apps (Capacitor):** iOS-/Android-Widgets «Heute retten», Kurzbefehle/Siri/Action-Button (App Intents), Haptik
 - **Übersetzungen** FR, IT, EN (ADR-0008)
 - **Kreise:** Rette-Kreis über den Haushalt hinaus (Haus, Nachbarschaft, Kollektiv), siehe `architecture.md` Abschnitt 6
@@ -324,7 +350,7 @@ Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ic
 3. **Daten, die das Gerät verlassen** (neben dem Sync selbst)
    - a) **Open Food Facts:** Barcode-Nummer und IP-Adresse gehen an Open Food Facts (Frankreich). *Empfehlung:* erlaubt, mit Hinweis beim ersten Scan und Schalter in den Einstellungen.
    - b) **Web Push:** Der Server muss wissen, wann was abläuft. *Empfehlung:* Push nur mit Konto (die Daten sind durch den Sync ohnehin dort). Ohne Konto: Digest beim Öffnen.
-4. **Serverseitiges OCR/LLM-Parsing** – **Beantwortet (6.11.2026):** keine KI auf rettich-Kosten. Erkennung über die KI der Nutzer:innen: «KI-Import» per Kopieren/Einfügen im Prototyp, MCP-Connector in v1, eigene KI nur über ein Pro-Abo (ADR-0012).
+4. **Serverseitiges OCR/LLM-Parsing** – **Beantwortet (6.11.2026):** keine KI auf Rettich-Kosten. Der «KI-Import» per Kopieren/Einfügen war im Prototyp und ist seit 7.11.2026 entfernt; MCP-Connector in v1, eigene KI nur über ein Pro-Abo (ADR-0012).
 5. **Freemium im MVP** – *Empfehlung:* alles gratis, nur die Mechanik `free | pro` bauen, Preise nach dem Pilot. CHF 9/Monat liegt über ZWIMP (CHF 4.90) und Kühlbär (CHF 3); ein Haushalts-Abo, das auf alle Mitglieder verteilt wird, könnte das auffangen. Weitere Kandidaten für bezahlte Stufen: Büro-Kühlschrank für Teams ([`use-cases.md`](./use-cases.md), Abschnitt 2d), eigene KI (ADR-0012).
 6. **Dependency-Liste zur Freigabe** (alles Open Source, keine kostenpflichtigen Dienste):
    - Laufzeit: `react`, `react-dom`, `react-router`, `zod` (v4), `dexie`, `dexie-react-hooks`, `tailwindcss`, einzelne `@radix-ui/*`-Komponenten, `tesseract.js`, `barcode-detector` + `zxing-wasm` (statt `@zxing/browser`, ADR-0014), `pdfjs-dist`, `papaparse`; ab Schritt 7 `@tanstack/react-query` und der Client des gewählten Backends; ab Schritt 8 eine Web-Push-Bibliothek im Backend
@@ -343,7 +369,7 @@ Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ic
     - A) **MVP mit PWA-Push** und guter Installationsanleitung, native Apps in v1.
     - B) **Native App (Capacitor) schon im MVP**: Erinnerungen lokal auf dem Gerät, auch ohne Konto und Server. Kostet mehr Aufwand (2 bis 3 zusätzliche PRs plus Store-Prozess) und ein Apple-Entwicklerkonto (rund 100 Franken pro Jahr) für TestFlight.
     - *Empfehlung:* A. Wir messen im Pilot-Alpha, wie viele iPhone-Nutzer:innen die PWA installieren. Ist das zu wenig, ziehen wir B vor.
-12. **API und MCP: wann?** – *Empfehlung:* Im MVP nur die Schnittstelle (Schritt 2d), die Events und das Einwilligungsmodell. REST-API und MCP-Server in v1, sobald es echte Partner-Gespräche gibt. Ausnahme: Wenn ihr für die Schule eine Demo «Claude fragt rettich» wollt, kann ich einen schreibgeschützten MCP-Server als Zusatzschritt nach Schritt 9 einplanen (2 bis 3 PRs).
+12. **API und MCP: wann?** – *Empfehlung:* Im MVP nur die Schnittstelle (Schritt 2d), die Events und das Einwilligungsmodell. REST-API und MCP-Server in v1, sobald es echte Partner-Gespräche gibt. Ausnahme: Wenn ihr für die Schule eine Demo «Claude fragt Rettich» wollt, kann ich einen schreibgeschützten MCP-Server als Zusatzschritt nach Schritt 9 einplanen (2 bis 3 PRs).
 13. **«Datenbasierte Insights (anonymisiert)» aus dem Businessplan vs. «kein Verkauf von Daten» aus dem Brief** – *Empfehlung:* Nie Einzeldaten verkaufen oder weitergeben. Erlaubt sind nur aggregierte Wirkungsberichte innerhalb eines Programms (Option C), bei dem Haushalte aktiv mitmachen (Opt-in), mit einer Mindestgruppengrösse, damit niemand erkennbar ist. Das passt zum Vertrauensversprechen und bleibt trotzdem monetarisierbar.
 14. **Rahmen**
     - a) ~~Coden weitere Personen mit?~~ **Beantwortet:** Nein, persönliches Projekt von Alban, vorerst One-Man-Show (6.11.2026). Folgen siehe Abschnitt 10.
@@ -358,8 +384,8 @@ Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ic
 | --- | --- | --- |
 | 1 | Backend/Sync & Hosting | **Oracle Cloud + Docker** für den Server, erreichbar über Cloudflare Tunnel oder Tailscale Funnel (ADR-0009); PWA und Vorschau-Links auf **Cloudflare** (ADR-0013) |
 | 2 | Auth-Methode | **E-Mail/Passwort, Google, Apple, Facebook** (ADR-0010) |
-| 3 | Daten, die das Gerät verlassen | offen |
-| 4 | Serverseitiges OCR/LLM | **Bring your own AI** (ADR-0012) |
+| 3 | Daten, die das Gerät verlassen | teilweise: Open Food Facts erlaubt (ADR-0016, ADR-0025, ADR-0036, SE-01, SE-02); Push offen |
+| 4 | Serverseitiges OCR/LLM | **Keine KI auf Rettich-Kosten** (ADR-0012); Stufe 1 am 7.11.2026 entfernt, Bestandesaufnahme per Foto geparkt (P18) |
 | 5 | Freemium im MVP | Brainstorming in [`ideen/monetarisierung.md`](./ideen/monetarisierung.md); Pilot ohne Werbung, Entscheid danach |
 | 6 | Dependency-Liste | **freigegeben** (delegiert) |
 | 7 | Echte Bon-Beispiele | offen |

@@ -8,9 +8,9 @@ Bis 7.11.2026 hiess die App «FridgeAI». Repo, Paketnamen und Web-Adresse heiss
 
 > **Scan deine Quittung – Rettich weiss, was du hast, wem es gehört, wer was schuldet und was du heute retten musst.**
 
-Local-first PWA für Schweizer Haushalte (WGs, Paare, Familien) gegen Food Waste. Alles funktioniert offline auf dem Gerät; KI-Erkennung läuft über die KI, die du ohnehin nutzt (ChatGPT, Claude, Gemini), ohne Kosten für Rettich.
+Local-first PWA für Schweizer Haushalte (WGs, Paare, Familien). Rettich zeigt dir, was mit deinen Lebensmitteln passiert: was du verwertest, was du entsorgst und was es kostet ([ADR-0046](docs/adr/0046-awareness-verwertet-entsorgt.md)). Alles läuft offline auf dem Gerät: Quittungen, Barcodes und Nährwerttabellen liest Rettich selbst, ohne Cloud-KI und ohne Konto.
 
-**Product Owner:** Alban Hyseni · **Stand:** Version 0.6.0 ([Release](https://github.com/BanioX/FridgeAI/releases/tag/v0.6.0), [Änderungen](CHANGELOG.md)), im Pilot ([`docs/pilot.md`](docs/pilot.md)); Teilen im Haushalt folgt · **Lizenz:** proprietär, alle Rechte vorbehalten
+**Product Owner:** Alban Hyseni · **Stand:** Version 0.11.0 ([Releases](https://github.com/BanioX/FridgeAI/releases), [Änderungen](CHANGELOG.md)), im Pilot ([`docs/pilot.md`](docs/pilot.md)); Teilen im Haushalt folgt · **Lizenz:** proprietär, alle Rechte vorbehalten
 
 ---
 
@@ -28,37 +28,37 @@ Local-first PWA für Schweizer Haushalte (WGs, Paare, Familien) gegen Food Waste
 
 ## Was die App heute kann
 
-Unten fünf Tabs: **Start · Vorrat · ＋ Erfassen · Wissen · Mehr** ([ADR-0031](docs/adr/0031-tab-navigation.md), [ADR-0041](docs/adr/0041-knowledge-tab.md)). Hinter ＋ liegen alle Wege in den Vorrat, unter «Wissen» was wie lange hält, unter «Mehr» Berichte, Nachkaufen und deine Daten. Rezepte gibt es nicht mehr ([ADR-0040](docs/adr/0040-no-recipes.md)).
+Unten fünf Tabs: **Start · Vorrat · ＋ Erfassen · Wissen · Mehr** ([ADR-0031](docs/adr/0031-tab-navigation.md), [ADR-0041](docs/adr/0041-knowledge-tab.md)). Hinter ＋ liegen alle Wege in den Vorrat, unter «Wissen» was wie lange hält, unter «Mehr» Auszüge, Journal, Nachkaufen und «Deine Daten». Rezepte gibt es nicht mehr ([ADR-0040](docs/adr/0040-no-recipes.md)).
 
 | Bereich | Funktion |
 | --- | --- |
-| **Start** | Was bald abläuft, Wert im Kühlschrank in CHF, deine Wirkung diesen Monat; ohne Vorrat eine Einführung mit den zwei Wegen hinein (Quittung, Artikel), «So funktioniert Rettich» in drei Schritten, deinem Rettich und «Wusstest du?» |
-| **Vorrat** | Kühlschrank, Tiefkühler, Vorrat, Notvorrat (bis 100 Jahre); mehrere Artikel mit «Auswählen» antippen und gemeinsam in einen anderen Lagerort verschieben; auf der Artikelseite «Weitere Packungen» desselben Produkts mit Datum und dem Hinweis, welche zuerst weg muss |
+| **Start** | «Heute retten» (was in den nächsten drei Tagen abläuft), Wert im Kühlschrank in CHF und die «Bilanz» des Monats als zwei Kreise; ohne Vorrat eine Einführung mit den zwei Wegen hinein (Quittung, Artikel), «So funktioniert Rettich» in drei Schritten, deinem Rettich und «Wusstest du?» |
+| **Vorrat** | Kühlschrank, Tiefkühler, Vorrat, Notvorrat (bis 100 Jahre); in der Liste nach links wischen für «Verwertet», nach rechts für «Entsorgt» (mit «Rückgängig»); mehrere Artikel mit «Auswählen» antippen und gemeinsam in einen anderen Lagerort verschieben, auch durch Ziehen auf dessen Tab; auf der Artikelseite «Weitere Packungen» desselben Produkts mit Datum und dem Hinweis, welche zuerst weg muss |
 | **Erfassen** | Name genügt: Kategorie, Lagerort, Menge, Verpackung und Ablaufdatum werden vorgeschlagen; Eier im 6er/10er, Datumsfeld mit Schnellwahl und Eintippen; «Schnell erfassen»: die eigenen Standardartikel mit einem Tipp; Suche beim Tippen wie «Coop Weggli» (eigene Produkte und Open Food Facts Schweiz) |
-| **Bon hochladen** | PDF, Screenshot oder Foto des Kassenbons (Coop, Migros, Aldi, Lidl, Denner) auf dem Gerät auslesen: Produktname, Menge, bezahlter Preis mit Aktion, Summenprüfung; Lebensmittel angehakt, mit Preis in den Vorrat; derselbe Bon nie doppelt; Preis-Erinnerung «12 % teurer als sonst». Artikel von einem erkannten Laden tragen seinen Buchstaben im Stil des Ladens (Vorrat, Start, Artikelseite, PDF-Berichte) |
-| **Auszüge als PDF** | Unter «Mehr»: Kurz-Auszüge als Quittung (Bilanz, Läuft bald ab in 1, 3, 7 oder eigenen Tagen, Entsorgt, Kühlschrank, Tiefkühler, Vorrat) oder der Gesamtauszug mit Diagrammen, «Was auffällt» und Einkäufen nach Laden; Zeitraum wie ein Kontoauszug: Monats- oder Jahresabschluss per letztem Schweizer Bankwerktag oder frei von–bis; auf dem Gerät erzeugt und in der App geöffnet, von dort teilen oder speichern |
+| **Quittung hochladen** | PDF, Screenshot oder Foto der Quittung (Coop, Migros, Aldi, Lidl, Denner), auch mehrere auf einmal: alle auf einer Seite prüfen und mit «Alle übernehmen» in den Vorrat legen; alles auf dem Gerät auslesen: Produktname, Menge, bezahlter Preis mit Aktion, Summenprüfung. Jede Zeile sucht Rettich zuerst bei früheren Quittungen, dann im mitgelieferten Katalog mit 7'169 Schweizer Produkten (auf dem Gerät); fehlt der Laden, fragt Rettich «Wo eingekauft?». Lebensmittel sind angehakt und kommen mit Preis in den Vorrat; dieselbe Quittung nie doppelt; Preis-Erinnerung «12 % teurer als sonst». Zeilen und Artikel eines erkannten Ladens tragen seinen Buchstaben im Stil des Ladens (Quittung, Vorrat, Start, Artikelseite, PDF-Auszüge) |
+| **Auszüge als PDF** | Unter «Mehr»: Kurz-Auszüge als Quittung (Bilanz, Läuft bald ab in 1, 3, 7 oder eigenen Tagen, Entsorgt, Kühlschrank, Tiefkühler, Vorrat) oder der «Gesamtauszug» mit Diagrammen, «Was auffällt» und Einkäufen nach Laden; Zeitraum wie ein Kontoauszug: Monats- oder Jahresabschluss per letztem Schweizer Bankwerktag oder frei von–bis; auf dem Gerät erzeugt und in der App geöffnet, von dort teilen oder speichern |
 | **Barcode** | Unter ＋: Barcode, QR und GS1-DataMatrix (Datum aus dem Code). Im Dunkeln hilft «Licht» |
-| **Abschliessen** | Verwertet (gegessen, gekocht, verbraucht) oder entsorgt (warum) – ganz oder in sinnvollen Portionen (⅛ Kuchen, ⅓ Käse, 2 von 4 Joghurts) |
+| **Abschliessen** | «Verwertet» (gegessen, gekocht, verbraucht) oder «Entsorgt» (mit Grund), ganz oder in sinnvollen Portionen (⅛ Kuchen, ⅓ Käse, 2 von 4 Joghurts); in «Vorrat» und «Heute retten» auch per Wischen |
 | **Öffnungsregel** | «Nach dem Öffnen innert 21 Tagen» verkürzt das Datum automatisch |
 | **Einfrieren** | Umlagern mit neu geschätztem Datum |
 | **Kühlschrank-Check** | Einmal pro Woche jeden heiklen Artikel kurz bestätigen: noch da, halb, verwertet oder entsorgt; Robustes wie Getränke und ungeöffnete Saucen lässt er aus |
-| **Korrigieren** | Rückgängig nach Verwertet/Entsorgt, dazu «Nachkaufen» mit einem Tipp; Name, Kategorie, Ort, Datum, Menge und Preis ändern; Artikel löschen; im «Journal» unter «Mehr» Verwertetes und Entsorgtes nachträglich ändern oder löschen |
+| **Korrigieren** | Rückgängig nach Verwertet/Entsorgt, dazu «Nachkaufen» mit einem Tipp; Name, Kategorie, Ort, Datum, Menge und Preis ändern; Artikel löschen; im «Journal» unter «Mehr» Verwertetes und Entsorgtes nachträglich ändern oder löschen; der Filter «Alle · Verwertet · Entsorgt» lässt sich auch über einen Kreis der «Bilanz» öffnen |
 | **Produktdaten** | Nach dem Scan: Bild, Marke, Nährwerte, Nutri-Score, Allergene (Open Food Facts, 30 Tage offline); fehlen die Nährwerte, liest Rettich sie aus einem Foto oder Screenshot der Nährwerttabelle, auf dem Gerät |
 | **Nachkaufen** | Unter «Mehr»: «Du hast noch …» gegen Doppelkäufe, abhaken, «In den Vorrat legen» |
-| **Wirkung** | Zwei Kreise «Verwertet» (Onyx) und «Entsorgt» (Rot) nach Wert, auf Start und auf der Quittung «Wirkung» ([ADR-0046](docs/adr/0046-awareness-verwertet-entsorgt.md)); Gerettet (selbst bestätigt: «ohne Rettich im Abfall gelandet») und entsorgt diesen Monat in CHF und Artikeln, «x % gerettet von allem, was knapp wurde» ([ADR-0039](docs/adr/0039-rescue-confirmed.md)). Nach einer Rettung: «Gerettet: Joghurt, CHF 2.10», der Monat bis heute und ein «Wusstest du?» ([ADR-0042](docs/adr/0042-rescue-reward.md)). Auf Start wächst «Dein Rettich» mit jeder Rettung im Monat, bis «Vorbild» ([ADR-0043](docs/adr/0043-growing-rettich.md)) |
+| **Bilanz** | Zwei Kreise «Verwertet» (Onyx) und «Entsorgt» (Rot) nach Wert, auf Start («Bilanz November») und auf der Quittung «Bilanz»; ein Tipp auf einen Kreis öffnet im Journal, was verwertet oder entsorgt wurde ([ADR-0046](docs/adr/0046-awareness-verwertet-entsorgt.md), [ADR-0047](docs/adr/0047-names-like-a-private-bank.md)). Gerettet (selbst bestätigt: «ohne Rettich im Abfall gelandet») und entsorgt diesen Monat in CHF und Artikeln, «x % gerettet von allem, was knapp wurde» ([ADR-0039](docs/adr/0039-rescue-confirmed.md)). Nach einer Rettung: «Gerettet: Joghurt, CHF 2.10», der Monat bis heute und ein «Wusstest du?» ([ADR-0042](docs/adr/0042-rescue-reward.md)). Auf Start wächst «Dein Rettich» mit jeder Rettung im Monat, bis «Vorbild» ([ADR-0043](docs/adr/0043-growing-rettich.md)) |
 | **Wissen** | «Kurz erklärt» (Mindesthaltbarkeits- und Verbrauchsdatum, richtig kühlen, einfrieren) und «Haltbarkeit A–Z»: jede Kategorie mit Score 1–10, wie lange sie zu, offen und eingefroren hält, und Tipps; mit Suche |
-| **Mehr** | Auszüge, Journal, Nachkaufen, App installieren; Daten als JSON exportieren, wieder importieren oder löschen, Datenschutz in Kürze |
+| **Mehr** | Auszüge, Journal, Nachkaufen, App installieren; unter «Deine Daten» als JSON exportieren, wieder importieren oder löschen, Datenschutz in Kürze |
 
 **Aussehen:** drei Premium-Töne (Smaragd, Silber, Onyx) nach Apples Human Interface Guidelines, Symbol: ein aufrechter weisser Rettich ([`docs/design.md`](docs/design.md)).
 
-Geplant: Teilen in WG und Familie, Kosten aufteilen, Push-Erinnerungen, Wirkungs-Dashboard, MCP-Connector für ChatGPT/Claude, native App für iOS und Android (Capacitor), Büro-Kühlschrank. Reihenfolge: [`docs/plan.md`](docs/plan.md).
+Geplant: Teilen in WG und Familie, Kosten aufteilen, Push-Erinnerungen, die Bilanz über mehrere Monate, MCP-Connector für ChatGPT/Claude, native App für iOS und Android (Capacitor), Büro-Kühlschrank. Reihenfolge: [`docs/plan.md`](docs/plan.md).
 
 ## Am Handy ausprobieren
 
 Die App: **https://fridgeai.hyseni-alban.workers.dev** (Stand `main`). Jeder Pull Request bekommt zusätzlich einen eigenen **Vorschau-Link** (Cloudflare schreibt ihn als Kommentar in den PR). Einrichtung und Tipps: [`docs/previews.md`](docs/previews.md).
 
 1. Link öffnen (iPhone: Teilen → «Zum Home-Bildschirm» für App-Gefühl).
-2. **«Beispieldaten laden»** auf der Startseite tippen – ein typischer WG-Kühlschrank erscheint.
+2. In einem **Vorschau-Link** eines Pull Requests auf Start **«Beispieldaten laden»** tippen: Ein typischer WG-Kühlschrank erscheint. In der App auf `main` gibt es keine Beispieldaten, dort beginnst du mit einer Quittung oder einem Artikel.
 3. Auf einen Artikel tippen, erfassen, scannen, ausprobieren. Daten bleiben nur auf deinem Gerät.
 
 Neues Symbol, neues Handy oder neue Adresse: Das iPhone übernimmt Symbol und Namen nur beim Hinzufügen. Vorher «Alles exportieren», dann neu hinzufügen und «Daten importieren» ([`docs/pilot.md`](docs/pilot.md#neues-symbol-neues-handy-oder-neue-adresse)).
@@ -84,6 +84,8 @@ pnpm dev            # = pnpm --filter @fridgeai/web dev → http://localhost:517
 | `pnpm e2e` | Playwright inkl. Barrierefreiheit (axe) und Sicherheits-Header |
 | `pnpm preview:shots / /inventory …` | iPhone-Screenshots einzelner Seiten nach `apps/web/.previews/` |
 | `pnpm licenses:check` | Prüft, dass keine Lizenz die kommerzielle Nutzung einschränkt |
+| `pnpm release` / `pnpm release --count` | Release vorbereiten, PRs seit dem letzten Tag zählen ([ADR-0017](docs/adr/0017-release-and-maintenance-rhythm.md)) |
+| `pnpm catalog:refresh` | Produktkatalog neu bauen ([ADR-0045](docs/adr/0045-retailer-catalog.md)) |
 
 Vor jedem Push: alles grün (`format:check`, `lint`, `typecheck`, `test`, `build`, `e2e`). Lokal ohne installiertes Chromium: `PW_CHROMIUM_EXECUTABLE=/pfad/zu/chromium pnpm e2e`.
 
@@ -97,8 +99,9 @@ flowchart LR
     Handlers --> DB[("IndexedDB (Dexie)")]
     Handlers --> Core["@fridgeai/core (reines TypeScript)"]
     UI --> Scanner["Scanner (ZXing WebAssembly)"]
+    Katalog[("Produktkatalog, mitgeliefert")] --> Handlers
   end
-  KI["Deine KI (ChatGPT, Claude, Gemini)"] -. "Antwort einfügen" .-> UI
+  OFF["Open Food Facts"] -. "Barcode, Suchwörter" .-> Handlers
   Contract -. später .-> API["REST-API und MCP-Server"]
   API -. später .-> Server[("Hono + PostgreSQL (Docker, Oracle Cloud)")]
 ```
@@ -113,9 +116,9 @@ flowchart LR
 
 ```
 apps/web/            PWA: Seiten (features/), Design-System (ui/), Datenhaltung (data/), E2E-Tests (e2e/)
-packages/core/       Domäne: Modell, Schnittstelle, Kategorien, Daten, Mengen, Ablauf, GS1, KI-Import
+packages/core/       Logik: Schnittstelle, Anwendungsfälle, Ports, Modell, Kategorien, Quittung, Nährwerte, Mengen, Ablauf, GS1
 docs/                Plan, Use Cases, Architektur, Design, Strategie, Entscheide (adr/)
-scripts/             Hilfsskripte (z. B. Lizenzprüfung)
+scripts/             Hilfsskripte: Lizenzprüfung, Release, Cloudflare-Build und der Produktkatalog (scripts/catalog/, ADR-0045)
 .github/workflows/   CI: Format, Lint, Typen, Tests, Build, Cloudflare-Build, E2E
 wrangler.jsonc       Cloudflare Workers (statische PWA, Vorschau-Links)
 CLAUDE.md            Arbeitsregeln für die KI-Entwicklung
@@ -132,7 +135,8 @@ CLAUDE.md            Arbeitsregeln für die KI-Entwicklung
 ## Datenschutz und Sicherheit
 
 - Daten bleiben auf dem Gerät, bis es Teilen im Haushalt gibt; danach nur innerhalb des Haushalts.
-- Bon- und Barcode-Fotos werden nur im Speicher gelesen, nie gespeichert.
+- Fotos und PDFs von Quittungen, Barcodes und Nährwerttabellen liest Rettich nur im Speicher, gespeichert werden sie nie.
+- An Open Food Facts gehen nur die Barcode-Nummer, getippte Suchwörter und Produktnamen von Quittungszeilen, die der mitgelieferte Katalog nicht sicher kennt, ohne Preise, Laden und Datum ([`docs/privacy.md`](docs/privacy.md)).
 - Keine KI auf Rettich-Kosten. Der frühere «KI-Import» über die eigene KI ist seit 7.11.2026 aus der App entfernt ([ADR-0012](docs/adr/0012-bring-your-own-ai.md)).
 - Strenge Content-Security-Policy, alle Assets selbst gehostet, kein CDN; der E2E-Test schlägt bei jeder CSP-Verletzung fehl.
 - Partner- und KI-Zugriff auf Haushaltsdaten nur mit ausdrücklicher, widerrufbarer Einwilligung; kein Verkauf von Einzeldaten.
@@ -153,7 +157,10 @@ CLAUDE.md            Arbeitsregeln für die KI-Entwicklung
 | [`docs/privacy.md`](docs/privacy.md) | Datenschutzerklärung (Entwurf) |
 | [`docs/data-sources.md`](docs/data-sources.md) | Produktdaten-Quellen |
 | [`docs/previews.md`](docs/previews.md) | Vorschau-Links auf Cloudflare |
-| [`docs/adr/`](docs/adr/) | Architektur-Entscheide (ADR-0001 bis heute) |
+| [`docs/adr/README.md`](docs/adr/README.md) | Alle Architektur-Entscheide mit Status |
+| [`docs/reviews/`](docs/reviews/2026-11-08-200-prs.md) | Grosses Review nach 200 PRs (8.11.2026): Befunde, Zahlen, nächste Schritte |
+| [`docs/schulden.md`](docs/schulden.md) | Bekannte technische Schulden |
+| [`docs/swelp/uebergabe.md`](docs/swelp/uebergabe.md) | Übergabe: wo die Arbeit steht |
 
 ## Lizenz
 

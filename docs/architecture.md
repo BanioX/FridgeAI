@@ -1,6 +1,6 @@
-# rettich – Architektur: heute bauen, morgen skalieren
+# Rettich – Architektur: heute bauen, morgen skalieren
 
-> Stand: 6. November 2026. Auftrag von Alban: «Denke gross, erweiterbar, wartbar, state of the art, skalierbar bis Unicorn.»
+> Stand: 8. November 2026 (Version 0.10.0 und folgende PRs). Auftrag von Alban: «Denke gross, erweiterbar, wartbar, state of the art, skalierbar bis Unicorn.»
 > Entscheide im Detail: [`adr/`](./adr/). Plan: [`plan.md`](./plan.md). Use Cases: [`use-cases.md`](./use-cases.md).
 
 ## 0. Drei Schichten ([ADR-0034](./adr/0034-three-layers.md))
@@ -13,24 +13,26 @@ flowchart TB
   subgraph L["2 · Logik (packages/core)"]
     C["Schnittstelle CONTRACT_V1 (Zod)"]
     A["Anwendungsfälle"]
-    D["Regeln und Modell: Ablauf, gerettet, Geld, Rezepte, Bon"]
+    D["Regeln und Modell: Ablauf, Haltbarkeit, gerettet, Geld, Quittung, Nährwerte"]
     Ports["Ports (Interfaces)"]
   end
   subgraph S["3 · Daten"]
     Dexie[("IndexedDB / Dexie (Gerät)")]
+    Katalog[("Produktkatalog, mitgeliefert (off-ch.json)")]
     OFF["Open Food Facts"]
     PG[("PostgreSQL (Server, ab Schritt 7)")]
   end
   UI -->|nur Commands und Queries| C --> A --> D
   A --> Ports
   Ports -.umgesetzt von.-> Dexie
+  Ports -.umgesetzt von.-> Katalog
   Ports -.umgesetzt von.-> OFF
   Ports -. später .-> PG
 ```
 
 - **Präsentation** kennt nur die Schnittstelle. **Logik** kennt nur Ports. **Daten** setzen die Ports um: heute Dexie im Browser, später zusätzlich PostgreSQL auf dem Server.
 - Die Grenzen prüft ESLint in der CI.
-- Die Anwendungsfälle stehen heute noch in `apps/web/src/data/*-handlers.ts`. Sie wandern Schritt für Schritt nach `packages/core/src/application`, der Weg steht in ADR-0034.
+- Die meisten Anwendungsfälle liegen in `packages/core/src/application`: Vorrat, Abschlüsse, Haushalt, Einkaufsliste, Auszüge und der Quittungs-Abgleich. In `apps/web/src/data` bleiben die Produktsuche und der Quittungs-Import (TD-02) sowie Löschen und Import des Haushalts (TD-03). Der Weg steht in ADR-0034.
 
 ## 1. Leitprinzipien
 
@@ -65,7 +67,7 @@ Orientiert an HUB-042 (Albans bewährtem Betrieb), aber auf Wachstum ausgelegt:
 | API-Server | **Node.js 24 + Hono** (TypeScript) | Klein, schnell, typisiert; derselbe Code läuft auf Node (Docker) und später auf Edge-Plattformen wie Cloudflare Workers. OpenAPI direkt aus unseren Zod-Schemas. |
 | Datenbank | **PostgreSQL** (Docker lokal und im Betrieb) | Bewährt bis zu sehr grossen Datenmengen; Row-Level-Security pro Haushalt; `householdId` ist ein natürlicher Schlüssel zum späteren Aufteilen (Sharding). |
 | Zugriff auf die DB | Drizzle ORM (typisierte SQL-Abfragen, Migrationen im Repo) | Typsicherheit vom Schema bis zur UI. |
-| Login | Magic Link per E-Mail, später Passkeys; OAuth für Partner und MCP | Ohne Passwörter; Standard-OAuth für externe Clients. |
+| Login | E-Mail und Passwort, Google, Apple und Facebook über Better Auth ([ADR-0010](./adr/0010-auth.md)); später Passkeys und Magic Link; OAuth für Partner und MCP | Wie bei einer normalen App; Standard-OAuth für externe Clients. |
 | Hintergrundjobs | Queue in Postgres (z. B. pg-boss) für Digest, Push, Wirkungsberichte | Kein zusätzlicher Dienst nötig; später austauschbar. |
 | Betrieb | **Docker Compose**, Image auf GHCR, automatische Updates, öffentlich über Cloudflare Tunnel | Wie HUB-042: gratis, ohne offene Ports, ein Merge geht live. |
 | Hosting Pilot | Oracle Cloud Always Free, Region Zürich (wie HUB-042) oder Albans eigener Server | 0 CHF, Daten in der Schweiz. |
@@ -85,23 +87,26 @@ Das Datenmodell ist dafür vorbereitet: global eindeutige IDs (UUIDv7) ohne zent
 
 | Weg | Stand |
 | --- | --- |
-| Bon-Foto, Migros-CSV, Coop-PDF | MVP (Schritte 4, 5, 10) |
-| Barcode (EAN) + Produktdatenbank (Nährwerte, Kalorien, Allergene) | MVP (Schritt 10) |
-| **2D-Codes (GS1 DataMatrix/QR) mit Ablaufdatum** | Logik fertig (ADR-0006), Scanner in Schritt 10 |
-| **Scan-Modi «Schnell» und «Gründlich»** (Rundum-Scan) | Logik: neuer Schritt 2i; Kamera: Schritt 10 |
+| Quittung als PDF, Screenshot oder Foto | umgesetzt |
+| Migros-CSV | offen |
+| Barcode (EAN) + Produktdatenbank (Nährwerte, Kalorien, Allergene) | umgesetzt (Kamera, Foto, Eintippen) |
+| **2D-Codes (GS1 DataMatrix/QR) mit Ablaufdatum** | umgesetzt (ADR-0006): Datum aus dem GS1-Code |
+| **Scan-Modi «Schnell» und «Gründlich»** (Rundum-Scan) | offen (Schritt 2i, nicht gebaut) |
 | Datum vom Etikett fotografieren | Logik fertig (2g), Kamera: v1 |
 | **Kühlschrank-Foto («wie Google Lens»)** | Port und Ablauf jetzt geplant, Umsetzung v1 (siehe 5.1) |
 
 ### 5.1 Kühlschrank-Foto: mit der KI der Nutzer:innen (ADR-0012)
 
-rettich trägt keine KI-Kosten pro Foto. Die Erkennung macht die KI, die die Person ohnehin nutzt (ChatGPT, Claude, Gemini …):
+Stufe 1 war bis 7.11.2026 in der App und ist entfernt (ADR-0012, Nachtrag). Die Bestandesaufnahme per Foto ist geparkt (Parkplatz P18). Stufe 2 (MCP) bleibt die Richtung.
+
+Rettich trägt keine KI-Kosten pro Foto. Die Erkennung macht die KI, die die Person ohnehin nutzt (ChatGPT, Claude, Gemini …):
 
 ```
-Foto in der KI-App ──► KI erkennt Inhalt ──► Vorschlag in rettich ──► bestätigen ──► Vorrat
+Foto in der KI-App ──► KI erkennt Inhalt ──► Vorschlag in Rettich ──► bestätigen ──► Vorrat
                          │                       ▲
                          ├─ Stufe 1: Antwort kopieren und einfügen (ohne Server, sofort)
                          └─ Stufe 2: MCP-Connector legt den Vorschlag direkt in den
-                                     Posteingang, Link «In rettich öffnen» (v1)
+                                     Posteingang, Link «In Rettich öffnen» (v1)
 ```
 
 - **Vorschläge statt direkter Änderungen:** Externe KI darf nur vorschlagen (`inventory:propose`), nie selbst ändern. Die Person bestätigt in derselben Review-Liste wie beim Bon.

@@ -1,31 +1,32 @@
-# Datenschutz bei rettich (Entwurf)
+# Datenschutz bei Rettich (Entwurf)
 
-> **Entwurf, keine Rechtsberatung.** Stand: v0.4.0, 6. November 2026. Vor einem öffentlichen Start prüfen Alban und eine Fachperson diesen Text (Plan 12d). Massstab: Schweizer Datenschutzgesetz (DSG), für Nutzer:innen in der EU die DSGVO.
+> **Entwurf, keine Rechtsberatung.** Stand: v0.11.0, 8. November 2026. Vor einem öffentlichen Start prüfen Alban und eine Fachperson diesen Text (Plan 12d). Massstab: Schweizer Datenschutzgesetz (DSG), für Nutzer:innen in der EU die DSGVO.
 
 ## Kurz gesagt
 
-- Dein Vorrat, deine Einkaufsliste und deine Statistik bleiben **auf deinem Gerät**. Es gibt kein Konto und keinen rettich-Server mit deinen Daten.
-- Beim Scannen geht **nur die Barcode-Nummer** an Open Food Facts, damit Name, Nährwerte und Packungsbild kommen. Suchst du ein Produkt nach Namen, gehen ab drei Buchstaben **nur die getippten Wörter** dorthin, sobald du kurz mit Tippen innehältst. Liest rettich einen Bon, gleicht es die gewählten verpackten Lebensmittel automatisch mit Open Food Facts ab. Dabei gehen **nur die Produktnamen** dorthin, ohne Preise, Laden und Datum.
-- Fotos von Codes, Bons und Nährwerttabellen (auch Screenshots) sowie Bon-PDFs werden auf dem Gerät gelesen und **nie gespeichert**.
+- Dein Vorrat, deine Einkaufsliste und deine Statistik bleiben **auf deinem Gerät**. Es gibt kein Konto und keinen Rettich-Server mit deinen Daten.
+- Beim Scannen geht **nur die Barcode-Nummer** an Open Food Facts, damit Name, Nährwerte und Packungsbild kommen. Suchst du ein Produkt nach Namen, gehen ab drei Buchstaben **nur die getippten Wörter** dorthin, sobald du kurz mit Tippen innehältst. Liest Rettich eine Quittung, sucht es jede Zeile zuerst bei früheren Quittungen und im mitgelieferten Katalog, auf dem Gerät. Nur Zeilen ohne sicheren Treffer gehen als **Produktname** an Open Food Facts, ohne Preise, Laden und Datum.
+- Fotos von Codes, Quittungen und Nährwerttabellen (auch Screenshots) sowie Quittungs-PDFs werden auf dem Gerät gelesen und **nie gespeichert**.
 - **Kein Tracking, keine Werbung, keine Cookies.**
-- Du kannst jederzeit **alles exportieren** (JSON) und **alles löschen** («Haushalt»).
+- Du kannst jederzeit **alles exportieren** (JSON) und **alles löschen** («Mehr» › «Deine Daten»).
 
 ## Wer ist verantwortlich
 
 Alban Hyseni, Schweiz. Kontakt: _[E-Mail-Adresse vor dem Start eintragen]_.
 
-## Welche Daten rettich speichert, und wo
+## Welche Daten Rettich speichert, und wo
 
 Alles liegt im Speicher deines Browsers auf diesem Gerät (IndexedDB). Ohne dein Zutun verlässt nichts davon das Gerät.
 
 | Was | Wozu |
 | --- | --- |
-| Artikel im Vorrat: Name, Kategorie, Ort, Menge, Ablaufdatum, Preis (falls erfasst) | Damit rettich weiss, was du hast und was bald abläuft |
-| Abschlüsse: gegessen, weitergegeben, weggeworfen, mit Grund und Wert | Rückgängig, «Deine Wirkung diesen Monat» |
+| Artikel im Vorrat: Name, Kategorie, Ort, Menge, Ablaufdatum, Preis (falls erfasst) | Damit Rettich weiss, was du hast und was bald abläuft |
+| Abschlüsse: verwertet oder entsorgt (ältere Einträge auch «weitergegeben»), mit Grund und Wert | Rückgängig, die «Bilanz» des Monats, das «Journal» |
 | Einkaufsliste | «Du hast noch …» gegen Doppelkäufe |
-| Gelesene Bons: Laden, Datum, Total und pro Zeile Name, Menge, Preis, Rabatt (nie Foto, PDF oder Karten- und Kundennummern) | Echte Preise im Vorrat, später dein Preisgedächtnis |
+| Gelesene Quittungen: Laden, Datum, Total und pro Zeile Name, Menge, Preis, Rabatt (nie Foto, PDF oder Karten- und Kundennummern) | Echte Preise im Vorrat, später dein Preisgedächtnis |
 | Produkte, die du schon erfasst hast, und «Schnell erfassen» | Damit der nächste Scan oder Tipp schneller geht |
 | Antworten von Open Food Facts und Packungsbilder | Damit derselbe Barcode auch offline erkannt wird (30 Tage) |
+| Der mitgelieferte Produktkatalog (rund 7'000 Schweizer Produkte, Datei der App, im Cache des Browsers) | Damit Quittungszeilen auf dem Gerät erkannt werden, auch offline. Er enthält keine Daten von dir |
 | Verlauf der Änderungen (Ereignisse) | Rückgängig, Export, später der Abgleich zwischen Geräten |
 
 Zusätzlich merkt sich der Browser zwei Kleinigkeiten ohne Personenbezug:
@@ -36,11 +37,11 @@ Zusätzlich merkt sich der Browser zwei Kleinigkeiten ohne Personenbezug:
 
 | Empfänger | Was | Wann |
 | --- | --- | --- |
-| **Open Food Facts** (offene Produktdatenbank, Frankreich) | Die Barcode-Nummer, dazu technisch deine IP-Adresse | Wenn du einen Barcode scannst oder eintippst, den rettich noch nicht kennt |
+| **Open Food Facts** (offene Produktdatenbank, Frankreich) | Die Barcode-Nummer, dazu technisch deine IP-Adresse | Wenn du einen Barcode scannst oder eintippst, den Rettich noch nicht kennt |
 | **Open Food Facts, Suche** | Die getippten Wörter (z. B. «Coop Gipfeli»), dazu technisch deine IP-Adresse | Wenn du im Feld «Was ist es?» mindestens drei Buchstaben tippst und kurz innehältst (wie bei Yazio) |
-| **Open Food Facts, Bon-Abgleich** | Die Produktwörter der gewählten Bon-Zeilen ohne Packungsgrösse (z. B. «Naturaplan Bio Coconutwater»), einzeln nacheinander, dazu technisch deine IP-Adresse. Nie Preise, Mengen, Laden, Datum oder Uhrzeit | Automatisch nach dem Auslesen eines Bons (Albans Entscheid vom 7.11.2026, ADR-0036). Zeilen, die du früher schon bestätigt hast, erkennt rettich ohne Anfrage. Scannst du bei einer Zeile den Barcode, geht nur die Barcode-Nummer raus |
+| **Open Food Facts, Quittungs-Abgleich** | Nur für Zeilen, die Rettich weder aus deinen früheren Quittungen noch im mitgelieferten Katalog sicher kennt: die Produktwörter ohne Packungsgrösse (z. B. «Naturaplan Bio Coconutwater»), einzeln nacheinander, dazu technisch deine IP-Adresse. Nie Preise, Mengen, Laden, Datum oder Uhrzeit | Automatisch nach dem Auslesen einer Quittung (Albans Entscheid vom 7.11.2026, ADR-0036; zuerst der Katalog seit ADR-0045). Scannst du bei einer Zeile den Barcode, geht nur die Barcode-Nummer raus |
 | **Open Food Facts, Bildserver** | Abruf des Packungsbilds, dazu technisch deine IP-Adresse | Einmal pro Barcode, danach liegt das Bild auf dem Gerät |
-| **Cloudflare** (Hoster der App) | Abruf der App-Dateien, dazu technisch deine IP-Adresse und Browserdaten | Beim Öffnen und bei Updates; rettich wertet das nicht aus |
+| **Cloudflare** (Hoster der App) | Abruf der App-Dateien, dazu technisch deine IP-Adresse und Browserdaten | Beim Öffnen und bei Updates; Rettich wertet das nicht aus |
 
 Andere Verbindungen erlaubt die App nicht: Eine Content-Security-Policy lässt nur die App selbst und die beiden Open-Food-Facts-Adressen zu.
 
@@ -56,12 +57,12 @@ Andere Verbindungen erlaubt die App nicht: Eine Content-Security-Policy lässt n
 | Aktiver Vorrat und Einkaufsliste | solange du sie brauchst |
 | Abschlüsse und Verlauf | auf dem Gerät, bis du sie löschst. Geplant (ADR-0020): nach 24 Monaten bleiben nur Monatssummen |
 | Antworten von Open Food Facts | 30 Tage, dann wird neu gefragt |
-| Fotos von Codes, Bons und Nährwerttabellen | nie gespeichert |
+| Fotos von Codes, Quittungen und Nährwerttabellen | nie gespeichert |
 
 ## Deine Rechte
 
-- **Auskunft und Herausgabe:** «Haushalt» → «Alles exportieren» gibt dir alle Daten als JSON.
-- **Löschung:** «Haushalt» → «Alles löschen» entfernt die ganze lokale Datenbank. Einzelne Artikel löschst du auf ihrer Detailseite.
+- **Auskunft und Herausgabe:** «Mehr» › «Deine Daten» › «Alles exportieren» gibt dir alle Daten als JSON.
+- **Löschung:** «Mehr» › «Deine Daten» › «Alles löschen» entfernt die ganze lokale Datenbank. Einzelne Artikel löschst du auf ihrer Detailseite.
 - **Berichtigung:** Jeder Artikel lässt sich bearbeiten.
 - Bei Fragen oder Beschwerden: Kontakt oben, in der Schweiz auch der Eidgenössische Datenschutz- und Öffentlichkeitsbeauftragte (EDÖB).
 

@@ -1,8 +1,8 @@
 # ADR-0046: Rettich ist eine Awareness-App: «verwertet» und «entsorgt»
 
-- Status: angenommen
-- Datum: 8.11.2026
-- Entscheid: Alban (Positionierung, Wörter), Claude (Umsetzung)
+- **Status:** angenommen
+- **Datum:** 8.11.2026
+- **Entscheid:** Alban (Positionierung, Wörter), Claude (Umsetzung)
 
 ## Kontext
 
