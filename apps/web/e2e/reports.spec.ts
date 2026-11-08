@@ -14,14 +14,20 @@ test('creates a PDF report on the device, opens it in the app and shares it', as
   await expect(page.getByRole('heading', { level: 1, name: 'Berichte als PDF' })).toBeVisible();
   // The short reports are receipts; «Ausführlich» is the full report with a period.
   await page.getByRole('radio', { name: 'Ausführlich' }).check({ force: true });
-  await page.getByRole('radio', { name: 'Dieses Jahr' }).check({ force: true });
+  // Periods like a bank statement: the running month is chosen, a range can go backwards.
+  await expect(page.getByLabel('Monatsabschluss')).toHaveValue(/^\d{4}-\d{2}$/);
+  await page.getByRole('radio', { name: 'Von – bis' }).check({ force: true });
+  await page.getByLabel('Von', { exact: true }).fill('2030-01-01');
+  await expect(page.getByText('«Von» muss vor «Bis» liegen')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'PDF erstellen' })).toBeDisabled();
+  await page.getByRole('radio', { name: 'Jahr', exact: true }).check({ force: true });
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations).toEqual([]);
 
   // The report opens inside the app, page by page.
   await page.getByRole('button', { name: 'PDF erstellen' }).click();
   await expect(
-    page.getByRole('heading', { level: 1, name: 'Ausführlich · Dieses Jahr' }),
+    page.getByRole('heading', { level: 1, name: /^Ausführlich · Jahr \d{4} · bis heute$/ }),
   ).toBeVisible();
   await expect(page.getByRole('img', { name: /^1 von \d+$/ })).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
