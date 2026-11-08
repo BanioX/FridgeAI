@@ -80,10 +80,30 @@ export const messages = {
     expiringTitle: 'Läuft bald ab',
     expiringEmpty: 'Nichts läuft in den nächsten 3 Tagen ab. Gut gemacht!',
     showAll: (count: number) => `Alle anzeigen (${String(count)})`,
-    welcomeTitle: 'Willkommen bei Rettich',
-    welcomeText:
-      'Wirf kein Geld in den Abfall: Erfasse, was du zu Hause hast, und Rettich sagt dir, was du heute retten solltest.',
-    firstItem: 'Ersten Artikel erfassen',
+    /** Start before the first item (Alban, 8.11.2026). */
+    intro: {
+      eyebrow: 'Willkommen bei Rettich',
+      title: 'Wirf kein Geld in den Abfall.',
+      text: 'Rettich weiss, was du zu Hause hast, was bald abläuft und was du rettest. Alles bleibt auf deinem Gerät.',
+      receipt: 'Quittung hochladen',
+      item: 'Artikel erfassen',
+      howTitle: 'So funktioniert Rettich',
+      steps: [
+        {
+          title: 'Quittung hochladen',
+          text: 'Das PDF aus der Coop- oder Migros-App, ein Screenshot oder ein Foto. Rettich liest Artikel, Preise und Laden.',
+        },
+        {
+          title: 'Vorrat im Blick',
+          text: 'Das Ablaufdatum schätzt Rettich nach Kategorie. Was bald abläuft, steht hier zuoberst.',
+        },
+        {
+          title: 'Verwerten statt entsorgen',
+          text: 'Wisch nach links, wenn du etwas verwertet hast, nach rechts, wenn du es entsorgt hast. Rettich zeigt dir, wie viel du rettest.',
+        },
+      ],
+      growth: 'Mit jeder Rettung wächst er.',
+    },
     impactTitle: 'Deine Wirkung diesen Monat',
     growth: {
       title: 'Dein Rettich',

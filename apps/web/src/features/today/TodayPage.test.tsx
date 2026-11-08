@@ -24,12 +24,17 @@ describe('TodayPage', () => {
   });
   afterEach(cleanup);
 
-  it('shows the welcome card for an empty household', async () => {
+  it('explains Rettich in an empty household, with the two ways in', async () => {
     renderPage();
-    expect(await screen.findByText(messages.today.welcomeTitle)).toBeDefined();
-    const link = screen.getByRole('link', { name: messages.today.firstItem });
-    expect(link.getAttribute('href')).toBe('/inventory/new');
-    expect(screen.getByText(messages.today.expiringEmpty)).toBeDefined();
+    const t = messages.today.intro;
+    expect(await screen.findByRole('heading', { name: t.title })).toBeDefined();
+    expect(screen.getByRole('link', { name: t.receipt }).getAttribute('href')).toBe('/add/receipt');
+    expect(screen.getByRole('link', { name: t.item }).getAttribute('href')).toBe('/inventory/new');
+    const how = screen.getByRole('region', { name: t.howTitle });
+    expect(within(how).getAllByRole('heading', { level: 3 })).toHaveLength(t.steps.length);
+    expect(screen.getByText(messages.knowledge.didYouKnow)).toBeDefined();
+    // Nothing in stock yet: no empty «Läuft bald ab» list.
+    expect(screen.queryByText(messages.today.expiringTitle)).toBeNull();
     expect(screen.queryByText('Lagerorte')).toBeNull();
   });
 
@@ -58,7 +63,7 @@ describe('TodayPage', () => {
     expect(expiringLink?.getAttribute('href')).toMatch(/^\/inventory\/[0-9a-f-]{36}$/);
     expect(screen.queryByText('Lagerorte')).toBeNull();
     expect(screen.queryByText(/\d+ Artikel$/)).toBeNull();
-    expect(screen.queryByText(messages.today.welcomeTitle)).toBeNull();
+    expect(screen.queryByText(messages.today.intro.title)).toBeNull();
   });
 
   it('shows «Nicht mehr verwenden» for use-by items past their date', async () => {
