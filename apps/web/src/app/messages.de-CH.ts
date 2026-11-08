@@ -12,7 +12,7 @@ export const messages = {
     start: 'Start',
     inventory: 'Vorrat',
     add: 'Erfassen',
-    receipt: 'Bon hochladen',
+    receipt: 'Quittung hochladen',
     shopping: 'Nachkaufen',
     cook: 'Kochen',
     more: 'Mehr',
@@ -437,8 +437,8 @@ export const messages = {
     privacyPoints: [
       'Dein Vorrat, deine Liste und deine Statistik bleiben auf diesem Gerät.',
       'Beim Scannen geht nur die Barcode-Nummer an Open Food Facts, damit Name, Nährwerte und Bild kommen.',
-      'Nach dem Auslesen eines Bons gehen nur die Produktnamen an Open Food Facts, ohne Preise, Laden und Datum.',
-      'Fotos von Bons und Codes werden nur gelesen, nie gespeichert.',
+      'Nach dem Auslesen einer Quittung gehen nur die Produktnamen an Open Food Facts, ohne Preise, Laden und Datum.',
+      'Fotos von Quittungen und Codes werden nur gelesen, nie gespeichert.',
       'Kein Konto, kein Tracking, keine Werbung.',
     ],
   },
@@ -546,7 +546,7 @@ export const messages = {
           ? '1 Artikel ist abgelaufen oder läuft in 3 Tagen ab.'
           : `${String(count)} Artikel sind abgelaufen oder laufen in 3 Tagen ab.`,
       shop: (shop: string, value: string) => `Am meisten ausgegeben bei ${shop}: ${value}.`,
-      nothing: 'Noch wenig Daten. Mit jedem Bon und jedem Abschluss wird der Bericht genauer.',
+      nothing: 'Noch wenig Daten. Mit jeder Quittung und jedem Abschluss wird der Bericht genauer.',
     },
   },
   priceMemory: {
@@ -563,13 +563,13 @@ export const messages = {
     },
   },
   addHub: {
-    receipt: 'Alle Einkäufe auf einmal: PDF, Screenshot oder Foto vom Kassenbon',
+    receipt: 'Alle Einkäufe auf einmal: PDF, Screenshot oder Foto der Quittung',
     barcode: 'Packung vor die Kamera halten',
     manualTitle: 'Von Hand',
     manual: 'Name eintippen, den Rest schlägt rettich vor',
     startTitle: 'Zum Start: einmal Bestand aufnehmen',
     start:
-      'Hast du noch Bons der letzten Tage? Lade sie hoch, dann kennt rettich deinen Kühlschrank in wenigen Minuten. Was nicht auf einem Bon steht, scannst du einfach.',
+      'Hast du noch Quittungen der letzten Tage? Lade sie hoch, dann kennt rettich deinen Kühlschrank in wenigen Minuten. Was nicht auf einer Quittung steht, scannst du einfach.',
   },
   receiptUpload: {
     match: {
@@ -581,9 +581,9 @@ export const messages = {
           ? 'Bei Open Food Facts nichts Passendes gefunden.'
           : `${String(found)} von ${String(total)} gefunden.`,
       unavailable:
-        'Open Food Facts ist gerade nicht erreichbar. Du kannst den Bon trotzdem übernehmen.',
+        'Open Food Facts ist gerade nicht erreichbar. Du kannst die Quittung trotzdem übernehmen.',
       hint: 'Für die übrigen Produkte: Tippe auf «Barcode scannen» und halte die Packung vor die Kamera. Dann bekommen auch sie Name, Nährwerte und Bild.',
-      known: 'Von früheren Bons',
+      known: 'Von früheren Quittungen',
       sure: 'Open Food Facts',
       maybe: 'Vorschlag · Open Food Facts',
       scanned: 'Per Barcode',
@@ -599,22 +599,26 @@ export const messages = {
       scanFor: (name: string) => `Barcode scannen für ${name}`,
       cancelScan: 'Abbrechen',
       scanUnknown:
-        'Diesen Barcode kennt Open Food Facts nicht. Der Artikel kommt mit dem Namen vom Bon.',
+        'Diesen Barcode kennt Open Food Facts nicht. Der Artikel kommt mit dem Namen von der Quittung.',
       scanInvalid: 'Das war kein Barcode. Versuch es nochmals.',
     },
     intro:
-      'Wähl das PDF deines Kassenbons (Coop- oder Migros-App), einen Screenshot (z. B. Lidl Plus) oder ein Foto. rettich liest ihn auf deinem Gerät, die Datei wird nicht gespeichert.',
+      'Lade deine Quittung hoch: das PDF aus der Coop- oder Migros-App, einen Screenshot (z. B. Lidl Plus) oder ein Foto. rettich liest sie auf deinem Gerät und speichert die Datei nicht.',
+    /** The shops are named only to say where the file comes from (no logos, no partnership). */
+    trademarks:
+      'Coop, Migros und Lidl Plus sind Marken ihrer Inhaber. rettich ist mit ihnen nicht verbunden.',
     choose: 'PDF oder Foto wählen',
-    reading: 'Bon wird gelesen …',
+    reading: 'Quittung wird gelesen …',
     readingPhoto: 'Foto wird gelesen, das dauert ein paar Sekunden …',
-    tooLarge: 'Die Datei ist zu gross für einen Bon (höchstens 15 MB).',
+    tooLarge: 'Die Datei ist zu gross für eine Quittung (höchstens 15 MB).',
     noText:
       'In diesem PDF steht kein lesbarer Text, es ist wohl ein eingescanntes Bild. Mach stattdessen ein Foto oder einen Screenshot.',
-    noLines: 'Auf diesem Bon hat rettich keine Artikel gefunden.',
-    failed: 'Die Datei liess sich nicht lesen. Versuch es nochmals oder mit einem anderen Bon.',
+    noLines: 'Auf dieser Quittung hat rettich keine Artikel gefunden.',
+    failed:
+      'Die Datei liess sich nicht lesen. Versuch es nochmals oder mit einer anderen Quittung.',
     sumOk: (total: string) => `Summe stimmt: ${total}`,
     sumMismatch: (read: string, total: string) =>
-      `Die Summe stimmt nicht: gelesen ${read}, auf dem Bon ${total}. Tipp auf einen falschen Preis, um ihn zu korrigieren.`,
+      `Die Summe stimmt nicht: gelesen ${read}, auf der Quittung ${total}. Tipp auf einen falschen Preis, um ihn zu korrigieren.`,
     editPrice: (name: string, price: string) => `Preis von ${name} ändern, jetzt ${price}`,
     priceLabel: (name: string, symbol: string) => `Preis von ${name} in ${symbol}`,
     noTotal: 'Kein Total gefunden. Prüf die Preise.',
@@ -635,7 +639,7 @@ export const messages = {
     extras: (amount: string) => `Dazu Tasche, Pfand und Rabatte: ${amount}`,
     take: (count: number) =>
       count === 1 ? '1 Artikel übernehmen' : `${String(count)} Artikel übernehmen`,
-    duplicate: 'Diesen Bon hast du schon übernommen.',
+    duplicate: 'Diese Quittung hast du schon übernommen.',
     saveFailed: 'Speichern hat nicht geklappt. Bitte versuch es nochmals.',
   },
   scanner: {

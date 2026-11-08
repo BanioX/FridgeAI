@@ -19,6 +19,12 @@ describe('messages.de-CH', () => {
     }
   });
 
+  it('says «Quittung», never «Bon» or «Kassenbon» (Alban, 7.11.2026; docs/glossar.md)', () => {
+    for (const [path, text] of texts(messages, 'messages')) {
+      expect(text, path).not.toMatch(/\b(Kassen)?[Bb]ons?\b/);
+    }
+  });
+
   it('uses «ss» instead of «ß»', () => {
     for (const [path, text] of texts(messages, 'messages')) {
       expect(text, path).not.toContain('ß');
