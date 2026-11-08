@@ -23,6 +23,7 @@ export function sampleReport(): Report {
     expiresOn: string,
     value: number,
     valueEstimated = false,
+    retailer?: ReportItem['retailer'],
   ): ReportItem => ({
     name,
     categoryId,
@@ -32,6 +33,7 @@ export function sampleReport(): Report {
     expiresOn: localDate(expiresOn),
     valueRappen: rappen(value),
     valueEstimated,
+    ...(retailer === undefined ? {} : { retailer }),
   });
   const items: ReportItem[] = [
     {
@@ -42,10 +44,10 @@ export function sampleReport(): Report {
       ...item('Poulet Brust', 'meat-poultry', 'fridge', 400, 'g', '2026-11-07', 1190),
       expiryKind: 'use_by',
     },
-    item('Joghurt Erdbeer', 'dairy-yoghurt', 'fridge', 3, 'pcs', '2026-11-08', 210),
+    item('Joghurt Erdbeer', 'dairy-yoghurt', 'fridge', 3, 'pcs', '2026-11-08', 210, false, 'coop'),
     item('Nüsslisalat', 'produce-salad', 'fridge', 100, 'g', '2026-11-09', 350),
-    item('Vollmilch', 'dairy-milk', 'fridge', 1000, 'ml', '2026-11-12', 165),
-    item('Gruyère', 'dairy-cheese-hard', 'fridge', 250, 'g', '2026-12-02', 640),
+    item('Vollmilch', 'dairy-milk', 'fridge', 1000, 'ml', '2026-11-12', 165, false, 'migros'),
+    item('Gruyère', 'dairy-cheese-hard', 'fridge', 250, 'g', '2026-12-02', 640, false, 'denner'),
     item('Rüebli', 'produce-carrots', 'fridge', 1000, 'g', '2026-11-20', 220, true),
     item('Glace Vanille', 'frozen-icecream', 'freezer', 6, 'pcs', '2027-05-01', 690),
     item('Erbsen', 'frozen-vegetables', 'freezer', 750, 'g', '2027-08-01', 395),

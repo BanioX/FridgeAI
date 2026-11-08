@@ -7,7 +7,7 @@ import { summarizeImpact } from '../metrics';
 import type { InventoryItem, Product } from '../model/inventory';
 import type { InventoryItemView } from '../contract/operations';
 import type { AppContext, UseCase } from './command';
-import { factsOf, toView } from './inventory-shared';
+import { factsOf, retailersOfItems, toView } from './inventory-shared';
 
 /**
  * The inventory queries of contract v1 (ADR-0005), ADR-0034 layer 2: the household's stock,
@@ -26,10 +26,11 @@ export function createInventoryQueries(ctx: AppContext) {
       storage.items.activeOf(householdId),
       householdProducts(householdId),
     ]);
-    return items
+    const live = items
       .filter((item) => item.deletedAt === undefined)
-      .sort((a, b) => a.expiresOn.localeCompare(b.expiresOn))
-      .map((item) => toView(item, products.get(item.productId)));
+      .sort((a, b) => a.expiresOn.localeCompare(b.expiresOn));
+    const retailers = await retailersOfItems(storage, householdId, live);
+    return live.map((item) => toView(item, products.get(item.productId), retailers.get(item.id)));
   }
 
   const list: UseCase<'inventory.list'> = async (raw) => {

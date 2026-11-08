@@ -10,6 +10,7 @@ import { buildReport, type ReportItem, type ReportOutcome } from '../reports/rep
 import { itemValue } from '../value';
 import { WASTE_HABIT_DAYS, wasteHabits } from '../waste-habits';
 import type { AppContext, UseCase } from './command';
+import { retailersOfItems } from './inventory-shared';
 
 /** Additions older than this do not count: habits change, and old data should fade (ADR-0020). */
 const FREQUENT_WINDOW_DAYS = 180;
@@ -139,30 +140,33 @@ export function createInsightQueries({ storage, clock }: AppContext) {
       categoryById(productById.get(productId)?.categoryId ?? '') ?? fallbackCategory();
     const itemById = new Map(allItems.map((item) => [item.id, item]));
 
-    const items: ReportItem[] = allItems
-      .filter((item) => item.status === 'active' && item.deletedAt === undefined)
-      .map((item) => {
-        const category = categoryOf(item.productId);
-        const value = itemValue(
-          {
-            quantity: item.quantity,
-            unit: item.unit,
-            ...(item.priceRappen === undefined ? {} : { priceRappen: item.priceRappen }),
-          },
-          category,
-        );
-        return {
-          name: productById.get(item.productId)?.name ?? category.name.de,
-          categoryId: category.id,
-          location: item.location,
+    const activeItems = allItems.filter(
+      (item) => item.status === 'active' && item.deletedAt === undefined,
+    );
+    const retailers = await retailersOfItems(storage, householdId, activeItems);
+    const items: ReportItem[] = activeItems.map((item) => {
+      const category = categoryOf(item.productId);
+      const value = itemValue(
+        {
           quantity: item.quantity,
           unit: item.unit,
-          expiresOn: item.expiresOn,
-          expiryKind: item.expiryKind,
-          valueRappen: value.valueRappen,
-          valueEstimated: value.estimated,
-        };
-      });
+          ...(item.priceRappen === undefined ? {} : { priceRappen: item.priceRappen }),
+        },
+        category,
+      );
+      return {
+        name: productById.get(item.productId)?.name ?? category.name.de,
+        categoryId: category.id,
+        location: item.location,
+        quantity: item.quantity,
+        unit: item.unit,
+        expiresOn: item.expiresOn,
+        expiryKind: item.expiryKind,
+        valueRappen: value.valueRappen,
+        valueEstimated: value.estimated,
+        ...(retailers.has(item.id) ? { retailer: retailers.get(item.id) } : {}),
+      };
+    });
     const closed: ReportOutcome[] = outcomes.map((outcome) => {
       const item = itemById.get(outcome.itemId);
       const category = item === undefined ? fallbackCategory() : categoryOf(item.productId);
