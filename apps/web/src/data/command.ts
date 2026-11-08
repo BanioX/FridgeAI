@@ -22,6 +22,8 @@ export interface HandlerContext {
   catalog?: ProductCatalog;
   /** Name search in open databases; none = household only. */
   search?: ProductSearch;
+  /** Name search in the catalog shipped with the app, on the device (ADR-0045). */
+  localSearch?: ProductSearch;
 }
 
 export type Handler<TName extends OperationName> = UseCase<TName>;

@@ -38,3 +38,10 @@ Rechtliche Lage (keine Rechtsberatung): Das Lesen öffentlicher Seiten ist eine 
 - Die Regel in `CLAUDE.md` heisst neu: keine Partner-Anbindungen mit Verträgen, Konten oder Bestellungen ohne Albans Entscheid, nur Mocks. Öffentliche Produktdaten nach diesem ADR sind erlaubt.
 - Erster Nutzen: Zeilen auf Quittungen von Aldi, Lidl, Migros und Coop werden besser erkannt (Name, Marke, Grösse und damit Kategorie und Haltbarkeit). Später: Suche beim Erfassen und der Hinweis auf kleinere Packungen.
 - Die Partnerschaft mit Migros und Coop (Parkplatz P1) bleibt der Weg zu vollständigen Daten.
+
+## Umsetzung: Abgleich auf dem Gerät
+
+- `parseCatalogFile` und `localCatalogSearch` in `packages/core` lesen `off-ch.json` und suchen darin nach Wörtern, ohne Netz.
+- `receipts.matchLine` fragt in dieser Reihenfolge: frühere Quittungen des Haushalts, dann der mitgelieferte Katalog, dann Open Food Facts. Ist der Treffer im Katalog sicher, geht kein Produktname mehr ins Netz. Die Quelle heisst dann `catalog`; die App nennt sie wie Open Food Facts, weil die Daten von dort stammen (ODbL, Namensnennung).
+- Die App lädt die Datei (etwa 90 kB gepackt) erst bei der ersten Quittung, der Service Worker hält sie danach offline bereit (`StaleWhileRevalidate`).
+- `retail-ch.json` (Aldi, ohne Barcodes) nutzt die App noch nicht. Ein Treffer ohne Barcode braucht eine Änderung der Schnittstelle (`gtin` optional) und kommt mit der Suche beim Erfassen.

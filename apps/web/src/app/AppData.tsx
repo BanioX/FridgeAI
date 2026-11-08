@@ -20,6 +20,7 @@ import {
   openFoodFactsSearch,
   rateLimitedSearch,
 } from '../data/open-food-facts';
+import { shippedCatalogSearch } from '../data/local-catalog';
 import { requestPersistentStorage } from '../data/persistence';
 import { fetchProductImage } from '../data/product-images';
 import { messages } from './messages.de-CH';
@@ -72,6 +73,7 @@ export function AppDataProvider({ children, db }: { children: ReactNode; db?: Fr
             image: (url) => fetchProductImage(url),
           }),
           search: rateLimitedSearch(openFoodFactsSearch()),
+          localSearch: shippedCatalogSearch(),
         };
         setData({
           db: database,

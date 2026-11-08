@@ -1,6 +1,7 @@
 import { normalizeFoodText } from '../catalog/match';
 import { CONTRACT_V1, type OperationOutput } from '../contract/operations';
 import type { Id } from '../ids';
+import type { ProductSearch, ProductSearchHit } from '../ports';
 import { rankReceiptHits, receiptSearchPlan } from '../receipt/off-match';
 import type { AppContext, UseCase } from './command';
 
@@ -9,9 +10,21 @@ type Match = NonNullable<OperationOutput<'receipts.matchLine'>['match']>;
 /**
  * `receipts.matchLine` (Alban, 7.11.2026: one tap per receipt). First what the household learned:
  * an earlier receipt line with the same printed name that went into the inventory as a product
- * with a barcode, no network needed. Then Open Food Facts with the cleaned product words only.
+ * with a barcode, no network needed. Then the catalog shipped with the app, on the device
+ * (ADR-0045). Only when that has no sure hit, Open Food Facts with the cleaned product words.
  */
-export function createReceiptMatchUseCases({ storage, search }: AppContext) {
+export function createReceiptMatchUseCases({ storage, search, localSearch }: AppContext) {
+  /** The query, then the fallback without the house brand when the query finds nothing. */
+  async function hitsFor(
+    source: ProductSearch,
+    plan: NonNullable<ReturnType<typeof receiptSearchPlan>>,
+  ): Promise<ProductSearchHit[] | 'unavailable'> {
+    const hits = await source.searchByName(plan.query, 8);
+    return hits !== 'unavailable' && hits.length === 0 && plan.fallback !== undefined
+      ? source.searchByName(plan.fallback, 8)
+      : hits;
+  }
+
   async function learned(householdId: Id, name: string): Promise<Match | undefined> {
     const printed = normalizeFoodText(name);
     const lines = (await storage.receiptLines.ofHousehold(householdId)).filter(
@@ -50,23 +63,29 @@ export function createReceiptMatchUseCases({ storage, search }: AppContext) {
       return { match: known, openDatabase: 'none' };
     }
     const plan = receiptSearchPlan(input.name);
-    if (plan === null || search === undefined) {
+    if (plan === null) {
       return { openDatabase: 'none' };
     }
-    let hits = await search.searchByName(plan.query, 8);
-    if (hits !== 'unavailable' && hits.length === 0 && plan.fallback !== undefined) {
-      hits = await search.searchByName(plan.fallback, 8);
+    const shipped = localSearch === undefined ? 'unavailable' : await hitsFor(localSearch, plan);
+    const local = shipped === 'unavailable' ? null : rankReceiptHits(input.name, shipped);
+    const fromCatalog =
+      local === null
+        ? undefined
+        : ({ ...local.hit, source: 'catalog', confidence: local.confidence } satisfies Match);
+    // A sure hit on the device: no product name has to leave it.
+    if (fromCatalog?.confidence === 'sure' || search === undefined) {
+      return { ...(fromCatalog === undefined ? {} : { match: fromCatalog }), openDatabase: 'none' };
     }
-    if (hits === 'unavailable') {
-      return { openDatabase: 'unavailable' };
+    const hits = await hitsFor(search, plan);
+    const best = hits === 'unavailable' ? null : rankReceiptHits(input.name, hits);
+    const openDatabase = hits === 'unavailable' ? 'unavailable' : 'searched';
+    if (best !== null) {
+      return {
+        match: { ...best.hit, source: 'off', confidence: best.confidence },
+        openDatabase,
+      };
     }
-    const best = rankReceiptHits(input.name, hits);
-    return best === null
-      ? { openDatabase: 'searched' }
-      : {
-          match: { ...best.hit, source: 'off', confidence: best.confidence },
-          openDatabase: 'searched',
-        };
+    return { ...(fromCatalog === undefined ? {} : { match: fromCatalog }), openDatabase };
   };
 
   return { 'receipts.matchLine': matchLine };
