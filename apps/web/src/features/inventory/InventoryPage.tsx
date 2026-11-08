@@ -25,10 +25,13 @@ import { InventoryItemRow } from './InventoryItemRow';
 import { locationOrder } from './item-meta';
 import { SelectableRow } from './SelectableRow';
 import { SelectionBar } from './SelectionBar';
+import { useDragToLocation } from './use-drag-to-location';
 import { useMoveSelected } from './use-move-selected';
 import { useSelection } from './use-selection';
 import { SWIPE_HINT_ID, useSwipeOutcome } from './swipe-outcome';
 
+/** Id of the visually hidden drag hint that selectable rows point to. */
+const DRAG_HINT_ID = 'drag-to-location-hint';
 const tabId = (location: StorageLocation) => `tab-${location}`;
 const panelId = (location: StorageLocation) => `panel-${location}`;
 
@@ -235,6 +238,25 @@ export function InventoryPage() {
     }
   };
 
+  const drag = useDragToLocation({
+    enabled: selection.active && !mover.busy,
+    from: selected,
+    begin: (id) => {
+      // Holding a row that is not chosen yet chooses it, so it travels with the others.
+      const picked = selection.ids.has(id);
+      if (!picked) {
+        selection.toggle(id);
+      }
+      const count = chosen.length + (picked ? 0 : 1);
+      return count === 1
+        ? (visible.find((item) => item.id === id)?.name ?? t.select.parcel(1))
+        : t.select.parcel(count);
+    },
+    drop: (to) => {
+      void moveChosen(to);
+    },
+  });
+
   return (
     <div className={`space-y-5 ${chosen.length > 0 ? 'pb-44' : 'pb-8'}`}>
       <div className="flex items-center justify-between gap-3">
@@ -279,10 +301,13 @@ export function InventoryPage() {
               onKeyDown={(event) => {
                 onKeyDown(event, index);
               }}
+              data-drop-location={location}
               className={`flex min-h-12 min-w-0 flex-col items-center justify-center rounded-[0.625rem] px-1 text-center text-[0.8125rem] leading-tight hyphens-auto transition-colors ${
                 active
                   ? 'bg-basil-700 font-semibold text-white shadow-card'
-                  : 'font-medium text-ink hover:bg-surface'
+                  : drag.over === location
+                    ? 'relative z-10 bg-basil-50 font-semibold text-ink outline-2 outline-basil-600 motion-safe:scale-105'
+                    : `font-medium text-ink hover:bg-surface ${drag.dragging ? 'outline-2 -outline-offset-2 outline-dashed outline-basil-600' : ''}`
               }`}
             >
               <span>{messages.locations[location]}</span>
@@ -326,6 +351,11 @@ export function InventoryPage() {
             ) : (
               swipe.tip
             )}
+            {selection.active ? (
+              <p id={DRAG_HINT_ID} className="sr-only">
+                {t.select.dragHint}
+              </p>
+            ) : null}
             <GroupedList>
               {visible.map((item) => {
                 const status = expiryBadge(
@@ -353,6 +383,8 @@ export function InventoryPage() {
                         onToggle={() => {
                           selection.toggle(item.id);
                         }}
+                        describedBy={DRAG_HINT_ID}
+                        dragProps={drag.rowProps(item.id)}
                       >
                         <InventoryItemRow item={item} status={status} />
                       </SelectableRow>
@@ -381,6 +413,7 @@ export function InventoryPage() {
       </div>
       {swipe.toast}
       {mover.toast}
+      {drag.parcel}
       {chosen.length > 0 ? (
         <SelectionBar
           count={chosen.length}
