@@ -1,3 +1,6 @@
+import { ChevronRight } from 'lucide-react';
+import { Link } from 'react-router';
+
 const SIZE = 96;
 const STROKE = 9;
 const RADIUS = (SIZE - STROKE) / 2;
@@ -11,12 +14,14 @@ interface Ring {
   detail: string;
   /** Onyx for «Verwertet», red for «Entsorgt» (Alban, 8.11.2026). */
   tone: 'onyx' | 'danger';
+  /** Where a tap leads, e.g. the journal with only what was thrown away (Alban, 8.11.2026). */
+  to?: string;
 }
 
-function OneRing({ label, share, value, detail, tone }: Ring) {
+function OneRing({ label, share, value, detail, tone, to }: Ring) {
   const percent = Math.round(share * 100);
   const stroke = tone === 'onyx' ? 'var(--color-onyx)' : 'var(--color-danger)';
-  return (
+  const ring = (
     <div
       role="img"
       aria-label={`${label}: ${String(percent)} %, ${value}, ${detail}`}
@@ -54,12 +59,25 @@ function OneRing({ label, share, value, detail, tone }: Ring) {
           {percent} %
         </text>
       </svg>
-      <span className={`font-semibold ${tone === 'onyx' ? 'text-ink' : 'text-danger'}`}>
+      <span
+        className={`inline-flex items-center gap-0.5 font-semibold ${tone === 'onyx' ? 'text-ink' : 'text-danger'}`}
+      >
         {label}
+        {to === undefined ? null : <ChevronRight size={16} aria-hidden="true" />}
       </span>
       <span className="font-display text-lg font-semibold tabular-nums">{value}</span>
       <span className="text-sm text-ink-muted">{detail}</span>
     </div>
+  );
+  return to === undefined ? (
+    ring
+  ) : (
+    <Link
+      to={to}
+      className="-m-2 rounded-2xl p-2 transition-colors hover:bg-surface-muted active:bg-surface-muted"
+    >
+      {ring}
+    </Link>
   );
 }
 

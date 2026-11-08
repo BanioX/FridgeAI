@@ -11,14 +11,21 @@ test('deletes a wrong «Entsorgt» from the history, the food comes back', async
   // Wait until it is saved: the Vorrat page confirms it (a reload too early would lose it).
   await expect(page.getByRole('status')).toHaveText('Joghurt: als entsorgt gespeichert.');
 
-  // From the «Bilanz» on Start to the journal.
+  // A tap on the «Entsorgt» ring of the «Bilanz» opens the journal with what was thrown away.
   await page.getByRole('navigation').getByRole('link', { name: 'Start' }).click();
-  await page.getByRole('link', { name: 'Journal ansehen' }).click();
+  await page.getByRole('link', { name: /^Entsorgt: 100 %/ }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Journal' })).toBeVisible();
+  await expect(page.getByRole('radio', { name: 'Entsorgt' })).toBeChecked();
+  await expect(page.getByText(/^Total CHF \d+\.\d{2} · 1 Eintrag$/)).toBeVisible();
   const entry = page.getByRole('listitem').filter({ hasText: 'Joghurt' });
   await expect(entry).toContainText('Entsorgt');
   await expect(entry).toContainText('vergessen');
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  // «Verwertet» shows nothing here, «Alle» shows it again.
+  await page.locator('label').filter({ hasText: 'Verwertet' }).click();
+  await expect(page.getByText('In diesem Zeitraum hast du nichts abgeschlossen.')).toBeVisible();
+  await page.locator('label').filter({ hasText: 'Alle' }).click();
+  await expect(entry).toBeVisible();
 
   await page.getByRole('button', { name: 'Eintrag Joghurt löschen' }).click();
   await page.getByRole('button', { name: 'Abbrechen' }).click();
@@ -48,6 +55,7 @@ test('corrects a wrong «Entsorgt» to «Verwertet», the impact follows', async
   await page.goto('/more/history');
   await page.getByRole('button', { name: 'Eintrag Rahm ändern' }).click();
   await page
+    .getByRole('group', { name: 'Was ist damit passiert?' })
     .locator('label')
     .filter({ hasText: /^Verwertet$/ })
     .click();

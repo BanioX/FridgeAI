@@ -1,5 +1,6 @@
 import {
   formatSwissDate,
+  sumRappen,
   toLocalDate,
   type Id,
   type OperationOutput,
@@ -9,6 +10,7 @@ import {
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Pencil, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import { useSearchParams } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { useMoney, type Money } from '../../app/money';
 import { messages } from '../../app/messages.de-CH';
@@ -32,6 +34,13 @@ const periodOptions = (Object.keys(messages.history.periods) as Period[]).map((v
   value,
   label: messages.history.periods[value],
 }));
+type Show = 'all' | 'eaten' | 'wasted';
+const SHOWS: readonly Show[] = ['all', 'eaten', 'wasted'];
+const showOptions = SHOWS.map((value) => ({ value, label: t.show[value] }));
+/** «Verwertet» holds everything not thrown away, older «Weitergegeben» entries too (ADR-0046). */
+const matches = (show: Show, entry: Entry) =>
+  show === 'all' || (show === 'wasted') === (entry.outcome === 'wasted');
+
 const TONES = { eaten: 'text-basil-800', shared_out: 'text-basil-800', wasted: 'text-today' };
 
 /** «Verwertet · 150 g · CHF 3.00» and «vergessen · 07.11.2026». */
@@ -54,7 +63,15 @@ function details(entry: Entry, money: Money): [string, string] {
  */
 export function HistoryPage() {
   const { householdId, ids, inventory, today } = useAppData();
+  const money = useMoney();
   const [period, setPeriod] = useState<Period>('month');
+  // `?outcome=wasted` from the «Entsorgt» ring of the «Bilanz» on Start.
+  const [params, setParams] = useSearchParams();
+  const asked = params.get('outcome');
+  const show: Show = asked === 'eaten' || asked === 'wasted' ? asked : 'all';
+  const setShow = (next: Show) => {
+    setParams(next === 'all' ? {} : { outcome: next }, { replace: true });
+  };
   const [mode, setMode] = useState<Mode | null>(null);
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState('');
@@ -69,6 +86,8 @@ export function HistoryPage() {
       ).outcomes,
     [householdId, period, today],
   );
+
+  const shown = entries?.filter((entry) => matches(show, entry));
 
   async function run(action: () => Promise<string>) {
     setBusy(true);
@@ -121,16 +140,29 @@ export function HistoryPage() {
         onChange={setPeriod}
         segmented
       />
+      <ChoiceChips
+        legend={t.showLegend}
+        hideLegend
+        options={showOptions}
+        value={show}
+        onChange={setShow}
+        segmented
+      />
       <p role="status" className="font-semibold text-basil-800 empty:hidden">
         {status}
       </p>
-      {entries === undefined ? null : entries.length === 0 ? (
+      {shown === undefined || shown.length === 0 || show === 'all' ? null : (
+        <p className={`font-semibold ${show === 'wasted' ? 'text-today' : 'text-ink'}`}>
+          {t.total(money.format(sumRappen(shown.map((entry) => entry.valueRappen))), shown.length)}
+        </p>
+      )}
+      {shown === undefined ? null : shown.length === 0 ? (
         <Card>
           <p className="text-ink-muted">{t.empty}</p>
         </Card>
       ) : (
         <GroupedList>
-          {entries.map((entry) => (
+          {shown.map((entry) => (
             <HistoryRow
               key={entry.eventId}
               entry={entry}
