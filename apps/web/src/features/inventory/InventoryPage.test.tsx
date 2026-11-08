@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, useLocation } from 'react-router';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -94,5 +94,25 @@ describe('InventoryPage', () => {
     expect(screen.getByRole('link', { name: messages.inventory.add }).getAttribute('href')).toBe(
       '/inventory/new?location=freezer',
     );
+  });
+
+  it('moves a selection and says so; a refused move keeps the selection', async () => {
+    renderPage(await seeded());
+    await screen.findByText('Vollmilch');
+    await userEvent.click(screen.getByRole('button', { name: 'Auswählen' }));
+    expect(screen.queryByRole('link', { name: /Vollmilch/ })).toBeNull();
+    await userEvent.click(screen.getByRole('checkbox', { name: 'Vollmilch' }));
+    expect(screen.getByText('1 ausgewählt')).toBeDefined();
+    // Milk is not suitable for a pantry: it stays, is named, and the selection stays.
+    const bar = screen.getByRole('region', { name: 'Auswahl verschieben' });
+    await userEvent.click(within(bar).getByRole('button', { name: 'Vorrat' }));
+    expect(
+      await screen.findByText('Vollmilch gehört nicht in den Vorrat, bleibt hier.'),
+    ).toBeDefined();
+    expect(screen.getByText('1 ausgewählt')).toBeDefined();
+    await userEvent.click(within(bar).getByRole('button', { name: 'Tiefkühler' }));
+    expect(await screen.findByText('Vollmilch liegt jetzt im Tiefkühler.')).toBeDefined();
+    expect(screen.queryByText('1 ausgewählt')).toBeNull();
+    expect(screen.getByRole('button', { name: 'Auswählen' })).toBeDefined();
   });
 });
