@@ -44,4 +44,4 @@ jobs:
           prerelease=""
           if [[ "$version" == 0.* ]]; then prerelease="--prerelease"; fi
           gh release create "$tag" --target "$GITHUB_SHA" $prerelease \
-            --title "rettich ${tag}" --notes-file notes.md
+            --title "Rettich ${tag}" --notes-file notes.md

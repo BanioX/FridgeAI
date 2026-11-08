@@ -21,6 +21,22 @@ describe('closedItemFrom', () => {
     );
   });
 
+  it('keeps the value of a confirmed rescue only as whole, non-negative Rappen', () => {
+    const rescue = { kind: 'outcome', eventId: id, name: 'Joghurt', outcome: 'eaten' };
+    expect(closedItemFrom({ closed: { ...rescue, rescuedRappen: 210 } })).toEqual({
+      ...rescue,
+      rescuedRappen: 210,
+    });
+    expect(closedItemFrom({ closed: { ...rescue, rescuedRappen: 120, estimated: true } })).toEqual({
+      ...rescue,
+      rescuedRappen: 120,
+      estimated: true,
+    });
+    for (const rescuedRappen of [-5, 2.1, '210', Number.NaN, 2 ** 60]) {
+      expect(closedItemFrom({ closed: { ...rescue, rescuedRappen } })).toEqual(rescue);
+    }
+  });
+
   it('ignores anything else in the history state', () => {
     for (const state of [
       null,

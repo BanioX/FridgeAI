@@ -1,6 +1,8 @@
 import {
   expiryStatus,
+  rappen,
   soonThresholdFor,
+  startOfMonth,
   StorageLocationSchema,
   type Id,
   type StorageLocation,
@@ -10,12 +12,14 @@ import { Plus, ShoppingBasket, Undo2 } from 'lucide-react';
 import { useRef, useState, type KeyboardEvent } from 'react';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router';
 import { useAppData } from '../../app/AppData';
+import { useMoney } from '../../app/money';
 import { messages } from '../../app/messages.de-CH';
 import { Button } from '../../ui/Button';
 import { SwipeAction } from '../../ui/SwipeAction';
 import { Card } from '../../ui/Card';
 import { expiryBadge } from '../../ui/expiry-badge';
 import { closedItemFrom } from './closed-item';
+import { factFor } from '../knowledge/food-facts';
 import { GROUPED_ROW_LINK, GroupedList, GroupedListItem } from '../../ui/GroupedList';
 import { InventoryItemRow } from './InventoryItemRow';
 import { locationOrder } from './item-meta';
@@ -30,10 +34,21 @@ const panelId = (location: StorageLocation) => `panel-${location}`;
  * history entry, so it disappears once the person moves on.
  */
 function ClosedNotice() {
-  const { householdId, ids, inventory, shopping } = useAppData();
+  const { householdId, ids, inventory, shopping, today } = useAppData();
+  const money = useMoney();
   const location = useLocation();
   const navigate = useNavigate();
   const closed = closedItemFrom(location.state);
+  // After a confirmed rescue: what it was worth and this month's total (ADR-0042).
+  const rescuedRappen =
+    closed !== null && closed.kind === 'outcome' ? closed.rescuedRappen : undefined;
+  const month = useLiveQuery(
+    () =>
+      rescuedRappen === undefined
+        ? Promise.resolve(undefined)
+        : inventory['stats.waste']({ householdId, from: startOfMonth(today), to: today }),
+    [householdId, inventory, rescuedRappen, today],
+  );
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
   // Tied to the closed entry it answers: the next closed item starts without it.
@@ -101,16 +116,34 @@ function ClosedNotice() {
         ? note.text
         : closed.kind === 'deleted'
           ? t.deleted(closed.name)
-          : t.closed[closed.outcome](closed.name);
+          : closed.rescuedRappen !== undefined
+            ? t.rescued(
+                closed.name,
+                money.format(rappen(closed.rescuedRappen)),
+                closed.estimated === true,
+              )
+            : t.closed[closed.outcome](closed.name);
   if (text === '') {
     return null;
   }
   // The card stays mounted from «gespeichert» to «wieder im Vorrat», so the change is announced.
   return (
     <Card variant="tip" className="flex flex-wrap items-center justify-between gap-2 py-3">
-      <p role="status" className="font-semibold">
-        {text}
-      </p>
+      <div className="min-w-0 flex-1">
+        <p role="status" className="font-semibold">
+          {text}
+        </p>
+        {closed?.kind === 'outcome' && closed.rescuedRappen !== undefined && note === null ? (
+          <>
+            {month === undefined ? null : (
+              <p className="text-sm">{t.monthSaved(money.format(month.savedRappen))}</p>
+            )}
+            <p className="mt-2 text-sm text-ink-muted">
+              <strong>{messages.knowledge.didYouKnow}</strong> {factFor(closed.eventId)}
+            </p>
+          </>
+        ) : null}
+      </div>
       {closed === null ? null : (
         <div className="flex flex-wrap gap-1">
           {closed.kind === 'deleted' || note?.done === true ? null : (
