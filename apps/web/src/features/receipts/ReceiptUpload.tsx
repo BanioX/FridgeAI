@@ -111,7 +111,7 @@ function purchasedAt(receipt: ParsedReceipt) {
 }
 
 /**
- * «Bon hochladen» (ADR-0028): a receipt PDF, photo or screenshot is read on the device, the lines show with name and
+ * «Quittung hochladen» (ADR-0028): a receipt PDF, photo or screenshot is read on the device, the lines show with name and
  * price paid, food is ticked, and «übernehmen» stores the receipt and puts the ticked items into
  * the inventory with their price.
  */
@@ -253,6 +253,7 @@ export function ReceiptUpload() {
       <p role="status" className="mt-2 text-sm font-semibold text-basil-800">
         {status}
       </p>
+      {review === null ? <p className="text-xs text-ink-muted">{t.trademarks}</p> : null}
 
       {review === null || receipt === undefined ? null : (
         <section aria-labelledby="receipt-title" className="mt-4 space-y-3">

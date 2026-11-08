@@ -5,7 +5,7 @@ Karte für alle KI-Werkzeuge: [`AGENTS.md`](AGENTS.md) · SWELP (Darf, Tut, Lern
 
 **Name:** rettich, immer klein geschrieben («rett' ich»); nur unter dem App-Symbol steht «Rettich». Claim: «Wirf kein Geld in den Kübel.» Bis 7.11.2026 hiess die App «FridgeAI»; Repo, Pakete `@fridgeai/*`, Datenbank und Web-Adresse bleiben technisch so (ADR-0032).
 
-**Produkt:** Local-first PWA für Schweizer Haushalte (WGs, Paare). «Scan deinen Bon – rettich weiss, was du hast, wem es gehört, wer was schuldet und was du heute retten musst.» Product Owner: Alban Hyseni.
+**Produkt:** Local-first PWA für Schweizer Haushalte (WGs, Paare). «Scan deine Quittung – rettich weiss, was du hast, wem es gehört, wer was schuldet und was du heute retten musst.» Product Owner: Alban Hyseni.
 
 **Prioritäten** (Alban, 6.11.2026): Kühlschrank zuerst, Vorrat/Tiefkühler/Notvorrat zweitrangig. Design nach Apples Human Interface Guidelines (ADR-0021). Pilot Schweiz, dann DACH, gebaut für jede Währung (ADR-0019). Daten so kurz wie möglich, jederzeit exportier- und löschbar (ADR-0020). Den Pilot (Alban + 1 Person) gibt Claude frei, sobald er startklar ist. Ideen-Sammlung: [`docs/ideen/`](docs/ideen/).
 
@@ -40,7 +40,7 @@ Karte für alle KI-Werkzeuge: [`AGENTS.md`](AGENTS.md) · SWELP (Darf, Tut, Lern
 - `packages/core` ist reines TypeScript ohne Browser-Abhängigkeit; Äusseres nur über Ports.
 - Contract-first: Die UI ruft nur Commands/Queries der Schnittstelle (Zod-Schemas, im Code `contract`) auf, Änderungen erzeugen Domain Events. So bleiben REST-API und MCP-Server später ohne Umbau möglich (Plan, Abschnitt 2).
 - Partner- oder KI-Zugriff auf Haushaltsdaten nur mit ausdrücklicher, widerrufbarer Einwilligung pro Haushalt. Kein Verkauf von Einzeldaten.
-- Bon-Bilder werden nach der Auswertung nicht gespeichert (ausser expliziter Opt-in). Assets (OCR-Modelle, Worker) selbst hosten, kein CDN.
+- Bilder von Quittungen werden nach der Auswertung nicht gespeichert (ausser expliziter Opt-in). Assets (OCR-Modelle, Worker) selbst hosten, kein CDN.
 - TypeScript `strict`, kein `any`. Neue Dependencies nur kostenlos, gut gepflegt und schlank, im PR begründen; im ausgelieferten Code nur permissive Lizenzen (MIT, Apache-2.0, ISC, BSD, OFL), nirgends GPL/AGPL (`pnpm licenses:check`, ADR-0015).
 - Lizenz: proprietär, alle Rechte bei Alban (`LICENSE`). Keine fremden Code-Schnipsel mit unklarer Lizenz übernehmen.
 - Kamera nur nach Nutzeraktion, alle Berechtigungszustände und Fallbacks (Foto-Upload, manuell) behandeln.

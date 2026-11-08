@@ -2,7 +2,7 @@ import { messages } from '../../app/messages.de-CH';
 import { BackLink } from '../../ui/BackLink';
 import { ReceiptUpload } from './ReceiptUpload';
 
-/** «Bon hochladen» under «Erfassen» (ADR-0028, ADR-0031). */
+/** «Quittung hochladen» under «Erfassen» (ADR-0028, ADR-0031). */
 export function ReceiptPage() {
   return (
     <div className="space-y-6 pb-8">
