@@ -59,8 +59,9 @@ test('swipes left for «Verwertet», right for «Entsorgt», undoes, and a short
   await expect(row).toContainText('6 Stk.');
   await expect(page.getByText(/^Tipp: Wisch nach links/)).toBeVisible();
 
-  // Below the threshold: the row springs back, nothing is recorded, the item page stays closed.
-  await swipe(page, -60);
+  // Below the threshold and shorter than a flick (60 px): the row springs back, nothing is
+  // recorded, the item page stays closed.
+  await swipe(page, -40);
   await expect(row).toContainText('6 Stk.');
   await expect(page.getByRole('status')).toHaveCount(0);
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
@@ -70,6 +71,10 @@ test('swipes left for «Verwertet», right for «Entsorgt», undoes, and a short
   await expect(row).toContainText('5 Stk.');
   await expect(page.getByRole('status')).toContainText('1 Glace verwertet');
 
+  // Checked while the toast shows; before the next swipe, so undo below never races its timer.
+  const result = await new AxeBuilder({ page }).analyze();
+  expect(result.violations).toEqual([]);
+
   // To the right, like Spotify: one piece «Entsorgt».
   await swipe(page, 250);
   await expect(row).toContainText('4 Stk.');
@@ -77,9 +82,6 @@ test('swipes left for «Verwertet», right for «Entsorgt», undoes, and a short
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
   // The tip stays for this visit, so the list does not jump under the finger.
   await expect(page.getByText(/^Tipp: Wisch nach links/)).toBeVisible();
-
-  const result = await new AxeBuilder({ page }).analyze();
-  expect(result.violations).toEqual([]);
 
   await page.getByRole('status').getByRole('button', { name: 'Rückgängig' }).click();
   await expect(row).toContainText('5 Stk.');
