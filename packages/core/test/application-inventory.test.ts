@@ -87,6 +87,36 @@ describe('inventory.addItem', () => {
 });
 
 describe('outcomes', () => {
+  it('counts «gerettet» only when confirmed and the food was on the brink (ADR-0039)', async () => {
+    const eat = (itemId: Id, rescued: boolean) =>
+      inventory['inventory.recordOutcome']({
+        commandId: next(),
+        householdId,
+        itemId,
+        outcome: 'eaten',
+        rescued,
+      });
+    // Bread for tomorrow, eaten today: never a rescue, even if ticked.
+    const bread = await add({ name: 'Ruchbrot', expiresOn: '2026-11-08' });
+    expect((await eat(bread.itemId, true)).rescued).toBe(false);
+    // Yoghurt past its best-before date: a rescue once confirmed …
+    const yoghurt = await add({ name: 'Joghurt', expiresOn: '2026-11-05' });
+    const saved = await eat(yoghurt.itemId, true);
+    expect(saved.rescued).toBe(true);
+    expect((await storage.outcomes.get(saved.eventId))?.rescued).toBe(true);
+    // … and none without the confirmation.
+    const quark = await add({ name: 'Quark', expiresOn: '2026-11-06' });
+    expect((await eat(quark.itemId, false)).rescued).toBe(false);
+    // Thrown away after all: no longer a rescue.
+    await inventory['inventory.changeOutcome']({
+      commandId: next(),
+      householdId,
+      eventId: saved.eventId,
+      outcome: 'wasted',
+    });
+    expect((await storage.outcomes.get(saved.eventId))?.rescued).toBeUndefined();
+  });
+
   it('records an outcome, closes the item and undoes it again', async () => {
     const { itemId } = await add({ quantity: 2, unit: 'pcs' });
     const done = await inventory['inventory.recordOutcome']({

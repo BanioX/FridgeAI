@@ -8,7 +8,7 @@ import {
 import type { Category } from '../catalog/category';
 import { CONTRACT_V1, type OperationOutput } from '../contract/operations';
 import { estimateExpiry, expiryAfterMove, expiryAfterOpening, soonThresholdFor } from '../expiry';
-import { isAtRisk } from '../metrics';
+import { canBeRescued, isAtRisk } from '../metrics';
 import {
   InventoryItemSchema,
   OutcomeEventSchema,
@@ -317,6 +317,10 @@ export function createInventoryCommands(ctx: AppContext) {
           : rappen(Math.round(item.priceRappen * share));
       const grams = estimate.grams;
 
+      // Only a confirmed rescue of food that was really on the brink counts (ADR-0039).
+      const rescued =
+        input.rescued === true && input.outcome !== 'wasted' && canBeRescued(item, clock.today());
+
       const now = clock.now();
       const outcome = OutcomeEventSchema.parse({
         id: ids.next(),
@@ -336,6 +340,7 @@ export function createInventoryCommands(ctx: AppContext) {
           clock.today(),
           soonThresholdFor(item.location),
         ),
+        ...(rescued ? { rescued: true } : {}),
         owner: item.owner,
         at: now,
         by: actor,
@@ -377,7 +382,7 @@ export function createInventoryCommands(ctx: AppContext) {
           }),
         );
       }
-      return { eventId: outcome.id, remainingQuantity: closed ? 0 : remaining };
+      return { eventId: outcome.id, remainingQuantity: closed ? 0 : remaining, rescued };
     });
   };
 
@@ -462,6 +467,10 @@ export function createInventoryCommands(ctx: AppContext) {
       const changed = { ...outcome, outcome: input.outcome, updatedAt: now };
       delete changed.wasteReason;
       delete changed.sharedWith;
+      if (input.outcome === 'wasted') {
+        // Thrown away after all: no longer a rescue (ADR-0039).
+        delete changed.rescued;
+      }
       await storage.outcomes.put(
         OutcomeEventSchema.parse({
           ...changed,

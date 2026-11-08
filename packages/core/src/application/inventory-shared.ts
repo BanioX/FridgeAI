@@ -47,6 +47,7 @@ export function toView(item: InventoryItem, product: Product | undefined): Inven
     ...(item.container === undefined ? {} : { container: item.container }),
     ...(item.packageSize === undefined ? {} : { packageSize: item.packageSize }),
     ...(item.openedOn === undefined ? {} : { openedOn: item.openedOn }),
+    purchasedAt: item.purchasedAt,
     ...factsOf(product),
     ...(product === undefined ? {} : { productSource: product.source }),
     ...(product?.gtin === undefined ? {} : { gtin: product.gtin }),
