@@ -41,7 +41,6 @@ Saucen, Dips und Tomatenmark landeten aber in «Sonstiges». Dort steht keine Ha
 
 ## Später
 
-- **Von der Theke** (Alban: «Mozzarella verschweisst oder frisch an der Theke ist eine andere Geschichte»): Beim Erfassen ein Schalter «Von der Theke», dann gilt die Haltbarkeit ab Kauf wie geöffnet.
 - **Das wirfst du oft weg:** Aus dem eigenen Verlauf, nur auf dem Gerät, ein Hinweis beim Erfassen, zum Beispiel «kleinere Packung», «Tube» oder «Reste einfrieren».
 - **Quittung in vier Schritten:** Das Datum nur bei heiklen Artikeln fragen.
 - **Parkplatz:** «Gibt es auch kleiner» mit konkreten Produkten und Preisen. Dafür bräuchte es Daten der Händler, und echte Händler-Anbindungen gibt es nur über Mocks.
@@ -50,3 +49,11 @@ Saucen, Dips und Tomatenmark landeten aber in «Sonstiges». Dort steht keine Ha
 
 - Die Stufe ändert sich mit dem Katalog von selbst. Eine Kategorie mit neuer Haltbarkeit braucht keinen zweiten Eintrag.
 - Mit dem Verbrauchsdatum ist eine Kategorie immer heikel, auch wenn die Tage länger wären (Rauchlachs).
+
+## Nachtrag (8.11.2026): Von der Theke
+
+Alban: «Wenn ich eine Packung Mozzarella kaufe, ist diese verschweisst. Wenn ich sie frisch an der Theke kaufe, ist das eine andere Geschichte.»
+
+- **Katalog-Feld `soldLoose`:** Kategorien, die es auch offen an der Theke gibt, tragen das Feld. Das sind Hartkäse, Frischkäse und Mozzarella, Aufschnitt, Würste, Rauchlachs und Dips. Ein Schema-Test verlangt dafür eine Haltbarkeit nach dem Öffnen.
+- **Beim Erfassen:** Steht so ein Artikel im Kühlschrank, fragt Rettich «Wie gekauft? Verpackt / Von der Theke». Mit «Von der Theke» ist der Artikel ab dem Kauftag geöffnet (`openedOn`). Das Datum folgt der bestehenden Regel nach dem Öffnen: Mozzarella hält dann etwa 3 Tage statt 10.
+- Frisches Fleisch und frischer Fisch brauchen den Schalter nicht, sie haben schon das kurze Verbrauchsdatum.
