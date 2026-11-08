@@ -1,5 +1,4 @@
-import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from './test';
+import { AxeBuilder, expect, test } from './test';
 import { textPdf } from './pdf';
 
 // An invented receipt in the layout of a Coop PDF (ADR-0027, ADR-0028).

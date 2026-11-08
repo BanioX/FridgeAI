@@ -1,5 +1,4 @@
-import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from './test';
+import { AxeBuilder, expect, test } from './test';
 
 test('deletes a wrong «Weggeworfen» from the history, the food comes back', async ({ page }) => {
   await page.goto('/inventory/new');

@@ -15,35 +15,31 @@ import { expiryBadge } from '../../ui/expiry-badge';
 import { formatQuantity } from '../../ui/quantity-text';
 import type { Tone } from '../../ui/tones';
 import {
-  barcode,
   bars,
+  FOOTER,
+  footers,
   card,
   chip,
   columns,
-  dashed,
-  double,
   emoji,
   ground,
   measure,
+  PAGE,
   PDF_COLOR as C,
-  receiptPaper,
   roundedPicture,
   stack,
+  TOP,
   write,
   type BarRow,
   type PdfPictures,
   type Rgb,
-  type TextStyle,
 } from './pdf-kit';
 import { reportInsights } from './report-insights';
 
 const t = messages.reports.pdf;
-const PAGE = { width: 210, height: 297, margin: 16 };
 const CONTENT = PAGE.width - 2 * PAGE.margin;
 const GUTTER = 5;
 const HALF = (CONTENT - GUTTER) / 2;
-const FOOTER = PAGE.height - 14;
-const TOP = 22;
 const MONTHS = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
 const LOCATION_COLOR: Record<'fridge' | 'freezer' | 'pantry' | 'reserve', Rgb> = {
   fridge: C.smaragd,
@@ -53,7 +49,6 @@ const LOCATION_COLOR: Record<'fridge' | 'freezer' | 'pantry' | 'reserve', Rgb> =
 };
 
 type Amount = (value: number, options?: { currency?: boolean }) => string;
-const kg = (grams: number) => `${(grams / 1000).toFixed(1)} kg`;
 const emojiOf = (categoryId: string) => (categoryById(categoryId) ?? fallbackCategory()).emoji;
 
 interface Context {
@@ -64,12 +59,11 @@ interface Context {
 }
 
 /**
- * Draws a report as an A4 PDF on the device (ADR-0030), in the design language of the app: the
- * silver ground, white cards with a soft shadow, the large title, the onyx card with the money
- * saved, and lists like «Vorrat» with the food emoji and the same status chips.
- * Page 1: what was saved, three key figures, «Was auffällt», the months.
- * Page 2: what to eat now, what is wasted and why, where the value and the money are.
- * Then everything in stock. jsPDF and the pictures load only now.
+ * The detailed report («Ausführlich») as an A4 PDF on the device (ADR-0030), in the design
+ * language of the app: silver ground, white cards with a soft shadow, the large title, lists
+ * like «Vorrat» with the food emoji and the same status chips. «Was auffällt», the months, what to
+ * eat now, what is wasted and why, where the value and the money are, then everything in stock.
+ * The short reports are receipts (`receipt-pdf.ts`); this one has none. jsPDF loads only now.
  */
 export async function reportPdf(
   report: Report,
@@ -97,12 +91,10 @@ export async function reportPdf(
   };
 
   ground(doc);
-  receipt(ctx, options);
-
-  let y = details(doc, options, newPage(doc));
+  let y = masthead(ctx, options, TOP);
   y = insights(ctx, report, money, y + 6);
   y = months(ctx, room(doc, y + 12, 96));
-  y = urgent(ctx, room(doc, y + 12, 34));
+  y = urgent(ctx, y + 12);
   y = waste(ctx, y + 12);
   y = places(ctx, y + 12);
   inventory(ctx, y + 12);
@@ -129,140 +121,44 @@ function room(doc: jsPDF, y: number, height: number): number {
 }
 
 /**
- * Page 1: the report as a till receipt («So hast du Food Waste reduziert»), on its own so it can
- * be shared alone: what was saved and given away, what was thrown away, the rescue rate and the
- * total, in a typewriter font on torn paper. The paper is as long as its content and stands in
- * the middle of the page: a first pass only measures, the second draws.
+ * The head of the detailed report, its own and not a receipt (Alban, 8.11.2026): the app icon
+ * and «Rettich» on the left, the date on the right, a hairline, then the large title like in
+ * the app.
  */
-function receipt(
-  ctx: Context,
+function masthead(
+  { doc, pictures }: Context,
   options: { household: string; period: string; createdOn: LocalDate },
-): void {
-  const width = 98;
-  const x = (PAGE.width - width) / 2;
-  const height = receiptLines(ctx, options, x, width, 0, false);
-  const top = Math.max(TOP, (FOOTER - height) / 2);
-  receiptPaper(ctx.doc, { x, y: top, width, height });
-  receiptLines(ctx, options, x, width, top, true);
-}
-
-/** Lays out the receipt from `top`; draws only when `paint`. Returns the height of the paper. */
-function receiptLines(
-  { doc, report, amount, pictures }: Context,
-  options: { household: string; period: string; createdOn: LocalDate },
-  x: number,
-  width: number,
-  top: number,
-  paint: boolean,
+  y: number,
 ): number {
-  const r = t.receipt;
-  const left = x + 9;
-  const right = x + width - 9;
-  const center = PAGE.width / 2;
-  const mono = (size: number, color: Rgb = C.ink, bold = false): TextStyle => ({
-    size,
-    color,
-    bold,
-    font: 'courier',
+  const logo = 10;
+  const middle = y + logo / 2;
+  if (pictures.logo === undefined) {
+    card(doc, { x: PAGE.margin, y, width: logo, height: logo }, C.smaragd, 2.6);
+  } else {
+    roundedPicture(doc, pictures.logo, { x: PAGE.margin, y, size: logo }, 2.6);
+  }
+  write(doc, 'Rettich', PAGE.margin + logo + 3.5, middle, {
+    size: 13,
+    color: C.onyx,
+    bold: true,
+    baseline: 'middle',
   });
-  const text = (value: string, at: number, y: number, style: TextStyle, room?: number) => {
-    if (paint) {
-      write(doc, value, at, y, style, room);
-    }
-  };
-  const rule = (kind: 'dashed' | 'double', y: number) => {
-    if (paint) {
-      (kind === 'dashed' ? dashed : double)(doc, left, right, y);
-    }
-  };
-
-  let y = top + 12;
-  const logo = 15;
-  if (paint) {
-    if (pictures.logo === undefined) {
-      card(doc, { x: center - logo / 2, y, width: logo, height: logo }, C.smaragd, 3.8);
-    } else {
-      roundedPicture(doc, pictures.logo, { x: center - logo / 2, y, size: logo }, 3.8);
-    }
-  }
-  y += logo + 8;
-  text('Rettich', center, y, { size: 19, color: C.onyx, bold: true, align: 'center' });
-  y += 5.5;
-  text(r.claim, center, y, { ...mono(8.5, C.muted), align: 'center' });
-  y += 7;
-  rule('dashed', y);
-  y += 7;
-  text(r.title, center, y, { ...mono(9.5, C.ink, true), align: 'center' });
-  y += 6;
-  const meta = [options.household, options.period, t.created(formatSwissDate(options.createdOn))];
-  for (const line of meta) {
-    text(line, center, y, { ...mono(8.5, C.muted), align: 'center' }, right - left);
-    y += 4.4;
-  }
-  y += 2.6;
-  rule('dashed', y);
-  y += 8;
-
-  const post = (label: string, value: string, color: Rgb = C.ink, bold = false) => {
-    text(label, left, y, mono(10, color, bold), right - left - 32);
-    text(value, right, y, { ...mono(10, color, bold), align: 'right' });
-    y += 4.6;
-  };
-  const note = (value: string) => {
-    text(`  ${value}`, left, y, mono(8.5, C.muted), right - left);
-    y += 6;
-  };
-  const impact = report.impact;
-  post(r.saved, amount(impact.savedRappen), C.smaragd, true);
-  note(r.detail(impact.savedCount, kg(impact.savedGrams)));
-  post(r.shared, amount(impact.sharedRappen));
-  note(r.sharedDetail(impact.sharedCount));
-  post(r.wasted, amount(impact.wastedRappen), C.today, true);
-  note(r.detail(impact.wastedCount, kg(impact.wastedGrams)));
-  y += 1;
-  rule('dashed', y);
-  y += 8;
-  post(r.inStock, amount(report.fridge.valueRappen));
-  note(t.items(report.fridge.itemCount));
-  post(r.spent, amount(report.shopping.spentRappen));
-  note(t.receipts(report.shopping.receiptCount));
-  y += 1;
-  rule('double', y);
-  y += 9;
-  const share = impact.savedShare;
-  text(r.rate, left, y, mono(10.5, C.ink, true));
-  text(share === null ? '–' : `${String(Math.round(share * 100))} %`, right, y, {
-    ...mono(10.5, C.ink, true),
+  write(doc, t.created(formatSwissDate(options.createdOn)), PAGE.width - PAGE.margin, middle, {
+    size: 9,
+    color: C.muted,
     align: 'right',
+    baseline: 'middle',
   });
-  y += 8;
-  text(r.total, left, y, mono(12.5, C.smaragd, true));
-  text(amount(impact.savedRappen), right, y, { ...mono(12.5, C.smaragd, true), align: 'right' });
-  y += 5;
-  rule('double', y);
-
-  // Foot: a decorative barcode and a thank-you.
-  y += 14;
-  if (paint) {
-    barcode(
-      doc,
-      { x: center - 30, y, width: 60, height: 11 },
-      `${options.household}|${options.period}|${options.createdOn}`,
-    );
-  }
-  y += 18;
-  text(r.thanks, center, y, { ...mono(9, C.ink), align: 'center' });
-  return y + 12 - top;
-}
-
-/** The large title of the detail pages, like the pages of the app. */
-function details(doc: jsPDF, options: { household: string; period: string }, y: number): number {
-  write(doc, t.heading, PAGE.margin, y + 8, { size: 28, color: C.onyx, bold: true });
-  write(doc, `${options.household} · ${options.period}`, PAGE.margin, y + 15.5, {
+  doc.setDrawColor(...C.line);
+  doc.setLineWidth(0.2);
+  doc.line(PAGE.margin, y + logo + 5, PAGE.width - PAGE.margin, y + logo + 5);
+  const title = y + logo + 19;
+  write(doc, t.heading, PAGE.margin, title, { size: 28, color: C.onyx, bold: true });
+  write(doc, `${options.household} · ${options.period}`, PAGE.margin, title + 7.5, {
     size: 11,
     color: C.muted,
   });
-  return y + 17;
+  return title + 9.5;
 }
 
 /** «Was auffällt» as a tip card like «Kühlschrank-Check»: green title, one line per finding. */
@@ -435,9 +331,11 @@ function itemRow(report: Report, item: ReportItem, value?: string): ListRow {
 }
 
 /** «Jetzt essen»: what expires within three days, as in «Läuft bald ab» on Start. */
+/** «Jetzt essen» stays in one piece: it moves to the next page whole when that is enough. */
 function urgent(ctx: Context, y: number): number {
   const { doc, report } = ctx;
-  const start = section(doc, t.urgent, y);
+  const height = 5 + Math.max(14, report.fridge.urgent.length * ROW);
+  const start = section(doc, t.urgent, room(doc, y, height <= FOOTER - 6 - TOP ? height : 34));
   if (report.fridge.urgent.length === 0) {
     card(doc, { x: PAGE.margin, y: start, width: CONTENT, height: 14 });
     write(doc, t.noUrgent, PAGE.margin + 7, start + 7, {
@@ -567,22 +465,6 @@ function inventory(ctx: Context, y: number): void {
     write(doc, t.estimated, PAGE.margin, Math.min(end + 6, FOOTER - 3), {
       size: 8,
       color: C.muted,
-    });
-  }
-}
-
-function footers(doc: jsPDF): void {
-  const pages = doc.getNumberOfPages();
-  for (let page = 1; page <= pages; page += 1) {
-    doc.setPage(page);
-    doc.setDrawColor(...C.line);
-    doc.setLineWidth(0.2);
-    doc.line(PAGE.margin, FOOTER, PAGE.margin + CONTENT, FOOTER);
-    const style = { size: 8, color: C.muted };
-    write(doc, t.footer, PAGE.margin, FOOTER + 5, style);
-    write(doc, t.page(page, pages), PAGE.margin + CONTENT, FOOTER + 5, {
-      ...style,
-      align: 'right',
     });
   }
 }

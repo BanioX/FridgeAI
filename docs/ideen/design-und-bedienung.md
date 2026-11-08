@@ -43,3 +43,12 @@ Ideen aus der Arbeit an der Apple-Designsprache (ADR-0021). Noch nicht beschloss
 - **Wegwischen auf Einkaufsliste und Kühlschrank-Check:** Dieselbe Geste zum Abhaken. Aufwand S.
 - **Braucht:** nichts Neues, alles auf dem Gerät.
 
+
+## Berichte weiterdenken (nach den Berichtsarten, 8.11.2026)
+
+- **Quittung als Bild teilen:** Neben dem PDF ein PNG im Hochformat, das direkt in WhatsApp oder Instagram-Stories passt. Mehr Reichweite für Rettich ohne Werbung. Aufwand S (Canvas auf dem Gerät), Kosten keine.
+- **Sonntags-Quittung:** Einmal pro Woche ein Hinweis «Deine Woche: CHF 12.40 gerettet», ein Tipp öffnet die Wirkungs-Quittung. Braucht Benachrichtigungen ([`benachrichtigungen.md`](benachrichtigungen.md)). Aufwand M.
+- **«Läuft bald ab» als Kochplan:** Auf der Quittung pro Artikel ein passendes Rezept aus «Kochen». Aufwand S, alles auf dem Gerät.
+- **Notvorrat als eigene Quittung:** Heute nur im ausführlichen Bericht. Mit Ablaufdaten wichtig für die Vorratsliste des Bundes. Aufwand S.
+- **Mehrere Orte zusammen:** Kühlschrank und Tiefkühler auf einer Quittung, mit Zwischentotal pro Ort. Aufwand S.
+- **Braucht:** nichts Neues; kein Datenfluss nach aussen.

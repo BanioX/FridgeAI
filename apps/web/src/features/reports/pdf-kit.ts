@@ -1,4 +1,5 @@
 import type { jsPDF } from 'jspdf';
+import { messages } from '../../app/messages.de-CH';
 import type { Tone } from '../../ui/tones';
 
 /**
@@ -473,5 +474,28 @@ export function barcode(
     }
     at += width;
     bar = !bar;
+  }
+}
+
+/** A4 in millimetres, the margin of every page, where the footer starts and content begins. */
+export const PAGE = { width: 210, height: 297, margin: 16 } as const;
+export const FOOTER = PAGE.height - 14;
+export const TOP = 22;
+
+/** The footer of every page: a hairline, where the PDF was made, and the page number. */
+export function footers(doc: jsPDF): void {
+  const t = messages.reports.pdf;
+  const pages = doc.getNumberOfPages();
+  for (let page = 1; page <= pages; page += 1) {
+    doc.setPage(page);
+    doc.setDrawColor(...PDF_COLOR.line);
+    doc.setLineWidth(0.2);
+    doc.line(PAGE.margin, FOOTER, PAGE.width - PAGE.margin, FOOTER);
+    const style = { size: 8, color: PDF_COLOR.muted };
+    write(doc, t.footer, PAGE.margin, FOOTER + 5, style);
+    write(doc, t.page(page, pages), PAGE.width - PAGE.margin, FOOTER + 5, {
+      ...style,
+      align: 'right',
+    });
   }
 }

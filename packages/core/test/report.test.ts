@@ -125,6 +125,16 @@ describe('buildReport (ADR-0030)', () => {
     expect(fresh.impact).toMatchObject({ sharedRappen: 0, sharedCount: 0 });
   });
 
+  it('lists what was thrown away, newest first, with name, day, value and reason', () => {
+    expect(
+      report.impact.wastedItems.map((entry) => [entry.on, entry.valueRappen, entry.reason]),
+    ).toEqual([
+      ['2026-11-03', 600, 'spoiled'],
+      ['2026-10-20', 250, 'forgotten'],
+      ['2026-10-02', 300, 'forgotten'],
+    ]);
+  });
+
   it('names what is wasted most and why', () => {
     expect(report.impact.topWasted).toEqual([
       { categoryId: 'meat-poultry', count: 1, valueRappen: 600 },

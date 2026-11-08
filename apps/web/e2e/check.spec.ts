@@ -1,6 +1,5 @@
-import AxeBuilder from '@axe-core/playwright';
 import type { Page } from '@playwright/test';
-import { expect, test } from './test';
+import { AxeBuilder, expect, test } from './test';
 
 async function addToFridge(page: Page, name: string) {
   await page.goto('/inventory/new');
