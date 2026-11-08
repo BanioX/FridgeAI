@@ -185,6 +185,29 @@ export const messages = {
     rebuyFailed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
     undone: (name: string) => `${name} ist wieder im Vorrat.`,
     undoFailed: 'Rückgängig hat nicht geklappt. Bitte versuch es nochmals.',
+    /** Select mode like iOS «Auswählen» (Alban, 8.11.2026): pick several items and move them. */
+    select: {
+      enter: 'Auswählen',
+      done: 'Fertig',
+      all: 'Alle auswählen',
+      none: 'Keine auswählen',
+      barLabel: 'Auswahl verschieben',
+      count: (n: number) => `${String(n)} ausgewählt`,
+      moveTo: 'Verschieben nach',
+      /** «im Tiefkühler»: where the items lie afterwards. */
+      in: {
+        fridge: 'im Kühlschrank',
+        freezer: 'im Tiefkühler',
+        pantry: 'im Vorrat',
+        reserve: 'im Notvorrat',
+      },
+      movedOne: (name: string, place: string) => `${name} liegt jetzt ${place}.`,
+      movedMany: (n: number, place: string) => `${String(n)} Artikel liegen jetzt ${place}.`,
+      /** «Milch gehört nicht in den Vorrat, sie bleibt.» The others still move. */
+      unfit: (names: readonly string[], place: string) =>
+        `${names.join(', ')} ${names.length === 1 ? 'gehört' : 'gehören'} nicht ${place.replace(/^im /, 'in den ')}, ${names.length === 1 ? 'bleibt' : 'bleiben'} hier.`,
+      failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
+    },
   },
   swipe: {
     tip: 'Tipp: Wisch nach links, wenn du etwas verwertet hast, nach rechts, wenn du es entsorgt hast.',
