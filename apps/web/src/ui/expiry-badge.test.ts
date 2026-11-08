@@ -12,7 +12,7 @@ describe('expiryBadge', () => {
       '2026-11-05',
       'fridge',
       'danger',
-      'Nicht mehr essen',
+      'Nicht mehr verwenden',
     ],
     [
       { kind: 'past_best_before', daysOver: 3 } as const,

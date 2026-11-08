@@ -34,7 +34,7 @@ test('counts a rescue only when the person confirms it on the brink', async ({ p
   await expect(page.getByRole('radio', { name: 'Nein' })).toBeChecked();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await page.locator('label').filter({ hasText: 'Ja, gerettet' }).click();
-  await page.getByRole('button', { name: 'Als gegessen speichern' }).click();
+  await page.getByRole('button', { name: 'Als verwertet speichern' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
 
   // The reward (ADR-0042): what it was worth, the month so far and a food fact, no «Danke».

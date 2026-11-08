@@ -837,7 +837,7 @@ export const CATEGORIES: readonly Category[] = [
     ],
     tips: [
       'Altes Gipfeli im Ofen kurz aufbacken, dann schmeckt es wieder frisch.',
-      'Einfrieren, wenn du sie nicht am gleichen Tag isst.',
+      'Einfrieren, wenn du sie nicht am gleichen Tag brauchst.',
     ],
   }),
   // Pantry
@@ -1308,7 +1308,7 @@ export const CATEGORIES: readonly Category[] = [
     ],
     tips: [
       'Fertiggerichte für die ersten Tage nach dem Einkauf einplanen, sie halten am kürzesten.',
-      'Ungeöffnet kühl lagern, geöffnet am gleichen Tag essen.',
+      'Ungeöffnet kühl lagern, geöffnet am gleichen Tag aufbrauchen.',
     ],
   }),
   def({
@@ -1376,7 +1376,7 @@ export const CATEGORIES: readonly Category[] = [
     ],
     tips: [
       'Kühl, trocken und dunkel lagern, dann hält die Packung am längsten.',
-      'Rollierend lagern: das Älteste zuerst essen und gleich ersetzen.',
+      'Rollierend lagern: das Älteste zuerst aufbrauchen und gleich ersetzen.',
       LOOK,
     ],
   }),
@@ -1402,7 +1402,7 @@ export const CATEGORIES: readonly Category[] = [
     ],
     tips: [
       'Der Bund empfiehlt Lebensmittel für rund eine Woche als Notvorrat.',
-      'Rollierend lagern: das Älteste zuerst essen und gleich ersetzen.',
+      'Rollierend lagern: das Älteste zuerst aufbrauchen und gleich ersetzen.',
     ],
   }),
   def({

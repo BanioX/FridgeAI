@@ -487,7 +487,7 @@ describe('inventory.changeOutcome', () => {
   ) =>
     handlers['inventory.changeOutcome']({ commandId: ids.next(), householdId, eventId, ...fields });
 
-  it('turns a wrong «weggeworfen» into «gegessen»: value and date stay, the item follows', async () => {
+  it('turns a wrong «entsorgt» into «verwertet»: value and date stay, the item follows', async () => {
     // Its last day: eaten and confirmed, a rescue (ADR-0039).
     const { itemId } = await add({
       name: 'Joghurt',

@@ -36,7 +36,7 @@ const periodOptions = (Object.keys(messages.history.periods) as Period[]).map((v
 }));
 const TONES = { eaten: 'text-basil-800', shared_out: 'text-basil-800', wasted: 'text-today' };
 
-/** «Gegessen · 150 g · CHF 3.00» and «vergessen · 07.11.2026». */
+/** «Verwertet · 150 g · CHF 3.00» and «vergessen · 07.11.2026». */
 function details(entry: Entry, money: Money): [string, string] {
   const value = `${money.format(entry.valueRappen)}${entry.valueEstimated ? ` (${t.estimated})` : ''}`;
   const why =

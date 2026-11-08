@@ -53,7 +53,7 @@ test('swipes left to eat one piece, undoes it, and a short drag changes nothing'
   // Past 40 % of the row.
   await swipeLeft(page, 250);
   await expect(row).toContainText('5 Stk.');
-  await expect(page.getByRole('status')).toContainText('1 Glace gegessen');
+  await expect(page.getByRole('status')).toContainText('1 Glace verwertet');
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
   // The tip stays for this visit, so the list does not jump under the finger.
   await expect(page.getByText(/^Tipp: Wisch einen Artikel nach links/)).toBeVisible();
