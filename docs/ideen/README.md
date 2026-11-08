@@ -22,7 +22,7 @@ Brainstorming, laufend gepflegt (CLAUDE.md: «Ideen unterwegs»). Hier steht, wa
 | [`markt-und-timing.md`](./markt-und-timing.md) | Food Waste in Zahlen, Ziele 2030, Konkurrenz, Abo-Kennzahlen |
 | [`mitbewerber-yazio.md`](./mitbewerber-yazio.md) | YAZIO geprüft: Zahlen, Datenquellen (Schweizer Nährwertdatenbank), Suche in Stufen, Wachstum ohne Werbebudget |
 | [`masterplan-bewertung.md`](./masterplan-bewertung.md) | Albans Masterplan: übernommen, später, Entscheide, Regeln |
-| [`schaltzentrale.md`](./schaltzentrale.md) | Ein eigener Rahmen ausserhalb von Rettich: Trichter, Dispatcher, Stecker, Kontexte; wie Alban beim Entwickeln Aufgaben zieht und ablegt; Budget-Empfehlung, geprüfte Fakten, Stufenplan |
+| [`swelper.md`](./swelper.md) | **Swelper**, die Schaltzentrale als eigener Rahmen ausserhalb von Rettich: Trichter, Dispatcher, Stecker, Kontexte; führt SWELP über Agenten aus; wie Alban beim Entwickeln Aufgaben zieht und ablegt; Budget-Empfehlung, geprüfte Fakten, Stufenplan |
 
 **Produkt-Prioritäten** (Alban, 6.11.2026):
 

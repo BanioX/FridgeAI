@@ -1,6 +1,6 @@
-# Schaltzentrale: ein eigener Rahmen mit Trichter, Dispatcher, Stecker und Takt
+# Swelper: die Schaltzentrale als eigener Rahmen
 
-Stand 8.11.2026, zweite Fassung nach Albans Antworten. Vorschlag von Claude als Architekt, **Entscheid über den Start offen** (Alban). Die Schaltzentrale ist **kein Teil von Rettich**, sondern ein eigener Rahmen in einem eigenen Repo: ein Programm, mit dem du Ideen hineinlegst, Aufgaben nach Kontext geclustert siehst, beim Entwickeln eine Aufgabe auswählst oder eine neue hineinlegst, und ein Dirigent sie an ansteckbare Fach-Agenten verteilt. Rettich ist der erste Kontext, nicht der einzige.
+Stand 8.11.2026, dritte Fassung. Vorschlag von Claude als Architekt, **Entscheid über den Start offen** (Alban). **Name: Swelper** (Alban, 8.11.2026; technisch `swelper`), der Rahmen, der Albans [SWELP](https://github.com/BanioX/swelp) über Agenten hinweg ausführt. Der Swelper ist **kein Teil von Rettich**, sondern ein eigener Rahmen in einem eigenen Repo: ein Programm, mit dem du Ideen hineinlegst, Aufgaben nach Kontext geclustert siehst, beim Entwickeln eine Aufgabe auswählst oder eine neue hineinlegst, und ein Dirigent sie an ansteckbare Fach-Agenten verteilt. Rettich ist der erste Kontext, nicht der einzige.
 
 **Wie dieser Vorschlag entstand:** vier Recherche-Agenten (Claude-Code-Stack, externe Frameworks, Repo-Stand, Nebenläufigkeit und Kosten), drei konkurrierende Entwürfe, drei Juroren, 13 Skeptiker, die jede Produkt-Behauptung gegen die Doku prüften. Alle drei Juroren wählten den Stufen-Entwurf. Die Recherche selbst hat Albans 5-Stunden-Fenster erreicht (26 Agenten, rund 4,2 Mio. Tokens), siehe L-20 im [Lernbuch](../swelp/lernbuch.md).
 
@@ -10,54 +10,66 @@ Stand 8.11.2026, zweite Fassung nach Albans Antworten. Vorschlag von Claude als 
 
 | Dein Wort | Was es heisst | Begriff hier |
 | --- | --- | --- |
-| «eigenes Programm, eigener Rahmen, Frame» | Die Zentrale lebt in einem eigenen Repo und wird per Sync in jedes Projekt eingesteckt | **Rahmen** (Repo `zentrale`) |
+| «eigenes Programm, eigener Rahmen, Frame» | Der Swelper lebt in einem eigenen Repo und wird per Sync in jedes Projekt eingesteckt | **Rahmen** (Repo `swelper`) |
 | «kontextbezogen, geclustert» | Aufgaben gehören zu einem Kontext (Rettich, nächstes Projekt, privat) und zu einer Kompetenz | **Kontext** und **Lane** |
 | «Trichter», «Catchup-Staubsauger» | Ein Ort, an dem du frei schreibst; alles wird aufgesaugt und sortiert | **Trichter** |
 | «Er moderiert und bricht es an Marketing, CEO usw.» | Ein Dirigent zerlegt nach Kompetenz und delegiert | **Dispatcher** |
 | «Telefonistinnen stecken die Leitungen zusammen» | Fach-Agenten kommen und gehen nach Bedarf | **Stecker** |
-| «Task auswählen oder reinlegen, wenn ich entwickle» | Aus jeder Claude-Code-Sitzung heraus Aufgaben ziehen und ablegen | **`/zentrale`** |
+| «Task auswählen oder reinlegen, wenn ich entwickle» | Aus jeder Claude-Code-Sitzung heraus Aufgaben ziehen und ablegen | **`/swelper`** |
 | «Mo–Fr 8–17 Uhr, Phasen» (war eine Idee) | Ereignisse treiben die Arbeit, ein Takt ist optional | **Ereignis-Takt**, später **Takt** |
 | «Kein Agent überschreibt den anderen» | Isolation, Besitz, Rulesets, ein einziger Merger | **Wächter** |
 | «Grokbot, OpenClaw, Hermes, Harness» | Vorbilder, von denen wir Muster übernehmen, nicht Code | siehe «Vorbilder» |
 
 ## Kurzantwort
 
-**Bau die Zentrale als eigenes privates Repo `zentrale`: die Quelle für Agenten, Skills, Hooks und Takt-Prompts, die ein Sync-Skript in jedes Projekt kopiert, und das Gedächtnis (Tickets als GitHub Issues, geclustert nach Kontext, als privates GitHub Project sichtbar). Jedes Projekt, Rettich zuerst, trägt eine erzeugte Kopie und sagt nur, welcher Kontext es ist.** Kein Server, kein API-Key, keine neue Dependency; alles läuft im Abo. Drei Stufen: im Gespräch nutzbar, dann ereignisgetrieben ohne dich, dann mit Takt, eigener Ansicht und anderen Anbietern. Nichts wird später weggeworfen.
+**Bau den Swelper als eigenes privates Repo `swelper`: die Quelle für Agenten, Skills, Hooks und Takt-Prompts, die ein Sync-Skript in jedes Projekt kopiert, und das Gedächtnis (Tickets als GitHub Issues, geclustert nach Kontext, als privates GitHub Project sichtbar). Jedes Projekt, Rettich zuerst, trägt eine erzeugte Kopie und sagt nur, welcher Kontext es ist.** Kein Server, kein API-Key, keine neue Dependency; alles läuft im Abo. Drei Stufen: im Gespräch nutzbar, dann ereignisgetrieben ohne dich, dann mit Takt, eigener Ansicht und anderen Anbietern. Nichts wird später weggeworfen.
 
-Warum nicht eine eigene Anwendung (Hono auf Cloudflare, Agent SDK, Managed Agents)? Weil das beim ersten Schritt einen API-Key und Geld braucht (Regel 5), rund 1500 Zeilen eigenen Code, und weil Abo, Cloud-Sitzungen, Scheduled Tasks und Subagents dasselbe heute schon können. Die Idee einer austauschbaren Ausführer-Schnittstelle kommt in Stufe 3.
+Warum nicht eine eigene Anwendung mit Server (Hono auf Cloudflare, Agent SDK, Managed Agents)? Weil das beim ersten Schritt einen API-Key und Geld braucht (Regel 5), rund 1500 Zeilen eigenen Code, und weil Abo, Cloud-Sitzungen, Scheduled Tasks und Subagents dasselbe heute schon können. Die Idee einer austauschbaren Ausführer-Schnittstelle kommt in Stufe 3.
+
+## Warum Swelper
+
+SWELP ist Albans eigenes Protokoll-Set ([`BanioX/swelp`](https://github.com/BanioX/swelp)): **S**coped **W**ork, Side **E**ffect, Self **L**earning **P**rotocols, in Rettich als «Darf, Tut, Lernt» gelebt ([`docs/swelp/`](../swelp/README.md)). Die KI arbeitet, an drei Punkten entscheidet ein Mensch. Der **Swelper** ist der, der diesen Kreis dreht, über Agenten, Projekte und Tage hinweg:
+
+| SWELP | Alltagsbild | Im Swelper |
+| --- | --- | --- |
+| **Darf** (SWP) | Auftrag und Quittung | Jedes Ticket ist ein Auftrag mit Ziel, Pfaden, Tabu und Testweg; die Landung ist die Quittung (PR, Datei, Issue-Kommentar) |
+| **Tut** (SEP) | Beipackzettel und Zulassung | Gates `gate:money`, `gate:data-flow`, `gate:product`; neue Nebenwirkungen stoppen, bis du Ja sagst |
+| **Lernt** (SLP) | Lektionenbuch | Lernbuch des Kontexts, `metrics.json`, und in Stufe 3 der Dispatcher, der daraus Tickets vorschlägt |
+
+**Schreibweise, design-technisch:** SWELP bleibt gross, weil es ein Akronym ist. Der Swelper ist eine Rolle, kein Akronym mehr, darum **Swelper** mit grossem S wie Rettich, und technisch klein: Repo `BanioX/swelper`, Befehl `/swelper`, Datei `.swelper.json`, Label `swelper`. «SWELPER» in Grossbuchstaben würde schreien und wie eine zweite Abkürzung aussehen. Kollisionsprüfung per Websuche am 8.11.2026: kein Werkzeug und kein Projekt mit diesem Namen gefunden. Zweiter Platz war **Mainspring**, die Zugfeder des Uhrwerks; besetzt in dieser Nische sind Clockwork, Escapement, Ratchet, Camshaft, Pinion, Gearbox und Cog.
 
 ## Bild
 
 ```
  Du: Gespräch in einem Projekt · Handy (GitHub-App) · später Panel oder Seite
-        │  /zentrale add «…»  ·  Issue mit Label trichter
+        │  /swelper add «…»  ·  Issue mit Label trichter
         ▼
- ┌────────────────────────── Repo zentrale (der Rahmen) ──────────────────────────┐
+ ┌────────────────────────── Repo swelper (der Rahmen) ───────────────────────────┐
  │ Trichter ─▶ Dispatcher (Opus; Fable auf Zuruf)                                 │
  │             liest: Steuer-Issue, Kontext, Standing Orders, Lernbuch, Faden     │
  │             sortiert jetzt · später · Parkplatz; zerlegt in Tickets            │
  │ Tickets = Issues, geclustert: ctx:rettich · lane:marketing · status:ready      │
- │ Stecker = agents/*.md   Skills = /zentrale, /trichter   Hooks = Wächter        │
+ │ Stecker = agents/*.md   Skills = /swelper, /trichter   Hooks = Wächter        │
  │ Kontexte: contexts/rettich/context.json · contexts/<nächstes>/…                │
  └───────────────┬──────────────────────────────┬─────────────────────────────────┘
                  │ Sync: .claude/ erzeugt       │ Sync: .claude/ erzeugt
         ┌────────▼────────┐             ┌───────▼────────┐
-        │ Repo FridgeAI   │             │ nächstes Repo  │   .zentrale.json: { "context": "…" }
+        │ Repo FridgeAI   │             │ nächstes Repo  │   .swelper.json: { "context": "…" }
         │ Dev-Tickets →   │             │                │   Arbeit in eigenem Worktree und Branch
         │ PR claude/<id>  │             │                │   Branch-Schutz auf main (GitHub Pro)
         └─────────────────┘             └────────────────┘
 ```
 
-## Der Rahmen: Repo `zentrale`
+## Der Rahmen: Repo `swelper`
 
 Ein privates Repo, zugleich Quelle und Gedächtnis. Vorschlag für den Aufbau:
 
 ```
-zentrale/
+swelper/
 ├── bin/sync.mjs                     kopiert agents, skills, hooks in das .claude/ eines Projekts (nur Node, keine Dependency)
 ├── .claude-plugin/plugin.json       optional: dasselbe als Plugin für deinen Rechner und für Kontexte ohne Repo
 ├── agents/                          dispatcher, ceo-strategy, marketing, design, legal, finance, reviewer, implementer, helper
-├── skills/zentrale/SKILL.md         /zentrale status · pick · add · done · report
+├── skills/swelper/SKILL.md         /swelper status · pick · add · done · report
 ├── skills/trichter/SKILL.md         Moderation, Sortierung, Zerlegung, Gates, Anstecken, Landung, Nachführen
 ├── hooks/hooks.json + *.mjs         guard-paths, guard-git, board-brief (SessionStart)
 ├── takt/                            plan.md, build.md, optimize.md, report.md, ping.md (versionierte Prompts, Stufe 3)
@@ -68,18 +80,18 @@ zentrale/
 └── docs/adr/                        die Entscheide des Rahmens selbst
 ```
 
-**Ein Projekt steckt den Rahmen ein** per Sync, nicht per Plugin: `node bin/sync.mjs <projekt>` erzeugt im Projekt `.claude/agents/*.md`, `.claude/skills/*/SKILL.md`, `.claude/hooks/*.mjs` und den Hook-Teil von `.claude/settings.json`, jede Datei mit Kopfzeile «erzeugt von zentrale vX, nicht von Hand ändern», dazu `.zentrale.json` mit `{ "context": "rettich" }`. Geprüft ist: Cloud-Sitzungen und Scheduled Tasks laden Plugins, die Projekt-Settings deklarieren, **nicht**, wohl aber die `.claude/`-Dateien im Repo. Ein Test im Projekt prüft, dass die Kopie zur Version im Rahmen passt. Das Plugin bleibt eine Bequemlichkeit für deinen Rechner (`/zentrale` in jedem Ordner) und für Kontexte ohne Repo. Die drei bestehenden Agenten in `.claude/agents` von Rettich werden durch die erzeugten ersetzt.
+**Ein Projekt steckt den Rahmen ein** per Sync, nicht per Plugin: `node bin/sync.mjs <projekt>` erzeugt im Projekt `.claude/agents/*.md`, `.claude/skills/*/SKILL.md`, `.claude/hooks/*.mjs` und den Hook-Teil von `.claude/settings.json`, jede Datei mit Kopfzeile «erzeugt von swelper vX, nicht von Hand ändern», dazu `.swelper.json` mit `{ "context": "rettich" }`. Geprüft ist: Cloud-Sitzungen und Scheduled Tasks laden Plugins, die Projekt-Settings deklarieren, **nicht**, wohl aber die `.claude/`-Dateien im Repo. Ein Test im Projekt prüft, dass die Kopie zur Version im Rahmen passt. Das Plugin bleibt eine Bequemlichkeit für deinen Rechner (`/swelper` in jedem Ordner) und für Kontexte ohne Repo. Die drei bestehenden Agenten in `.claude/agents` von Rettich werden durch die erzeugten ersetzt.
 
-**Geclustert heisst:** Jedes Ticket trägt genau einen Kontext (`ctx:rettich`), eine Lane (`lane:dev`, `lane:marketing`, `lane:ceo`, `lane:design`, `lane:legal`, `lane:finance`), einen Status (`status:inbox`, `ready`, `doing`, `review`, `waiting-alban`, `done`, `parked`) und bei Bedarf Gates (`gate:money`, `gate:data-flow`, `gate:product`). `/zentrale status` zeigt das als Baum: Kontext → Lane → Status. Dieselben Issues erscheinen in einem **privaten GitHub Project** auf deinem Konto (Tabelle und Board, gruppiert nach Kontext und Lane, auch in der GitHub-App auf dem Handy); die eingebaute Automation «Auto-add» nimmt jedes Issue mit Label `zentrale` von selbst auf. Das ist die erste Ansicht der Zentrale, ohne eine Zeile Code. Ein neuer Kontext ist ein Ordner unter `contexts/` und ein Label; sonst nichts.
+**Geclustert heisst:** Jedes Ticket trägt genau einen Kontext (`ctx:rettich`), eine Lane (`lane:dev`, `lane:marketing`, `lane:ceo`, `lane:design`, `lane:legal`, `lane:finance`), einen Status (`status:inbox`, `ready`, `doing`, `review`, `waiting-alban`, `done`, `parked`) und bei Bedarf Gates (`gate:money`, `gate:data-flow`, `gate:product`). `/swelper status` zeigt das als Baum: Kontext → Lane → Status. Dieselben Issues erscheinen in einem **privaten GitHub Project** auf deinem Konto (Tabelle und Board, gruppiert nach Kontext und Lane, auch in der GitHub-App auf dem Handy); die eingebaute Automation «Auto-add» nimmt jedes Issue mit Label `swelper` von selbst auf. Das ist die erste Ansicht des Swelpers, ohne eine Zeile Code. Ein neuer Kontext ist ein Ordner unter `contexts/` und ein Label; sonst nichts.
 
 ## So nutzt du es beim Entwickeln
 
-1. Du öffnest Rettich in Claude Code. Der SessionStart-Hook `board-brief` druckt ohne Tokens: «Zentrale · Kontext rettich · 3 bereit · 1 wartet auf dich · Not-Aus aus».
-2. **Aufgabe auswählen:** `/zentrale pick` listet die `ready`-Tickets dieses Kontexts, du wählst eines, Claude setzt es auf `doing`, legt den Worktree und den Branch `claude/A-0024-landingpage` an und arbeitet nach dem Ticket (Ziel, Pfade, Tabu, Testweg).
-3. **Aufgabe hineinlegen:** `/zentrale add «Wir brauchen eine Landingpage mit Warteliste»`. Das wird ein Issue mit `trichter` und `ctx:rettich`; der Dispatcher sortiert sofort, wenn du willst, sonst beim nächsten Lauf.
-4. **Fertig melden:** `/zentrale done A-0024` verlinkt den PR, setzt `review`, und der Reviewer schaut drauf. Gemergt wird erst nach grüner CI.
-5. **Vom Handy:** GitHub-App, Repo `zentrale`, neues Issue mit Label `trichter`. Kontext-Label, wenn du es weisst, sonst setzt es der Dispatcher.
-6. **Anderer Kontext, gleiche Zentrale:** Im nächsten Repo steht `.zentrale.json` mit einem anderen Kontext; `/zentrale pick` zeigt nur dessen Tickets. Private Aufgaben bekommen einen Kontext ohne Repo.
+1. Du öffnest Rettich in Claude Code. Der SessionStart-Hook `board-brief` druckt ohne Tokens: «Swelper · Kontext rettich · 3 bereit · 1 wartet auf dich · Not-Aus aus».
+2. **Aufgabe auswählen:** `/swelper pick` listet die `ready`-Tickets dieses Kontexts, du wählst eines, Claude setzt es auf `doing`, legt den Worktree und den Branch `claude/A-0024-landingpage` an und arbeitet nach dem Ticket (Ziel, Pfade, Tabu, Testweg).
+3. **Aufgabe hineinlegen:** `/swelper add «Wir brauchen eine Landingpage mit Warteliste»`. Das wird ein Issue mit `trichter` und `ctx:rettich`; der Dispatcher sortiert sofort, wenn du willst, sonst beim nächsten Lauf.
+4. **Fertig melden:** `/swelper done A-0024` verlinkt den PR, setzt `review`, und der Reviewer schaut drauf. Gemergt wird erst nach grüner CI.
+5. **Vom Handy:** GitHub-App, Repo `swelper`, neues Issue mit Label `trichter`. Kontext-Label, wenn du es weisst, sonst setzt es der Dispatcher.
+6. **Anderer Kontext, gleicher Swelper:** Im nächsten Repo steht `.swelper.json` mit einem anderen Kontext; `/swelper pick` zeigt nur dessen Tickets. Private Aufgaben bekommen einen Kontext ohne Repo.
 
 ## Rollenmodell
 
@@ -103,7 +115,7 @@ Ein Stecker ist eine Markdown-Datei mit Frontmatter (`name`, `description`, `mod
 
 Du schreibst: «Wir brauchen eine Landingpage mit Warteliste vor dem Pilot.»
 
-1. **Eingabe:** `/zentrale add …` oder ein Issue mit `trichter`. Der Text steht zwischen Markern und gilt als Daten.
+1. **Eingabe:** `/swelper add …` oder ein Issue mit `trichter`. Der Text steht zwischen Markern und gilt als Daten.
 2. **Startritual:** Der Dispatcher liest Steuer-Issue (Not-Aus?), `contexts/rettich/context.json`, `standing-orders.md`, den Faden des Kontexts (`docs/swelp/uebergabe.md` in Rettich) und das Lernbuch. Höchstens eine Rückfrage.
 3. **Sortieren:** jetzt / später / Parkplatz, mit dem Filter des Kontexts («Fokus jetzt: bis zum Pilot»). Hier: jetzt, aber ohne Bezahlfunktion.
 4. **Zerlegen:** `A-0021` Marketing (Botschaft, Texte), `A-0022` Design (HIG-Layout, Sheet), `A-0023` Recht (Warteliste = neuer Datenfluss E-Mail-Adresse → `gate:data-flow`), `A-0024` Implementer (statische Seite mit Mock-Adapter), `A-0025` CEO (passt die Seite zur Blue-Ocean-Strategie?). Jedes Ticket: Ziel, Format, erlaubte Pfade, Tabu, Testweg, Gates, Besitzer.
@@ -125,10 +137,10 @@ Jeder Cloud-Lauf klont frisch, ohne Erinnerung an den Lauf eine Stunde vorher. A
 
 | Was | Wo | Wer schreibt |
 | --- | --- | --- |
-| Lebender Zustand der Tickets (Kontext, Lane, Status, Besitzer, Gates) | Issues im Repo `zentrale`, Labels wie oben | Dispatcher; du antwortest per Kommentar oder Label |
-| Steuerung und Not-Aus | ein Issue «Zentrale: Steuerung» mit Labels `takt:on` / `takt:stop` | du, vom Handy |
+| Lebender Zustand der Tickets (Kontext, Lane, Status, Besitzer, Gates) | Issues im Repo `swelper`, Labels wie oben | Dispatcher; du antwortest per Kommentar oder Label |
+| Steuerung und Not-Aus | ein Issue «Swelper: Steuerung» mit Labels `takt:on` / `takt:stop` | du, vom Handy |
 | Code, PRs, Faden eines Kontexts | im Projekt-Repo (Rettich: `docs/swelp/uebergabe.md`), Ticket verlinkt den PR | Dispatcher, Implementer |
-| Ansicht für dich | privates GitHub Project «Zentrale» (Auto-add über Label), Baum per `/zentrale status` | GitHub, automatisch |
+| Ansicht für dich | privates GitHub Project «Swelper» (Auto-add über Label), Baum per `/swelper status` | GitHub, automatisch |
 | Maschinenlesbarer Spiegel und Messwerte | `board/<kontext>/board.json`, `metrics.json` (pro Lauf: Modell, Turns, Dauer, Dateien) | `takt-report`, als Doku-PR |
 | Regeln | `standing-orders.md`, `contexts/*/context.json`, `schema/` | nur du und der Dispatcher in einem reviewten PR |
 | Ergebnisse der Fach-Rollen | `contexts/<kontext>/out/<rolle>/` | die jeweilige Rolle |
@@ -141,7 +153,7 @@ Der Takt war deine Idee, keine Vorgabe. Darum treiben **Ereignisse** die Arbeit,
 
 | Auslöser | Was passiert | Womit |
 | --- | --- | --- |
-| Issue mit `trichter` | Dispatcher sortiert und zerlegt | Scheduled Task im Repo `zentrale` mit GitHub-Trigger auf Issues, oder stündlicher Lauf, der den Trichter leert |
+| Issue mit `trichter` | Dispatcher sortiert und zerlegt | Scheduled Task im Repo `swelper` mit GitHub-Trigger auf Issues, oder stündlicher Lauf, der den Trichter leert |
 | Ticket auf `ready` und `takt:on` | Implementer setzt genau ein Ticket im Worktree um, ein Push, Draft-PR | Scheduled Task auf dem Projekt-Repo (Ein-Repo-Task, damit Hooks greifen) |
 | PR geöffnet auf `claude/*` | Reviewer prüft | Scheduled Task mit GitHub-Trigger `pull_request.opened` |
 | CI rot | höchstens zwei Fix-Pushes | `/autofix-pr`, gedeckelt |
@@ -181,7 +193,7 @@ Cloud Scheduled Tasks (unter `claude.ai/code/routines` oder mit `/schedule`) lau
 
 Du hast mich um eine Empfehlung gebeten. Sie beruht auf den geprüften Fakten unten, nicht auf Dollar-Schätzungen.
 
-1. **Die Zentrale ist Zweitverbraucher.** Deine eigene Arbeit mit Claude hat Vorrang. Autonome Läufe bekommen **höchstens ein Viertel des Wochenlimits** und starten nur, wenn der Wochenbalken unter 75 % steht. Ab 80 % setzt du `takt:stop`, bis er zurückgesetzt ist.
+1. **Der Swelper ist Zweitverbraucher.** Deine eigene Arbeit mit Claude hat Vorrang. Autonome Läufe bekommen **höchstens ein Viertel des Wochenlimits** und starten nur, wenn der Wochenbalken unter 75 % steht. Ab 80 % setzt du `takt:stop`, bis er zurückgesetzt ist.
 2. **Keine Usage Credits**, bis der Pilot Zahlen liefert. Der API-Weg (Agent SDK, Managed Agents) bleibt Stufe 3 und braucht deinen Geld-Entscheid.
 3. **Modellmix:** Opus nur für den Dispatcher. Sonnet mit `effort: medium` für Umsetzung und Review. Haiku für Bericht und Finanz-Rechnen. `CLAUDE_CODE_SUBAGENT_MODEL=sonnet` als Standard. Fable nur, wenn du es rufst: Es zieht aus demselben Wochenlimit, schneller, mit eigener Kappe.
 4. **Autonome Läufe ausserhalb deiner Arbeitszeit**, zum Beispiel 06:07 und 20:37 Uhr, damit das 5-Stunden-Fenster am Morgen dir gehört. Darum ist der Takt nicht mehr 8 bis 17 Uhr.
@@ -235,26 +247,25 @@ Du hast mich um eine Empfehlung gebeten. Sie beruht auf den geprüften Fakten un
 
 | Stufe | Wann | Was | Erfolg, dann weiter |
 | --- | --- | --- | --- |
-| **1 Rahmen im Gespräch** | sobald du das Repo angelegt hast, in einer Woche mit freiem Wochenbalken | Repo `zentrale` mit Sync-Skript, Kontext `rettich`, `/zentrale` und `/trichter`, Stecker, Standing Orders, Wächter, GitHub Project, Branch-Schutz auf `main`; kein Lauf ohne dich | 10 Ideen durch den Trichter, mindestens 8 richtig sortiert, 0 Überschreibungen, du hast in Rettich dreimal `/zentrale pick` genutzt |
+| **1 Rahmen im Gespräch** | sobald du das Repo angelegt hast, in einer Woche mit freiem Wochenbalken | Repo `swelper` mit Sync-Skript, Kontext `rettich`, `/swelper` und `/trichter`, Stecker, Standing Orders, Wächter, GitHub Project, Branch-Schutz auf `main`; kein Lauf ohne dich | 10 Ideen durch den Trichter, mindestens 8 richtig sortiert, 0 Überschreibungen, du hast in Rettich dreimal `/swelper pick` genutzt |
 | **2 Ereignisse ohne dich** | nach dem Pilot-Start | Trichter-Lauf, Reviewer auf PRs, Umsetzungs-Task auf `ready`, Tagesbericht, Not-Aus, `takt-ping` | 5 Arbeitstage ohne Eingriff, jeden Tag ein Bericht, Verbrauch innerhalb des Viertels |
-| **3 Zentrale als Programm** | wenn der Nutzen belegt ist | Zweiter Kontext; eigene Ansicht als Mod-Panel in Claude Code (das GitHub Project bleibt die Ansicht fürs Handy); Dispatcher schlägt aus Lernbuch, Schulden und Metriken selbst Tickets vor, du gibst frei; Takt zu Uhrzeiten, wenn gewünscht; Ausführer-Schnittstelle für andere Anbieter über MCP; optional Agent SDK oder Managed Agents mit API-Key | dein Entscheid über Geld und Datenflüsse |
+| **3 Swelper als Programm** | wenn der Nutzen belegt ist | Zweiter Kontext; eigene Ansicht als Mod-Panel in Claude Code (das GitHub Project bleibt die Ansicht fürs Handy); Dispatcher schlägt aus Lernbuch, Schulden und Metriken selbst Tickets vor, du gibst frei; Takt zu Uhrzeiten, wenn gewünscht; Ausführer-Schnittstelle für andere Anbieter über MCP; optional Agent SDK oder Managed Agents mit API-Key | dein Entscheid über Geld und Datenflüsse |
 
-### Die ersten fünf PRs, alle im Repo `zentrale`
+### Die ersten fünf PRs, alle im Repo `swelper`
 
-0. **Du:** privates Repo `BanioX/zentrale` anlegen, Claude GitHub App darauf installieren, Branch-Schutz auf `main` (nur PR, CI grün, kein Force-Push), ein privates GitHub Project «Zentrale» mit Auto-add für das Label `zentrale`.
+0. **Du:** privates Repo `BanioX/swelper` anlegen, Claude GitHub App darauf installieren, Branch-Schutz auf `main` (nur PR, CI grün, kein Force-Push), ein privates GitHub Project «Swelper» mit Auto-add für das Label `swelper`.
 1. **Gerüst** (Doku, CI-günstig): `README.md` (Begriffe, Bild, Ticket-Lebenszyklus), ADR-0001 des Rahmens (Entscheide aus diesem Dokument), `standing-orders.md`, `schema/`, `contexts/rettich/context.json`, Labels per Skript.
 2. **Stecker:** `agents/*.md` nach einheitlicher Schablone; Test prüft Frontmatter gegen Schema und Pfad-Besitz.
 3. **Wächter und Sync:** `hooks/hooks.json`, `guard-paths.mjs`, `guard-git.mjs`, `board-brief.mjs`, `bin/sync.mjs`; Tests: Beispiel-Verstoss endet mit Exit 2, Sync ist idempotent, erzeugte Dateien tragen die Kopfzeile.
-4. **Skills:** `skills/zentrale/SKILL.md` (status, pick, add, done, report), `skills/trichter/SKILL.md`; Issue-Spiegel über `gh`, mit GitHub-MCP als Ersatz in Cloud-Sitzungen.
-5. **Rettich einstecken** (PR in FridgeAI): `node bin/sync.mjs` erzeugt `.claude/agents`, `.claude/skills`, `.claude/hooks` und die Hooks in `.claude/settings.json`; `.zentrale.json`; die drei alten Agenten werden ersetzt; CLAUDE.md-Abschnitt «Agent-Orchestrierung» zeigt auf den Rahmen; dazu ADR-0038 in Rettich und ein Test, der die Kopie gegen die Version des Rahmens prüft.
+4. **Skills:** `skills/swelper/SKILL.md` (status, pick, add, done, report), `skills/trichter/SKILL.md`; Issue-Spiegel über `gh`, mit GitHub-MCP als Ersatz in Cloud-Sitzungen.
+5. **Rettich einstecken** (PR in FridgeAI): `node bin/sync.mjs` erzeugt `.claude/agents`, `.claude/skills`, `.claude/hooks` und die Hooks in `.claude/settings.json`; `.swelper.json`; die drei alten Agenten werden ersetzt; CLAUDE.md-Abschnitt «Agent-Orchestrierung» zeigt auf den Rahmen; dazu ADR-0038 in Rettich und ein Test, der die Kopie gegen die Version des Rahmens prüft.
 
 ## Offen
 
-1. **Name:** Alban will nicht «Zentrale», sondern ein englisches Wort aus der Welt von Zahnrad und Uhrwerk im Ton eines Dev-Tools (8.11.2026); bis zum Entscheid bleibt «Zentrale» der Arbeitsname in diesem Dokument. Kollisionsprüfung per Websuche am 8.11.2026: **Mainspring** ist frei (kein Dev-Tool, kein Agenten-Werkzeug gefunden) und Claudes Empfehlung: die Zugfeder, die aufgezogen wird und das Uhrwerk in gleichmässigen Schritten antreibt, im Englischen auch «the mainspring of» für die treibende Kraft. Besetzt oder dicht belegt: Clockwork (Mac-App, die KI-Coding-Agenten einplant), Escapement (Claude-Code-Plugin für KI-Workflows), Ratchet (Go-CLI für Multi-Agent-Orchestrierung), Camshaft (DAG-Workflow-Engine für Agenten), Pinion (Task-Runner von Feathers), Gearbox (mehrere Pakete, darunter ein Agenten-Harness-Installer), Cog (Replicate, CogOS), Sprocket (Rails). Offen und unbelegt: Flywheel (Business-Jargon, Hosting-Firma), Tourbillon (französisch, schwer zu tippen). Technischer Name klein: `mainspring`.
-2. **Eingang vom Handy:** GitHub-Issue reicht (gratis, sicher, benachrichtigt dich)? Telegram braucht einen laufenden Rechner oder Server.
-3. **Modell:** Dispatcher standardmässig Opus, Fable auf Zuruf. Einverstanden?
-4. **Zweiter Kontext:** Welches Projekt oder welcher Lebensbereich kommt nach Rettich? Das bestimmt, wie allgemein die Standing Orders sein müssen.
+1. **Eingang vom Handy:** GitHub-Issue reicht (gratis, sicher, benachrichtigt dich)? Telegram braucht einen laufenden Rechner oder Server.
+2. **Modell:** Dispatcher standardmässig Opus, Fable auf Zuruf. Einverstanden?
+3. **Zweiter Kontext:** Welches Projekt oder welcher Lebensbereich kommt nach Rettich? Das bestimmt, wie allgemein die Standing Orders sein müssen.
 
 ## Quellen
 
-Subagents: <https://code.claude.com/docs/en/sub-agents> · Hooks: <https://code.claude.com/docs/en/hooks> · Plugins: <https://code.claude.com/docs/en/plugins> · Scheduled Tasks (Cloud): <https://code.claude.com/docs/en/routines> · Sitzungs-Scheduling: <https://code.claude.com/docs/en/scheduled-tasks> · Cloud-Sitzungen: <https://code.claude.com/docs/en/claude-code-on-the-web> · Cross-Session: <https://code.claude.com/docs/en/cross-session-messaging> · Channels: <https://code.claude.com/docs/en/channels> · Workflows: <https://code.claude.com/docs/en/workflows> · Agent Teams: <https://code.claude.com/docs/en/agent-teams> · Projects: <https://code.claude.com/docs/en/claude-projects> · Worktrees: <https://code.claude.com/docs/en/worktrees> · Kosten: <https://code.claude.com/docs/en/costs> · Agent SDK: <https://code.claude.com/docs/en/agent-sdk/overview> · Managed Agents: <https://platform.claude.com/docs/en/managed-agents/overview> · Advisor: <https://platform.claude.com/docs/en/agents-and-tools/tool-use/advisor-tool> · Preise: <https://platform.claude.com/docs/en/about-claude/pricing> · Fable im Plan: <https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan> · Pro/Max-Limits: <https://support.claude.com/en/articles/11145838-using-claude-code-with-your-pro-or-max-plan> · Extra Usage: <https://support.claude.com/en/articles/12429409-extra-usage-for-max-20x-plans> · Cowork-Tasks: <https://support.claude.com/en/articles/13854387-schedule-recurring-tasks-in-claude-cowork> · GitHub-Pläne und Rulesets: <https://github.com/pricing>, <https://github.com/github/docs/blob/main/data/reusables/gated-features/repo-rules.md> · Grok Bot: <https://www.unite.ai/xai-launches-grok-bot-always-on-ai-teammates-with-their-own-cloud-computers/> · OpenClaw: <https://github.com/openclaw/openclaw> · Hermes Agent: <https://github.com/NousResearch/hermes-agent> · Anthropic Engineering: <https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents>, <https://www.anthropic.com/engineering/building-effective-agents>, <https://www.anthropic.com/engineering/multi-agent-research-system>, <https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents>
+Subagents: <https://code.claude.com/docs/en/sub-agents> · Hooks: <https://code.claude.com/docs/en/hooks> · Plugins: <https://code.claude.com/docs/en/plugins> · Scheduled Tasks (Cloud): <https://code.claude.com/docs/en/routines> · Sitzungs-Scheduling: <https://code.claude.com/docs/en/scheduled-tasks> · Cloud-Sitzungen: <https://code.claude.com/docs/en/claude-code-on-the-web> · Cross-Session: <https://code.claude.com/docs/en/cross-session-messaging> · Channels: <https://code.claude.com/docs/en/channels> · Workflows: <https://code.claude.com/docs/en/workflows> · Agent Teams: <https://code.claude.com/docs/en/agent-teams> · Projects: <https://code.claude.com/docs/en/claude-projects> · Worktrees: <https://code.claude.com/docs/en/worktrees> · Kosten: <https://code.claude.com/docs/en/costs> · Agent SDK: <https://code.claude.com/docs/en/agent-sdk/overview> · Managed Agents: <https://platform.claude.com/docs/en/managed-agents/overview> · Advisor: <https://platform.claude.com/docs/en/agents-and-tools/tool-use/advisor-tool> · Preise: <https://platform.claude.com/docs/en/about-claude/pricing> · Fable im Plan: <https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan> · Pro/Max-Limits: <https://support.claude.com/en/articles/11145838-using-claude-code-with-your-pro-or-max-plan> · Extra Usage: <https://support.claude.com/en/articles/12429409-extra-usage-for-max-20x-plans> · Cowork-Tasks: <https://support.claude.com/en/articles/13854387-schedule-recurring-tasks-in-claude-cowork> · GitHub-Pläne und Rulesets: <https://github.com/pricing>, <https://github.com/github/docs/blob/main/data/reusables/gated-features/repo-rules.md> · Grok Bot: <https://www.unite.ai/xai-launches-grok-bot-always-on-ai-teammates-with-their-own-cloud-computers/> · SWELP: <https://github.com/BanioX/swelp> · OpenClaw: <https://github.com/openclaw/openclaw> · Hermes Agent: <https://github.com/NousResearch/hermes-agent> · Anthropic Engineering: <https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents>, <https://www.anthropic.com/engineering/building-effective-agents>, <https://www.anthropic.com/engineering/multi-agent-research-system>, <https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents>
