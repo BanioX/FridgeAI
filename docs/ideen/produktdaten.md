@@ -3,7 +3,7 @@
 Stand: 7.11.2026. Alban: «Gibt es eine bessere Datenquelle als Open Food Facts?», «mit der Website von Migros, Coop, Denner, Lidl, Aldi abgleichen», «wie bei MyFoodRepo: Produkt nicht gefunden, mach ein Foto».
 
 **Harte Regeln (CLAUDE.md):**
-- Keine echten Partner-Anbindungen an Migros, Coop und andere, nur Interfaces mit Mocks.
+- Keine echten Partner-Anbindungen an Migros, Coop und andere, nur Interfaces mit Mocks. Öffentliche Produktdaten nach ADR-0045 sind erlaubt.
 - Was Daten neu vom Gerät schickt, entscheidet Alban.
 
 ## Quellen im Vergleich
@@ -12,7 +12,7 @@ Stand: 7.11.2026. Alban: «Gibt es eine bessere Datenquelle als Open Food Facts?
 | --- | --- | --- | --- |
 | **Open Food Facts** (heute) | offen, ohne Schlüssel. Suche etwa 10 Anfragen pro Minute | gut bei Markenartikeln, lückenhaft bei Eigenmarken. Namen teils nur französisch | bleibt die Basis |
 | **Open Food Repo / MyFoodRepo** (EPFL, Digital Epidemiology Lab) | offene Daten (2018: über 21'000 Schweizer Produkte, später 38'000 bis 45'000 genannt), API mit Schlüssel ([Paper](https://arxiv.org/abs/1801.10195)) | stark bei Migros- und Coop-Eigenmarken | aktueller Stand und API von hier aus nicht erreichbar. Alban kann foodrepo.org prüfen. Ein Schlüssel gehört nicht in die App, dafür bräuchte es einen kleinen Proxy (Cloudflare Worker, gratis). Neuer Datenfluss: **Alban entscheidet** |
-| **Migros, Coop, Denner, Lidl, Aldi** (Websites) | keine offene API. Laut Migipedia gibt Migros Dritten keinen Zugang ([Forum](https://migipedia.migros.ch/de/forum/migipedia/is-there-an-api-for-migros-product-data)) | vollständig für die eigenen Produkte | Scraping verstösst gegen die Nutzungsbedingungen, und der Browser darf diese Seiten ohnehin nicht abfragen (CORS). Darum: **nicht automatisch**. Möglich: ein Link «Bei Migros ansehen», der die Suche des Händlers mit dem Produktnamen öffnet, ohne dass etwas zurückfliesst |
+| **Migros, Coop, Denner, Lidl, Aldi** (Websites) | keine offene API. Laut Migipedia gibt Migros Dritten keinen Zugang ([Forum](https://migipedia.migros.ch/de/forum/migipedia/is-there-an-api-for-migros-product-data)) | vollständig für die eigenen Produkte | **Seit 8.11.2026 (Alban, [ADR-0045](../adr/0045-retailer-catalog.md)):** ein höflicher Crawler sammelt, was technisch offen ist (Aldi, Lidl, Denner). Migros und Coop sperren Bots und kommen über Open Food Facts. Abgleich auf dem Gerät |
 | **GS1 Schweiz** (trustbox, «Verified by GS1») | kostenpflichtig, für Mitglieder | Stammdaten der Hersteller | kostet Geld: Alban entscheidet, später mit Partnern |
 
 ## Was rettich selbst besser machen kann (Reihenfolge)

@@ -244,7 +244,8 @@ export function MatchRow({
   if (found !== undefined && decision !== 'no') {
     const { match, image } = found;
     const label =
-      match.source === 'off'
+      // The shipped catalog comes from Open Food Facts too (ADR-0045): same words, same credit.
+      match.source === 'off' || match.source === 'catalog'
         ? match.confidence === 'sure'
           ? t.sure
           : t.maybe

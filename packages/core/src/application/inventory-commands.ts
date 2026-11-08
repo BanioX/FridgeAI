@@ -16,6 +16,7 @@ import {
   type InventoryItem,
   type Product,
 } from '../model/inventory';
+import type { Id } from '../ids';
 import type { IsoDateTime } from '../model/primitives';
 import { rappen } from '../money';
 import { toLocalDate } from '../dates';
@@ -622,9 +623,47 @@ export function createInventoryCommands(ctx: AppContext) {
     });
   };
 
+  /**
+   * Items the recognition could not place went to «Sonstiges» in the pantry with an estimated
+   * date. When a better recognition knows them now (ADR-0045 follow-up, Alban 8.11.2026: «Mache
+   * alles selber»), they get the category, its place and a new estimate. Only what nobody touched:
+   * still «Sonstiges», date still estimated, still where «Sonstiges» put it. Each change is its own
+   * `inventory.updateItem` with its events; running it again finds nothing left to do.
+   */
+  const recategorize: UseCase<'inventory.recategorize'> = async (raw) => {
+    const input = CONTRACT_V1['inventory.recategorize'].input.parse(raw);
+    const fallback = fallbackCategory();
+    const itemIds: Id[] = [];
+    for (const item of await storage.items.ofHousehold(input.householdId)) {
+      if (
+        item.status !== 'active' ||
+        item.deletedAt !== undefined ||
+        item.expirySource !== 'category_estimate' ||
+        item.location !== fallback.defaultLocation
+      ) {
+        continue;
+      }
+      const product = await storage.products.get(item.productId);
+      const found = product?.categoryId === fallback.id ? matchCategoryByName(product.name) : null;
+      if (found === null || found.id === fallback.id) {
+        continue;
+      }
+      await updateItem({
+        commandId: ids.next(),
+        householdId: input.householdId,
+        itemId: item.id,
+        categoryId: found.id,
+        ...(found.defaultLocation === item.location ? {} : { location: found.defaultLocation }),
+      });
+      itemIds.push(item.id);
+    }
+    return { itemIds };
+  };
+
   return {
     'inventory.addItem': addItem,
     'inventory.updateItem': updateItem,
+    'inventory.recategorize': recategorize,
     'inventory.deleteItem': deleteItem,
     'inventory.restoreItem': restoreItem,
     'inventory.recordOutcome': recordOutcome,

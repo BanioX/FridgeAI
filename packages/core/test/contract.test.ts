@@ -15,6 +15,7 @@ describe('contract v1', () => {
       'inventory.addItem',
       'inventory.updateItem',
       'inventory.deleteItem',
+      'inventory.recategorize',
       'inventory.restoreItem',
       'inventory.recordOutcome',
       'inventory.undoOutcome',

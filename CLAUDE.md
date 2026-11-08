@@ -33,7 +33,7 @@ Karte für alle KI-Werkzeuge: [`AGENTS.md`](AGENTS.md) · SWELP (Darf, Tut, Lern
 - **Alle 100 PRs:** grosses Review (Architektur, Plan, ADRs, Performance, Barrierefreiheit) mit Roadmap-Vorschlag.
 
 ## Harte Regeln
-- Keine echten Partner-Integrationen (Migros, Coop, Lieferdienste): nur Interfaces mit Mocks.
+- Keine echten Partner-Integrationen (Verträge, Konten, Bestellungen bei Migros, Coop, Lieferdiensten): nur Interfaces mit Mocks. Öffentliche Produktdaten der Händler-Websites sammelt ein höflicher Crawler (ADR-0045, Alban 8.11.2026): ehrlicher Name, robots.txt beachten, nie Bot-Schutz umgehen, nur Fakten, Abgleich auf dem Gerät.
 - Keine Secrets im Repo (`.env.example` ja, echte Keys nie). Keine personenbezogenen Daten in Fixtures, Logs oder Commits.
 - Geld immer als Ganzzahl in der kleinsten Einheit der Haushaltswährung (CHF: Rappen), nie Float (ADR-0019). Salden und Metriken werden berechnet, nicht gespeichert.
 - Ablaufdaten als Kalendertag (`YYYY-MM-DD`, Europe/Zurich), Zeitpunkte als ISO-UTC.

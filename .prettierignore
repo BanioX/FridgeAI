@@ -11,3 +11,6 @@ docs/brief.md
 .claude/skills/
 .claude/swelper/
 .swelper.json
+
+# Erzeugt von scripts/catalog/build.mjs, ein Produkt pro Zeile (ADR-0045)
+apps/web/public/catalog/

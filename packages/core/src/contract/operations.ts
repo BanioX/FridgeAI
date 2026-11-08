@@ -74,8 +74,11 @@ const ReceiptMatchSchema = z.object({
   name: z.string().min(1).max(120),
   brand: z.string().max(80).optional(),
   packSize: z.string().max(30).optional(),
-  /** `household`: learned from an earlier receipt; `off`: Open Food Facts. */
-  source: z.enum(['household', 'off']),
+  /**
+   * `household`: learned from an earlier receipt; `catalog`: the catalog shipped with the app,
+   * found on the device (ADR-0045); `off`: Open Food Facts over the network.
+   */
+  source: z.enum(['household', 'catalog', 'off']),
   confidence: z.enum(['sure', 'maybe']),
 });
 
@@ -441,6 +444,16 @@ export const CONTRACT_V1 = {
     scopes: ['inventory:write'],
     input: z.object({ ...commandBase, itemId: IdSchema }),
     output: z.object({ itemId: IdSchema }),
+  }),
+  'inventory.recategorize': command({
+    name: 'inventory.recategorize',
+    summary: {
+      de: 'Artikel aus «Sonstiges» neu einordnen, wenn die Erkennung sie inzwischen kennt.',
+      en: 'Sort items out of «Sonstiges» once the recognition knows them.',
+    },
+    scopes: ['inventory:write'],
+    input: z.object({ ...commandBase }),
+    output: z.object({ itemIds: z.array(IdSchema) }),
   }),
   'inventory.restoreItem': command({
     name: 'inventory.restoreItem',
