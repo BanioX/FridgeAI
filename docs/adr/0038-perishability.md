@@ -41,7 +41,6 @@ Saucen, Dips und Tomatenmark landeten aber in «Sonstiges». Dort steht keine Ha
 
 ## Später
 
-- **Das wirfst du oft weg:** Aus dem eigenen Verlauf, nur auf dem Gerät, ein Hinweis beim Erfassen, zum Beispiel «kleinere Packung», «Tube» oder «Reste einfrieren».
 - **Quittung in vier Schritten:** Das Datum nur bei heiklen Artikeln fragen.
 - **Parkplatz:** «Gibt es auch kleiner» mit konkreten Produkten und Preisen. Dafür bräuchte es Daten der Händler, und echte Händler-Anbindungen gibt es nur über Mocks.
 
@@ -57,3 +56,12 @@ Alban: «Wenn ich eine Packung Mozzarella kaufe, ist diese verschweisst. Wenn ic
 - **Katalog-Feld `soldLoose`:** Kategorien, die es auch offen an der Theke gibt, tragen das Feld. Das sind Hartkäse, Frischkäse und Mozzarella, Aufschnitt, Würste, Rauchlachs und Dips. Ein Schema-Test verlangt dafür eine Haltbarkeit nach dem Öffnen.
 - **Beim Erfassen:** Steht so ein Artikel im Kühlschrank, fragt Rettich «Wie gekauft? Verpackt / Von der Theke». Mit «Von der Theke» ist der Artikel ab dem Kauftag geöffnet (`openedOn`). Das Datum folgt der bestehenden Regel nach dem Öffnen: Mozzarella hält dann etwa 3 Tage statt 10.
 - Frisches Fleisch und frischer Fisch brauchen den Schalter nicht, sie haben schon das kurze Verbrauchsdatum.
+
+## Nachtrag (8.11.2026): Das wirfst du oft weg
+
+Alban: «Oder man kauft eine Riesenpackung, aber benutzt sie selten. Da vielleicht smarte Hinweise: Dieses Produkt gibt es auch in kleineren Grössen.»
+
+- **Neue Abfrage `products.wasteHabits`:** Kategorien, aus denen in den letzten 90 Tagen mindestens zweimal etwas weggeworfen wurde, mit den Produktnamen (neueste zuerst) und dem ersten Tipp der Kategorie. Gegessenes, Rückgängig-Gemachtes und Älteres zählt nicht.
+- **Beim Erfassen** einer solchen Kategorie steht oben eine Tipp-Karte, zum Beispiel: «Tzatziki, Hummus Natur: in den letzten 3 Monaten 2× weggeworfen. Offen hält ein Dip nur wenige Tage: lieber die kleine Packung kaufen.»
+- **Nur eigene Daten**, berechnet auf dem Gerät. Nichts verlässt es.
+- **Konkrete kleinere Produkte** mit Preisen bleiben im Parkplatz, weil sie Daten der Händler brauchen.

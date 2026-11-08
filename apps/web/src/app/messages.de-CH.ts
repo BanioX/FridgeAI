@@ -234,6 +234,9 @@ export const messages = {
     more: 'Mehr Angaben',
     moreWith: (summary: string) => `Mehr Angaben · ${summary}`,
     location: 'Wo lagerst du es?',
+    /** «Das wirfst du oft weg» (ADR-0038): from the household's own history, on the device. */
+    habit: (times: number, names: readonly string[]) =>
+      `${names.slice(0, 3).join(', ')}: in den letzten 3 Monaten ${String(times)}× weggeworfen.`,
     /** Packed or loose from the counter (ADR-0038). */
     bought: 'Wie gekauft?',
     packed: 'Verpackt',

@@ -183,6 +183,13 @@ Stand: 7.11.2026, aufbauend auf [`monetarisierung.md`](./monetarisierung.md) und
 
 **Reihenfolge:** Pilot ohne Geld → Pro-Test → Pitch mit Pilotzahlen bei einem Händler → Provision → Daten und B2B.
 
+## Kleinere Packung, konkret (8.11.2026)
+
+- **Idee (Alban):** «Dieses Produkt gibt es auch in kleineren Grössen.» Beim Erfassen oder auf der Einkaufsliste nennt Rettich die konkrete kleinere Packung mit Preis, zum Beispiel die Tomatenmark-Tube statt der Dose.
+- **Heute:** Der allgemeine Tipp der Kategorie kommt, sobald du dort zweimal etwas weggeworfen hast (ADR-0038).
+- **Braucht:** Packungsgrössen und Preise pro Produkt. Diese gibt es nur bei den Händlern oder in Open Food Facts (Grösse ja, Preis nein). Mit echten Händlerdaten wäre das eine Partner-Anbindung, die heute nur als Mock erlaubt ist.
+- **Wert:** hoch, ein klarer USP («Rettich rät dir zur richtigen Grösse»), zusammen mit Händler-Partnerschaften (P-Einträge oben).
+
 ## Verlauf
 
 | Datum | Änderung |

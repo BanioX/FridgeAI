@@ -122,4 +122,32 @@ describe('insight queries on memory storage', () => {
     expect(report.fridge.valueRappen).toBeGreaterThan(0);
     expect(report.shopping.receiptCount).toBe(0);
   });
+
+  it('products.wasteHabits names what was thrown away at least twice, with a tip (ADR-0038)', async () => {
+    const throwAway = async (name: string, outcome: 'wasted' | 'eaten' = 'wasted') => {
+      const { itemId } = await add(name);
+      await inventory['inventory.recordOutcome']({
+        commandId: next(),
+        householdId,
+        itemId,
+        outcome,
+        quantity: 1,
+      });
+    };
+    await throwAway('Hummus Natur');
+    await throwAway('Guacamole');
+    await throwAway('Tomatenmark');
+    await throwAway('Pesto', 'eaten');
+    const { habits } = await inventory['products.wasteHabits']({ householdId });
+    // Dips twice: a habit. Tomato paste once and pesto eaten: not (yet).
+    expect(habits).toHaveLength(1);
+    expect(habits[0]).toMatchObject({
+      categoryId: 'prepared-dips',
+      times: 2,
+      lastOn: '2026-11-07',
+    });
+    // Same clock here, so no order to check; newest first is tested in waste-habits.test.ts.
+    expect([...(habits[0]?.names ?? [])].sort()).toEqual(['Guacamole', 'Hummus Natur']);
+    expect(habits[0]?.tip).toMatch(/kleine Packung/);
+  });
 });

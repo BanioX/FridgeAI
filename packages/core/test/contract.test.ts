@@ -26,6 +26,7 @@ describe('contract v1', () => {
       'products.lookup',
       'products.search',
       'products.frequent',
+      'products.wasteHabits',
       'products.image',
       'shopping.list',
       'shopping.addItem',
