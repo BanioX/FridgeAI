@@ -1,12 +1,12 @@
-import { localDate, toLocalDate } from './dates';
-import { expiryStatus } from './expiry';
+import { daysBetween, localDate, toLocalDate } from './dates';
+import { expiryStatus, soonThresholdFor } from './expiry';
 import type { OutcomeEvent } from './model/inventory';
-import type { DateKind, LocalDate } from './model/primitives';
+import type { DateKind, LocalDate, StorageLocation } from './model/primitives';
 import { sumRappen, type Rappen } from './money';
 
 /** What a household rescued and wasted in a period (step 6, US-06). Computed, never stored. */
 export interface ImpactSummary {
-  /** Rescued: eaten or given away while at risk (ADR-0033). Ordinary eating is not counted. */
+  /** Rescued: eaten or given away and confirmed as a rescue (ADR-0039). Eating is not counted. */
   savedRappen: Rappen;
   wastedRappen: Rappen;
   savedGrams: number;
@@ -22,7 +22,7 @@ export interface ImpactSummary {
 
 type OutcomeLike = Pick<
   OutcomeEvent,
-  'outcome' | 'valueRappen' | 'grams' | 'valueEstimated' | 'at' | 'deletedAt' | 'atRisk'
+  'outcome' | 'valueRappen' | 'grams' | 'valueEstimated' | 'at' | 'deletedAt' | 'atRisk' | 'rescued'
 >;
 
 /**
@@ -39,9 +39,45 @@ export function isAtRisk(
   return kind === 'soon' || kind === 'today' || kind === 'past_best_before';
 }
 
-/** Rescued: eaten or shared while at risk. Ordinary eating is consumption, not a rescue. */
-export const isRescue = (outcome: Pick<OutcomeEvent, 'outcome' | 'atRisk'>): boolean =>
-  outcome.outcome !== 'wasted' && outcome.atRisk === true;
+/** Food that keeps a week or less is always «läuft bald ab»; eating it in time is just eating. */
+const RESCUE_MIN_LIFE_DAYS = 7;
+
+/**
+ * Whether Rettich may offer «Gerettet» when an item is eaten or given away (ADR-0039, Alban
+ * 8.11.2026: «Wenn ich ein Brot kaufe, das 2 Tage haltbar ist, und es esse, ist es nicht
+ * gerettet»): its date is today or a best-before date is past, or it is in the «läuft bald ab»
+ * days and kept longer than a week from the day it came home. Past a use-by date it is no food.
+ */
+export function canBeRescued(
+  item: {
+    expiresOn: LocalDate;
+    expiryKind: DateKind;
+    location: StorageLocation;
+    purchasedAt: string;
+  },
+  today: LocalDate,
+): boolean {
+  const { kind } = expiryStatus(
+    item.expiresOn,
+    today,
+    item.expiryKind,
+    soonThresholdFor(item.location),
+  );
+  if (kind === 'today' || kind === 'past_best_before') {
+    return true;
+  }
+  return (
+    kind === 'soon' &&
+    daysBetween(toLocalDate(item.purchasedAt), item.expiresOn) > RESCUE_MIN_LIFE_DAYS
+  );
+}
+
+/**
+ * Rescued: eaten or shared, and the person confirmed that it would otherwise have been thrown
+ * away (ADR-0039). Ordinary eating is consumption, not a rescue.
+ */
+export const isRescue = (outcome: Pick<OutcomeEvent, 'outcome' | 'rescued'>): boolean =>
+  outcome.outcome !== 'wasted' && outcome.rescued === true;
 
 /** The first day of the month `today` is in, e.g. 2026-11-06 → 2026-11-01. */
 export function startOfMonth(today: LocalDate): LocalDate {

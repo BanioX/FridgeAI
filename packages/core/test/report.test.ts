@@ -33,6 +33,7 @@ const closed = (
   valueEstimated: false,
   grams: 100,
   atRisk: true,
+  ...(outcome === 'wasted' ? {} : { rescued: true }),
   categoryId,
   ...extra,
 });
@@ -96,7 +97,7 @@ describe('buildReport (ADR-0030)', () => {
       to: localDate('2026-11-30'),
       items: [],
       outcomes: [
-        closed('eaten', '2026-11-02T12:00:00.000Z', 300, 'bakery-bread', { atRisk: false }),
+        closed('eaten', '2026-11-02T12:00:00.000Z', 300, 'bakery-bread', { rescued: false }),
       ],
       purchases: [],
     });
@@ -117,11 +118,13 @@ describe('buildReport (ADR-0030)', () => {
       to: localDate('2026-11-30'),
       items: [],
       outcomes: [
-        closed('shared_out', '2026-11-02T12:00:00.000Z', 300, 'bakery-bread', { atRisk: false }),
+        closed('shared_out', '2026-11-02T12:00:00.000Z', 300, 'bakery-bread', {
+          rescued: false,
+        }),
       ],
       purchases: [],
     });
-    // Giving away fresh food is generous, but not a rescue (ADR-0033).
+    // Giving away fresh food is generous, but not a rescue (ADR-0033, ADR-0039).
     expect(fresh.impact).toMatchObject({ sharedRappen: 0, sharedCount: 0 });
   });
 

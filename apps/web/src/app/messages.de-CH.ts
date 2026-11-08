@@ -243,6 +243,10 @@ export const messages = {
     otherPacksEarlier: 'Eine andere Packung läuft früher ab. Die solltest du zuerst essen.',
     whatHappened: 'Was ist damit passiert?',
     outcomes: { eaten: 'Gegessen', wasted: 'Weggeworfen', shared_out: 'Weitergegeben' },
+    /** Only a confirmed rescue counts as «gerettet» (ADR-0039). */
+    rescueQuestion: 'Ohne Rettich im Abfall gelandet?',
+    rescueYes: 'Ja, gerettet',
+    rescueNo: 'Nein',
     howMuch: 'Wie viel?',
     all: 'alles',
     otherAmount: (unit: string) => `Andere Menge (${unit})`,

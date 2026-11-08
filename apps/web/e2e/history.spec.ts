@@ -36,7 +36,6 @@ test('deletes a wrong «Weggeworfen» from the history, the food comes back', as
 test('corrects a wrong «Weggeworfen» to «Gegessen», the impact follows', async ({ page }) => {
   await page.goto('/inventory/new');
   await page.getByLabel('Was ist es?').fill('Rahm');
-  // Expires tomorrow: eating it counts as a rescue (ADR-0033).
   await page.getByRole('button', { name: 'morgen', exact: true }).click();
   await page.getByRole('button', { name: 'Speichern', exact: true }).click();
   await page.getByRole('link', { name: /Rahm/ }).click();
@@ -60,6 +59,8 @@ test('corrects a wrong «Weggeworfen» to «Gegessen», the impact follows', asy
   await expect(entry).toContainText('Gegessen');
   await expect(entry).not.toContainText('verdorben');
 
+  // Nothing thrown away any more; a corrected entry is eaten, not «gerettet» (ADR-0039).
   await page.getByRole('navigation').getByRole('link', { name: 'Start' }).click();
-  await expect(page.getByRole('img', { name: '100 % gerettet' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  await expect(page.getByRole('img', { name: /% gerettet$/ })).toHaveCount(0);
 });

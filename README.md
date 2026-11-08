@@ -45,7 +45,7 @@ Unten die Tabs **Start · Vorrat · ＋ Erfassen · Mehr** ([ADR-0031](docs/adr/
 | **Korrigieren** | Rückgängig nach Gegessen/Weggeworfen, dazu «Nachkaufen» mit einem Tipp; Name, Kategorie, Ort, Datum, Menge und Preis ändern; Artikel löschen; im «Verlauf» unter «Mehr» Gegessenes, Weitergegebenes und Weggeworfenes nachträglich ändern oder löschen |
 | **Produktdaten** | Nach dem Scan: Bild, Marke, Nährwerte, Nutri-Score, Allergene (Open Food Facts, 30 Tage offline); fehlen die Nährwerte, liest Rettich sie aus einem Foto oder Screenshot der Nährwerttabelle, auf dem Gerät |
 | **Nachkaufen** | Unter «Mehr»: «Du hast noch …» gegen Doppelkäufe, abhaken, «In den Vorrat legen» |
-| **Wirkung** | Gerettet (kurz vor Ablauf gegessen oder weitergegeben) und weggeworfen diesen Monat in CHF und Artikeln, «x % gerettet von allem, was knapp wurde» ([ADR-0033](docs/adr/0033-rescued-means-at-risk.md)) |
+| **Wirkung** | Gerettet (selbst bestätigt: «ohne Rettich im Abfall gelandet») und weggeworfen diesen Monat in CHF und Artikeln, «x % gerettet von allem, was knapp wurde» ([ADR-0039](docs/adr/0039-rescue-confirmed.md)) |
 | **Mehr** | Berichte, Verlauf, Nachkaufen, App installieren; Daten als JSON exportieren, wieder importieren oder löschen, Datenschutz in Kürze |
 
 **Aussehen:** drei Premium-Töne (Smaragd, Silber, Onyx) nach Apples Human Interface Guidelines, Symbol: ein aufrechter weisser Rettich ([`docs/design.md`](docs/design.md)).
