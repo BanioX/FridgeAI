@@ -5,7 +5,6 @@ export const messages = {
     start: 'Start',
     inventory: 'Vorrat',
     add: 'Erfassen',
-    cook: 'Kochen',
     more: 'Mehr',
   },
   pages: {
@@ -14,7 +13,6 @@ export const messages = {
     add: 'Erfassen',
     receipt: 'Quittung hochladen',
     shopping: 'Nachkaufen',
-    cook: 'Kochen',
     more: 'Mehr',
     history: 'Verlauf',
     data: 'Daten und Datenschutz',
@@ -122,72 +120,6 @@ export const messages = {
       return parts.join(', ');
     },
     toToday: 'Zum Start',
-    failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
-  },
-  recipes: {
-    moreRecipes: 'Mehr Rezepte',
-    rescueTitle: 'Rette heute',
-    filterLegend: 'Rezepte zeigen',
-    listLabel: 'Rezepte',
-    filters: {
-      rescue: 'Retten',
-      feierabend: 'Feierabend',
-      all: 'Alle',
-    },
-    empty: {
-      rescue: 'Gerade läuft nichts bald ab. Schau bei «Alle» rein.',
-      feierabend:
-        'Für den Feierabend (höchstens 15 Minuten, nichts einkaufen) fehlt dir gerade bei jedem Rezept noch etwas. Schau bei «Alle» rein.',
-      all: 'Gerade gibt es keine Rezepte.',
-    },
-    listDetail: (minutes: number, missing: number, rescues: string) =>
-      [
-        `${String(minutes)} Min.`,
-        missing === 0
-          ? 'alles da'
-          : missing === 1
-            ? '1 Zutat fehlt'
-            : `${String(missing)} Zutaten fehlen`,
-        rescues === '' ? undefined : `rettet ${rescues}`,
-      ]
-        .filter(Boolean)
-        .join(' · '),
-    rescues: (food: string, minutes: number, missing: number) =>
-      `Rettet ${food} · ${String(minutes)} Min.${missing === 0 ? ' · alles da' : ` · ${String(missing)} fehlt`}`,
-    notFound: 'Dieses Rezept gibt es nicht (mehr).',
-    minutes: (minutes: number) => `${String(minutes)} Min.`,
-    servings: (servings: number) =>
-      servings === 1 ? '1 Portion' : `${String(servings)} Portionen`,
-    ingredients: 'Zutaten',
-    atHome: (food: string) => `Da: ${food}`,
-    staple: 'Grundvorrat',
-    optional: 'Wenn du es hast',
-    missing: 'Fehlt',
-    toList: (count: number) =>
-      count === 1 ? 'Fehlende Zutat nachkaufen' : `${String(count)} fehlende Zutaten nachkaufen`,
-    onList: (count: number) =>
-      count === 1
-        ? '1 Zutat steht bei «Nachkaufen».'
-        : `${String(count)} Zutaten stehen bei «Nachkaufen».`,
-    steps: 'So geht’s',
-    cooked: {
-      title: 'Gekocht?',
-      text: 'Buche ab, was du dafür gebraucht hast. So stimmt dein Vorrat.',
-      start: 'Zutaten abbuchen',
-      all: 'Alles',
-      half: 'Halb',
-      none: 'Nichts',
-      book: 'Abbuchen',
-      cancel: 'Abbrechen',
-      booked: (count: number) =>
-        count === 0
-          ? 'Nichts abgebucht.'
-          : count === 1
-            ? '1 Zutat als gegessen abgebucht.'
-            : `${String(count)} Zutaten als gegessen abgebucht.`,
-      undone: 'Rückgängig gemacht, alles ist wieder im Vorrat.',
-      failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
-    },
     failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
   },
   inventory: {

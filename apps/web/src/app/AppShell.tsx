@@ -1,11 +1,4 @@
-import {
-  CircleEllipsis,
-  CookingPot,
-  House,
-  Plus,
-  Refrigerator,
-  type LucideIcon,
-} from 'lucide-react';
+import { CircleEllipsis, House, Plus, Refrigerator, type LucideIcon } from 'lucide-react';
 import { Link, Outlet, useLocation } from 'react-router';
 import { messages } from './messages.de-CH';
 
@@ -27,7 +20,6 @@ const navItems: readonly NavItem[] = [
   { to: '/', label: messages.nav.start, icon: House },
   { to: '/inventory', label: messages.nav.inventory, icon: Refrigerator },
   { to: '/add', label: messages.nav.add, icon: Plus, also: ['/inventory/new'], primary: true },
-  { to: '/cook', label: messages.nav.cook, icon: CookingPot, also: ['/recipes'] },
   { to: '/more', label: messages.nav.more, icon: CircleEllipsis, also: ['/shopping'] },
 ];
 

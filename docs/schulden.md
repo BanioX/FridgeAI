@@ -7,7 +7,7 @@ Alban (7.11.2026): «Baue so weiter, dass so wenige Technical Debts wie möglich
 | Kennung | Schuld | Warum sie besteht | Risiko | Plan | Status |
 | --- | --- | --- | --- | --- | --- |
 | TD-01 | Seiten zeichnen sich über `useLiveQuery` (Dexie) neu, also an der Datenschicht vorbei | Schnellster Weg im Pilot. Die Seiten rufen darin nur Operationen der Schnittstelle auf | mittel | Abo auf Domain Events, wenn der Sync kommt (ADR-0034) | offen |
-| TD-02 | Produktsuche, Quittungs-Import und Rezepte liegen noch in `apps/web/src/data` | Umzug Schritt für Schritt (ADR-0034). Häufige Produkte, Preis-Gedächtnis und Berichte sind seit 7.11.2026 in `application/insights.ts` | mittel | je ein PR in `packages/core/src/application` | offen |
+| TD-02 | Produktsuche und Quittungs-Import liegen noch in `apps/web/src/data` (die Rezepte sind seit 8.11.2026 weg, ADR-0040) | Umzug Schritt für Schritt (ADR-0034). Häufige Produkte, Preis-Gedächtnis und Berichte sind seit 7.11.2026 in `application/insights.ts` | mittel | je ein PR in `packages/core/src/application` | offen |
 | TD-03 | Haushalt löschen und importieren bleiben in der Datenschicht | Sie verwalten die ganze Gerätedatenbank, auf einem Server wären es andere Abläufe | tief | bewusst so, mit Konten neu bauen (P6) | akzeptiert |
 | TD-04 | Felder heissen `priceRappen` und `valueRappen`, meinen aber die kleinste Einheit jeder Währung | Umbenennen wäre ein Bruch der Schnittstelle v1 | tief | mit Schnittstelle v2 (ADR-0019) | akzeptiert |
 | TD-05 | Der Listen-Parser `import/ai-import.ts` wird von der App nicht mehr genutzt | «Mit eigener KI» ist entfernt, die Bestandesaufnahme per Foto ist geparkt (P18) | tief | bis Ende 2026 entscheiden: P18 bauen oder Parser löschen | offen |

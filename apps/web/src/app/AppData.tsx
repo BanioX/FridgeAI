@@ -14,7 +14,6 @@ import { appContext } from '../data/command';
 import { FridgeDb } from '../data/db';
 import { createInventoryHandlers, type InventoryHandlers } from '../data/handlers';
 import { createHouseholdHandlers, type HouseholdHandlers } from '../data/household-handlers';
-import { createRecipeHandlers, type RecipeHandlers } from '../data/recipe-handlers';
 import { cachedCatalog } from '../data/catalog-cache';
 import {
   openFoodFactsCatalog,
@@ -37,7 +36,6 @@ export interface AppData {
   inventory: InventoryHandlers;
   shopping: ShoppingUseCases;
   household: HouseholdHandlers;
-  recipes: RecipeHandlers;
 }
 
 const AppDataContext = createContext<AppData | null>(null);
@@ -85,7 +83,6 @@ export function AppDataProvider({ children, db }: { children: ReactNode; db?: Fr
           inventory: createInventoryHandlers(context),
           shopping: createShoppingUseCases(appContext(context)),
           household: createHouseholdHandlers(context),
-          recipes: createRecipeHandlers(context),
         });
       })
       .catch(() => {

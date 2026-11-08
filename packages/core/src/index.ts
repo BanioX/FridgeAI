@@ -37,8 +37,6 @@ export * from './catalog/open-food-facts';
 export * from './metrics';
 export * from './frequent-products';
 export * from './waste-habits';
-export * from './recipes/recipe';
-export * from './recipes/recipes.de-CH';
 export * from './receipt/parse-receipt';
 export * from './nutrition/label';
 export * from './receipt/pdf-lines';
