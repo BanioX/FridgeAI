@@ -7,6 +7,7 @@ Damit Mensch und Maschine dasselbe meinen: Wort in der App (de-CH), Name im Code
 | App (de-CH) | Code | Bedeutung | Andere Regionen |
 | --- | --- | --- | --- |
 | **Quittung** (nicht «Bon», Alban 7.11.2026) | `receipt`, `receipts.import`, `receipts.matchLine` | Kassenzettel eines Einkaufs, als PDF, Screenshot oder Foto | de-DE «Kassenbon», de-AT «Kassabon» oder «Rechnung» |
+| **Abfall** (nicht «Kübel», Alban 8.11.2026) | `wasted` | wohin weggeworfene Lebensmittel gehen; Claim «Wirf kein Geld in den Abfall.» | de-DE auch «Müll», de-CH auch «Kehricht» |
 | **Vorrat** (Tab) | `inventory` | alles, was im Haushalt ist, über alle Lagerorte | – |
 | **Lagerort** | `StorageLocation` | `fridge` Kühlschrank, `freezer` Tiefkühler, `pantry` Vorrat, `reserve` Notvorrat | de-DE «Gefrierschrank», «Vorratsschrank» |
 | **Haltbar bis** | `expiresOn` (`LocalDate`, Europe/Zurich) | Kalendertag, an dem etwas abläuft | – |

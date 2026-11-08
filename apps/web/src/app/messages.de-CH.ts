@@ -82,7 +82,7 @@ export const messages = {
     showAll: (count: number) => `Alle anzeigen (${String(count)})`,
     welcomeTitle: 'Willkommen bei Rettich',
     welcomeText:
-      'Wirf kein Geld in den Kübel: Erfasse, was du zu Hause hast, und Rettich sagt dir, was du heute retten solltest.',
+      'Wirf kein Geld in den Abfall: Erfasse, was du zu Hause hast, und Rettich sagt dir, was du heute retten solltest.',
     firstItem: 'Ersten Artikel erfassen',
     impactTitle: 'Deine Wirkung diesen Monat',
     saved: 'Gerettet',
@@ -498,7 +498,7 @@ export const messages = {
       heading: 'Dein Bericht',
       /** Page 1 of the PDF: the report as a till receipt (Alban, 8.11.2026). */
       receipt: {
-        claim: 'Wirf kein Geld in den Kübel.',
+        claim: 'Wirf kein Geld in den Abfall.',
         title: 'So hast du Food Waste reduziert',
         saved: 'GERETTET',
         shared: 'WEITERGEGEBEN',
@@ -519,7 +519,7 @@ export const messages = {
       insights: 'Was auffällt',
       months: 'Pro Monat',
       urgent: 'Jetzt essen',
-      wasteTop: 'Was im Kübel landet',
+      wasteTop: 'Was im Abfall landet',
       byCategory: 'Nach Lebensmittel',
       reasons: 'Warum',
       money: 'Vorrat und Einkäufe',
@@ -528,7 +528,7 @@ export const messages = {
       inventory: 'Alles im Vorrat',
       total: 'Total',
       estimated: '* geschätzt aus dem Durchschnittspreis der Kategorie',
-      footer: 'Erstellt auf deinem Gerät mit Rettich · Wirf kein Geld in den Kübel.',
+      footer: 'Erstellt auf deinem Gerät mit Rettich · Wirf kein Geld in den Abfall.',
       page: (page: number, pages: number) => `Seite ${String(page)} von ${String(pages)}`,
       noWaste: 'Nichts weggeworfen. Stark!',
       noUrgent: 'Nichts läuft in den nächsten drei Tagen ab.',
