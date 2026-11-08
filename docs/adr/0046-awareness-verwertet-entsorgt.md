@@ -15,7 +15,7 @@ Bisher sagte Rettich «gegessen» und «weggeworfen». «Gegessen» stimmt oft n
 1. **Rettich zeigt, was mit deinen Lebensmitteln passiert,** nicht, was du isst. Keine Kalorien, keine Mahlzeiten, kein Ernährungstagebuch. Jede neue Funktion wird daran gemessen: Hilft sie, weniger zu entsorgen und den Wert des Vorrats zu sehen?
 2. **«Verwertet»** ersetzt «gegessen» in der ganzen App: gegessen, gekocht, gebacken, verbraucht. Alban nannte «konsumiert oder verwertet»; Rettich nimmt nur ein Wort, damit es überall gleich heisst. «Verwertet» sagt, dass etwas genutzt wurde, und klingt nicht nach Essen.
 3. **«Entsorgt»** ersetzt «weggeworfen»: sachlich, ohne Schuld. «Abfall» bleibt als Ort (Claim «Wirf kein Geld in den Abfall.»).
-4. **«Gerettet»** bleibt, wie es ist: verwertet oder weitergegeben und selbst bestätigt (ADR-0039).
+4. **«Gerettet»** bleibt, wie es ist: verwertet (ältere Einträge auch weitergegeben) und selbst bestätigt (ADR-0039).
 5. **Im Code** heissen die Abschlüsse weiter `eaten`, `wasted`, `shared_out`. Die gespeicherten Daten und die Schnittstelle bleiben gleich; nur die Texte ändern. Das Glossar ordnet die Wörter zu.
 6. Ein Test prüft den Textkatalog: «gegessen» und «weggeworfen» kommen nicht mehr vor.
 

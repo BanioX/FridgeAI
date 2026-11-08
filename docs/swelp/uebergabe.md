@@ -7,7 +7,7 @@ Für die nächste Sitzung (Mensch oder KI). Claude führt diese Datei am Ende je
 | PR oder Branch | Was | Nächster Schritt |
 | --- | --- | --- |
 | Doku-PR zum Review (`docs/review-200`) | README, Plan, Architektur, Pilot, Datenschutz, ADR-Index, Schulden, Übergabe, Review-Bericht; dazu der Text «Datenschutz in Kürze» in der App | CI abwarten, mergen, danach `pnpm release` für 0.11.0 |
-| PR «Ziehen auf einen Lagerort-Tab» | ausgewählte Artikel auf einen Tab ziehen | CI abwarten, mergen |
+| #210 Ziehen auf einen Lagerort-Tab | ausgewählte Artikel auf einen Tab ziehen; langes Drücken in der normalen Liste wählt aus und hebt an | CI abwarten, mergen |
 | `feat/receipt-steps` (kein PR) | vier Schritte pro Artikel beim Quittungs-Abgleich; halbfertiger Stand eines abgebrochenen Hilfs-Agenten, auf altem `main`, über 50 Commits dahinter | schliessen und auf `main` neu bauen (Schritt 2 unten) |
 
 Zuletzt gemergt (seit 0.10.0):
