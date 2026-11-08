@@ -30,7 +30,7 @@ Rechtliche Lage (keine Rechtsberatung): Das Lesen öffentlicher Seiten ist eine 
    - **Stopp auf Zuruf:** Verlangt ein Händler, dass Rettich aufhört, endet das Sammeln für ihn sofort, und seine Daten werden mit dem nächsten Release entfernt.
 3. **Migros und Coop über Open Food Facts:** etwa 10'000 Migros- und 2'300 Coop-Produkte aus der Schweiz, mit Barcode und Laden. Die Lizenz ist ODbL: Quelle nennen («Daten von Open Food Facts»), und der daraus gebaute Datensatz steht unter derselben Lizenz. Abgefragt wird höchstens alle 7 Sekunden (Regel von Open Food Facts für die Suche).
 4. **Auf dem Gerät:** Der Katalog wird als selbst gehostete Datei mit der App ausgeliefert und auf dem Gerät durchsucht. Keine Suchanfrage und keine Quittung geht dafür an einen Händler. Damit entsteht kein neuer Datenfluss von Personendaten.
-5. **Gesammelt wird ausserhalb der App:** mit Skripten im Repo (`scripts/catalog/`: `crawl-aldi.mjs`, `off-stores.mjs`, `build.mjs`), heute von Hand in einer Sitzung. Daraus entstehen `apps/web/public/catalog/off-ch.json` (Open Food Facts, ODbL, 2'879 Produkte mit Barcode) und `retail-ch.json` (Händler-Websites). Getrennte Dateien, damit ein Händler auf Zuruf mit einer Datei verschwindet und die ODbL nur für den Open-Food-Facts-Teil gilt. Ob es regelmässig über GitHub Actions läuft, entscheidet Alban (Minuten aus dem Pro-Kontingent).
+5. **Gesammelt wird ausserhalb der App:** mit Skripten im Repo (`scripts/catalog/`: `crawl-aldi.mjs`, `off-stores.mjs`, `build.mjs`), heute von Hand in einer Sitzung. Daraus entstehen `apps/web/public/catalog/off-ch.json` (Open Food Facts, ODbL, 7'169 Produkte mit Barcode, Stand 8.11.2026) und `retail-ch.json` (Händler-Websites). Getrennte Dateien, damit ein Händler auf Zuruf mit einer Datei verschwindet und die ODbL nur für den Open-Food-Facts-Teil gilt. Ob es regelmässig über GitHub Actions läuft, entscheidet Alban (Minuten aus dem Pro-Kontingent).
 6. **Neue Händler** kommen mit derselben Prüfung dazu: robots.txt, technische Erreichbarkeit, was die Seiten an Fakten zeigen.
 
 ## Folgen
@@ -43,9 +43,13 @@ Rechtliche Lage (keine Rechtsberatung): Das Lesen öffentlicher Seiten ist eine 
 
 - `parseCatalogFile` und `localCatalogSearch` in `packages/core` lesen `off-ch.json` und suchen darin nach Wörtern, ohne Netz.
 - `receipts.matchLine` fragt in dieser Reihenfolge: frühere Quittungen des Haushalts, dann der mitgelieferte Katalog, dann Open Food Facts. Ist der Treffer im Katalog sicher, geht kein Produktname mehr ins Netz. Die Quelle heisst dann `catalog`; die App nennt sie wie Open Food Facts, weil die Daten von dort stammen (ODbL, Namensnennung).
-- Die App lädt die Datei (etwa 90 kB gepackt) erst bei der ersten Quittung, der Service Worker hält sie danach offline bereit (`StaleWhileRevalidate`).
+- Die App lädt die Datei (etwa 210 kB gepackt) erst bei der ersten Quittung, der Service Worker hält sie danach offline bereit (`StaleWhileRevalidate`).
 - `retail-ch.json` (Aldi, ohne Barcodes) nutzt die App noch nicht. Ein Treffer ohne Barcode braucht eine Änderung der Schnittstelle (`gtin` optional) und kommt mit der Suche beim Erfassen.
 
 ## Alte Artikel neu einordnen
 
 Alban (8.11.2026): «Mache alles selber frisch upgedatet.» Artikel, die früher in «Sonstiges» gelandet sind, ordnet `inventory.recategorize` bei jedem Start der App neu ein, sobald die Erkennung sie kennt. Mit der Kategorie wechseln ihr Ort und das geschätzte Datum. Angefasst wird nur, was niemand geändert hat: noch «Sonstiges», Datum noch geschätzt, Ort noch der Vorrat. Jede Änderung läuft als `inventory.updateItem` mit eigenem Ereignis.
+
+## Auffrischen
+
+`pnpm catalog:refresh` holt Open Food Facts neu und baut `off-ch.json`; mit `--shops` auch die Händler-Websites (Aldi braucht etwa zwei Stunden). Die Suche von Open Food Facts liefert höchstens 10 Seiten zu 100 Produkten, darum teilt `off-stores.mjs` grosse Läden nach Lebensmittelgruppe (PNNS) und, wo nötig, nach Nutri-Score. Antwortet Open Food Facts dreimal mit 503, wird die Teilsuche übersprungen und protokolliert; der nächste Lauf holt sie nach. Claude frischt den Katalog wöchentlich auf (Alban, 8.11.2026: «Mache alles selber frisch upgedatet»), als PR wie jede andere Änderung.
