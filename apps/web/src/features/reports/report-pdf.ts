@@ -26,6 +26,7 @@ import {
   measure,
   PAGE,
   PDF_COLOR as C,
+  ring,
   roundedPicture,
   stack,
   TOP,
@@ -49,6 +50,7 @@ const LOCATION_COLOR: Record<'fridge' | 'freezer' | 'pantry' | 'reserve', Rgb> =
 };
 
 type Amount = (value: number, options?: { currency?: boolean }) => string;
+const kg = (grams: number) => `${(grams / 1000).toFixed(1)} kg`;
 const emojiOf = (categoryId: string) => (categoryById(categoryId) ?? fallbackCategory()).emoji;
 
 interface Context {
@@ -92,6 +94,8 @@ export async function reportPdf(
 
   ground(doc);
   let y = masthead(ctx, options, TOP);
+  y = hero(ctx, y + 6);
+  y = keyFigures(ctx, y + 5);
   y = insights(ctx, report, money, y + 6);
   y = months(ctx, room(doc, y + 12, 96));
   y = urgent(ctx, y + 12);
@@ -159,6 +163,62 @@ function masthead(
     color: C.muted,
   });
   return title + 9.5;
+}
+
+/**
+ * The onyx card of the app: the money saved, a sentence, and the rescue rate as a ring
+ * (Alban, 8.11.2026: «Ich liebe das Schwarze, gibt Premium-Look, und die Kreise ein Augenschmaus»).
+ */
+function hero({ doc, report, amount }: Context, y: number): number {
+  const height = 48;
+  card(doc, { x: PAGE.margin, y, width: CONTENT, height }, C.onyx);
+  const left = PAGE.margin + 9;
+  write(doc, amount(report.impact.savedRappen), left, y + 21, {
+    size: 34,
+    color: C.white,
+    bold: true,
+  });
+  write(doc, t.heroSentence, left, y + 30.5, { size: 13, color: C.white });
+  write(doc, t.savedDetail(kg(report.impact.savedGrams), report.impact.savedCount), left, y + 39, {
+    size: 9.5,
+    color: C.silver,
+  });
+  const center = { x: PAGE.margin + CONTENT - 25, y: y + height / 2 };
+  const share = report.impact.savedShare;
+  ring(doc, center, 14, 3.8, share, C.onyxRaised, C.smaragdMid);
+  write(
+    doc,
+    share === null ? '–' : `${String(Math.round(share * 100))} %`,
+    center.x,
+    center.y - 1.4,
+    { size: 15, color: C.white, bold: true, align: 'center', baseline: 'middle' },
+  );
+  write(doc, t.rateLabel, center.x, center.y + 5, {
+    size: 8,
+    color: C.silver,
+    align: 'center',
+    baseline: 'middle',
+  });
+  return y + height;
+}
+
+/** Three white cards of equal size: label, value and detail on the same lines in each. */
+function keyFigures({ doc, report, amount }: Context, y: number): number {
+  const tiles: [string, string, string, Rgb][] = [
+    [t.inStock, amount(report.fridge.valueRappen), t.items(report.fridge.itemCount), C.ink],
+    [t.wasted, amount(report.impact.wastedRappen), kg(report.impact.wastedGrams), C.today],
+    [t.spent, amount(report.shopping.spentRappen), t.receipts(report.shopping.receiptCount), C.ink],
+  ];
+  const width = (CONTENT - GUTTER * (tiles.length - 1)) / tiles.length;
+  const height = 29.5;
+  tiles.forEach(([label, value, detail, color], index) => {
+    const x = PAGE.margin + index * (width + GUTTER);
+    card(doc, { x, y, width, height });
+    write(doc, label, x + 6, y + 8.5, { size: 9, color: C.muted, bold: true }, width - 12);
+    write(doc, value, x + 6, y + 18.5, { size: 17, color, bold: true }, width - 12);
+    write(doc, detail, x + 6, y + 24.6, { size: 9, color: C.muted }, width - 12);
+  });
+  return y + height;
 }
 
 /** «Was auffällt» as a tip card like «Kühlschrank-Check»: green title, one line per finding. */
