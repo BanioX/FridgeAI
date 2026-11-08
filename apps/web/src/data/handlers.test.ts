@@ -825,7 +825,7 @@ describe('stats.waste', () => {
         ...(outcome === 'wasted' ? {} : { rescued: true }),
       });
     }
-    // Still fresh: eating it is consumption and counts nowhere here.
+    // Still fresh: eating it is consumption, no rescue; it only counts as «Verwertet».
     const fresh = await add({ name: 'Gruyère', priceRappen: 600, expiresOn: '2026-12-20' });
     await handlers['inventory.recordOutcome']({
       commandId: ids.next(),
@@ -847,6 +847,9 @@ describe('stats.waste', () => {
       wastedGrams: 180,
       savedCount: 2,
       wastedCount: 1,
+      // «Verwertet» also counts the fresh Gruyère: everything not thrown away (ADR-0046).
+      usedRappen: 800,
+      usedCount: 3,
       estimated: false,
     });
     const before = await handlers['stats.waste']({

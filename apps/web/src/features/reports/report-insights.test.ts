@@ -23,6 +23,8 @@ const empty: Report = {
     wastedCount: 0,
     estimated: false,
     savedShare: null,
+    usedRappen: rappen(0),
+    usedCount: 0,
     sharedRappen: rappen(0),
     sharedCount: 0,
     wastedItems: [],

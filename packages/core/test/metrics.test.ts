@@ -77,6 +77,9 @@ describe('summarizeImpact', () => {
       wastedCount: 1,
       estimated: true,
       savedShare: 0.8,
+      // «Verwertet» counts every outcome that was not thrown away, rescued or not (ADR-0046).
+      usedRappen: 800,
+      usedCount: 4,
     });
   });
 

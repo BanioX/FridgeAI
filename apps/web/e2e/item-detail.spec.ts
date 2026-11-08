@@ -45,10 +45,15 @@ test('eats part of a cheese, opens it and throws the rest away with a reason', a
   });
   await page.getByRole('navigation').getByRole('link', { name: 'Start' }).click();
   await expect(page.getByRole('heading', { name: 'Deine Wirkung diesen Monat' })).toBeVisible();
-  // The cheese was still fresh: eating a third is no rescue (ADR-0033), throwing the rest away
-  // is waste, so nothing of what was at risk was rescued.
-  await expect(page.getByRole('img', { name: '0 % gerettet' })).toBeVisible();
-  await expect(page.getByText('1 Artikel', { exact: true })).toBeVisible();
+  // A third used, the rest thrown away: one entry each in the two rings (ADR-0046). The cheese
+  // was still fresh, so eating it is no rescue (ADR-0033).
+  await expect(
+    page.getByRole('img', { name: /^Verwertet: \d+ %, CHF [\d.]+, 1 Artikel$/ }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('img', { name: /^Entsorgt: \d+ %, CHF [\d.]+, 1 Artikel$/ }),
+  ).toBeVisible();
+  await expect(page.getByText('noch nichts', { exact: false })).toBeVisible();
   const today = await new AxeBuilder({ page }).analyze();
   expect(today.violations).toEqual([]);
   expect(cspErrors).toEqual([]);
