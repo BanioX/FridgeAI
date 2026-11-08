@@ -16,7 +16,7 @@ Zuletzt gemergt: «Quittung» statt «Bon» (#167), PDF-Seite 1 als Rettich-Quit
 2. **Scanner:** «Code aus Foto lesen» und die Nummer von Hand hinter «Andere Wege» legen. Dabei die Quittungs-E2E anpassen, sie nutzen die Nummer.
 3. **TD-02:** Produktsuche, Quittungs-Import und Rezepte nach `packages/core/src/application` ziehen (je ein PR).
 4. **Release** bei 10 gemergten PRs seit v0.8.0 (`pnpm release --count`).
-5. **Swelper** (Albans Schaltzentrale, Wunsch vom 8.11.2026): Vorschlag in [`docs/ideen/swelper.md`](../ideen/swelper.md). Alban hat entschieden: Name Swelper (technisch `swelper`), ein eigener Rahmen ausserhalb von Rettich, der SWELP über Agenten ausführt, kontextbezogen und geclustert; GitHub Pro ist da; der Takt ist optional. Nächster Schritt liegt bei Alban: privates Repo `BanioX/swelper` anlegen und die Claude GitHub App installieren. Danach PR 1 bis 5 dort, zuletzt Rettich einstecken (eigener PR hier, ersetzt `.claude/agents`).
+5. **Swelper und SWELP** (8.11.2026): Alban hat Claude erlaubt, SWELP, Swelper, SWP, SEP und SLP selbständig auszubauen (Standing Orders: `BanioX/SWELPER/standing-orders.md`). Offen zum Mergen: SWELP #6 (Review), #7 (Hygiene), #8 (Wächter, braucht Albans `sep lock`); SWELPER #1 (Gerüst, ADR-0001), #2 (Schemas, Kontext `rettich`). Danach PR 3 bis 5 im Swelper (Paket `swelper` mit `sync`, Stecker, Skills) und zuletzt Rettich einstecken: eigener PR hier, der `.claude/agents` durch erzeugte Dateien ersetzt und `.swelper.json` anlegt. Entwurf: [`docs/ideen/swelper.md`](../ideen/swelper.md).
 6. **Später (Ideen):** der Rettich als Maskottchen in leeren Zuständen und beim Teilen. Illustrationen passend zum Logo, zum Beispiel mit einer Bild-KI erstellt (Albans Abos).
 
 ## Offene Fragen an Alban
