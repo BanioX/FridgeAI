@@ -22,6 +22,7 @@ Bisher sagte Rettich «gegessen» und «weggeworfen». «Gegessen» stimmt oft n
 ## Folgen
 
 - **Zwei Kreise** (Alban: «runde schwarze und rote Kreise»): «Verwertet» in Onyx und «Entsorgt» in Rot, als Anteil am Wert alles Abgeschlossenen, auf Start und auf der Quittung «Wirkung». «Verwertet» zählt alles, was nicht entsorgt wurde, auch Weitergegebenes und Frisches; «Gerettet» bleibt die bestätigte Rettung darunter.
+- **Kein «Weitergegeben» mehr** (Alban, 8.11.2026: «Entferne weitergegeben, das will ich verwerfen»): Rettich kennt nur noch zwei Abschlüsse, «Verwertet» und «Entsorgt». Weitergeben ist auch Verwerten. Im Code und in den gespeicherten Daten bleibt `shared_out` bestehen, damit alte Einträge gültig bleiben; sie zählen und erscheinen als «Verwertet». Die Schnittstelle nimmt `shared_out` weiter an, die App bietet es nicht mehr an.
 
 - Partner-Ideen (Provision beim Nachkaufen, Werbung, bezahlte Dashboards) passen zu einer Awareness-App, solange sie den Vorrat betreffen, nicht die Ernährung. Sie stehen im Parkplatz (P1, Geschäftsmodell-Säulen 7 und 8).
 - Später ausbaubar: Nährwerte bleiben, wo sie beim Einkaufen helfen (Produktinfo), aber Rettich zählt nie, was du isst.

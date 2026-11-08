@@ -126,11 +126,6 @@ export function receiptSpec(
               bold: true,
             },
             {
-              label: t.shared,
-              value: amount(impact.sharedRappen),
-              note: t.sharedDetail(impact.sharedCount),
-            },
-            {
               label: t.wasted,
               value: amount(impact.wastedRappen),
               note: t.detail(impact.wastedCount, kg(impact.wastedGrams)),

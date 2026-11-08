@@ -6,15 +6,12 @@ import {
   expiryStatus,
   fallbackCategory,
   isFreezable,
-  OutcomeSchema,
   portionChoices,
   portioningOf,
-  ShareRecipientSchema,
   soonThresholdFor,
   WasteReasonSchema,
   type Id,
   type Outcome,
-  type ShareRecipient,
   type WasteReason,
 } from '@fridgeai/core';
 import { ArrowLeft, PackageOpen, Pencil, Snowflake, Sun, Trash2, Undo2 } from 'lucide-react';
@@ -43,7 +40,11 @@ import { useInventoryItem } from './use-item';
 import { useProductImage } from './use-product-image';
 
 const t = messages.itemDetail;
-const outcomeOptions = OutcomeSchema.options.map((value) => ({ value, label: t.outcomes[value] }));
+/** «Weitergegeben» is gone from the choice (Alban, 8.11.2026); old entries count as «Verwertet». */
+const outcomeOptions = (['eaten', 'wasted'] as const).map((value) => ({
+  value,
+  label: t.outcomes[value],
+}));
 const rescueOptions = [
   { value: 'yes' as const, label: messages.itemDetail.rescueYes },
   { value: 'no' as const, label: messages.itemDetail.rescueNo },
@@ -52,14 +53,10 @@ const reasonOptions = WasteReasonSchema.options.map((value) => ({
   value,
   label: messages.wasteReasons[value],
 }));
-const recipientOptions = ShareRecipientSchema.options.map((value) => ({
-  value,
-  label: messages.shareRecipients[value],
-}));
 
 /**
- * One item (step 6): what happened to it – eaten, thrown away (with reason) or given away (with
- * recipient), all or in portions that fit the food – plus opening and freezing.
+ * One item (step 6): what happened to it – «Verwertet» or «Entsorgt» (with reason), all or in
+ * portions that fit the food – plus opening and freezing.
  */
 export function ItemDetailPage() {
   const { itemId } = useParams();
@@ -76,7 +73,6 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
   const [portion, setPortion] = useState<string | null>(null);
   const [otherText, setOtherText] = useState('');
   const [reason, setReason] = useState<WasteReason | null>(null);
-  const [recipient, setRecipient] = useState<ShareRecipient | null>(null);
   /** «Ohne Rettich im Abfall gelandet?» (ADR-0039): only a «Ja» counts as rescued. */
   const [rescued, setRescued] = useState<'yes' | 'no'>('no');
   const [status, setStatus] = useState('');
@@ -160,7 +156,6 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
         outcome,
         quantity,
         ...(outcome === 'wasted' && reason !== null ? { wasteReason: reason } : {}),
-        ...(outcome === 'shared_out' && recipient !== null ? { sharedWith: recipient } : {}),
         ...(rescuable && rescued === 'yes' ? { rescued: true } : {}),
       });
       if (result.remainingQuantity === 0) {
@@ -365,14 +360,6 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
             value={rescued}
             onChange={setRescued}
             segmented
-          />
-        ) : null}
-        {outcome === 'shared_out' ? (
-          <ChoiceChips
-            legend={t.toWhom}
-            options={recipientOptions}
-            value={recipient}
-            onChange={setRecipient}
           />
         ) : null}
         <Button

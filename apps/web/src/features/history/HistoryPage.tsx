@@ -4,7 +4,6 @@ import {
   type Id,
   type OperationOutput,
   type Outcome,
-  type ShareRecipient,
   type WasteReason,
 } from '@fridgeai/core';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -25,7 +24,6 @@ type Entry = OperationOutput<'inventory.history'>['outcomes'][number];
 interface Edit {
   outcome: Outcome;
   wasteReason?: WasteReason;
-  sharedWith?: ShareRecipient;
 }
 type Mode = { eventId: Id; kind: 'remove' } | ({ eventId: Id; kind: 'edit' } & Edit);
 
@@ -40,11 +38,7 @@ const TONES = { eaten: 'text-basil-800', shared_out: 'text-basil-800', wasted: '
 function details(entry: Entry, money: Money): [string, string] {
   const value = `${money.format(entry.valueRappen)}${entry.valueEstimated ? ` (${t.estimated})` : ''}`;
   const why =
-    entry.wasteReason === undefined
-      ? entry.sharedWith === undefined
-        ? undefined
-        : messages.shareRecipients[entry.sharedWith]
-      : messages.wasteReasons[entry.wasteReason];
+    entry.wasteReason === undefined ? undefined : messages.wasteReasons[entry.wasteReason];
   return [
     [formatQuantity(entry.quantity, entry.unit), value].join(' · '),
     [why, formatSwissDate(toLocalDate(entry.at))].filter(Boolean).join(' · '),
@@ -52,8 +46,9 @@ function details(entry: Entry, money: Money): [string, string] {
 }
 
 /**
- * «Verlauf» under «Mehr»: what was eaten, shared or thrown away, newest first, with its share of
- * the price. A wrong entry is corrected (eaten, shared, wasted, reason) or deleted with one
+ * «Verlauf» under «Mehr»: what was «Verwertet» or «Entsorgt», newest first, with its share of the
+ * price. Older «Weitergegeben» entries show as «Verwertet» (Alban, 8.11.2026). A wrong entry is
+ * corrected (outcome, reason) or deleted with one
  * confirmation: then the amount goes back to the item and statistics, reports and «Deine Wirkung»
  * no longer count it.
  */
@@ -107,9 +102,6 @@ export function HistoryPage() {
         ...(edit.outcome === 'wasted' && edit.wasteReason !== undefined
           ? { wasteReason: edit.wasteReason }
           : {}),
-        ...(edit.outcome === 'shared_out' && edit.sharedWith !== undefined
-          ? { sharedWith: edit.sharedWith }
-          : {}),
       });
       return t.changed(entry.name, messages.itemDetail.outcomes[edit.outcome]);
     });
@@ -158,7 +150,7 @@ export function HistoryPage() {
   );
 }
 
-const outcomeOptions = (['eaten', 'shared_out', 'wasted'] as const).map((value) => ({
+const outcomeOptions = (['eaten', 'wasted'] as const).map((value) => ({
   value,
   label: messages.itemDetail.outcomes[value],
 }));
@@ -166,9 +158,6 @@ const reasonOptions = (Object.keys(messages.wasteReasons) as WasteReason[]).map(
   value,
   label: messages.wasteReasons[value],
 }));
-const recipientOptions = (Object.keys(messages.shareRecipients) as ShareRecipient[]).map(
-  (value) => ({ value, label: messages.shareRecipients[value] }),
-);
 
 /** One entry: what happened, then «Ändern» and «Löschen», each opening below the row. */
 function HistoryRow({
@@ -223,9 +212,8 @@ function HistoryRow({
                 onMode({
                   eventId: entry.eventId,
                   kind: 'edit',
-                  outcome: entry.outcome,
+                  outcome: entry.outcome === 'shared_out' ? 'eaten' : entry.outcome,
                   ...(entry.wasteReason === undefined ? {} : { wasteReason: entry.wasteReason }),
-                  ...(entry.sharedWith === undefined ? {} : { sharedWith: entry.sharedWith }),
                 });
               }}
             />
@@ -267,16 +255,6 @@ function HistoryRow({
               value={mode.wasteReason ?? null}
               onChange={(wasteReason) => {
                 onMode({ ...mode, wasteReason });
-              }}
-            />
-          ) : null}
-          {mode.outcome === 'shared_out' ? (
-            <ChoiceChips
-              legend={t.recipient}
-              options={recipientOptions}
-              value={mode.sharedWith ?? null}
-              onChange={(sharedWith) => {
-                onMode({ ...mode, sharedWith });
               }}
             />
           ) : null}
