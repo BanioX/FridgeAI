@@ -11,7 +11,7 @@ Bis heute hatte Rettich drei eigene Subagenten in `.claude/agents` (helper, impl
 
 ## Entscheid
 
-1. **Rettich ist ein Kontext des SWELPER**, der erste. Seine Regeln, Rollen, Prüfbefehle und Gates stehen im Rahmen unter `contexts/rettich/context.json`; eine Kopie liegt hier unter `.claude/swelper/context.json`.
+1. **Rettich ist ein Kontext des SWELPER**, der erste. Seine Regeln, Rollen, Prüfbefehle und Gates stehen seit SWELPER 0.2.0 im Projekt in `.swelper.json` (SWELPER ADR-0003; bis dahin im Rahmen unter `contexts/rettich/context.json`); eine Kopie liegt hier unter `.claude/swelper/context.json`.
 2. **Aufträge sind Issues im Rahmen** (Label `ctx:rettich`), der Code entsteht hier auf Branches `claude/<id>-<slug>` als PR. Die Übergabe (`docs/swelp/uebergabe.md`) bleibt der Faden dieses Kontexts.
 3. **Erzeugt, nicht gepflegt:** `.claude/agents/*.md`, `.claude/skills/*/SKILL.md`, `.claude/swelper/*`, `.swelper.json` und der SessionStart-Hook in `.claude/settings.json` kommen aus dem Rahmen (`python -m swelper sync <pfad>`), tragen `generated: swelper <version>` und werden hier nie von Hand geändert. Der Test `apps/web/src/swelper.test.ts` prüft Markierung und Vollständigkeit. Die drei alten Agenten sind durch die erzeugten Fassungen ersetzt.
 4. **Die Regeln von Rettich bleiben die Regeln:** `CLAUDE.md` und `AGENTS.md` gelten unverändert; der Kontext trägt sie als Zusätze zu den Standing Orders in den Rahmen (keine Partner-Integrationen, Geld in Rappen, reiner Core, Nebenwirkungen im Register, Previews für Alban, CI-Minuten).
