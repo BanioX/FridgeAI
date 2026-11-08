@@ -4,3 +4,9 @@ dist/
 playwright-report/
 test-results/
 *.md
+
+# Erzeugt vom Swelper (swelper sync), nie von Hand formatieren (ADR-0044)
+.claude/agents/
+.claude/skills/
+.claude/swelper/
+.swelper.json
