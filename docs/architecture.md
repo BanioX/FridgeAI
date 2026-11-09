@@ -55,7 +55,7 @@ flowchart TB
 ### iOS und Android (v1/v2)
 
 - **Widgets (WidgetKit / Android Glance):** zeigen «Heute retten» und den CHF-Wert. Die App schreibt nach jeder Änderung eine kleine Zusammenfassung in einen gemeinsamen Speicher (iOS App Group), das Widget liest nur diese.
-- **Kurzbefehle, Siri, Action-Button (App Intents):** «Was läuft bald ab?», «Bon scannen», «Milch auf die Liste». Jede Intent ruft eine Operation aus der Schnittstelle auf (offline über den Gerätespeicher oder online über die API).
+- **Kurzbefehle, Siri, Action-Button (App Intents):** «Was läuft bald ab?», «Quittung scannen», «Milch auf die Liste». Jede Intent ruft eine Operation aus der Schnittstelle auf (offline über den Gerätespeicher oder online über die API).
 - **Taptic Engine:** Haptik bei Scan-Treffern, Speichern und Warnungen (Capacitor Haptics).
 
 ## 3. Backend (ab Schritt 7)
@@ -109,7 +109,7 @@ Foto in der KI-App ──► KI erkennt Inhalt ──► Vorschlag in Rettich �
                                      Posteingang, Link «In Rettich öffnen» (v1)
 ```
 
-- **Vorschläge statt direkter Änderungen:** Externe KI darf nur vorschlagen (`inventory:propose`), nie selbst ändern. Die Person bestätigt in derselben Review-Liste wie beim Bon.
+- **Vorschläge statt direkter Änderungen:** Externe KI darf nur vorschlagen (`inventory:propose`), nie selbst ändern. Die Person bestätigt in derselben Review-Liste wie bei der Quittung.
 - **Abgleich mit dem Vorrat:** Was im Vorrat steht, aber auf dem Foto fehlt, wird als «aufgebraucht?» vorgeschlagen; so wird das Foto zum Kühlschrank-Check (UC-04).
 - **Eigene KI** nur gegen Bezahlung (Pro-Abo, Stufe 3).
 

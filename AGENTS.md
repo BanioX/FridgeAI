@@ -1,6 +1,6 @@
 # AGENTS.md – Einstieg für KI-Assistenten (Claude Code, Cursor, Codex, Gemini …)
 
-Rettich ist eine local-first PWA gegen Food Waste für Schweizer Haushalte. Diese Datei ist die Karte. Die Regeln stehen in [`CLAUDE.md`](./CLAUDE.md) und gelten für jedes Werkzeug, nicht nur für Claude.
+Rettich ist eine local-first PWA für Schweizer Haushalte: Sie zeigt, was du verwertest und was du entsorgst, und was es kostet (ADR-0046). Diese Datei ist die Karte. Die Regeln stehen in [`CLAUDE.md`](./CLAUDE.md) und gelten für jedes Werkzeug, nicht nur für Claude.
 
 ## Lesereihenfolge vor jeder Änderung
 
@@ -9,7 +9,7 @@ Rettich ist eine local-first PWA gegen Food Waste für Schweizer Haushalte. Dies
 2. [`docs/swelp/README.md`](./docs/swelp/README.md): was der Code darf (Darf), was er bewirkt (Tut, [`nebenwirkungen.md`](./docs/swelp/nebenwirkungen.md)), was wir gelernt haben (Lernt, [`lernbuch.md`](./docs/swelp/lernbuch.md)).
 3. [`docs/schulden.md`](./docs/schulden.md): bekannte Schulden; nichts davon unbemerkt vergrössern.
 4. [`docs/glossar.md`](./docs/glossar.md): Begriffe in App, Code und Regionen.
-5. Das passende ADR in [`docs/adr/`](./docs/adr/) und der Plan in [`docs/plan.md`](./docs/plan.md).
+5. Das passende ADR (Verzeichnis mit Status: [`docs/adr/README.md`](./docs/adr/README.md)) und der Plan in [`docs/plan.md`](./docs/plan.md), Abschnitt «Stand nach 200 PRs».
 
 ## Karte des Codes (drei Schichten, ADR-0034)
 

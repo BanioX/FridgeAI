@@ -26,19 +26,19 @@ Alles in diesem Parkplatz wartet auf den Pilot und seine Zahlen.
 | # | Hebel | USP: warum gross | Was abzuklären ist | Status |
 | --- | --- | --- | --- | --- |
 | P1 | **Partnerschaft mit Migros und Coop** (auch Denner, Lidl, Aldi): Produktdaten, Nachkauf mit Provision, digitale Kassenzettel | Kein Abfotografieren mehr, vollständige Produktdaten, Nachkauf in einem Tipp. Daraus entsteht ein Geschäftsmodell (siehe unten) | Pitch, Vertrag, Einwilligung pro Haushalt, Provisionshöhe | geparkt |
-| P2 | **Gemeinsames Gedächtnis über alle Haushalte**: Bon-Text → Barcode | Netzwerkeffekt: Ein bestätigter Bon hilft allen. Mit jeder Person wird Rettich besser, das kann niemand kopieren | Konten und Server (P6), Datenschutz: nur die Zuordnung, nie wer was kauft | geparkt |
-| P3 | **WG-Funktionen**: wem gehört's, wer schuldet was | Kern der Vision («Scan deinen Bon – Rettich weiss, … wem es gehört, wer was schuldet»). Kein Konkurrent kann das | Konten, Sync, Einladungen, Abrechnung (P6). «Wer hat's gegessen» (wer im Haushalt wischt) gehört zu den WG-Funktionen. | geparkt |
+| P2 | **Gemeinsames Gedächtnis über alle Haushalte**: Quittungs-Text → Barcode | Netzwerkeffekt: Ein bestätigte Quittung hilft allen. Mit jeder Person wird Rettich besser, das kann niemand kopieren | Konten und Server (P6), Datenschutz: nur die Zuordnung, nie wer was kauft | geparkt |
+| P3 | **WG-Funktionen**: wem gehört's, wer schuldet was | Kern der Vision («Scan deine Quittung – Rettich weiss, … wem es gehört, wer was schuldet»). Kein Konkurrent kann das | Konten, Sync, Einladungen, Abrechnung (P6). «Wer hat's gegessen» (wer im Haushalt wischt) gehört zu den WG-Funktionen. | geparkt |
 | P4 | **Open Food Repo der EPFL** als zweite Produktquelle | Stark bei Schweizer Eigenmarken, also genau der Lücke von Open Food Facts | Lebt die API noch? Lizenz, Schlüssel über einen Gratis-Proxy, neuer Datenfluss | geparkt |
 | P5 | **Beitragen an Open Food Facts** (Fotos, Nährwerte) | Unbekannte Produkte werden für alle bekannt; Rettich als guter Bürger der offenen Daten | Konto der Person bei Open Food Facts, neuer Datenfluss | geparkt |
 | P6 | **Backend und Konten** (Hono, PostgreSQL) | Voraussetzung für P2, P3, Sync zwischen Handys, echte Push-Mitteilungen | Hosting-Kosten, Datenschutz (ADR-0020), Betrieb. Die drei Schichten sind vorbereitet (ADR-0034) | geparkt |
 | P7 | **App Store über Capacitor** | Echte App-Symbole, Push, Taschenlampe auch auf dem iPhone, Hintergrund-Erinnerungen, Vertrauen | Kosten: Apple USD 99 pro Jahr, Google USD 25 einmal; Review-Prozess ([`app-stores.md`](./app-stores.md)) | geparkt |
 | P8 | **Marke und Domain**: rettich.app, Marke Schweiz und EU | Schutz vor Kopien, bevor das Marketing startet | CHF 350 (Schweiz), EUR 900–1050 (EU). «Rettermarkt Rettich» in Saarbrücken prüfen ([`schutz.md`](./schutz.md)) | geparkt (Alban) |
-| P9 | **Start in Deutschland und Österreich** | Zehnfacher Markt. Die Währungs-Grundlage ist gebaut (ADR-0019) | Bon-Parser für Rewe, Edeka, Spar, Billa usw., Schätzpreise pro Land, Befehl zum Umstellen der Währung | geparkt |
+| P9 | **Start in Deutschland und Österreich** | Zehnfacher Markt. Die Währungs-Grundlage ist gebaut (ADR-0019) | Quittungs-Parser für Rewe, Edeka, Spar, Billa usw., Schätzpreise pro Land, Befehl zum Umstellen der Währung | geparkt |
 | P10 | **GS1-2D-Codes** («Sunrise 2027») mit GS1 Schweiz | Ablaufdatum direkt aus dem Code, ohne Tippen. Rettich liest sie schon heute | Pilotpartner, Zeitplan der Händler ([`integrationen.md`](./integrationen.md)) | geparkt |
 | P11 | **Thermomix/Cookidoo, Samsung Food** und eine **offene Rettich-Schnittstelle** (OpenAPI, MCP) | Rettich als Schicht zwischen Einkauf und Küche | Ob die Importe funktionieren, Partnergespräche, Einwilligung ([`integrationen.md`](./integrationen.md)) | geparkt |
 | P12 | **Kühlschrank-Hersteller** (LG, Samsung) und EU Data Act | Langfristig Daten direkt vom Gerät | Kein Hersteller öffnet heute sein Inventar ([`integrationen.md`](./integrationen.md)) | geparkt |
 | P13 | **Preisvergleich zwischen Läden** («bei Coop 30 Rappen günstiger») | Spart Geld, nicht nur Lebensmittel | Preisdaten der Händler (P1) oder Preise aus vielen Haushalten (P2), Datenschutz | geparkt |
-| P14 | **Gamification**: Fortschritt, Serien, «Bon komplett», Reineclaude-Erfolg | Macht das Erfassen zur Routine | Nach dem Pilot mit echten Zahlen. Gestaltung mit Alban ([`designsprache-garten.md`](./designsprache-garten.md)) | geparkt |
+| P14 | **Gamification**: Fortschritt, Serien, «Quittung komplett», Reineclaude-Erfolg | Macht das Erfassen zur Routine | Nach dem Pilot mit echten Zahlen. Gestaltung mit Alban ([`designsprache-garten.md`](./designsprache-garten.md)) | geparkt |
 | P15 | **Aggregierte Food-Waste-Kennzahlen** für Handel, Forschung, Gemeinden | Einnahmen ohne Werbung. Messbarer Beitrag zum Ziel 2030 | Genug Haushalte, Anonymisierung (k-Anonymität), Einwilligung. Nie Einzeldaten verkaufen | geparkt |
 | P16 | **Förderung** (z. B. StreamUp von United Against Waste, Innosuisse, Aktionsplan des Bundes gegen Lebensmittelverschwendung, Stiftungen) | Geld ohne Anteile abzugeben, dazu Glaubwürdigkeit und ein Netzwerk in der Branche | Passende Programme, Firmenform, Gesuch. StreamUp: siehe «P16 im Detail» | geparkt |
 | P17 | **Büro-Kühlschrank für Teams** | B2B-Einnahmen pro Team | Eigener Vertrieb, Konten (P6) ([`monetarisierung.md`](./monetarisierung.md)) | geparkt |
@@ -60,7 +60,7 @@ Alles in diesem Parkplatz wartet auf den Pilot und seine Zahlen.
 | Port in `packages/core/src/ports` | Was ein Partner liefert | Was es für die Person heisst |
 | --- | --- | --- |
 | `ProductCatalog` | Produktdaten per Barcode (Name, Grösse, Nährwerte, Bild) | Jeder Artikel ist vollständig, auch Eigenmarken |
-| `RetailerReceiptSource` | Digitale Kassenzettel (Cumulus, Supercard) mit Einwilligung | Der Bon kommt von selbst, ohne Foto und ohne Lesefehler |
+| `RetailerReceiptSource` | Digitale Kassenzettel (Cumulus, Supercard) mit Einwilligung | Die Quittung kommt von selbst, ohne Foto und ohne Lesefehler |
 | `RebuyProvider` | Angebote zum Nachkaufen | «Milch ist leer – bei Migros nachkaufen?» |
 | `DeliveryProvider` | Warenkorb beim Händler, Link zur Kasse | Ein Tipp füllt den Warenkorb, die Provision läuft über den Link |
 
@@ -76,7 +76,7 @@ Ein Partner-Adapter ist Arbeit von Tagen, nicht Monaten. Der Aufwand liegt beim 
 
 **Erste Schritte:**
 
-1. Pilot mit echten Zahlen: gerettete CHF, aktive Haushalte, Bons pro Woche.
+1. Pilot mit echten Zahlen: gerettete CHF, aktive Haushalte, Quittungen pro Woche.
 2. Pitch-Artifact um die Händler-Seite ergänzen.
 3. Kontakt über Innovations- und Nachhaltigkeitsteams (Migros: z. B. Generation M; Coop: Nachhaltigkeit) statt über den Kundendienst.
 
@@ -178,7 +178,7 @@ Stand: 7.11.2026, aufbauend auf [`monetarisierung.md`](./monetarisierung.md) und
 
 **Kennzahlen, die das Modell prüfen:**
 
-- Aktivierung: erster Bon in den ersten 24 Stunden.
+- Aktivierung: erste Quittung in den ersten 24 Stunden.
 - Wöchentlich aktive Haushalte.
 - Gerettete CHF pro Haushalt und Monat.
 - Wochen-4-Retention.

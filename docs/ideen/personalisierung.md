@@ -1,6 +1,6 @@
 # Personalisierung: Rezepte, Menüplanung, Zielgruppen
 
-Ziel: rettich soll für **alle ein No-Brainer** sein (scannen, essen, fertig) und für Leute mit Zielen **mehr können**. Die Personalisierung baut auf Daten auf, die schon da sind: Vorrat, Ablaufdaten, Nährwerte nach dem Scan (10b) und Preise vom Bon.
+Ziel: Rettich soll für **alle ein No-Brainer** sein (scannen, essen, fertig) und für Leute mit Zielen **mehr können**. Die Personalisierung baut auf Daten auf, die schon da sind: Vorrat, Ablaufdaten, Nährwerte nach dem Scan (10b) und Preise von der Quittung.
 
 ## Bausteine
 
@@ -26,7 +26,7 @@ Ziel: rettich soll für **alle ein No-Brainer** sein (scannen, essen, fertig) un
 - **Frugalist:innen:**
   - Kosten pro Mahlzeit und pro Monat.
   - Gerettet in CHF (gibt es schon).
-  - Preisentwicklung pro Produkt aus den Bons.
+  - Preisentwicklung pro Produkt aus den Quittungen.
   - «Günstigste Woche» in der Menüplanung.
   - Später Aktionen der Händler über Partner.
 - **Tracker:innen:**

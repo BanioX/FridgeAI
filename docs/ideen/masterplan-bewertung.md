@@ -31,8 +31,8 @@ Stand: 7.11.2026. Albans Masterplan (Brand, Tech, Business) gemessen an Plan, AD
 | Domain **rettich.ai** | deutlich teurer, oft mit Mindestlaufzeit | Erst später, nur als Schutz |
 | **hi@, alban@, partner@** | Empfangen über Cloudflare Email Routing ist gratis. Senden ab der Adresse braucht einen Mail-Dienst. | Weiterleitung auf Gmail reicht für den Start |
 | Social-Handles @rettich.app | gratis | Alban sichert sie selbst. Claude kann keine Konten anlegen. |
-| **1-Snap mit Vision-KI** (Foto vom Kühlschrank auf dem Server) | Kosten pro Bild, Fotos verlassen das Gerät | Heute: Bon auf dem Gerät lesen (ADR-0028) und Foto über die eigene KI (ADR-0012), ohne Kosten. Server-KI erst mit `rettich+`. |
-| **bon@rettich.app** (Bons per Mail weiterleiten) | Bons gehen an einen Server | Spannend für Cumulus und Supercard, braucht Server, Datenschutz-Text und Löschfristen |
+| **1-Snap mit Vision-KI** (Foto vom Kühlschrank auf dem Server) | Kosten pro Bild, Fotos verlassen das Gerät | Heute: Quittung auf dem Gerät lesen (ADR-0028) und Foto über die eigene KI (ADR-0012), ohne Kosten. Server-KI erst mit `rettich+`. |
+| **bon@rettich.app** (Quittungen per Mail weiterleiten) | Quittungen gehen an einen Server | Spannend für Cumulus und Supercard, braucht Server, Datenschutz-Text und Löschfristen |
 | Lokale «Rett-Matches» (Bäckerei im Umkreis) | Standort, Partner | Nur mit Einwilligung, Partner nur über Interfaces mit Mocks (CLAUDE.md) |
 
 ## Verworfen

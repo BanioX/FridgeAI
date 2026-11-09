@@ -1,4 +1,4 @@
-# Lernt: das Lernbuch von rettich
+# Lernt: das Lernbuch von Rettich
 
 Was wir aus Fehlern gelernt haben, mit Beleg. Claude trägt ein, Alban kann jede Lektion streichen. Neue Arbeit liest zuerst diese Liste.
 

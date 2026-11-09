@@ -1,11 +1,11 @@
-# rettich – Produkt- und Lebensmitteldaten: Quellen
+# Rettich – Produkt- und Lebensmitteldaten: Quellen
 
 > Stand: 6. November 2026. Recherche auf Albans Frage nach YAZIO und MyFoodRepo.
 > Grundsatz: Nur offizielle, lizenzierte Zugänge. Keine nachgebauten (reverse-engineerten) Schnittstellen.
 
 ## Übersicht
 
-| Quelle | Was | Zugang und Lizenz | Status | Nutzen für rettich |
+| Quelle | Was | Zugang und Lizenz | Status | Nutzen für Rettich |
 | --- | --- | --- | --- | --- |
 | **Open Food Facts** | Weltweite Produktdatenbank per Barcode (Name, Marke, Kategorie, Nährwerte, Bilder), viele CH-Produkte | Offene API, Daten unter ODbL (Quellenangabe, Share-alike für die Datenbank) | Aktiv | **MVP, Schritt 10:** Barcode → Produkt vorausfüllen |
 | **Open Food Repo** (EPFL, Digital Epidemiology Lab; Datenbasis von MyFoodRepo) | Barcode-Produkte mit Fokus Schweiz (Name, Zutaten, Nährwerte, Bilder) | Öffentliche, kostenlose API laut Projekt | **Unklar:** Showcase-Seite nennt den Support-Status «Inactive» | **Optional, Schritt 10:** zweite Quelle für Schweizer Eigenmarken, nur wenn API und Bedingungen vor dem Einbau bestätigt sind |

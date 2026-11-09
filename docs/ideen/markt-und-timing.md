@@ -22,7 +22,7 @@ Stand: 7.11.2026, Websuche mit Quellen. Viele Zahlen stammen aus Berichten über
   - Der Zwischenbericht vom 6.5.2026 hält fest, dass die Haushalte **zu wenig erreicht** werden.
   - Die Massnahmen der Phase 2 werden 2026 beschlossen, der nächste Bericht folgt 2028 ([admin.ch](https://www.admin.ch/de/newnsb/OcIVPPPwZSjuVNWpJfFkK)).
 - **EU:** Die Richtlinie (EU) 2025/1892 verlangt bis 31.12.2030 verbindlich **−30 % pro Kopf** in Handel, Gastronomie und Haushalten. Die Umsetzung in nationales Recht ist bis 17.6.2027 fällig ([EUR-Lex](https://eur-lex.europa.eu/eli/dir/2025/1892/oj)).
-- **Digitale Bons:** Coop (2022) und Migros (2023) drucken Kassenzettel nur noch auf Wunsch. Digitale Belege gibt es in Supercard und Cumulus.
+- **Digitale Quittungen:** Coop (2022) und Migros (2023) drucken Kassenzettel nur noch auf Wunsch. Digitale Belege gibt es in Supercard und Cumulus.
 - **KI und OCR:** Texterkennung läuft heute gratis auf dem Gerät. Ein Modell auf GPT-3.5-Niveau wurde von 2022 bis 2024 rund 280-mal günstiger (Stanford AI Index 2025).
 - **Botschaft für die Schweiz:** Die Lebensmittelpreise sinken seit 2024 leicht, «Teuerung» zieht also nicht. «Lebensmittel sind hier 61 % teurer als in der EU, und du wirfst rund CHF 600 im Jahr weg» zieht. In Deutschland und Österreich wirkt die Teuerung als Argument.
 
@@ -38,7 +38,7 @@ Stand: 7.11.2026, Websuche mit Quellen. Viele Zahlen stammen aus Berichten über
 
 ## Konkurrenz (Ergänzung zu [`../blue-ocean.md`](../blue-ocean.md))
 
-- **Kitche** (UK): Bon-Scan, gratis. Februar 2025 von Remy gekauft und eingestellt.
+- **Kitche** (UK): Quittungs-Scan, gratis. Februar 2025 von Remy gekauft und eingestellt.
 - **CozZo:** Der Cloud-Dienst endete am 30.9.2025.
 
 Die Lehre aus beiden: Gratis ohne Modell und Abhängigkeit von einer Cloud sind die zwei häufigsten Todesursachen.
@@ -46,7 +46,7 @@ Die Lehre aus beiden: Gratis ohne Modell und Abhängigkeit von einer Cloud sind 
 - **KI-Klone wie «Fridge AI: Food & Recipes»:** Wochen-Abo ($1.99/Woche), Fotos gehen in die Cloud, kein Inventar und keine Franken.
 - **Too Good To Go:** 2.6 Mio. registrierte Nutzende in der Schweiz. Arbeitet mit Überschüssen aus Handel und Gastronomie, nicht mit dem eigenen Kühlschrank: eher Partner als Gegner.
 
-Eine Schweizer App, die Bon-Scan, Vorrat, Wert in CHF und geteilten Haushalt verbindet, hat die Recherche nicht gefunden.
+Eine Schweizer App, die Quittungs-Scan, Vorrat, Wert in CHF und geteilten Haushalt verbindet, hat die Recherche nicht gefunden.
 
 ## Abo-Kennzahlen
 
@@ -54,6 +54,6 @@ Eine Schweizer App, die Bon-Scan, Vorrat, Wert in CHF und geteilten Haushalt ver
 - **Abo-Form:** Jahresabos tragen bei Gesundheits-Apps 61 % des Umsatzes.
 - **Preis:** Tiefe Preise halten Nutzende besser.
 
-Eine YAZIO-Analyse nennt 5–7 % Umwandlung, widerspricht sich dabei aber selbst ([`mitbewerber-yazio.md`](./mitbewerber-yazio.md)). rettich rechnet weiter mit 2–5 %.
+Eine YAZIO-Analyse nennt 5–7 % Umwandlung, widerspricht sich dabei aber selbst ([`mitbewerber-yazio.md`](./mitbewerber-yazio.md)). Rettich rechnet weiter mit 2–5 %.
 
-Für rettich heisst das: Jahresabo zuerst und den Preis tief halten. Der Vorschlag CHF 29 pro Jahr liegt im unteren Mittelfeld (NoWaste $7, YAZIO EUR 30–84, Samsung Food+ $60).
+Für Rettich heisst das: Jahresabo zuerst und den Preis tief halten. Der Vorschlag CHF 29 pro Jahr liegt im unteren Mittelfeld (NoWaste $7, YAZIO EUR 30–84, Samsung Food+ $60).
