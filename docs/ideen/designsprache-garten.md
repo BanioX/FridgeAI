@@ -9,7 +9,7 @@ Die Natur liefert die Ordnung, nicht die Dekoration. Jedes Bild muss etwas erkl�
 | Idee | Was es erklärt | Für wen | Aufwand |
 | --- | --- | --- | --- |
 | **Pflanze = Bereich:** Kühlschrank Rucola, Tiefkühler Eis, Vorrat Weizen, Notvorrat Olive (gibt es schon) | Wo etwas liegt, auf einen Blick | alle | erledigt |
-| **Reineclaude = Erfolg:** Wer etwas kurz vor Ablauf rettet (ADR-0033), sieht einen warmen Moos-Gelbgrün-Akzent statt des üblichen Grüns. Die Reineclaude ist zugleich ein kleines Augenzwinkern an Claude, das rettich mitbaut | Echte Rettungen fühlen sich anders an als normales Essen | alle | S |
+| **Reineclaude = Erfolg:** Wer etwas kurz vor Ablauf rettet (ADR-0033), sieht einen warmen Moos-Gelbgrün-Akzent statt des üblichen Grüns. Die Reineclaude ist zugleich ein kleines Augenzwinkern an Claude, das Rettich mitbaut | Echte Rettungen fühlen sich anders an als normales Essen | alle | S |
 | **Reifen statt Prozent:** Der Rett-Tacho oder Wochen-Streak (Masterplan) «reift» von unreif-grün über halbreif zu reifer Reineclaude | Fortschritt ohne Zahlenwand | alle, besonders Einsteiger:innen | M |
 | **Saison-Akzente:** Spargel im Frühling, Kürbis im Herbst als kleine Akzente in «Rette heute» | Was gerade frisch und günstig ist | Kochfreudige | M, braucht Saisondaten |
 

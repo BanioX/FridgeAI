@@ -8,10 +8,10 @@ Grundsatz: **«Start» bleibt beim Retten** (ADR-0033). Ausgaben und Ernährung 
 
 | Idee | Nutzen | Aufwand | Braucht |
 | --- | --- | --- | --- |
-| **Ausgaben pro Monat** aus den Bons: Total, pro Laden, pro Kategorie (Milchprodukte, Fleisch, Gemüse …) | Budget kennen, ohne Excel | S–M | Daten sind schon da (`receipts`), nur eine Ansicht |
+| **Ausgaben pro Monat** aus den Quittungen: Total, pro Laden, pro Kategorie (Milchprodukte, Fleisch, Gemüse …) | Budget kennen, ohne Excel | S–M | Daten sind schon da (`receipts`), nur eine Ansicht |
 | **Budget festlegen** («CHF 600 im Monat») mit ruhigem Balken, kein Alarm | Planen, nicht schämen | S | eine Einstellung pro Haushalt |
-| **Wegwerf-Anteil am Budget**: «3 % deiner Ausgaben landeten im Abfall» | verbindet Geld und Food Waste | S | Bons und Verlauf |
-| **Preisgedächtnis nutzen**: «Butter bei Lidl 20 % günstiger als bei Coop» | sparen ohne Mühe | M | ADR-0029, genug Bons |
+| **Wegwerf-Anteil am Budget**: «3 % deiner Ausgaben landeten im Abfall» | verbindet Geld und Food Waste | S | Quittungen und Verlauf |
+| **Preisgedächtnis nutzen**: «Butter bei Lidl 20 % günstiger als bei Coop» | sparen ohne Mühe | M | ADR-0029, genug Quittungen |
 | Teilen im Haushalt: wer zahlt was (Kosten aufteilen) | WG-Kern | L | Konten und Sync (Plan, Schritt 7) |
 
 ## Ernährung (gesund und ungesund)

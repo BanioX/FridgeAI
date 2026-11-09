@@ -15,10 +15,10 @@ Stand: 7.11.2026. Alban: «Gibt es eine bessere Datenquelle als Open Food Facts?
 | **Migros, Coop, Denner, Lidl, Aldi** (Websites) | keine offene API. Laut Migipedia gibt Migros Dritten keinen Zugang ([Forum](https://migipedia.migros.ch/de/forum/migipedia/is-there-an-api-for-migros-product-data)) | vollständig für die eigenen Produkte | **Seit 8.11.2026 (Alban, [ADR-0045](../adr/0045-retailer-catalog.md)):** ein höflicher Crawler sammelt, was technisch offen ist (Aldi, Lidl, Denner). Migros und Coop sperren Bots und kommen über Open Food Facts. Abgleich auf dem Gerät |
 | **GS1 Schweiz** (trustbox, «Verified by GS1») | kostenpflichtig, für Mitglieder | Stammdaten der Hersteller | kostet Geld: Alban entscheidet, später mit Partnern |
 
-## Was rettich selbst besser machen kann (Reihenfolge)
+## Was Rettich selbst besser machen kann (Reihenfolge)
 
-1. **Bon automatisch abgleichen, Ja/Nein pro Treffer** (umgesetzt 7.11.2026, ADR-0036).
-2. **Barcode pro Bon-Zeile scannen**, wenn nichts gefunden wurde (umgesetzt 7.11.2026). Der Barcode ist eindeutig und funktioniert auch für Eigenmarken, sobald sie in einer offenen Datenbank stehen. rettich merkt sich die Zuordnung für den nächsten Bon.
+1. **Quittung automatisch abgleichen, Ja/Nein pro Treffer** (umgesetzt 7.11.2026, ADR-0036).
+2. **Barcode pro Quittungszeile scannen**, wenn nichts gefunden wurde (umgesetzt 7.11.2026). Der Barcode ist eindeutig und funktioniert auch für Eigenmarken, sobald sie in einer offenen Datenbank stehen. Rettich merkt sich die Zuordnung für die nächste Quittung.
 3. **Foto der Nährwerttabelle** (umgesetzt 7.11.2026: Foto oder Screenshot, z. B. von Migipedia oder coop.ch, wird auf dem Gerät gelesen und nie gespeichert oder gesendet) wie bei MyFoodRepo, wenn auch der Barcode unbekannt ist. Die Schrift liest tesseract auf dem Gerät, ein Parser in `packages/core` macht daraus Energie, Fett, Zucker, Eiweiss und Salz. Nichts verlässt das Gerät. Aufwand M.
 4. **Beitragen an Open Food Facts** (optional, mit Konto der Person): Fotos und Werte hochladen, damit der nächste Haushalt das Produkt kennt. Neuer Datenfluss, **Alban entscheidet**.
-5. **Gemeinsames Gedächtnis über Haushalte** (mit Konten, Schritt 7): Wenn eine Bon-Zeile bei einem Haushalt bestätigt ist, kennen sie alle. Das wäre der eigentliche Vorsprung gegenüber allen anderen Apps. Datenschutz: nur die Zuordnung Bon-Text → Barcode, nie wer was gekauft hat. **Alban entscheidet.**
+5. **Gemeinsames Gedächtnis über Haushalte** (mit Konten, Schritt 7): Wenn eine Quittungszeile bei einem Haushalt bestätigt ist, kennen sie alle. Das wäre der eigentliche Vorsprung gegenüber allen anderen Apps. Datenschutz: nur die Zuordnung Quittungs-Text → Barcode, nie wer was gekauft hat. **Alban entscheidet.**

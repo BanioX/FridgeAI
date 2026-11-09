@@ -18,13 +18,13 @@
   1. Sync ist das grösste technische Risiko. Je früher er läuft, desto billiger sind Korrekturen am Datenmodell.
   2. Push braucht einen Server und ist eines deiner Hauptziele.
   3. Die Basis-Features sind Red Ocean. Pilot-WGs sollen früh das testen, womit Rettich gewinnen will.
-  4. Nach Schritt 9 ist ein **Pilot-Alpha** mit 1 bis 2 WGs möglich: Vorrat, Bon-Scan, Haushalt, Push, Kostenteilung, Rette-Kreis.
+  4. Nach Schritt 9 ist ein **Pilot-Alpha** mit 1 bis 2 WGs möglich: Vorrat, Quittungs-Scan, Haushalt, Push, Kostenteilung, Rette-Kreis.
   - *Bedingung:* Der Backend-Entscheid (Frage 1) fällt spätestens am Ende von Meilenstein B. Wenn nicht, ziehe ich Meilenstein D vor. Der Plan funktioniert in beiden Reihenfolgen.
 
 | Meilenstein | Schritte | Ergebnis |
 | --- | --- | --- |
 | **A – Fundament** | 1–2 | Monorepo, CI, Domänenmodell, Schnittstelle für API/MCP, Haltbarkeit (**fertig**, ausser 2i) |
-| **B – Lokaler Vorrat & Bon-Scan** | 3–6 | Offline-Vorrat ohne Konto mit Startseite (was heute zu retten ist), Bon-Foto → Review → Vorrat, Status und Wirkungs-Dashboard (**fertig**, ausser Trend, pro Person und Schweizer Durchschnitt in 6c) |
+| **B – Lokaler Vorrat & Quittungs-Scan** | 3–6 | Offline-Vorrat ohne Konto mit Startseite (was heute zu retten ist), Quittungs-Foto → Review → Vorrat, Status und Wirkungs-Dashboard (**fertig**, ausser Trend, pro Person und Schweizer Durchschnitt in 6c) |
 | **C – Haushalt, Push & USP** | 7–9 | Konto, Haushalt, Sync, Push-Erinnerungen, Kostenteilung, Rette-Kreis → **Pilot-Alpha** (**nicht begonnen**) |
 | **D – Basis komplett** | 10–11 | Barcode und Quittung als PDF (umgesetzt), Migros-CSV (offen), Einkaufsliste (lokal umgesetzt); Rezepte entfernt (ADR-0040) |
 | **E – Release-Reife** | 12 | Export/Löschen, Datenschutz, Entitlements, PWA-Feinschliff → **Pilot mit 3–5 WGs** (12a lokal, 12c teilweise, 12b offen) |
@@ -120,14 +120,14 @@ Der Brief (§4) ist der Startpunkt. Diese Änderungen landen in Schritt 2 in `pa
 | Einfrieren | – | `Category.freezable`, Haltbarkeit im Tiefkühler | Einfrier-Tipp (P-03) |
 | Reste-Tipps | – | `Category.tips` (Lagerung, Verwertung) | R-04 |
 | Grundvorrat | – | `Category.defaultOwner: 'shared' \| 'buyer'` | W-04, weniger Zuordnen |
-| Bon-Zeilen | `isFood: boolean` | `kind: 'item' \| 'discount' \| 'deposit' \| 'bag' \| 'subtotal' \| 'total' \| 'payment' \| 'other'` plus `isFood` | Rabatt und Pfand gehören zu einer Position. Für die Kostenteilung zählt auch Non-Food |
+| Quittungszeilen | `isFood: boolean` | `kind: 'item' \| 'discount' \| 'deposit' \| 'bag' \| 'subtotal' \| 'total' \| 'payment' \| 'other'` plus `isFood` | Rabatt und Pfand gehören zu einer Position. Für die Kostenteilung zählt auch Non-Food |
 | Positionsdetails | `quantity`, `priceRappen` | plus `unitPriceRappen?`, `weightGrams?`, `discountRappen` | Gewichtsartikel, Aktionen |
 | Produkt | `barcode?` | `gtin?` (normalisiert), `externalRefs?: Record<retailer, string>` | Partner-Matching, Nachkauf |
 | Teilmengen | WasteEvent ohne Menge | `WasteEvent.quantity`; Artikel bleibt mit Restmenge aktiv | US-06 «ganz oder teilweise» |
 | Rette-Kreis | `sharedInRescueCircle: boolean` | Entität `RescueOffer { itemId, offeredBy, offeredAt, claimedBy?, claimedAt?, withdrawnAt? }` | Wer hat übernommen, keine Doppelzählung |
 | Mitglied | ohne Konto-Bezug | `Member.userId?`, `Member.leftAt?` | Lokales Profil ohne Konto; Austritt |
 | Geteilte Kosten | `assignedTo: 'shared'` | Snapshot `splitAmong: memberId[]` beim Speichern | Saldo ändert sich nicht rückwirkend |
-| Ausgleich | «setzt Salden zurück» | `Settlement` als Buchung; Saldo = Bon-Anteile − Ausgleiche | Nachvollziehbar |
+| Ausgleich | «setzt Salden zurück» | `Settlement` als Buchung; Saldo = Quittungs-Anteile − Ausgleiche | Nachvollziehbar |
 | Lernende Zuordnung | – | `ProductAlias { retailer, normalizedText, productId?, categoryId, hits }` | US-19 |
 | Erinnerungen | – | `ReminderPrefs { memberId, digestTime, daysBefore[], quietHours, channels }` | Digest, Ruhezeiten |
 | Events | – | `DomainEvent { id, type, version, householdId, actor, at, payload }` | Push, Dashboards, später Webhooks |
@@ -146,7 +146,7 @@ Weiterhin gilt: **Salden und Food-Waste-Metriken werden berechnet, nicht gespeic
 - **US-16 MHD vs. Verbrauchsdatum:** MHD abgelaufen → «Oft noch gut: schauen, riechen, probieren». Verbrauchsdatum abgelaufen → «Nicht mehr essen».
 - **US-17 Haushalt verlassen:** Offene Salden werden vorher angezeigt, eigene Artikel werden «geteilt» oder gelöscht. Owner können Mitglieder entfernen und Einladungen widerrufen.
 - **US-18 Offline gleichzeitig ändern:** Pro Feld gewinnt die spätere Änderung, niemand verliert ganze Datensätze.
-- **US-19 Lernende Zuordnung:** Korrektur «M-BUDGET VOLLMILCH» → «Milch» wird beim nächsten Bon automatisch vorgeschlagen.
+- **US-19 Lernende Zuordnung:** Korrektur «M-BUDGET VOLLMILCH» → «Milch» wird bei der nächsten Quittung automatisch vorgeschlagen.
 - **US-20 Rückgängig:** Statuswechsel 10 Sekunden per Toast, danach im Verlauf rückgängig machbar.
 - **US-21 Retten-Digest:** Einmal täglich zur gewählten Zeit eine Zusammenfassung der bald ablaufenden Artikel mit einem Tipp aus «Wissen» (Haltbarkeit, Einfrieren); dringende Fälle (Verbrauchsdatum heute) zusätzlich einzeln; Ruhezeiten werden respektiert.
 - **US-22 Kühlschrank-Check:** Einmal pro Woche schlägt die App einen 30-Sekunden-Check vor: Artikel als Karten, wischen «noch da / weg / halb».
@@ -176,7 +176,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 - **Fertig, wenn:** `pnpm lint | typecheck | test | build | e2e` lokal und in CI grün.
 
 #### Schritt 2 – Core-Domäne und Schnittstelle
-- 2a: **Geld und IDs**: Typ `Rappen` (Zod-Brand), `parseChf`/`formatChf` für alle Bon-Schreibweisen (`3.95`, `-.95`, `1'234.50`, `CHF 12.–`, `0.80-`), `allocate`/`splitEvenly` (Largest Remainder, rotierender Rest-Rappen), UUIDv7 ohne Dependency; Property-Tests; ADR-0003 (Local-first, IDs), ADR-0004 (Geld)
+- 2a: **Geld und IDs**: Typ `Rappen` (Zod-Brand), `parseChf`/`formatChf` für alle Quittungs-Schreibweisen (`3.95`, `-.95`, `1'234.50`, `CHF 12.–`, `0.80-`), `allocate`/`splitEvenly` (Largest Remainder, rotierender Rest-Rappen), UUIDv7 ohne Dependency; Property-Tests; ADR-0003 (Local-first, IDs), ADR-0004 (Geld)
 - 2b: `model.ts` und Zod-Schemas für alle Entitäten (inkl. Abschnitt 3), `LocalDate`/`IsoDateTime`
 - 2c: Europe/Zurich, «Tage bis Ablauf»; **Kategorien-Katalog** (rund 40 Schweizer Alltagskategorien mit Haltbarkeit pro Lagerort, `dateKind`, `freezable`, Reste-/Lagertipps, Emoji, Durchschnittspreis und -gewicht, Quellen dokumentiert); `estimateExpiry()`
 - 2d: Ports (`ReceiptOcrEngine`, `BarcodeScanner`, `ProductCatalog`, `RebuyProvider`, `DeliveryProvider`, `RetailerReceiptSource`, `SyncAdapter`, `NotificationService`, `Clock`, `IdGenerator`), Mocks für die Partner-Ports
@@ -191,7 +191,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 
 ---
 
-### Meilenstein B – Lokaler Vorrat & Bon-Scan
+### Meilenstein B – Lokaler Vorrat & Quittungs-Scan
 
 #### Schritt 3 – Lokaler Vorrat und Startseite (US-04, US-13, US-14, US-15)
 - 3a: Dexie-Schema, Repositories hinter Interfaces, Event-Log und Outbox lokal, Migrations-Tests (`fake-indexeddb`), automatischer lokaler Haushalt
@@ -201,7 +201,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 - **Delegation:** O für 3a (sync-kritisch), S für 3b bis 3d nach meinen Komponenten-Schnittstellen.
 - **Parallel möglich mit Schritt 4.**
 
-#### Schritt 4 – Bon-Pipeline in `core` (US-01, Logik)
+#### Schritt 4 – Quittungs-Pipeline in `core` (US-01, Logik)
 - 4a: Normalisierung (Umlaute, Abkürzungen, OCR-Verwechslungen `0/O`, `1/l`, `,/.`), Händlererkennung, Zeilenklassifikation, Rabatt einer Position zuordnen, Plausibilität «Summe der Positionen = Total» (umgesetzt: allgemeiner Leser `parseReceiptText` für Coop, Migros, Aldi, Lidl, Denner, ADR-0027)
 - 4b: Migros-Parser + 5 Fixtures (ersetzt durch den allgemeinen Leser `parseReceiptText`, ADR-0027)
 - 4c: Coop-Parser + 5 Fixtures, generischer Fallback-Parser (ersetzt durch den allgemeinen Leser `parseReceiptText`, ADR-0027)
@@ -209,7 +209,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 - **Fixtures:** synthetisch, OCR-Text statt Bilder, Randfälle Rabatt, Pfand, Gewichtsartikel, Mehrfachmenge, OCR-Fehler, Tragtasche. Keine echten Personendaten.
 - **Delegation:** O für Klassifikation und Matching, S für die Händler-Parser nach meinem Interface, H für Fixtures.
 
-#### Schritt 5 – Bon-Scan-UI mit OCR (US-01)
+#### Schritt 5 – Quittungs-Scan-UI mit OCR (US-01)
 - 5a: Kamera-Adapter mit allen Zuständen (`unsupported`, `insecure-context`, `prompt`, `granted`, `denied`, `no-device`, `error`), Erklär-Screen vor der Anfrage, `playsinline`, Stream stoppen beim Verlassen; Fallbacks Foto-Upload und manuelle Erfassung; Anleitung bei `denied`
 - 5b: OCR-Worker (tesseract.js, `deu`, selbst gehostet, lazy geladen), Vorverarbeitung im Worker, Fortschrittsanzeige
 - 5c: Review-Liste: Positionen an-/abwählen (Non-Food abgewählt), alles editierbar, Warnung bei Summen-Differenz
@@ -218,7 +218,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 
 #### Schritt 5b – KI-Import «mit eigener KI erfassen» (ADR-0012, Stufe 1) – **am 7.11.2026 aus der App entfernt** (Alban: kaum genutzt, untergräbt Premium)
 - Auftrag (Prompt) zum Kopieren mit festem Antwortformat; Parser für die KI-Antwort (Zeilen oder JSON) in `core`, streng geprüft
-- «Einfügen» → Review-Liste → übernehmen; derselbe Posteingang wie später MCP und Bon-Scan
+- «Einfügen» → Review-Liste → übernehmen; derselbe Posteingang wie später MCP und Quittungs-Scan
 - Kein Server, keine Kosten für Rettich
 
 #### Schritt 6 – Abschliessen, Bilanz, Kühlschrank-Check (US-06, US-20, US-22)
@@ -250,8 +250,8 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 - **Delegation:** O für 8a und 8b, S für 8c.
 
 #### Schritt 9 – Kostenteilung & Rette-Kreis (US-10, US-11)
-- 9a: `core/balances`: Anteile pro Position, «geteilt» mit Largest-Remainder (der übrige Rappen rotiert fair), Bon-Rabatte proportional, Salden, Ausgleichsvorschlag mit minimaler Anzahl Zahlungen; Property-Tests
-- 9b: In der Bon-Review: «bezahlt von», Zuordnung pro Position, Grundvorrat automatisch geteilt (W-04); Saldo-Ansicht; «Ausgleich erfasst»; Push an Betroffene (P-05)
+- 9a: `core/balances`: Anteile pro Position, «geteilt» mit Largest-Remainder (der übrige Rappen rotiert fair), Quittungs-Rabatte proportional, Salden, Ausgleichsvorschlag mit minimaler Anzahl Zahlungen; Property-Tests
+- 9b: In der Quittungs-Review: «bezahlt von», Zuordnung pro Position, Grundvorrat automatisch geteilt (W-04); Saldo-Ansicht; «Ausgleich erfasst»; Push an Betroffene (P-05)
 - 9c: Rette-Kreis: freigeben, Push an Mitglieder (P-04), übernehmen, zurückziehen; Zählung gemäss Frage 8
 - **Delegation:** O für 9a vollständig (Geldlogik), S für 9b und 9c.
 
@@ -266,7 +266,7 @@ Legende Delegation: **O** = Opus (ich), **S** = Sonnet-Subagent (`implementer`),
 - 10b: `ProductCatalog`-Adapter für Open Food Facts mit lokalem Cache (umgesetzt: Adapter, 30-Tage-Cache, Fakten am Produkt; Anzeige umgesetzt: Produktseite mit Bild, Marke, Nährwerten, Nutri-Score und Allergenen; Nährwerte auch aus einem Foto); übernimmt **Name, Marke, Packungsgrösse, Nährwerte, Kalorien, Nutri-Score und Allergene** und zeigt sie auf der Produktseite (kein Kalorien-Tagebuch); manuelle Erfassung bei keinem Treffer, «Schon im Vorrat: 2 Stk.», Quellenangabe gemäss OFF-Lizenz (ODbL); optional Open Food Repo (EPFL) als zweite Quelle für Schweizer Produkte, falls API und Bedingungen bestätigt sind (siehe [`data-sources.md`](./data-sources.md))
 - 10c: Migros-CSV-Parser (papaparse) + Fixtures (offen)
 - 10d: Coop-PDF-Textextraktion (pdfjs-dist, selbst gehostet) + Parser + Fixtures (umgesetzt mit dem allgemeinen Leser: PDF aus der Coop- und Migros-App, ADR-0027, ADR-0028)
-- 10e: Import-UI, Duplikaterkennung über Bon-/Zeilen-Hash, Default «letzte 14 Tage angehakt», danach dieselbe Review wie beim Foto (umgesetzt: dieselbe Quittung nie doppelt, mehrere Quittungen auf einer Seite prüfen, «Alle übernehmen»)
+- 10e: Import-UI, Duplikaterkennung über Quittungs-/Zeilen-Hash, Default «letzte 14 Tage angehakt», danach dieselbe Review wie beim Foto (umgesetzt: dieselbe Quittung nie doppelt, mehrere Quittungen auf einer Seite prüfen, «Alle übernehmen»)
 - **Delegation:** S für Adapter und Parser, O für Hash-/Duplikatlogik und Datenschutz-Review (Frage 3a). *Hängt stark von echten Beispieldateien ab (Frage 7).*
 
 #### Schritt 11 – Einkaufsliste (US-07); Rezepte (US-08) entfernt
@@ -323,8 +323,8 @@ Schritt 3 und 4 laufen parallel. Schritte 10, 11 und 12 sind voneinander weitgeh
 
 | Risiko | Wirkung | Gegenmassnahme |
 | --- | --- | --- |
-| **Erfassungsmüdigkeit** (Risiko Nr. 1 der Analyse) | Vorrat veraltet, Erinnerungen werden wertlos, Nutzer:innen springen ab | Bon-Scan und Einkaufsliste als Hauptwege, Standardartikel mit 1 Tap, Kühlschrank-Check, «nach dem Kochen abbuchen» |
-| OCR auf Thermopapier ungenau | Bon-Scan enttäuscht | Vorverarbeitung, Händler-Parser, Summen-Plausibilität, gute Review, lernende Zuordnung, CSV/PDF-Import als zuverlässiger Weg |
+| **Erfassungsmüdigkeit** (Risiko Nr. 1 der Analyse) | Vorrat veraltet, Erinnerungen werden wertlos, Nutzer:innen springen ab | Quittungs-Scan und Einkaufsliste als Hauptwege, Standardartikel mit 1 Tap, Kühlschrank-Check, «nach dem Kochen abbuchen» |
+| OCR auf Thermopapier ungenau | Quittungs-Scan enttäuscht | Vorverarbeitung, Händler-Parser, Summen-Plausibilität, gute Review, lernende Zuordnung, CSV/PDF-Import als zuverlässiger Weg |
 | Echte Exportformate weichen ab | Import scheitert im Pilot | Echte, anonymisierte Beispiele vor Schritt 4 und 10 (Frage 7) |
 | Sync-Fehler | Datenverlust, Vertrauensverlust | Sync-Logik rein in `core`, Konflikt-Tests, Soft-Delete, nie hartes Löschen beim Sync |
 | iOS: Web Push nur für installierte PWA | Erinnerungen kommen nicht an | Installationsanleitung, In-App-Digest, native App als Ausweg (Frage 11) |
@@ -337,7 +337,7 @@ Schritt 3 und 4 laufen parallel. Schritte 10, 11 und 12 sind voneinander weitgeh
 
 ## 9. Offene Fragen an dich
 
-**Delegation (6.11.2026):** Alban gibt die Richtung vor, Claude führt aus. Technische Entscheide treffe ich deshalb selbst nach den Empfehlungen unten und halte sie als ADR fest. Alban frage ich nur noch, wenn (a) er selbst handeln muss (Konten, Zugänge, Bon-Beispiele), (b) Kosten entstehen, (c) Daten das Gerät auf eine neue Art verlassen oder (d) sich das Produkt verändert. Das betrifft vor allem die Fragen 1, 3, 7, 11 und 13, die ich rechtzeitig vor Schritt 7 nochmals kurz vorlege.
+**Delegation (6.11.2026):** Alban gibt die Richtung vor, Claude führt aus. Technische Entscheide treffe ich deshalb selbst nach den Empfehlungen unten und halte sie als ADR fest. Alban frage ich nur noch, wenn (a) er selbst handeln muss (Konten, Zugänge, Quittungs-Beispiele), (b) Kosten entstehen, (c) Daten das Gerät auf eine neue Art verlassen oder (d) sich das Produkt verändert. Das betrifft vor allem die Fragen 1, 3, 7, 11 und 13, die ich rechtzeitig vor Schritt 7 nochmals kurz vorlege.
 
 Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ich nur die Freigabe des Plans, Frage 6 und Frage 15.** Fragen 1 bis 3 und 11 brauche ich bis Ende Meilenstein B, Frage 7 vor Schritt 4.
 
@@ -358,7 +358,7 @@ Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ic
    - Design (ergänzt 6.11.2026, delegiert): `@fontsource-variable/fraunces`, `@fontsource-variable/figtree` (OFL, selbst gehostet), `lucide-react` (ISC)
    - Erst in v1: `@modelcontextprotocol/sdk` (MCP-Server)
    - Bewusst **ohne** Dependency selbst gebaut: UUIDv7, Fuzzy-Matching, Datumshilfen, Textkatalog.
-7. **Echte Bon-Beispiele** – 2 bis 3 Migros-CSV-Exporte, 2 bis 3 Coop-Supercard-PDFs und 5 bis 10 Fotos von Migros-/Coop-Bons. Ich leite synthetische Fixtures ab, **die Originale kommen nie ins Repo**. Bitte hier in der Session teilen.
+7. **Echte Quittungs-Beispiele** – 2 bis 3 Migros-CSV-Exporte, 2 bis 3 Coop-Supercard-PDFs und 5 bis 10 Fotos von Migros-/Coop-Quittungen. Ich leite synthetische Fixtures ab, **die Originale kommen nie ins Repo**. Bitte hier in der Session teilen.
 8. **Regeln für Kostenteilung und Rette-Kreis**
    - a) «Geteilt» = gleichmässig auf alle Mitglieder zum Zeitpunkt des Einkaufs; andere Schlüssel erst in v1. *Empfehlung:* ja.
    - b) Non-Food (WC-Papier, Putzmittel) kommt nicht in den Vorrat, zählt aber in der Kostenteilung. *Empfehlung:* ja.
@@ -388,7 +388,7 @@ Zu jeder Frage steht meine Empfehlung. **Für den Start von Schritt 1 brauche ic
 | 4 | Serverseitiges OCR/LLM | **Keine KI auf Rettich-Kosten** (ADR-0012); Stufe 1 am 7.11.2026 entfernt, Bestandesaufnahme per Foto geparkt (P18) |
 | 5 | Freemium im MVP | Brainstorming in [`ideen/monetarisierung.md`](./ideen/monetarisierung.md); Pilot ohne Werbung, Entscheid danach |
 | 6 | Dependency-Liste | **freigegeben** (delegiert) |
-| 7 | Echte Bon-Beispiele | offen |
+| 7 | Echte Quittungs-Beispiele | offen |
 | 8 | Kostenteilung & Rette-Kreis | offen |
 | 9 | Reihenfolge & Umfang | **freigegeben** (delegiert) |
 | 10 | Repo öffentlich oder privat | **privat** |

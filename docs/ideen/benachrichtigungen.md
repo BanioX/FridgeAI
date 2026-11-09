@@ -6,7 +6,7 @@ Frage Alban: «Push-Mitteilungen technisch möglich?» **Ja**, mit diesen Beding
 | --- | --- | --- |
 | Android (Chrome, Firefox, Samsung) | ja | Erlaubnis nach einem Tipp |
 | Desktop (Chrome, Edge, Firefox, Safari) | ja | Erlaubnis nach einem Tipp |
-| iPhone und iPad (ab iOS 16.4) | ja | nur wenn rettich **auf dem Home-Bildschirm installiert** ist («Teilen» → «Zum Home-Bildschirm»), danach Erlaubnis |
+| iPhone und iPad (ab iOS 16.4) | ja | nur wenn Rettich **auf dem Home-Bildschirm installiert** ist («Teilen» → «Zum Home-Bildschirm»), danach Erlaubnis |
 
 ## Was es braucht
 

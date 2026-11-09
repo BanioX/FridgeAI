@@ -1,6 +1,7 @@
-# rettich – Use Cases (Brainstorming)
+# Rettich – Use Cases (Brainstorming)
 
 > **Status:** Brainstorming zur Diskussion, Stand 6. November 2026.
+> **Nachtrag 9.11.2026:** Was davon gebaut ist, steht im [Plan](./plan.md#stand-nach-200-prs). Ein Abschluss heisst heute «Verwertet» oder «Entsorgt», «Weitergegeben» gibt es nicht mehr ([ADR-0046](adr/0046-awareness-verwertet-entsorgt.md)); die Rezepte sind entfernt ([ADR-0040](adr/0040-no-recipes.md)).
 > **Quellen:** [`brief.md`](./brief.md), Blue-Ocean-Analyse (6.11.2026), ATL1 «Unternehmensführung» (Okt. 2025), Businessplan ATL2 (März 2026). Zusammenfassung in [`blue-ocean.md`](./blue-ocean.md).
 
 ## Leitplanken fürs Brainstorming
@@ -39,7 +40,7 @@ Und er darf das Erfassen **nicht mühsamer** machen. Laut Blue-Ocean-Analyse ist
 | UC-02 | **«Was haben wir?»** unterwegs im Laden, auch offline | Keine Doppelkäufe | MVP |
 | UC-03 | **Wert im Kühlschrank** in CHF (Summe aller aktiven Artikel) | Macht Waste greifbar | MVP+ |
 | UC-04 | **30-Sekunden-Kühlschrank-Check** einmal pro Woche: Karten wischen «noch da / weg / halb» | Vorrat bleibt aktuell, ohne viel Aufwand | MVP+ |
-| UC-05 | Bon-Foto, Migros-CSV, Coop-PDF | Erfassen ohne Tippen | MVP |
+| UC-05 | Quittungs-Foto, Migros-CSV, Coop-PDF | Erfassen ohne Tippen | MVP |
 | UC-06 | Einkaufsliste abhaken → landet im Vorrat | Zweiter automatischer Weg | MVP |
 | UC-07 | **Standardartikel mit 1 Tap** (Milch, Brot, Eier aus dem eigenen Verlauf) | Schnellste manuelle Erfassung | MVP+ |
 | UC-08 | Tiefkühler mit «eingefroren am» und neu berechneter Haltbarkeit | Tiefkühler-Friedhof vermeiden | MVP |
@@ -57,11 +58,11 @@ Und er darf das Erfassen **nicht mühsamer** machen. Laut Blue-Ocean-Analyse ist
 | P-02 | Verbrauchsdatum heute erreicht | «Hackfleisch: heute letzter Tag. Heute braten oder jetzt einfrieren.» | MVP+ (hohe Priorität, Lebensmittelsicherheit) |
 | P-03 | **Einfrier-Tipp**, wenn ein einfrierbarer Artikel bald abläuft | «Poulet läuft morgen ab. Eingefroren hält es rund 3 Monate.» | MVP+ |
 | P-04 | Rette-Kreis: jemand gibt etwas frei | «Lena gibt Mozzarella frei (läuft morgen ab). Übernehmen?» | MVP |
-| P-05 | Kostenteilung: neuer Bon im Haushalt | «Marco hat einen Coop-Bon erfasst. Dein Anteil: CHF 12.40.» | MVP |
+| P-05 | Kostenteilung: neue Quittung im Haushalt | «Marco hat einen Coop-Quittung erfasst. Dein Anteil: CHF 12.40.» | MVP |
 | P-06 | Wochenrückblick (Sonntagabend) | «Diese Woche gerettet: CHF 23.50 / 1.4 kg. Weggeworfen: 1 Salat.» | MVP+ |
 | P-07 | Lange im Tiefkühler | «Seit 5 Monaten im Tiefkühler: Erbsen.» | v1 |
 | P-08 | Einkaufsliste geändert (Opt-in) | «Sara hat 3 Artikel auf die Liste gesetzt.» | v1 |
-| P-09 | Bon-Erinnerung nach typischem Einkaufsmuster (keine Standortdaten) | «Warst du heute einkaufen? Bon scannen dauert 20 Sekunden.» | v1 |
+| P-09 | Quittungs-Erinnerung nach typischem Einkaufsmuster (keine Standortdaten) | «Warst du heute einkaufen? Quittung scannen dauert 20 Sekunden.» | v1 |
 | P-10 | Offener Saldo seit 30 Tagen | «Offen seit einem Monat: CHF 48.20 an Lena.» | v1 |
 | P-11 | Nachkauf-Vorschlag | «Milch ist aufgebraucht. Auf die Liste oder bei [Partner] bestellen?» | Vision (Partner) |
 
@@ -126,7 +127,7 @@ Person ─ Haushalt ─ Haus ─ Quartier ─ Gemeinde ─ Kollektiv/Organisatio
 
 - **Gleiche Bausteine überall:** Angebot, Anfrage, Zusage, Abholung, Ergebnis («weitergegeben → gerettet»). Nur der Kreis wird grösser.
 - **Vertrauen wächst mit der Nähe:** Im Haushalt alles sichtbar; im Haus nur Freigegebenes; im Quartier nur Angebote ohne Namen und mit grobem Ort.
-- **Monetarisierung ohne Datenverkauf:** Gemeinden und Arbeitgeber bezahlen Programme mit aggregierter Wirkung; Händler bezahlen für Nachkauf-Vorschläge und Bon-Sync mit Einwilligung; Pro-Abo für Haushalte.
+- **Monetarisierung ohne Datenverkauf:** Gemeinden und Arbeitgeber bezahlen Programme mit aggregierter Wirkung; Händler bezahlen für Nachkauf-Vorschläge und Quittungs-Sync mit Einwilligung; Pro-Abo für Haushalte.
 
 ## 2d. Büro-Kühlschrank: beschriften statt anschreiben (Idee Alban, 6.11.2026)
 
@@ -165,7 +166,7 @@ Person ─ Haushalt ─ Haus ─ Quartier ─ Gemeinde ─ Kollektiv/Organisatio
 | A) Team-Stufe | ein Kühlschrank, bis ca. 10 Personen, Beschriften, «Wem gehört das?», Erinnerungen | mehr Personen und Kühlschränke |
 | B) Pro für Büros (pro Person/Monat) | wie A | Putztag-Regeln und Protokolle, Abwesenheits-Regel, Rollen, Berichte, mehrere Standorte, später SSO |
 | C) Lizenz für Facility Management, Coworking-Spaces, Kantinen-Betreiber | – | Pauschale pro Standort, Sticker-Rollen als Zubehör |
-| D) Büro als Einstieg (B2B2C) | Büro-Grundfunktionen gratis | Kolleg:innen lernen rettich kennen und nutzen es zu Hause; Umsatz über Haushalts-Pro |
+| D) Büro als Einstieg (B2B2C) | Büro-Grundfunktionen gratis | Kolleg:innen lernen Rettich kennen und nutzen es zu Hause; Umsatz über Haushalts-Pro |
 
 **Phase:** nach dem Teilen im Haushalt (Schritt 7, Konto und Sync), frühestens v1. Bis dahin sorgt das Datenmodell dafür, dass nichts umgebaut werden muss.
 
@@ -200,9 +201,9 @@ Person ─ Haushalt ─ Haus ─ Quartier ─ Gemeinde ─ Kollektiv/Organisatio
 | # | Use Case | Nutzen | Phase |
 | --- | --- | --- | --- |
 | W-01 | Besitz pro Artikel («gehört Lena» / «gehört allen»), Filter Meins/Geteilt/Alle | «Der Joghurt gehört Person 1» (Idee aus ATL1) | MVP |
-| W-02 | Kostenteilung aus dem Bon, Saldo pro Person, «Ausgleich erfasst» | Kein Tricount nötig | MVP |
+| W-02 | Kostenteilung aus der Quittung, Saldo pro Person, «Ausgleich erfasst» | Kein Tricount nötig | MVP |
 | W-03 | Rette-Kreis: freigeben, übernehmen | Retten im Haushalt | MVP |
-| W-04 | **Grundvorrat automatisch geteilt** (Öl, Salz, WC-Papier per Kategorie standardmässig «geteilt») | Weniger Zuordnen beim Bon | MVP+ |
+| W-04 | **Grundvorrat automatisch geteilt** (Öl, Salz, WC-Papier per Kategorie standardmässig «geteilt») | Weniger Zuordnen bei der Quittung | MVP+ |
 | W-05 | Ein- und Auszug: Saldo abschliessen, Artikel übergeben | WGs wechseln oft | MVP |
 | W-06 | **«Darf ich?»-Anfrage**: Mitbewohner:in fragt, ob sie Lenas Rahm nehmen darf; bei Ja wird automatisch verrechnet | Fairness ohne Zettel am Kühlschrank | v1 |
 | W-07 | Monatsabrechnung zum Teilen (Bild/PDF) | Transparenz in der WG | v1 |
@@ -218,18 +219,18 @@ Person ─ Haushalt ─ Haus ─ Quartier ─ Gemeinde ─ Kollektiv/Organisatio
 | D-04 | Top-Waste-Kategorien und Muster («Brot landet oft am Montag im Abfall») | Verhalten ändern | v1 |
 | D-05 | Haushalts-Challenge «4 Wochen weniger Waste» mit Fortschritt | Gamification mit echter Wirkung | v1 |
 | D-06 | CO₂-Äquivalent | Klimabezug | v1 (nur mit belastbaren Faktoren) |
-| D-07 | Ausgaben pro Monat und Händler aus den Bons | Budget | v1 (Nebenprodukt, kein Fokus: das ist Rappns Terrain) |
+| D-07 | Ausgaben pro Monat und Händler aus den Quittungen | Budget | v1 (Nebenprodukt, kein Fokus: das ist Rappns Terrain) |
 | D-08 | **Gemeinde-/Arbeitgeber-Dashboard**: anonymisierte, aggregierte Wirkung einer Challenge | Erster zahlender Kunde (Option C) | v1 / B2B |
 
 ## 7. Partner & Plattform: Monetarisierung über API und MCP
 
 Damit diese Fälle später ohne Umbau möglich sind, baut der MVP eine saubere **Schnittstelle** (Commands, Queries, Events) mit Einwilligungsmodell. Details: [`plan.md`](./plan.md), Abschnitt 2.
 
-| Partner | Use Case | Was rettich liefert | Erlösmodell | Phase |
+| Partner | Use Case | Was Rettich liefert | Erlösmodell | Phase |
 | --- | --- | --- | --- | --- |
 | **Gemeinden, Kantone, Arbeitgeber, Versicherer** | Food-Waste-Programm, 4-Wochen-Challenge | Aggregierte, anonymisierte Wirkung (kg, CHF) | Lizenz pro Programm (laut Analyse der realistischste Umsatz) | v1 |
 | **KI-Assistenten** (Claude, ChatGPT u. a.) via MCP | «Was muss ich heute essen?», «Was koche ich?», «Setz Milch auf die Liste» | MCP-Tools mit Haushalts-Einwilligung | Pro-Feature, Reichweite | v1 |
-| **Detailhändler** (Migros, Coop) | Bon-Sync statt Upload, Vorratsmodul in der Händler-App (Option B) | Vorrats- und Waste-Engine als White-Label | Lizenz | Vision (kein öffentlicher API-Zugang heute) |
+| **Detailhändler** (Migros, Coop) | Quittungs-Sync statt Upload, Vorratsmodul in der Händler-App (Option B) | Vorrats- und Waste-Engine als White-Label | Lizenz | Vision (kein öffentlicher API-Zugang heute) |
 | **Lieferdienste, Online-Shops** | Einkaufsliste → Warenkorb, Nachkauf bei «aufgebraucht» | Event `item.used_up` und Einkaufsliste | Provision | Vision |
 | **Rezeptplattformen** | Rezepte zu bald ablaufenden Zutaten | Anfrage «diese Zutaten laufen ab» | Lizenz oder gekennzeichnetes Sponsoring | Vision |
 | **Foodsharing-Initiativen** (z. B. öffentliche Kühlschränke, Too Good To Go) | Rette-Kreis in die Nachbarschaft öffnen | Freigegebene Artikel mit Ort (nur mit Opt-in) | Kooperation, Impact | Vision |

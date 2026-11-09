@@ -1,4 +1,4 @@
-# rettich im App Store und bei Google Play
+# Rettich im App Store und bei Google Play
 
 Stand: 7.11.2026. Realistische Einschätzung für Alban. **Kosten und Konten entscheidet Alban** (CLAUDE.md, Freigabe).
 
@@ -22,7 +22,7 @@ Stand: 7.11.2026. Realistische Einschätzung für Alban. **Kosten und Konten ent
 | Prüfung | meist 1–2 Tage, um Weihnachten langsamer | einige Tage |
 | Datenschutz | Datenschutz-Angaben im Store, Link zur Datenschutzerklärung, Kontaktadresse | Formular «Datensicherheit», Link zur Datenschutzerklärung, Kontaktadresse |
 
-rettich hat es dabei leicht: kein Konto, kein Tracking, keine Werbung, Daten bleiben auf dem Gerät.
+Rettich hat es dabei leicht: kein Konto, kein Tracking, keine Werbung, Daten bleiben auf dem Gerät.
 
 ## Zeitplan (ab heute, wenn Alban die Konten im November eröffnet)
 
@@ -43,7 +43,7 @@ rettich hat es dabei leicht: kein Konto, kein Tracking, keine Werbung, Daten ble
 3. 12 Testpersonen für den Google-Test finden (Pilot, Familie, Freund:innen).
 4. Eine Kontaktadresse für die Stores und die Datenschutzerklärung festlegen.
 
-Bis dahin funktioniert rettich schon heute wie eine App: in Safari «Teilen» → «Zum Home-Bildschirm» ([`../pilot.md`](../pilot.md)).
+Bis dahin funktioniert Rettich schon heute wie eine App: in Safari «Teilen» → «Zum Home-Bildschirm» ([`../pilot.md`](../pilot.md)).
 
 ## Quellen
 

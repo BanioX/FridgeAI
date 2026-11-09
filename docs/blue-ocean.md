@@ -1,6 +1,8 @@
-# rettich – Strategie in Kürze
+# Rettich – Strategie in Kürze
 
 > Zusammenfassung der Blue-Ocean-Analyse (Stand 6.11.2026) und der Schularbeiten ATL1 (Okt. 2025) und Businessplan ATL2 (März 2026). Die Originale liegen nicht im Repo.
+>
+> **Nachtrag 9.11.2026:** Seit dem 8.11.2026 gibt es keine Rezepte mehr ([ADR-0040](adr/0040-no-recipes.md)). Rettich zeigt, was du verwertest und was du entsorgst und was es kostet; es zählt keine Kalorien ([ADR-0046](adr/0046-awareness-verwertet-entsorgt.md)). Was heute gebaut ist, steht im [Plan](./plan.md#stand-nach-200-prs).
 
 ## Herkunft der Idee
 
@@ -9,7 +11,7 @@
 
 ## Was die Blue-Ocean-Analyse daraus macht
 
-**Kernaussage:** Die Basis (Vorrat in 3 Orten, Ablaufdaten, Rezepte, Bon-Scan, Haushalt teilen) ist Red Ocean, auch in der Schweiz (ZWIMP, Kühlbär). rettich gewinnt nicht mit mehr Funktionen, sondern mit einer anderen Nutzenkurve.
+**Kernaussage:** Die Basis (Vorrat in 3 Orten, Ablaufdaten, Rezepte, Quittungs-Scan, Haushalt teilen) ist Red Ocean, auch in der Schweiz (ZWIMP, Kühlbär). Rettich gewinnt nicht mit mehr Funktionen, sondern mit einer anderen Nutzenkurve.
 
 **Problem in Zahlen:** 720'000 t vermeidbare Verluste in Haushalten pro Jahr, 35 % Anteil der Haushalte an der Umweltbelastung (BAFU); rund 80 kg und CHF 600 pro Person und Jahr (Kanton Zürich, 2026). 71 % der 18- bis 24-Jährigen prüfen nicht, ob ein Produkt noch gut ist (Too Good To Go, 2024).
 
@@ -27,11 +29,11 @@
 
 | Eliminieren | Reduzieren | Steigern | Kreieren |
 | --- | --- | --- | --- |
-| Hardware im MVP, Kalorien/Nährwerte, Prospekte, grosse Rezeptdatenbank | Manuelles Erfassen, Einstellungen, Rezepte (3 «Rette-es»-Vorschläge), Lagerorte fix | Automatik (Bon, Einkaufsliste → Vorrat), Zusammenarbeit, Ersparnis in CHF, Vertrauen (Schweizer Hosting, lokal), MHD-Wissen | Besitz pro Artikel, Kostenteilung aus dem Bon, Rette-Kreis, Challenges mit gemessener Wirkung, White-Label für Händler und Gemeinden |
+| Hardware im MVP, Kalorien/Nährwerte, Prospekte, grosse Rezeptdatenbank | Manuelles Erfassen, Einstellungen, Rezepte (3 «Rette-es»-Vorschläge), Lagerorte fix | Automatik (Quittung, Einkaufsliste → Vorrat), Zusammenarbeit, Ersparnis in CHF, Vertrauen (Schweizer Hosting, lokal), MHD-Wissen | Besitz pro Artikel, Kostenteilung aus der Quittung, Rette-Kreis, Challenges mit gemessener Wirkung, White-Label für Händler und Gemeinden |
 
 ### Drei Optionen
 
-- **A · WG-Kühlschrank (Empfehlung für den Start):** Besitz pro Person, Kostenteilung aus dem Bon, Rette-Kreis. Viral (jede WG lädt 2–4 Personen ein), billig zu testen. Contra: geringe Zahlungsbereitschaft, Splitwise/Tricount existieren, Churn bei WG-Auflösung.
+- **A · WG-Kühlschrank (Empfehlung für den Start):** Besitz pro Person, Kostenteilung aus der Quittung, Rette-Kreis. Viral (jede WG lädt 2–4 Personen ein), billig zu testen. Contra: geringe Zahlungsbereitschaft, Splitwise/Tricount existieren, Churn bei WG-Auflösung.
 - **B · Zero-Input über Händler (B2B2C):** Vorrat füllt sich aus Migros-/Coop-Konten. Contra: kein öffentlicher Zugang («We do not have a public API», Migros), lange Verkaufszyklen.
 - **C · Programm für Gemeinden und Arbeitgeber:** 4-Wochen-Challenge mit anonymisierter Wirkung. Klarer Käufer mit Ziel 2030, laut Analyse der realistischste Umsatz. Braucht zuerst eine funktionierende App (Option A).
 
@@ -44,7 +46,7 @@ Gratis-Kern ab Tag 1 → Haushalts-Abo ab ca. 500 aktiven Haushalten (CHF 9 ist 
 1. **Erfassungsmüdigkeit** (Vorrats-Apps sterben, wenn das Eintragen nervt)
 2. Kopierbarkeit: ZWIMP oder Kühlbär könnten Kostenteilung schnell nachbauen
 3. Händler schlucken die Funktion (Beispiel Mealime, Okt. 2026)
-4. Datenschutz: Bons zeigen Konsumverhalten
+4. Datenschutz: Quittungen zeigen Konsumverhalten
 5. Businessplan (Hardware, 20 Mitarbeitende, CHF 582'000 Verlust im ersten Jahr) ist für die App-Phase zu gross gedacht
 
 ### Empfohlene nächste Schritte (nicht Code)

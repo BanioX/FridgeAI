@@ -1,12 +1,12 @@
-# rettich vor Kopien schützen
+# Rettich vor Kopien schützen
 
 Stand: 7.11.2026, Recherche mit Quellen. **Keine Rechtsberatung.** Vor einer Anmeldung kurz mit einer Markenanwältin oder einem Markenanwalt sprechen (unten).
 
 ## Das Wichtigste in drei Sätzen
 
-1. **Ideen und Funktionen lassen sich nicht schützen**, nur Name, Logo und Code. Ein Nachbau der Funktionen ist erlaubt (URG Art. 21, URV Art. 17), Software-Patente sind für rettich unrealistisch (EPÜ Art. 52).
-2. **Der Name ist das Wertvollste:** Die Marke «rettich» vor dem öffentlichen Start anmelden.
-3. **Der echte Schutz ist Tempo:** Abdeckung der Schweizer Bons, Vertrauen dank Datenschutz, Haushalte, die zusammen einladen, und schnelle Weiterentwicklung.
+1. **Ideen und Funktionen lassen sich nicht schützen**, nur Name, Logo und Code. Ein Nachbau der Funktionen ist erlaubt (URG Art. 21, URV Art. 17), Software-Patente sind für Rettich unrealistisch (EPÜ Art. 52).
+2. **Der Name ist das Wertvollste:** Die Marke «Rettich» vor dem öffentlichen Start anmelden.
+3. **Der echte Schutz ist Tempo:** Abdeckung der Schweizer Quittungen, Vertrauen dank Datenschutz, Haushalte, die zusammen einladen, und schnelle Weiterentwicklung.
 
 ## Was schon erledigt ist
 
@@ -34,11 +34,11 @@ Stand: 7.11.2026, Recherche mit Quellen. **Keine Rechtsberatung.** Vor einer Anm
 
 - Eine eingetragene Marke «Rettich» oder «rett ich» hat die Websuche nicht gefunden. Die Register konnten nicht direkt abgefragt werden, das muss Alban selbst prüfen.
 - **Achtung:** In Saarbrücken gibt es den **«Rettermarkt Rettich»**, einen Laden, der Lebensmittel rettet. Gleiches Thema, gleicher Name: für eine EU-Marke und den deutschen Markt vorher anwaltlich prüfen lassen.
-- «Rettich» ist ein Lebensmittelwort. In den Klassen 9 und 42 ist das kaum ein Problem, in 43/44 könnte das Amt einwenden, der Name beschreibe nur. Die Schreibweise «rettich» mit dem Wortspiel «rett' ich» und das Logo helfen.
+- «Rettich» ist ein Lebensmittelwort. In den Klassen 9 und 42 ist das kaum ein Problem, in 43/44 könnte das Amt einwenden, der Name beschreibe nur. Das Wortspiel «rett' ich» und das Logo helfen.
 
 ## Spannungsfeld local-first
 
-Weil rettich Bons auf dem Gerät liest, läuft die Logik im Browser und ist dort einsehbar (verkleinert, aber nicht geheim). Server-Logik würde besser schützen, widerspricht aber dem Versprechen «deine Daten bleiben auf dem Gerät». **Empfehlung:** local-first bleiben. Nachladbare Daten wie Parser-Regeln und Produktkatalog können später vom Server kommen, ohne dass Nutzerdaten das Gerät verlassen.
+Weil Rettich Quittungen auf dem Gerät liest, läuft die Logik im Browser und ist dort einsehbar (verkleinert, aber nicht geheim). Server-Logik würde besser schützen, widerspricht aber dem Versprechen «deine Daten bleiben auf dem Gerät». **Empfehlung:** local-first bleiben. Nachladbare Daten wie Parser-Regeln und Produktkatalog können später vom Server kommen, ohne dass Nutzerdaten das Gerät verlassen.
 
 ## Beratung in der Schweiz
 

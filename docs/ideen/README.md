@@ -1,12 +1,12 @@
 # Ideen und Erweiterungen
 
-Brainstorming, laufend gepflegt (CLAUDE.md: «Ideen unterwegs»). Hier steht, was rettich später können könnte, nicht was beschlossen ist. Beschlüsse stehen in [`../plan.md`](../plan.md) und den [ADRs](../adr/).
+Brainstorming, laufend gepflegt (CLAUDE.md: «Ideen unterwegs»). Hier steht, was Rettich später können könnte, nicht was beschlossen ist. Beschlüsse stehen in [`../plan.md`](../plan.md) und den [ADRs](../adr/).
 
 **Grosse Hebel mit Abklärungsbedarf** (Partner, Verträge, Kosten, Recht, neue Datenflüsse) und der Geschäftsmodell-Entwurf parken in [`parkplatz.md`](./parkplatz.md).
 
 | Datei | Thema |
 | --- | --- |
-| [`personalisierung.md`](./personalisierung.md) | Rezepte aus bald Ablaufendem, Menüplanung, Zielgruppen (Sport, Frugalismus, Tracking, «No-Brainer») |
+| [`personalisierung.md`](./personalisierung.md) | Rezepte aus bald Ablaufendem (vorerst entfernt, ADR-0040), Menüplanung, Zielgruppen (Sport, Frugalismus, Tracking, «No-Brainer») |
 | [`monetarisierung.md`](./monetarisierung.md) | Gratis mit Werbung oder Pro ohne Werbung und Tracking, Partner, Büro |
 | [`benachrichtigungen.md`](./benachrichtigungen.md) | Push-Mitteilungen: was technisch geht und was es braucht |
 | [`scan-und-produktdaten.md`](./scan-und-produktdaten.md) | Woher Produktdaten und Bilder kommen, der Vergleich mit Yazio, was eine native App bringt |
@@ -14,9 +14,9 @@ Brainstorming, laufend gepflegt (CLAUDE.md: «Ideen unterwegs»). Hier steht, wa
 | [`technik.md`](./technik.md) | 404 für alte Dateien, Fehlerberichte ohne Personendaten, Lighthouse in der CI |
 | [`hilfe-und-konto.md`](./hilfe-und-konto.md) | FAQ, How-to- und Info-Seiten; Registrierung (geparkt) |
 | [`app-stores.md`](./app-stores.md) | Native App für iOS und Android: Weg, Kosten, Zeitplan |
-| [`ausgaben-und-ernaehrung.md`](./ausgaben-und-ernaehrung.md) | Essensbudget aus den Bons, gesund und ungesund (später) |
-| [`integrationen.md`](./integrationen.md) | Thermomix, Kühlschränke (Samsung, LG, Matter), GS1-Codes und eine offene rettich-Schnittstelle |
-| [`schutz.md`](./schutz.md) | Marke, Urheberrecht, NDA, Source Maps: rettich vor Kopien schützen |
+| [`ausgaben-und-ernaehrung.md`](./ausgaben-und-ernaehrung.md) | Essensbudget aus den Quittungen, gesund und ungesund (später) |
+| [`integrationen.md`](./integrationen.md) | Thermomix, Kühlschränke (Samsung, LG, Matter), GS1-Codes und eine offene Rettich-Schnittstelle |
+| [`schutz.md`](./schutz.md) | Marke, Urheberrecht, NDA, Source Maps: Rettich vor Kopien schützen |
 | [`produktdaten.md`](./produktdaten.md) | Bessere Produktdaten: Open Food Repo, Händler-Websites, Foto der Nährwerttabelle, gemeinsames Gedächtnis |
 | [`designsprache-garten.md`](./designsprache-garten.md) | Pflanzen als Bereiche, Reineclaude für Erfolg, Reifen statt Prozent |
 | [`markt-und-timing.md`](./markt-und-timing.md) | Food Waste in Zahlen, Ziele 2030, Konkurrenz, Abo-Kennzahlen |

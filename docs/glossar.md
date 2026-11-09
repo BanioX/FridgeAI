@@ -8,7 +8,7 @@ Damit Mensch und Maschine dasselbe meinen: Wort in der App (de-CH), Name im Code
 | --- | --- | --- | --- |
 | **Monatsabschluss**, **Jahresabschluss** | `closingMonth`, `closingYear`, `monthClosingDay` | Berichtszeitraum bis zum letzten Schweizer Bankwerktag des Monats oder Jahres; der nächste beginnt am Tag danach (ADR-0030) | – |
 | **Bankwerktag** | `isSwissBankDay`, `swissBankHolidays` | Montag bis Freitag ohne Bankfeiertage des Schweizer Zahlungsverkehrs (SIC); 24.12. und 31.12. zählen | DE/AT: TARGET2-Kalender, später je Land |
-| **Kurz-Bericht** (Quittung im PDF) | `ReportKind`, `receiptSpec`, `receiptPdf` | Ein PDF im Look einer Quittung zu einem Thema: Wirkung, Läuft bald ab, Entsorgt, ein Ort. Der ausführliche Bericht zeigt keine Quittung (ADR-0030) | – |
+| **Kurz-Auszug** (Quittung im PDF, früher «Kurz-Bericht») | `ReportKind`, `receiptSpec`, `receiptPdf` | Ein PDF im Look einer Quittung zu einem Thema: Bilanz, Läuft bald ab in N Tagen, Entsorgt, ein Ort. Der Gesamtauszug zeigt keine Quittung (ADR-0030, ADR-0047) | – |
 | **SWELP** | `swelp` | Albans Protokoll-Set «Darf, Tut, Lernt»: Scoped Work, Side Effect, Self Learning Protocols ([`BanioX/swelp`](https://github.com/BanioX/swelp)); in Rettich gelebt in [`docs/swelp/`](./swelp/README.md) | – |
 | **SWELPER** (Alban 8.11.2026) | `swelper`, `/swelper`, `.swelper.json` | Albans Schaltzentrale als eigener Rahmen: Trichter, Dispatcher, Stecker, Kontexte; führt SWELP über Agenten aus ([`docs/ideen/swelper.md`](./ideen/swelper.md)) | – |
 | **Quittung** (nicht «Bon», Alban 7.11.2026) | `receipt`, `receipts.import`, `receipts.matchLine` | Kassenzettel eines Einkaufs, als PDF, Screenshot oder Foto | de-DE «Kassenbon», de-AT «Kassabon» oder «Rechnung» |
@@ -28,6 +28,16 @@ Damit Mensch und Maschine dasselbe meinen: Wort in der App (de-CH), Name im Code
 | **Abschluss** | `OutcomeEvent` | verwertet oder entsorgt, mit Menge und Wert. «Weitergegeben» (`shared_out`) bietet Rettich seit 8.11.2026 nicht mehr an; ältere Einträge zählen als verwertet (ADR-0046) | – |
 | **Verwertet** (nicht «gegessen», Alban 8.11.2026) | `eaten` | genutzt: gegessen, gekocht, gebacken, verbraucht. Rettich zählt nicht, was du isst (ADR-0046) | de-DE gleich |
 | **Entsorgt** (nicht «weggeworfen», Alban 8.11.2026) | `wasted` | im Abfall gelandet, mit freiwilligem Grund (ADR-0046) | de-DE gleich |
+| **Heute retten** (früher «Läuft bald ab» auf Start) | `urgentItems`, `today.expiringTitle` | was in den nächsten drei Tagen abläuft, zuoberst auf Start (ADR-0047) | – |
+| **Bilanz** (früher «Deine Wirkung») | `ImpactCard`, `stats.waste` | Verwertet und Entsorgt als zwei Kreise, darunter Gerettet, pro Monat («Bilanz November») (ADR-0046, ADR-0047) | – |
+| **Auszug, Gesamtauszug** (früher «Bericht», «Ausführlich») | `ReportKind`, `reports.build` | PDF zu einem Zeitraum wie ein Kontoauszug; Kurz-Auszüge als Quittung, der Gesamtauszug mit Diagrammen (ADR-0030, ADR-0047) | – |
+| **Journal** (früher «Verlauf») | `inventory.history` | jeder Abschluss, neueste zuerst, ändern und löschen (ADR-0047) | – |
+| **Deine Daten** (früher «Daten und Datenschutz») | `/more/data`, `pages.data` | Export als JSON, Import, alles löschen und «Datenschutz in Kürze» (ADR-0020, ADR-0047) | – |
+| **Wischen** (wie bei Spotify) | `SwipeAction`, `useSwipeOutcome` | in Vorrat und «Heute retten»: nach links «Verwertet», nach rechts «Entsorgt», mit «Rückgängig» (ADR-0046) | – |
+| **Auswählen** (wie in iOS) | `useSelection`, `SelectableRow`, `SelectionBar`, `useMoveSelected` | mehrere Artikel antippen und gemeinsam verschieben; was nicht an den neuen Ort passt, bleibt und wird genannt | – |
+| **Lang drücken und ziehen** | `useDragToLocation`, `dropLocationFrom` | ein Artikel (oder alle ausgewählten) hängt am Finger und landet auf dem Lagerort-Tab, über dem du loslässt; die Knöpfe «Verschieben nach» bleiben der barrierefreie Weg | – |
+| **Laden-Buchstabe** | `ShopBadge`, `shopMark` (PDF) | ein Buchstabe pro Laden im Stil seines Schilds (Coop, Migros, Denner, Lidl, Aldi), immer neben dem Namen; nie die geschützten Marken selbst (P24 im Parkplatz) | – |
+| **Alle übernehmen** | `ReceiptReview`, `batchTotals` | mehrere Quittungen auf einer Seite prüfen und mit einem Knopf in den Vorrat legen | – |
 | **Nachkaufen** | `shopping.*`, `ShoppingListItem` | Einkaufsliste | – |
 | **Haushalt** | `Household` | WG, Paar, Familie; hat eine Währung (ADR-0019) | – |
 | **Rappen** | `Rappen` (Typ) | Ganzzahl in der kleinsten Einheit der Haushaltswährung (TD-04) | Cent |
@@ -47,7 +57,3 @@ Die App versteht sie über Kategorien und Quittungs-Wörter (`catalog/receipt-wo
 | Peperoni | Paprika |
 | Rahm | Sahne, Obers |
 | Nüsslisalat | Feldsalat, Vogerlsalat |
-| **Heute retten** (früher «Läuft bald ab» auf Start) | `urgentItems`, `today.expiringTitle` | was in den nächsten drei Tagen abläuft, zuoberst auf Start (ADR-0047) | – |
-| **Bilanz** (früher «Deine Wirkung») | `ImpactCard`, `stats.waste` | Verwertet und Entsorgt als zwei Kreise, darunter Gerettet, pro Monat («Bilanz November») (ADR-0046, ADR-0047) | – |
-| **Auszug, Gesamtauszug** (früher «Bericht», «Ausführlich») | `ReportKind`, `reports.build` | PDF zu einem Zeitraum wie ein Kontoauszug; Kurz-Auszüge als Quittung, der Gesamtauszug mit Diagrammen (ADR-0030, ADR-0047) | – |
-| **Journal** (früher «Verlauf») | `inventory.history` | jeder Abschluss, neueste zuerst, ändern und löschen (ADR-0047) | – |

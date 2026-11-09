@@ -9,7 +9,7 @@ Frage Alban: «Woher bezieht Yazio die Daten? Muss ich für mehr Automatisierung
 - **Grösse:** über 4 Millionen Einträge, stark in Deutschland, Österreich und der Schweiz ([App Store](https://apps.apple.com/gb/app/id946099227), [Review](https://calorie-trackers.com/reviews/yazio/)).
 - **Kamera:** Yazio ist eine **native App**. Sie nutzt Apples Vision bzw. Googles ML Kit mit voller Kontrolle über Objektiv, Fokus und Makro. Daher kommt die Geschwindigkeit.
 
-## Was rettich heute hat
+## Was Rettich heute hat
 
 - Open Food Facts (ODbL, kostenlos, auch kommerziell nutzbar), 30 Tage Cache auf dem Gerät (ADR-0016).
 - Jeder Scan im Haushalt wird gemerkt: Der zweite Scan desselben Produkts geht offline.
@@ -31,7 +31,7 @@ Frage Alban: «Woher bezieht Yazio die Daten? Muss ich für mehr Automatisierung
 ## Empfehlung
 
 1. **Jetzt (gratis):** Produktbild von OFF, bessere Web-Kamera (erledigt), Lerneffekt im Haushalt (erledigt).
-2. **Für den Pilot:** reicht so. Unbekannte Produkte gibst du einmal ein, danach kennt rettich sie.
+2. **Für den Pilot:** reicht so. Unbekannte Produkte gibst du einmal ein, danach kennt Rettich sie.
 3. **Nach dem Pilot, wenn es zieht:**
    - native Hülle mit Capacitor: der grösste Sprung beim Scan;
    - Open Food Repo über einen kleinen Server;
