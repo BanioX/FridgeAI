@@ -2,6 +2,7 @@ import { CommandError, type InventoryItemView, type StorageLocation } from '@fri
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
+import { useFreezeHint } from './FreezeHint';
 
 /** The toast stays this long, like the swipe toast. */
 const TOAST_MS = 5000;
@@ -20,6 +21,7 @@ export function useMoveSelected(): {
   const { householdId, ids, inventory } = useAppData();
   const [busy, setBusy] = useState(false);
   const [text, setText] = useState<string | null>(null);
+  const freezeHint = useFreezeHint();
 
   useEffect(() => {
     if (text === null) {
@@ -33,20 +35,30 @@ export function useMoveSelected(): {
     };
   }, [text]);
 
+  const { ask } = freezeHint;
   const move = useCallback(
     async (items: readonly InventoryItemView[], to: StorageLocation) => {
       const t = messages.inventory.select;
+      // Into the freezer: food that does not freeze well asks first (R2-1).
+      const plan =
+        to === 'freezer'
+          ? await ask(items)
+          : { move: [...items], force: false, skipped: [] as InventoryItemView[] };
+      if (plan.move.length === 0) {
+        return false;
+      }
       setBusy(true);
       const moved: InventoryItemView[] = [];
       const unfit: InventoryItemView[] = [];
       try {
-        for (const item of items) {
+        for (const item of plan.move) {
           try {
             await inventory['inventory.move']({
               commandId: ids.next(),
               householdId,
               itemId: item.id,
               to,
+              ...(plan.force ? { allowUnsuitable: true } : {}),
             });
             moved.push(item);
           } catch (error) {
@@ -70,8 +82,12 @@ export function useMoveSelected(): {
                 unfit.map((item) => item.name),
                 t.in[to],
               );
-        setText([done, stays].filter((part) => part !== '').join(' '));
-        return unfit.length === 0;
+        const kept =
+          plan.skipped.length === 0
+            ? ''
+            : messages.freezeHint.kept(plan.skipped.map((item) => item.name));
+        setText([done, stays, kept].filter((part) => part !== '').join(' '));
+        return unfit.length === 0 && plan.skipped.length === 0;
       } catch {
         setText(t.failed);
         return false;
@@ -79,7 +95,7 @@ export function useMoveSelected(): {
         setBusy(false);
       }
     },
-    [householdId, ids, inventory],
+    [householdId, ids, inventory, ask],
   );
 
   return {
@@ -87,14 +103,17 @@ export function useMoveSelected(): {
     move,
     // The live region stays mounted and only its content changes, so screen readers announce it.
     toast: (
-      <div className="pointer-events-none fixed inset-x-0 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-20 mx-auto max-w-xl px-4">
-        <div
-          role="status"
-          className="pointer-events-auto rounded-2xl bg-onyx px-4 py-3 font-semibold text-white shadow-card empty:hidden"
-        >
-          {text}
+      <>
+        {freezeHint.sheet}
+        <div className="pointer-events-none fixed inset-x-0 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-20 mx-auto max-w-xl px-4">
+          <div
+            role="status"
+            className="pointer-events-auto rounded-2xl bg-onyx px-4 py-3 font-semibold text-white shadow-card empty:hidden"
+          >
+            {text}
+          </div>
         </div>
-      </div>
+      </>
     ),
   };
 }

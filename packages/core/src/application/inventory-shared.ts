@@ -52,6 +52,8 @@ export function toView(
     ...(item.container === undefined ? {} : { container: item.container }),
     ...(item.packageSize === undefined ? {} : { packageSize: item.packageSize }),
     ...(item.openedOn === undefined ? {} : { openedOn: item.openedOn }),
+    ...(item.frozenOn === undefined ? {} : { frozenOn: item.frozenOn }),
+    ...(item.thawedOn === undefined ? {} : { thawedOn: item.thawedOn }),
     purchasedAt: item.purchasedAt,
     ...factsOf(product),
     ...(product === undefined ? {} : { productSource: product.source }),

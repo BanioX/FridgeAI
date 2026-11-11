@@ -99,6 +99,15 @@ Systemschrift nach Apples Human Interface Guidelines (ADR-0021): SF Pro auf Appl
 
 - **Listen** (Vorrat, «Heute retten», Einkaufsliste): Apples «inset grouped» Liste. Alle Zeilen liegen in einer weissen, abgerundeten Gruppe, getrennt durch Haarlinien ab dem Text, nicht als einzelne Karten.
 - **Artikelzeile:** Packungsbild oder Emoji, Name, darunter Menge · Lagerort, rechts Status-Chip («heute», «morgen», «in 3 Tagen») und «›», wenn die Zeile eine Detailseite öffnet. Der Status steht im Chip als Text, die Farbe unterstützt nur.
+- **Badges am Artikel** (ADR-0051): kleine Text-Pillen mit Lucide-Icon (12 px), 12 px semibold, Pill-Radius, ruhig: in Zeilen höchstens zwei unter der Meta-Zeile, auf der Artikelseite alle. Der Text ist der Name, die Farbe unterstützt nur.
+
+  | Badge | Ton | Look |
+  | --- | --- | --- |
+  | Eingefroren 3.11. | Eis | Text `#2A6B8C` auf `#E6F3F8` (`ice`/`ice-bg`), Snowflake |
+  | Aufgetaut | Eis hell | Text `ice` auf Weiss, 1 px Rand `ice`, Droplets |
+  | Geöffnet | Aprikose | Text `#8A4B0F`, 1 px Rand `#E39A3B` (`apricot`), Weiss, PackageOpen; nur Rand, damit es nicht wie der gefüllte Status-Chip «bald» wirkt |
+  | Von der Theke | Oliv | Text `#4F5D27` auf `#ECEEE0` (`olive`/`olive-bg`), Store |
+- **Einfrier-Hinweis:** ein Blatt von unten (Radius 24 px) mit dem Grund je Kategorie und zwei Knöpfen: «Lieber nicht» (Hauptknopf) und «Trotzdem einfrieren».
 - **Startseite «Heute retten»:** grosse Zahl (Wert im Kühlschrank in CHF), darunter die dringendsten Artikel, Lagerorte als drei Kacheln.
 - **Navigation:** weisse Leiste unten mit fünf Zielen (Start, Vorrat, ＋ Erfassen, Wissen, Mehr; ADR-0031, ADR-0041), aktives Ziel mit hellgrüner Pill (`basil-100`) hinter dem Icon. ＋ steht in der Mitte und als einziges Icon in einem gefüllten Onyx-Kreis. Unterseiten haben oben links «‹ Titel der vorigen Seite».
 - **Segment-Auswahl** (2–4 kurze Optionen, z. B. «Wo ist es?»): eine graue Spur mit gleich breiten Segmenten, 13 px. Die Lagerort-Tabs im Vorrat sehen gleich aus. Das gewählte Segment ist basilikumgrün mit weisser Schrift statt iOS-weiss, damit der Zustand 3:1 Kontrast hat. Sehr lange Wörter trennen auf schmalen Handys mit Bindestrich.

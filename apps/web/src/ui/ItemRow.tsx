@@ -1,4 +1,5 @@
 import { ChevronRight } from 'lucide-react';
+import type { ReactNode } from 'react';
 import type { Retailer } from '@fridgeai/core';
 import { ShopBadge } from './ShopBadge';
 import { StatusChip } from './StatusChip';
@@ -17,6 +18,8 @@ interface ItemRowProps {
   sliced?: boolean;
   /** Where it was bought (from its receipt): the shop letter before the meta line, `label` for screen readers. */
   shop?: { retailer: Retailer; label: string } | undefined;
+  /** Calm state badges under the meta line (at most two in a row). */
+  badges?: ReactNode;
 }
 
 /**
@@ -32,6 +35,7 @@ export function ItemRow({
   chevron = false,
   sliced = false,
   shop,
+  badges,
 }: ItemRowProps) {
   const picture =
     image === undefined ? (
@@ -86,6 +90,7 @@ export function ItemRow({
             )}
             <span className="truncate">{meta}</span>
           </p>
+          {badges === undefined ? null : <div className="mt-1">{badges}</div>}
         </div>
         <StatusChip tone={status.tone}>{status.label}</StatusChip>
       </div>

@@ -60,6 +60,8 @@ export interface MoveResult {
   expiresOn: LocalDate;
   /** Set when the item goes into the freezer, cleared otherwise. */
   frozenOn?: LocalDate;
+  /** Set when the item leaves the freezer (thawed), cleared otherwise. */
+  thawedOn?: LocalDate;
 }
 
 /**
@@ -91,7 +93,7 @@ export function expiryAfterMove(params: {
   if (from === 'freezer') {
     const thawedDays =
       category.dateKind === 'use_by' ? THAWED_USE_BY_DAYS : Math.min(targetDays, THAWED_MAX_DAYS);
-    return { expiresOn: addDays(today, thawedDays) };
+    return { expiresOn: addDays(today, thawedDays), thawedOn: today };
   }
   return { expiresOn: minLocalDate(currentExpiresOn, addDays(today, targetDays)) };
 }
