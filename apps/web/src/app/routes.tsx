@@ -57,6 +57,12 @@ export const routes: RouteObject[] = [
         }),
       },
       {
+        path: 'add/process',
+        lazy: async () => ({
+          Component: (await import('../features/process/ProcessPage')).ProcessPage,
+        }),
+      },
+      {
         path: 'check',
         lazy: async () => ({
           Component: (await import('../features/check/CheckPage')).CheckPage,

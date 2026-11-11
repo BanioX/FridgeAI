@@ -1,5 +1,5 @@
 import { useLiveQuery } from 'dexie-react-hooks';
-import { Check, ListPlus, Pencil, Trash2 } from 'lucide-react';
+import { Check, ChefHat, ListPlus, Pencil, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { useAppData } from '../../app/AppData';
@@ -7,6 +7,7 @@ import { messages } from '../../app/messages.de-CH';
 import { BackLink } from '../../ui/BackLink';
 import { Button } from '../../ui/Button';
 import { GroupedList, GroupedListItem } from '../../ui/GroupedList';
+import type { ProcessPrefill } from '../process/process-state';
 
 const t = messages.recipes;
 
@@ -109,6 +110,22 @@ export function RecipePage() {
     }
   }
 
+  // «Gekocht» (ADR-0051): the same flow as «Verarbeiten», with what is at home already chosen.
+  function cooked() {
+    const prefill: ProcessPrefill = {
+      recipeId,
+      title: recipe?.title ?? '',
+      itemIds: [
+        ...new Set(
+          recipe?.ingredients.flatMap((ingredient) =>
+            ingredient.atHome.slice(0, 1).map((food) => food.itemId),
+          ),
+        ),
+      ],
+    };
+    void navigate('/add/process', { state: { process: prefill } });
+  }
+
   async function toList() {
     if (busy) {
       return;
@@ -185,6 +202,10 @@ export function RecipePage() {
           {status}
         </p>
       </section>
+
+      <Button variant="secondary" icon={ChefHat} fullWidth onClick={cooked}>
+        {messages.process.cooked}
+      </Button>
 
       <section aria-labelledby="steps-title" className="space-y-3">
         <h2 id="steps-title" className="text-xl font-semibold">

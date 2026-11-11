@@ -8,6 +8,7 @@ import {
   IsoDateTimeSchema,
   localDate,
   matchCategoryByName,
+  rappen,
   summarizeImpact,
   uuidV7,
   type Id,
@@ -228,7 +229,7 @@ describe('honest numbers: the value moves along', () => {
   it('applies the rule in summarizeImpact for rescue and value alike', () => {
     const outcome = {
       outcome: 'eaten' as const,
-      valueRappen: 500,
+      valueRappen: rappen(500),
       valueEstimated: false,
       at: now,
       rescued: true,

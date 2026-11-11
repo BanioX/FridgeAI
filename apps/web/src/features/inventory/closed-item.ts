@@ -1,4 +1,11 @@
-import { IdSchema, OutcomeSchema, type Id, type Outcome } from '@fridgeai/core';
+import {
+  IdSchema,
+  OutcomeSchema,
+  StorageLocationSchema,
+  type Id,
+  type Outcome,
+  type StorageLocation,
+} from '@fridgeai/core';
 
 /**
  * What the detail page hands to the Vorrat page when an item leaves the list, so it can offer
@@ -15,7 +22,18 @@ export type ClosedItem =
       /** The value is a category estimate, not a price from the receipt. */
       estimated?: true;
     }
-  | { kind: 'deleted'; itemId: Id; name: string };
+  | { kind: 'deleted'; itemId: Id; name: string }
+  /**
+   * «Verarbeiten» (ADR-0051): ingredients used up and, maybe, a new item. Undo gives the
+   * ingredients back (their outcomes) and removes the new item. `name` is empty for «Gekocht».
+   */
+  | {
+      kind: 'processed';
+      name: string;
+      outcomeIds: Id[];
+      resultItemId?: Id;
+      location: StorageLocation;
+    };
 
 /** Router state survives reloads in the browser history: read it defensively. */
 export function closedItemFrom(state: unknown): ClosedItem | null {
@@ -30,6 +48,24 @@ export function closedItemFrom(state: unknown): ClosedItem | null {
   const name = typeof fields.name === 'string' ? fields.name.slice(0, 120) : null;
   if (name === null) {
     return null;
+  }
+  if (fields.kind === 'processed') {
+    const outcomeIds = Array.isArray(fields.outcomeIds)
+      ? fields.outcomeIds.map((value) => IdSchema.safeParse(value))
+      : [];
+    const resultItemId = IdSchema.safeParse(fields.resultItemId);
+    const location = StorageLocationSchema.safeParse(fields.location);
+    return location.success && outcomeIds.every((entry) => entry.success)
+      ? {
+          kind: 'processed',
+          name,
+          outcomeIds: outcomeIds
+            .flatMap((entry) => (entry.success ? [entry.data] : []))
+            .slice(0, 50),
+          ...(resultItemId.success ? { resultItemId: resultItemId.data } : {}),
+          location: location.data,
+        }
+      : null;
   }
   if (fields.kind === 'deleted') {
     const itemId = IdSchema.safeParse(fields.itemId);
