@@ -1,3 +1,4 @@
+import { matchCategoryByName } from '../catalog/match';
 import type { InputUnit } from '../quantity';
 
 /** One shopping list entry read from a free sentence (K14). Quantity and unit only when given. */
@@ -20,6 +21,9 @@ const UNITS: Record<string, InputUnit> = {
   dl: 'dl',
   l: 'l',
   liter: 'l',
+  milliliter: 'ml',
+  zentiliter: 'cl',
+  deziliter: 'dl',
   stück: 'pcs',
   stücke: 'pcs',
   stk: 'pcs',
@@ -61,12 +65,75 @@ const WORD = new RegExp(`^(${Object.keys(NUMBER_WORDS).join('|')})${WORD_END}\\s
 const UNIT = new RegExp(`^(${UNIT_PATTERN})${WORD_END}[\\s.]*`, 'iu');
 
 const round = (value: number) => Math.round(value * 1e6) / 1e6;
+/** The contract allows names up to 80 characters. */
+const MAX_NAME = 80;
 
-function parsePart(raw: string): ParsedShoppingLine | undefined {
-  let rest = raw.replace(/\uE000/g, ',').trim();
+const has = (table: Record<string, unknown>, key: string) =>
+  Object.prototype.hasOwnProperty.call(table, key);
+const isNumberToken = (token: string) =>
+  /^\d+(?:[.,\uE000]\d+)?$/u.test(token) || has(NUMBER_WORDS, token.toLowerCase());
+const isQuantityToken = (token: string) => {
+  const lower = token.toLowerCase().replace(/\.$/u, '');
+  return (
+    isNumberToken(token) ||
+    has(UNITS, lower) ||
+    lower === 'paar' ||
+    /^halb(?:es|e|en|er)$/u.test(lower)
+  );
+};
+
+function stripFiller(text: string): string {
+  let rest = text.trim();
   for (let match = FILLER.exec(rest); match !== null; match = FILLER.exec(rest)) {
     rest = rest.slice(match[0].length);
   }
+  return rest;
+}
+
+/**
+ * Dictation rarely writes commas: «Milch Eier Brot» or «Milch 2 Joghurt» arrive as one part.
+ * A number starts a new product once a word came before it, and a run of words is split only
+ * when every word is a known food on its own, so «Zürcher Geschnetzeltes» and «Grüne Bohnen»
+ * stay together.
+ */
+function splitRun(part: string): string[] {
+  const tokens = stripFiller(part)
+    .split(/\s+/u)
+    .filter((token) => token !== '');
+  const chunks: string[][] = [];
+  let current: string[] = [];
+  for (const token of tokens) {
+    if (isNumberToken(token) && current.some((word) => !isQuantityToken(word))) {
+      chunks.push(current);
+      current = [];
+    }
+    current.push(token);
+  }
+  chunks.push(current);
+  // «Rahm 2 dl»: an amount after the product belongs to it.
+  const joined: string[][] = [];
+  for (const chunk of chunks) {
+    const previous = joined[joined.length - 1];
+    if (previous !== undefined && chunk.every(isQuantityToken)) {
+      joined[joined.length - 1] = [...chunk, ...previous];
+    } else {
+      joined.push(chunk);
+    }
+  }
+  return joined.flatMap((chunk) => {
+    const prefixLength = chunk.findIndex((token) => !isQuantityToken(token));
+    const prefix = prefixLength === -1 ? chunk : chunk.slice(0, prefixLength);
+    const words = prefixLength === -1 ? [] : chunk.slice(prefixLength);
+    const allFood = words.length >= 2 && words.every((word) => matchCategoryByName(word) !== null);
+    if (!allFood) {
+      return [chunk.join(' ')];
+    }
+    return words.map((word, index) => (index === 0 ? [...prefix, word] : [word]).join(' '));
+  });
+}
+
+function parsePart(raw: string): ParsedShoppingLine | undefined {
+  let rest = stripFiller(raw.replace(/\uE000/g, ','));
   rest = rest.replace(/[.:\s]+$/u, '').trim();
 
   let quantity: number | undefined;
@@ -103,7 +170,11 @@ function parsePart(raw: string): ParsedShoppingLine | undefined {
     }
   }
 
-  const name = rest.replace(/\s+/gu, ' ').replace(/^[\s.:]+|[\s.:]+$/gu, '');
+  const name = rest
+    .replace(/\s+/gu, ' ')
+    .replace(/^[\s.:]+|[\s.:]+$/gu, '')
+    .slice(0, MAX_NAME)
+    .trim();
   if (name === '') {
     return undefined;
   }
@@ -122,7 +193,7 @@ export function parseShoppingText(text: string): ParsedShoppingLine[] {
   const protectedText = text.replace(/(\d),(\d)/g, '$1\uE000$2');
   const lines: ParsedShoppingLine[] = [];
   const seen = new Map<string, number>();
-  for (const part of protectedText.split(SEPARATORS)) {
+  for (const part of protectedText.split(SEPARATORS).flatMap(splitRun)) {
     const line = parsePart(part);
     if (line === undefined) {
       continue;

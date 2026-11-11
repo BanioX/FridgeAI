@@ -138,4 +138,46 @@ describe('parseShoppingText', () => {
   it('ignores a zero quantity', () => {
     expect(parseShoppingText('0 Milch')).toEqual([{ name: 'Milch' }]);
   });
+  it('splits dictated runs without commas when every word is a known food', () => {
+    expect(parseShoppingText('Milch Eier Brot und Butter').map((l) => l.name)).toEqual([
+      'Milch',
+      'Eier',
+      'Brot',
+      'Butter',
+    ]);
+    expect(parseShoppingText('ich brauche Milch Eier Brot').map((l) => l.name)).toEqual([
+      'Milch',
+      'Eier',
+      'Brot',
+    ]);
+  });
+
+  it('starts a new product at a number after a word', () => {
+    expect(parseShoppingText('Milch 2 Joghurt Brot')).toEqual([
+      { name: 'Milch' },
+      { name: 'Joghurt', quantity: 2, unit: 'pcs' },
+      { name: 'Brot' },
+    ]);
+  });
+
+  it('keeps word pairs that are not all foods on their own', () => {
+    expect(parseShoppingText('Zürcher Geschnetzeltes und Grüne Bohnen').map((l) => l.name)).toEqual(
+      ['Zürcher Geschnetzeltes', 'Grüne Bohnen'],
+    );
+  });
+
+  it('moves an amount spoken after the product to it', () => {
+    expect(parseShoppingText('Rahm 2 Deziliter, Hackfleisch 500 g')).toEqual([
+      { name: 'Rahm', quantity: 2, unit: 'dl' },
+      { name: 'Hackfleisch', quantity: 500, unit: 'g' },
+    ]);
+  });
+
+  it('reads spelled-out units and keeps names within 80 characters', () => {
+    expect(parseShoppingText('zwei Deziliter Rahm')).toEqual([
+      { name: 'Rahm', quantity: 2, unit: 'dl' },
+    ]);
+    const [line] = parseShoppingText('x'.repeat(120));
+    expect(line?.name.length).toBe(80);
+  });
 });
