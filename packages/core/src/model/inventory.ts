@@ -64,6 +64,9 @@ export type Product = z.infer<typeof ProductSchema>;
 export const ItemStatusSchema = z.enum(['active', 'eaten', 'shared_out', 'wasted']);
 export type ItemStatus = z.infer<typeof ItemStatusSchema>;
 
+export const ItemOriginSchema = z.enum(['made', 'leftover']);
+export type ItemOrigin = z.infer<typeof ItemOriginSchema>;
+
 export const InventoryItemSchema = z.object({
   ...syncFields,
   productId: IdSchema,
@@ -91,6 +94,15 @@ export const InventoryItemSchema = z.object({
   /** The date before opening shortened it, to restore it on undo. */
   sealedExpiresOn: LocalDateSchema.optional(),
   priceRappen: RappenSchema.min(0).optional(),
+  /** The price is a sum of estimated ingredient values (made items), not a receipt price. */
+  priceEstimated: z.boolean().optional(),
+  /**
+   * Where it came from when it was not bought (ADR-0051): «made» = selbst gemacht, «leftover» =
+   * Reste. Bought items have none.
+   */
+  origin: ItemOriginSchema.optional(),
+  /** The items it was made from, for «Selbst gemacht aus: Mehl, Eier, Butter». */
+  madeFrom: z.array(IdSchema).max(50).optional(),
   owner: OwnerSchema,
   status: ItemStatusSchema,
   statusChangedAt: IsoDateTimeSchema.optional(),
@@ -148,6 +160,11 @@ export const OutcomeEventSchema = z
      * this counts as «gerettet»; offered only when the food really was on the brink.
      */
     rescued: z.boolean().optional(),
+    /**
+     * The item this one was processed into («Verarbeiten», ADR-0051). Its value moved on to that
+     * item, so it counts in no value sum; the result counts when it is closed.
+     */
+    madeInto: IdSchema.optional(),
     /** Owner of the item at that moment (snapshot for per-person statistics). */
     owner: OwnerSchema,
     at: IsoDateTimeSchema,

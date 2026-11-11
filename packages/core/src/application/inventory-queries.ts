@@ -30,7 +30,25 @@ export function createInventoryQueries(ctx: AppContext) {
       .filter((item) => item.deletedAt === undefined)
       .sort((a, b) => a.expiresOn.localeCompare(b.expiresOn));
     const retailers = await retailersOfItems(storage, householdId, live);
-    return live.map((item) => toView(item, products.get(item.productId), retailers.get(item.id)));
+    // Ingredients are closed items: their names come from the item and its product.
+    const nameOf = async (itemId: Id): Promise<string | undefined> => {
+      const ingredient = await storage.items.get(itemId);
+      return ingredient === undefined
+        ? undefined
+        : (products.get(ingredient.productId) ?? (await storage.products.get(ingredient.productId)))
+            ?.name;
+    };
+    return Promise.all(
+      live.map(async (item) => {
+        const names =
+          item.madeFrom === undefined
+            ? undefined
+            : (await Promise.all(item.madeFrom.map(nameOf))).filter(
+                (name): name is string => name !== undefined,
+              );
+        return toView(item, products.get(item.productId), retailers.get(item.id), names);
+      }),
+    );
   }
 
   const list: UseCase<'inventory.list'> = async (raw) => {

@@ -28,8 +28,25 @@ export interface ImpactSummary {
 
 type OutcomeLike = Pick<
   OutcomeEvent,
-  'outcome' | 'valueRappen' | 'grams' | 'valueEstimated' | 'at' | 'deletedAt' | 'atRisk' | 'rescued'
+  | 'outcome'
+  | 'valueRappen'
+  | 'grams'
+  | 'valueEstimated'
+  | 'at'
+  | 'deletedAt'
+  | 'atRisk'
+  | 'rescued'
+  | 'madeInto'
 >;
+
+/**
+ * Whether an outcome counts in value sums: Bilanz, «Seit deinem ersten Monat», Auszüge, rescue
+ * (ADR-0051). An ingredient that was processed into something («Verarbeiten») passed its value on
+ * to the result, which counts when it is verwertet or entsorgt; counting both would count a cake
+ * twice. Undone outcomes (soft-deleted) never count. The one place for this rule.
+ */
+export const countsInValue = (outcome: Pick<OutcomeLike, 'madeInto' | 'deletedAt'>): boolean =>
+  outcome.madeInto === undefined && outcome.deletedAt === undefined;
 
 /**
  * At risk (ADR-0033): it expires within `soonThresholdDays` («läuft bald ab») or is past its
@@ -101,7 +118,7 @@ export function summarizeImpact(
   to: LocalDate,
 ): ImpactSummary {
   const inPeriod = outcomes.filter((outcome) => {
-    if (outcome.deletedAt !== undefined) {
+    if (!countsInValue(outcome)) {
       return false;
     }
     const day = toLocalDate(outcome.at);
