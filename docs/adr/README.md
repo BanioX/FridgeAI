@@ -12,7 +12,7 @@ Jeder Entscheid mit Folgen steht hier als eigene Datei `NNNN-titel.md` (ADR-0001
 | [0002](0002-tech-stack-and-tooling.md) | Tech-Stack und Tooling | angenommen | 2026-11-06 |
 | [0003](0003-local-first-and-ids.md) | Local-first, clientseitige IDs und Soft-Delete | angenommen | 2026-11-06 |
 | [0004](0004-money-in-rappen.md) | Geld als Integer-Rappen | angenommen | 2026-11-06 |
-| [0005](0005-contract-first-api-mcp.md) | Contract-first – eine Schnittstelle für App, API und MCP | angenommen; `recipes.*` entfernt (siehe ADR-0040) | 2026-11-06 |
+| [0005](0005-contract-first-api-mcp.md) | Contract-first – eine Schnittstelle für App, API und MCP | angenommen; `recipes.*` seit ADR-0048 wieder da | 2026-11-06 |
 | [0006](0006-expiry-sources-and-gs1.md) | Ablaufdatum – Quellen, Datumsart und GS1-2D-Codes | angenommen | 2026-11-06 |
 | [0007](0007-notvorrat.md) | Notvorrat als vierter Lagerort | angenommen | 2026-11-06 |
 | [0008](0008-i18n.md) | Mehrsprachigkeit (DE, FR, IT, EN) | angenommen | 2026-11-06 |
@@ -47,7 +47,7 @@ Jeder Entscheid mit Folgen steht hier als eigene Datei `NNNN-titel.md` (ADR-0001
 | [0037](0037-shop-names.md) | Namen der Läden in der App, und «Quittung» statt «Bon» | angenommen | 2026-11-07 |
 | [0038](0038-perishability.md) | Haltbarkeits-Stufe pro Kategorie, und neue Kategorien für Saucen und Dips | angenommen | 2026-11-08 |
 | [0039](0039-rescue-confirmed.md) | «Gerettet» nur, wenn du es bestätigst | angenommen; ersetzt die Zählregel von ADR-0033 | 2026-11-08 |
-| [0040](0040-no-recipes.md) | Rezepte und der Tab «Kochen» fallen weg | angenommen | 2026-11-08 |
+| [0040](0040-no-recipes.md) | Rezepte und der Tab «Kochen» fallen weg | angenommen; teilweise abgelöst durch ADR-0048 | 2026-11-08 |
 | [0041](0041-knowledge-tab.md) | Tab «Wissen» statt «Kochen» | angenommen | 2026-11-08 |
 | [0042](0042-rescue-reward.md) | Die Belohnung nach «Gerettet»: nüchtern, mit Betrag und Food Fact | angenommen | 2026-11-08 |
 | [0043](0043-growing-rettich.md) | Der wachsende Rettich auf Start, mit «Vorbild» als Meilenstein | angenommen | 2026-11-08 |
@@ -55,4 +55,5 @@ Jeder Entscheid mit Folgen steht hier als eigene Datei `NNNN-titel.md` (ADR-0001
 | [0045](0045-retailer-catalog.md) | Produktdaten der Händler sammeln (höflicher Crawler) | angenommen; `retail-ch.json` noch ungenutzt (TD-16) | 2026-11-08 |
 | [0046](0046-awareness-verwertet-entsorgt.md) | Rettich ist eine Awareness-App: «verwertet» und «entsorgt» | angenommen | 2026-11-08 |
 | [0047](0047-names-like-a-private-bank.md) | Namen wie bei einer Schweizer Privatbank | angenommen | 2026-11-08 |
+| [0048](0048-recipes-return-under-wissen.md) | Rezepte kehren zurück, als Abschnitt unter «Wissen» | angenommen | 2026-11-11 |
 | [0049](0049-public-repo-noindex.md) | Öffentliches Repo, App nicht in Suchmaschinen | angenommen | 2026-11-11 |
