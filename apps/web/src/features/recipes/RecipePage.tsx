@@ -1,7 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks';
-import { Check, ListPlus } from 'lucide-react';
+import { Check, ListPlus, Pencil, Trash2 } from 'lucide-react';
 import { useState } from 'react';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
 import { BackLink } from '../../ui/BackLink';
@@ -59,13 +59,15 @@ function Rows({ title, rows }: { title: string; rows: Row[] }) {
  */
 export function RecipePage() {
   const { recipeId = '' } = useParams();
-  const { householdId, ids, recipes, shopping } = useAppData();
+  const navigate = useNavigate();
+  const { householdId, ids, recipes, recipeCommands, shopping } = useAppData();
   const recipe = useLiveQuery(
     async () => (await recipes['recipes.get']({ householdId, recipeId })).recipe,
     [householdId, recipeId],
   );
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState('');
+  const [confirming, setConfirming] = useState(false);
 
   const back = <BackLink to="/knowledge" label={messages.pages.knowledge} />;
   if (recipe === undefined) {
@@ -131,13 +133,34 @@ export function RecipePage() {
     }
   }
 
+  async function remove() {
+    if (busy) {
+      return;
+    }
+    setBusy(true);
+    try {
+      await recipeCommands['recipes.delete']({ commandId: ids.next(), householdId, recipeId });
+      void navigate('/knowledge/recipes', { replace: true });
+    } catch {
+      setStatus(t.failed);
+      setConfirming(false);
+      setBusy(false);
+    }
+  }
+
   return (
     <div className="space-y-6 pb-8">
       {back}
       <div>
         <h1 className="large-title">{recipe.title}</h1>
         <p className="mt-1 text-ink-muted">
-          {[t.minutes(recipe.minutes), t.servings(recipe.servings), ...recipe.tags].join(' · ')}
+          {[
+            recipe.minutes === undefined ? undefined : t.minutes(recipe.minutes),
+            recipe.servings === undefined ? undefined : t.servings(recipe.servings),
+            ...recipe.tags,
+          ]
+            .filter(Boolean)
+            .join(' · ')}
         </p>
       </div>
 
@@ -168,11 +191,59 @@ export function RecipePage() {
           {t.steps}
         </h2>
         <ol className="list-decimal space-y-2 pl-6 marker:font-semibold marker:text-basil-700">
-          {recipe.steps.map((step) => (
-            <li key={step}>{step}</li>
+          {recipe.steps.map((step, index) => (
+            <li key={`${String(index)}-${step}`}>{step}</li>
           ))}
         </ol>
       </section>
+
+      {recipe.source === 'own' ? (
+        <section aria-label={t.ownTitle} className="space-y-3">
+          {confirming ? (
+            <div role="alertdialog" aria-label={t.deleteAsk} className="space-y-3">
+              <p className="font-semibold">{t.deleteAsk}</p>
+              <div className="flex gap-3">
+                <Button
+                  variant="danger"
+                  icon={Trash2}
+                  disabled={busy}
+                  onClick={() => void remove()}
+                >
+                  {t.deleteYes}
+                </Button>
+                <Button
+                  variant="secondary"
+                  disabled={busy}
+                  onClick={() => {
+                    setConfirming(false);
+                  }}
+                >
+                  {t.cancel}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex gap-3">
+              <Button
+                variant="secondary"
+                icon={Pencil}
+                onClick={() => void navigate(`/knowledge/recipes/${recipeId}/edit`)}
+              >
+                {t.edit}
+              </Button>
+              <Button
+                variant="ghost"
+                icon={Trash2}
+                onClick={() => {
+                  setConfirming(true);
+                }}
+              >
+                {t.delete}
+              </Button>
+            </div>
+          )}
+        </section>
+      ) : null}
     </div>
   );
 }

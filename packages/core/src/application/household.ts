@@ -15,17 +15,27 @@ export function createHouseholdUseCases({ storage, clock }: AppContext) {
         throw new CommandError('not_found', `Household ${input.householdId} not found`);
       }
       const id = input.householdId;
-      const [members, products, items, outcomes, shoppingItems, receipts, receiptLines, events] =
-        await Promise.all([
-          storage.members.ofHousehold(id),
-          storage.products.ofHousehold(id),
-          storage.items.ofHousehold(id),
-          storage.outcomes.ofHousehold(id),
-          storage.shoppingItems.ofHousehold(id),
-          storage.receipts.ofHousehold(id),
-          storage.receiptLines.ofHousehold(id),
-          storage.events.ofHousehold(id),
-        ]);
+      const [
+        members,
+        products,
+        items,
+        outcomes,
+        shoppingItems,
+        receipts,
+        receiptLines,
+        ownRecipes,
+        events,
+      ] = await Promise.all([
+        storage.members.ofHousehold(id),
+        storage.products.ofHousehold(id),
+        storage.items.ofHousehold(id),
+        storage.outcomes.ofHousehold(id),
+        storage.shoppingItems.ofHousehold(id),
+        storage.receipts.ofHousehold(id),
+        storage.receiptLines.ofHousehold(id),
+        storage.ownRecipes.ofHousehold(id),
+        storage.events.ofHousehold(id),
+      ]);
       return CONTRACT_V1['household.export'].output.parse({
         format: 'fridgeai-export',
         contractVersion: 'v1',
@@ -38,6 +48,7 @@ export function createHouseholdUseCases({ storage, clock }: AppContext) {
         shoppingItems,
         receipts,
         receiptLines,
+        ownRecipes,
         events,
       });
     });

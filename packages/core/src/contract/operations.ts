@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { IdSchema } from '../ids';
 import { RappenSchema } from '../money';
 import { DomainEventSchema } from './events';
+import { OwnRecipeSchema } from '../recipes/own-recipe';
 import { RecipeTagSchema } from '../recipes/recipe';
 import { HouseholdSchema, MemberSchema, type Scope } from '../model/household';
 import {
@@ -179,6 +180,17 @@ const AfterOpeningDaysSchema = z.int().min(0).max(3650);
 const commandBase = { commandId: IdSchema, householdId: IdSchema };
 const queryBase = { householdId: IdSchema };
 
+const RecipeSourceSchema = z.enum(['own', 'curated']);
+
+/** What the person types for an own recipe: lines as pasted, cleaned and parsed by the use case. */
+const ownRecipeFields = {
+  title: z.string().trim().min(1).max(120),
+  minutes: z.int().positive().max(1440).optional(),
+  servings: z.int().positive().max(100).optional(),
+  ingredients: z.array(z.string().max(2000)).min(1).max(120),
+  steps: z.array(z.string().max(4000)).max(120).default([]),
+};
+
 function command<TInput extends z.ZodType, TOutput extends z.ZodType>(
   operation: Omit<Operation<TInput, TOutput>, 'kind'>,
 ): Operation<TInput, TOutput> {
@@ -302,6 +314,8 @@ export const HouseholdExportSchema = z.object({
   shoppingItems: z.array(ShoppingListItemSchema),
   receipts: z.array(ReceiptSchema),
   receiptLines: z.array(ReceiptLineSchema),
+  /** «Meine Rezepte» (ADR-0048); exports from before them have none. */
+  ownRecipes: z.array(OwnRecipeSchema).default([]),
   events: z.array(DomainEventSchema),
 });
 export type HouseholdExport = z.infer<typeof HouseholdExportSchema>;
@@ -320,6 +334,7 @@ const ImportableExportSchema = HouseholdExportSchema.superRefine((data, check) =
     'shoppingItems',
     'receipts',
     'receiptLines',
+    'ownRecipes',
     'events',
   ] as const;
   for (const table of tables) {
@@ -766,7 +781,8 @@ export const CONTRACT_V1 = {
         z.object({
           id: z.string(),
           title: z.string(),
-          minutes: z.int().positive(),
+          source: RecipeSourceSchema,
+          minutes: z.int().positive().optional(),
           usesExpiring: z.array(z.string()),
           missing: z.array(z.string()),
         }),
@@ -786,7 +802,8 @@ export const CONTRACT_V1 = {
         z.object({
           id: z.string(),
           title: z.string(),
-          minutes: z.int().positive(),
+          source: RecipeSourceSchema,
+          minutes: z.int().positive().optional(),
           tags: z.array(RecipeTagSchema),
           usesExpiring: z.array(z.string()),
           missing: z.array(z.string()),
@@ -807,8 +824,9 @@ export const CONTRACT_V1 = {
         .object({
           id: z.string(),
           title: z.string(),
-          minutes: z.int().positive(),
-          servings: z.int().positive(),
+          source: RecipeSourceSchema,
+          minutes: z.int().positive().optional(),
+          servings: z.int().positive().optional(),
           tags: z.array(z.string()),
           ingredients: z.array(
             z.object({
@@ -832,6 +850,36 @@ export const CONTRACT_V1 = {
         })
         .nullable(),
     }),
+  }),
+  'recipes.create': command({
+    name: 'recipes.create',
+    summary: {
+      de: 'Ein eigenes Rezept speichern (Zutaten und Schritte als Zeilen).',
+      en: 'Save an own recipe (ingredients and steps as lines).',
+    },
+    scopes: ['recipes:write'],
+    input: z.object({ ...commandBase, ...ownRecipeFields }),
+    output: z.object({ recipeId: IdSchema }),
+  }),
+  'recipes.update': command({
+    name: 'recipes.update',
+    summary: {
+      de: 'Ein eigenes Rezept ändern; Titel, Zutaten und Schritte ersetzen die bisherigen.',
+      en: 'Change an own recipe; title, ingredients and steps replace the earlier ones.',
+    },
+    scopes: ['recipes:write'],
+    input: z.object({ ...commandBase, recipeId: IdSchema, ...ownRecipeFields }),
+    output: z.object({ updated: z.boolean() }),
+  }),
+  'recipes.delete': command({
+    name: 'recipes.delete',
+    summary: {
+      de: 'Ein eigenes Rezept löschen.',
+      en: 'Delete an own recipe.',
+    },
+    scopes: ['recipes:write'],
+    input: z.object({ ...commandBase, recipeId: IdSchema }),
+    output: z.object({ deleted: z.boolean() }),
   }),
   'stats.waste': query({
     name: 'stats.waste',
