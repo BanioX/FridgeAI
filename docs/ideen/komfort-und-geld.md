@@ -52,7 +52,7 @@ Sortiert nach Wirkung auf Food Waste und Aufwand (S klein, M mittel, L gross).
 | # | Funktion | Wirkung auf Food Waste | Aufwand | Gratis oder Pro | Bedingung |
 | --- | --- | --- | --- | --- | --- |
 | K1 | **Erinnerung am Morgen:** «2 Sachen laufen heute ab» | hoch | M | gratis | Native App: lokale Mitteilung auf dem Gerät, kein Server, keine neuen Datenflüsse ([`benachrichtigungen.md`](./benachrichtigungen.md)) |
-| K2 | **Zahl am App-Symbol** für «Heute retten» | mittel | S | gratis | keine |
+| K2 | **Zahl am App-Symbol** für «Heute retten» (umgesetzt 11.11.2026, [ADR-0050](../adr/0050-impact-since-first-month.md)) | mittel | S | gratis | keine |
 | K3 | **«Ist das noch gut?»** beim Entsorgen von Ware mit Mindesthaltbarkeit: «Schauen, riechen, probieren», dann erst entsorgen | hoch | S | gratis | keine; der Text steht schon unter «Wissen» |
 | K4 | **Einfrieren mit einem Tipp**, wenn das Verbrauchsdatum morgen ist (Hackfleisch, Fisch) | hoch | S | gratis | keine |
 | K5 | **Mengen-Tipp auf der Einkaufsliste:** «Brot entsorgst du oft: kleiner kaufen oder halb einfrieren» | hoch | S | gratis | keine; die Daten gibt es («Das entsorgst du oft») |
@@ -72,7 +72,7 @@ Sortiert nach Wirkung auf Food Waste und Aufwand (S klein, M mittel, L gross).
 
 | # | Baustein | Warum | Aufwand | Entscheid |
 | --- | --- | --- | --- | --- |
-| G1 | **Wirkung messen:** «Seit Rettich entsorgst du x % weniger», verglichen mit dem ersten Monat | Grundlage für Preis, Werbung (UWG) und jeden Partner | S | Claude |
+| G1 | **Wirkung messen:** «Seit Rettich entsorgst du x % weniger», verglichen mit dem ersten Monat (umgesetzt 11.11.2026, [ADR-0050](../adr/0050-impact-since-first-month.md)) | Grundlage für Preis, Werbung (UWG) und jeden Partner | S | Claude |
 | G2 | **Native Apps in den Stores** (Capacitor, P7) | In-App-Kauf, Mitteilungen, Sichtbarkeit | M | Alban: Store-Konten rund CHF 125 im ersten Jahr |
 | G3 | **In-App-Kauf** (StoreKit, Google Play Billing), wiederherstellbar ohne Konto | Digitale Abos in der App laufen über die Stores (genaue Regeln für die Schweiz prüfen) | M | Alban: Preis |
 | G4 | **Gratis und Pro in `core`** (Plan 12b), 14 Tage Probezeit, Bezahlseite mit der eigenen Ersparnis | Ohne klare Grenze gibt es nichts zu verkaufen | M | Alban: Grenze |

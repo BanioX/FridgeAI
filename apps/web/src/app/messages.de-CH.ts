@@ -121,6 +121,14 @@ export const messages = {
       label: (stage: string, leaves: number) =>
         `Dein Rettich: ${stage}, ${leaves === 1 ? '1 Blatt' : `${String(leaves)} Blätter`}`,
     },
+    /** «Seit deinem ersten Monat» (ADR-0050): full months only, said plainly either way. */
+    impactSince: {
+      less: (percent: number, now: string, first: string) =>
+        `Seit deinem ersten Monat entsorgst du ${String(percent)} % weniger: ${now} statt ${first}.`,
+      more: (percent: number, now: string, first: string) =>
+        `Seit deinem ersten Monat entsorgst du ${String(percent)} % mehr: ${now} statt ${first}.`,
+      same: (now: string) => `Seit deinem ersten Monat entsorgst du gleich viel: ${now}.`,
+    },
     saved: 'Gerettet',
     /** The two rings (ADR-0046): everything used, and what was thrown away. */
     used: 'Verwertet',

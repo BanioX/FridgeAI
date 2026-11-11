@@ -57,3 +57,4 @@ Jeder Entscheid mit Folgen steht hier als eigene Datei `NNNN-titel.md` (ADR-0001
 | [0047](0047-names-like-a-private-bank.md) | Namen wie bei einer Schweizer Privatbank | angenommen | 2026-11-08 |
 | [0048](0048-recipes-return-under-wissen.md) | Rezepte kehren zurück, als Abschnitt unter «Wissen» | angenommen | 2026-11-11 |
 | [0049](0049-public-repo-noindex.md) | Öffentliches Repo, App nicht in Suchmaschinen | angenommen | 2026-11-11 |
+| [0050](0050-impact-since-first-month.md) | Wirkung sichtbar: «Seit deinem ersten Monat» und Zahl am App-Symbol | angenommen | 2026-11-11 |
