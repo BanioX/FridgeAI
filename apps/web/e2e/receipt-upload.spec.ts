@@ -69,13 +69,13 @@ test('uploads a receipt PDF, shows names and prices and takes the food over', as
   await page.goto('/inventory?location=pantry');
   await expect(page.getByText('Semmeli 80G')).toBeVisible();
 
-  // The same receipt again changes nothing.
+  // The same receipt again is named at once and changes nothing.
   await page.goto('/add/receipt');
   await page
     .getByLabel('PDF oder Foto wählen')
     .setInputFiles({ name: 'bon.pdf', mimeType: 'application/pdf', buffer: COOP });
-  await page.getByRole('button', { name: '2 Artikel übernehmen' }).first().click();
   await expect(page.getByText('Diese Quittung hast du schon übernommen.')).toBeVisible();
+  await expect(page.getByRole('button', { name: /Artikel übernehmen/ })).toHaveCount(0);
 });
 
 test('explains a PDF without text and one without articles', async ({ page }) => {
@@ -291,12 +291,6 @@ test('a known receipt is named before the review and never taken twice', async (
   await files.setInputFiles({ name: 'alt.pdf', mimeType: 'application/pdf', buffer: COOP });
   await page.getByRole('button', { name: '2 Artikel übernehmen' }).first().click();
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
-
-  // The same receipt alone: said at once, nothing to review.
-  await page.goto('/add/receipt');
-  await files.setInputFiles({ name: 'alt.pdf', mimeType: 'application/pdf', buffer: COOP });
-  await expect(page.getByText('Diese Quittung hast du schon übernommen.')).toBeVisible();
-  await expect(page.getByRole('button', { name: /übernehmen/ })).toHaveCount(0);
 
   // The same receipt again, a new one, and the new one twice (same file under two names).
   await page.goto('/add/receipt');
