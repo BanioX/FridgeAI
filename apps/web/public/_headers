@@ -7,6 +7,8 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(self), microphone=(), geolocation=(), payment=()
   Cross-Origin-Opener-Policy: same-origin
+  # Never in search engines (ADR-0049); also on preview links.
+  X-Robots-Tag: noindex, nofollow
 
 # Hashed build output never changes under the same name.
 /assets/*

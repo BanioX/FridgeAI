@@ -1,6 +1,6 @@
 // Shared rules for collecting public product data (ADR-0045): an honest name, robots.txt,
 // a pause between requests and no way around a block. A 403 or 429 stops the run.
-export const USER_AGENT = 'RettichBot/0.1 (+https://fridgeai.hyseni-alban.workers.dev)';
+export const USER_AGENT = 'RettichBot/0.1 (+https://github.com/BanioX/FridgeAI)';
 
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
