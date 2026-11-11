@@ -8,9 +8,12 @@ import {
   isFreezable,
   portionChoices,
   portioningOf,
+  shouldAskStillGood,
+  shouldSuggestFreezing,
   soonThresholdFor,
   WasteReasonSchema,
   type Id,
+  type LocalDate,
   type Outcome,
   type WasteReason,
 } from '@fridgeai/core';
@@ -78,6 +81,8 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
   const [status, setStatus] = useState('');
   /** The partial outcome just saved: it can be undone until the next action. */
   const [undoable, setUndoable] = useState<Id | null>(null);
+  /** Set after the one-tap freeze: the date it had in the fridge, for «Rückgängig». */
+  const [frozenFrom, setFrozenFrom] = useState<LocalDate | null>(null);
   const [busy, setBusy] = useState(false);
 
   if (item === undefined) {
@@ -132,6 +137,7 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
     setBusy(true);
     setStatus('');
     setUndoable(null);
+    setFrozenFrom(null);
     try {
       const message = await action();
       if (message !== null) {
@@ -209,6 +215,31 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
         to: item.location === 'freezer' ? 'fridge' : 'freezer',
       });
       return t.moved(describeDate(result.expiresOn));
+    });
+
+  // K4: freeze with one tap; «Rückgängig» goes back to the fridge with the old date.
+  const freezeNow = () =>
+    run(async () => {
+      const result = await inventory['inventory.move']({
+        commandId: ids.next(),
+        householdId,
+        itemId: item.id,
+        to: 'freezer',
+      });
+      setFrozenFrom(item.expiresOn);
+      return messages.rescue.frozen(item.name, describeDate(result.expiresOn));
+    });
+
+  const unfreeze = (previous: LocalDate) =>
+    run(async () => {
+      await inventory['inventory.updateItem']({
+        commandId: ids.next(),
+        householdId,
+        itemId: item.id,
+        location: 'fridge',
+        expiresOn: previous,
+      });
+      return messages.rescue.unfrozen(item.name);
     });
 
   // Entered by mistake or for a test: gone at once, «Rückgängig» waits in the list.
@@ -303,6 +334,21 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
         </div>
       </Card>
 
+      {shouldSuggestFreezing(item, today) ? (
+        <Card variant="tip" className="flex items-center justify-between gap-3">
+          <p className="min-w-0 font-semibold">{t.freezeTip}</p>
+          <Button
+            icon={Snowflake}
+            disabled={busy}
+            onClick={() => {
+              void freezeNow();
+            }}
+          >
+            {messages.rescue.freeze}
+          </Button>
+        </Card>
+      ) : null}
+
       <OtherPacks item={item} />
 
       <ProductFacts item={item} />
@@ -350,6 +396,9 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
             {otherInvalid ? t.otherInvalid : null}
           </p>
         </div>
+        {outcome === 'wasted' && shouldAskStillGood(item) ? (
+          <Card variant="tip">{messages.rescue.stillGood}</Card>
+        ) : null}
         {outcome === 'wasted' ? (
           <ChoiceChips legend={t.why} options={reasonOptions} value={reason} onChange={setReason} />
         ) : null}
@@ -377,6 +426,18 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
         <p role="status" className="font-semibold text-basil-800">
           {status}
         </p>
+        {frozenFrom === null ? null : (
+          <Button
+            variant="ghost"
+            icon={Undo2}
+            disabled={busy}
+            onClick={() => {
+              void unfreeze(frozenFrom);
+            }}
+          >
+            {t.undo}
+          </Button>
+        )}
         {undoable === null ? null : (
           <Button
             variant="ghost"
