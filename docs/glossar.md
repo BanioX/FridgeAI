@@ -32,6 +32,7 @@ Damit Mensch und Maschine dasselbe meinen: Wort in der App (de-CH), Name im Code
 | **Verwertet** (nicht «gegessen», Alban 8.11.2026) | `eaten` | genutzt: gegessen, gekocht, gebacken, verbraucht. Rettich zählt nicht, was du isst (ADR-0046) | de-DE gleich |
 | **Entsorgt** (nicht «weggeworfen», Alban 8.11.2026) | `wasted` | im Abfall gelandet, mit freiwilligem Grund (ADR-0046) | de-DE gleich |
 | **Heute retten** (früher «Läuft bald ab» auf Start) | `urgentItems`, `today.expiringTitle` | was in den nächsten drei Tagen abläuft, zuoberst auf Start (ADR-0047) | – |
+| **Abzeichen** (nicht «Achievement», «Badge») | `achievements`, `stats.achievements` (Runde 2) | Medaille für Retten, Kochen, Planen, in bis zu drei Stufen (Silber, Smaragd, Onyx); aus deinen Daten auf dem Gerät berechnet, nie gespeichert ([`abzeichen.md`](./abzeichen.md)) | – |
 | **Bilanz** (früher «Deine Wirkung») | `ImpactCard`, `stats.waste` | Verwertet und Entsorgt als zwei Kreise, darunter Gerettet, pro Monat («Bilanz November») (ADR-0046, ADR-0047) | – |
 | **Auszug, Gesamtauszug** (früher «Bericht», «Ausführlich») | `ReportKind`, `reports.build` | PDF zu einem Zeitraum wie ein Kontoauszug; Kurz-Auszüge als Quittung, der Gesamtauszug mit Diagrammen (ADR-0030, ADR-0047) | – |
 | **Journal** (früher «Verlauf») | `inventory.history` | jeder Abschluss, neueste zuerst, ändern und löschen (ADR-0047) | – |

@@ -89,6 +89,17 @@ Sortiert nach Wirkung auf Food Waste und Aufwand (S klein, M mittel, L gross).
 2. **Mit dem Store-Start im Januar:** G2, K1 (lokale Erinnerung), G3 technisch vorbereitet, Pro noch aus.
 3. **Februar bis März:** K9 Haushalt teilen und G4/G5 Pro mit Probezeit, sobald Alban Grenze und Preis entschieden hat. Dazu K10 für das Wachstum.
 
+## Runde 2 (Alban, 11.11.2026)
+
+Alban: «Mehl zu Brot verarbeitet, dann kann man das badgen. Einen Kuchen backen und Eier verwerten. Ein Rezept kochen und Reste landen im Kühlschrank. Abzeichen wie Koch, Sparsam, Überlebenskünstler.» Eingeordnet als **jetzt**, nach Runde 1 (dieselben Dateien), gratis und ohne neuen Datenfluss:
+
+| # | Idee | Nutzen | Aufwand |
+| --- | --- | --- | --- |
+| R2-1 | **Badges am Artikel** in passender Farbe: Eingefroren (Eis), Aufgetaut (Eis hell, neu), Geöffnet (Aprikose), Selbst gemacht (Weizen), Reste (Smaragd hell), Von der Theke (Oliv) | Zustand auf einen Blick | S–M |
+| R2-2 | **Verarbeiten:** Zutaten (auch Teile) werden verwertet, das Ergebnis kommt als neuer Artikel mit eigener Haltbarkeit in den Vorrat. Der Wert wandert mit, damit nichts doppelt zählt | Kuchen, Brot, Zopf, Reste ehrlich in der Bilanz | M |
+| R2-3 | **«Gekocht»** auf der Rezeptseite bucht die Zutaten ab und fragt «Reste in den Kühlschrank?» (ersetzt R-03 aus ADR-0048) | Kochen schliesst den Kreis | M |
+| R2-4 | **Abzeichen** nach [`../abzeichen.md`](../abzeichen.md) | Freude, Wiederkommen, ohne Kaufanreiz | M |
+
 ## Für den Parkplatz
 
 - **Preise an Open Prices spenden:** Quittungspreise anonym an die offene Preis-Datenbank von Open Food Facts, nur mit Einwilligung. Gibt der Gemeinschaft etwas zurück, deren Daten Rettich nutzt. Neuer Datenfluss: Alban.
