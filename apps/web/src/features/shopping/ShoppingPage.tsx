@@ -1,7 +1,13 @@
-import { parseShoppingText, toBaseQuantity, type Id, type OperationOutput } from '@fridgeai/core';
+import {
+  parseShoppingText,
+  shoppingTips,
+  toBaseQuantity,
+  type Id,
+  type OperationOutput,
+} from '@fridgeai/core';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { PackagePlus, Plus, X } from 'lucide-react';
-import { useId, useState } from 'react';
+import { PackagePlus, Plus, Share, X } from 'lucide-react';
+import { useEffect, useId, useState } from 'react';
 import { Link } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
@@ -11,6 +17,7 @@ import { Card } from '../../ui/Card';
 import { describeDate } from '../../ui/date-text';
 import { formatQuantity } from '../../ui/quantity-text';
 import { GroupedList, GroupedListItem } from '../../ui/GroupedList';
+import { shareText, shoppingListText } from './share-list';
 
 const t = messages.shopping;
 type Entry = OperationOutput<'shopping.list'>['items'][number];
@@ -31,7 +38,7 @@ function atHomeText(home: AtHome): string {
  * still at home (E-02) –, check it off into the basket and put bought things into the inventory.
  */
 export function ShoppingPage() {
-  const { householdId, ids, shopping } = useAppData();
+  const { householdId, ids, shopping, inventory } = useAppData();
   const id = useId();
   const [name, setName] = useState('');
   const [status, setStatus] = useState('');
@@ -40,6 +47,24 @@ export function ShoppingPage() {
     async () => (await shopping['shopping.list']({ householdId, includeChecked: true })).items,
     [householdId],
   );
+
+  /** K5: what the household often throws away; only a hint, so a failure just hides it. */
+  const [habits, setHabits] = useState<OperationOutput<'products.wasteHabits'>['habits']>([]);
+  useEffect(() => {
+    let active = true;
+    inventory['products.wasteHabits']({ householdId })
+      .then(({ habits: found }) => {
+        if (active) {
+          setHabits(found);
+        }
+      })
+      .catch(() => {
+        // Only a hint.
+      });
+    return () => {
+      active = false;
+    };
+  }, [householdId, inventory]);
 
   async function run(action: () => Promise<string | null>) {
     setBusy(true);
@@ -109,6 +134,17 @@ export function ShoppingPage() {
       return null;
     });
 
+  const tips = shoppingTips({ entries: entries ?? [], habits });
+  const shareList = async () => {
+    const text = shoppingListText(t.shareTitle, entries ?? []);
+    const outcome = await shareText(text);
+    if (outcome === 'copied') {
+      setStatus(t.copied);
+    } else if (outcome === 'failed') {
+      setStatus(t.shareFailed);
+    }
+  };
+
   const open = entries?.filter((entry) => !entry.checked) ?? [];
   const basket = entries?.filter((entry) => entry.checked) ?? [];
 
@@ -148,6 +184,9 @@ export function ShoppingPage() {
             </span>
           )}
         </label>
+        {tips.has(entry.id) ? (
+          <p className="text-sm text-ink-muted">{t.oftenThrown(tips.get(entry.id)?.tip)}</p>
+        ) : null}
         {/* Outside the label: tapping the link must not toggle the box. */}
         {entry.checked ? (
           <Link
@@ -231,6 +270,16 @@ export function ShoppingPage() {
                 {t.open}
               </h2>
               <GroupedList>{open.map(row)}</GroupedList>
+              <Button
+                variant="secondary"
+                icon={Share}
+                fullWidth
+                onClick={() => {
+                  void shareList();
+                }}
+              >
+                {t.share}
+              </Button>
             </section>
           )}
           {basket.length === 0 ? null : (
