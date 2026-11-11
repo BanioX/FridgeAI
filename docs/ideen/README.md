@@ -8,6 +8,7 @@ Brainstorming, laufend gepflegt (CLAUDE.md: «Ideen unterwegs»). Hier steht, wa
 | --- | --- |
 | [`personalisierung.md`](./personalisierung.md) | Rezepte aus bald Ablaufendem (vorerst entfernt, ADR-0040), Menüplanung, Zielgruppen (Sport, Frugalismus, Tracking, «No-Brainer») |
 | [`fahrplan-12-monate.md`](./fahrplan-12-monate.md) | Ist Cash möglich, Hochrechnung Food-Verlust, Wachstum auf 1'000 bis 1 Mio. Haushalte, Fahrplan Dez. 2026 bis Nov. 2027 |
+| [`komfort-und-geld.md`](./komfort-und-geld.md) | Mitbewerber (YAZIO, Open Food Facts, Bring!, NoWaste …), Nährwerte als Beifahrer, Komfort-Funktionen K1–K14, Bausteine für Geld G1–G10 |
 | [`monetarisierung.md`](./monetarisierung.md) | Gratis mit Werbung oder Pro ohne Werbung und Tracking, Partner, Büro |
 | [`benachrichtigungen.md`](./benachrichtigungen.md) | Push-Mitteilungen: was technisch geht und was es braucht |
 | [`scan-und-produktdaten.md`](./scan-und-produktdaten.md) | Woher Produktdaten und Bilder kommen, der Vergleich mit Yazio, was eine native App bringt |
