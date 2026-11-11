@@ -15,6 +15,7 @@ import { SWIPE_HINT_ID, useSwipeOutcome } from '../inventory/swipe-outcome';
 import { SwipeAction } from '../../ui/SwipeAction';
 import { checkDue, readLastCheck } from '../check/check-state';
 import { ImpactCard } from './ImpactCard';
+import { factFor } from '../knowledge/food-facts';
 import { StartIntro } from './StartIntro';
 import { URGENT_LIMIT, urgentItems } from './urgent-items';
 
@@ -126,6 +127,11 @@ export function TodayPage() {
       )}
 
       <ImpactCard from={startOfMonth(today)} to={today} />
+      {all.length > 0 ? (
+        <Card variant="tip">
+          <strong>{messages.knowledge.didYouKnow}</strong> {factFor(today)}
+        </Card>
+      ) : null}
       {swipe.toast}
     </div>
   );
