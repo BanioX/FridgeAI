@@ -6,6 +6,10 @@ test.use({ viewport: { width: 390, height: 844 } });
 async function addToFridge(page: Page, name: string) {
   await page.goto('/inventory/new');
   await page.getByLabel('Was ist es?').fill(name);
+  // The place sits under «Mehr Angaben» (ADR-0026).
+  if (await page.getByRole('radio', { name: 'Kühlschrank' }).isHidden()) {
+    await page.getByText('Mehr Angaben').click();
+  }
   await page.getByRole('radio', { name: 'Kühlschrank' }).check();
   await page.getByRole('button', { name: 'Speichern', exact: true }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
