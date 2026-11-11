@@ -55,3 +55,34 @@ test('shopping list: one sentence becomes one entry per product', async ({ page 
   await expect(page.getByRole('checkbox', { name: /Hackfleisch.*500 g/ })).toBeVisible();
   await expect(page.getByLabel('Was brauchst du?')).toHaveValue('');
 });
+
+test('shopping list: hints at often thrown-away food and shares the list as text', async ({
+  page,
+}) => {
+  for (const name of ['Hummus Natur', 'Tzatziki']) {
+    await page.goto('/inventory/new');
+    await page.getByLabel('Was ist es?').fill(name);
+    await page.getByRole('button', { name: 'Speichern', exact: true }).click();
+    await page.getByRole('link', { name: new RegExp(name) }).click();
+    await page.locator('label').filter({ hasText: 'Entsorgt' }).click();
+    await page.getByRole('button', { name: 'Als entsorgt speichern' }).click();
+    await expect(page.getByRole('status')).toHaveText(`${name}: als entsorgt gespeichert.`);
+  }
+
+  await page.goto('/shopping');
+  await expect(page.getByRole('button', { name: 'Liste teilen' })).toHaveCount(0);
+  await page.getByLabel('Was brauchst du?').fill('Guacamole, Milch');
+  await page.getByRole('button', { name: 'Auf die Liste' }).click();
+  await expect(page.getByText(/^Entsorgst du oft\./)).toHaveCount(1);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+
+  // No Web Share in desktop Chromium: the list goes to the clipboard.
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+  await page.evaluate(() => {
+    Object.defineProperty(navigator, 'share', { value: undefined, configurable: true });
+  });
+  await page.getByRole('button', { name: 'Liste teilen' }).click();
+  await expect(page.getByRole('status')).toHaveText('Kopiert.');
+  const copied = await page.evaluate(() => navigator.clipboard.readText());
+  expect(copied).toBe('Nachkaufen\nGuacamole\nMilch');
+});
