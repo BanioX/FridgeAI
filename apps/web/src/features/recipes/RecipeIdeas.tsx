@@ -1,5 +1,5 @@
 import { useLiveQuery } from 'dexie-react-hooks';
-import { ChefHat, ChevronRight } from 'lucide-react';
+import { ChefHat, ChevronRight, Plus } from 'lucide-react';
 import { Link } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
@@ -54,5 +54,70 @@ export function CookToday({ limit = 3 }: { limit?: number }) {
         />
       ))}
     </GroupedList>
+  );
+}
+
+/** The row that opens the form for a new recipe of your own. */
+function AddRecipeRow() {
+  return (
+    <GroupedListItem>
+      <Link to="/knowledge/recipes/new" className={GROUPED_ROW_LINK}>
+        <div className="flex min-h-15 items-center gap-3 py-2.5 pr-3 pl-4">
+          <span
+            aria-hidden="true"
+            className="grid size-10 shrink-0 place-items-center rounded-xl bg-basil-50 text-basil-700"
+          >
+            <Plus size={22} />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="font-semibold text-basil-700">{t.addRecipe}</p>
+            <p className="text-sm text-ink-muted">{t.addRecipeText}</p>
+          </div>
+          <ChevronRight size={18} aria-hidden="true" className="shrink-0 text-ink-muted/60" />
+        </div>
+      </Link>
+    </GroupedListItem>
+  );
+}
+
+/**
+ * «Meine Rezepte» (ADR-0048, point 7): your own recipes first, then the row to add one. Under a
+ * section heading (Wissen) the title is an h3; right below the page title (Alle Rezepte) an h2,
+ * so heading levels never skip one (axe «heading-order»).
+ */
+export function OwnRecipes({ headingLevel = 3 }: { headingLevel?: 2 | 3 }) {
+  const Heading = headingLevel === 2 ? 'h2' : 'h3';
+  const { householdId, recipes } = useAppData();
+  const own = useLiveQuery(
+    async () =>
+      (await recipes['recipes.list']({ householdId })).recipes.filter(
+        (recipe) => recipe.source === 'own',
+      ),
+    [householdId],
+  );
+  if (own === undefined) {
+    return null;
+  }
+  return (
+    <div className="space-y-2">
+      <Heading className="px-4 text-sm font-semibold text-ink-muted uppercase">
+        {t.ownTitle}
+      </Heading>
+      <GroupedList>
+        {own.map((entry) => (
+          <RecipeRow
+            key={entry.id}
+            id={entry.id}
+            title={entry.title}
+            detail={t.listDetail(
+              entry.minutes,
+              entry.missing.length,
+              entry.usesExpiring.join(', '),
+            )}
+          />
+        ))}
+        <AddRecipeRow />
+      </GroupedList>
+    </div>
   );
 }

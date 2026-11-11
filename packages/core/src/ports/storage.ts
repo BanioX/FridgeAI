@@ -11,6 +11,7 @@ import type { ProductInfo } from './index';
 import type { Household, Member, ReminderPrefs } from '../model/household';
 import type { InventoryItem, OutcomeEvent, Product, ShoppingListItem } from '../model/inventory';
 import type { Receipt, ReceiptLine } from '../model/receipt';
+import type { OwnRecipe } from '../recipes/own-recipe';
 import type { IsoDateTime } from '../model/primitives';
 
 /** One kind of household record (a table). Soft-deleted rows are returned; callers filter them. */
@@ -74,6 +75,8 @@ export interface Storage extends DeviceCaches {
   shoppingItems: RecordStore<ShoppingListItem>;
   receipts: RecordStore<Receipt>;
   receiptLines: RecordStore<ReceiptLine>;
+  /** «Meine Rezepte» (ADR-0048). */
+  ownRecipes: RecordStore<OwnRecipe>;
   events: EventLog;
   commands: CommandLog;
   /**

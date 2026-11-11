@@ -53,10 +53,28 @@ export interface FoodAtHome {
   expiryKind: DateKind;
 }
 
+/**
+ * What the ranking needs of a recipe: the curated `Recipe` fits, and so does an own recipe
+ * (ADR-0048, point 7), which may have no minutes or servings.
+ */
+export interface RankableRecipe {
+  id: string;
+  title: string;
+  minutes?: number;
+  servings?: number;
+  ingredients: readonly RecipeIngredient[];
+  steps: readonly string[];
+  tags: readonly RecipeTag[];
+}
+
+/** Sorts a recipe without a known time after the ones with one. */
+const minutesOf = (recipe: { minutes?: number }): number => recipe.minutes ?? 9999;
+
 export interface RecipeSuggestion {
   id: string;
   title: string;
-  minutes: number;
+  /** Absent for an own recipe without a time. */
+  minutes?: number;
   /** Names of soon-expiring food the recipe uses, most urgent first. */
   usesExpiring: string[];
   /** Ingredients to buy (as written in the recipe). */
@@ -99,7 +117,7 @@ export interface RecipeListEntry extends RecipeSuggestion {
 }
 
 interface Ranked {
-  recipe: Recipe;
+  recipe: RankableRecipe;
   usesExpiring: string[];
   missing: string[];
   /** How much urgent food the recipe rescues. */
@@ -107,7 +125,11 @@ interface Ranked {
 }
 
 /** What each recipe rescues and lacks. Food past its use-by date never counts (food safety). */
-function rank(recipes: readonly Recipe[], food: readonly FoodAtHome[], today: LocalDate): Ranked[] {
+function rank(
+  recipes: readonly RankableRecipe[],
+  food: readonly FoodAtHome[],
+  today: LocalDate,
+): Ranked[] {
   const usable = food
     .filter(
       (entry) => expiryStatus(entry.expiresOn, today, entry.expiryKind).kind !== 'past_use_by',
@@ -142,7 +164,7 @@ function rank(recipes: readonly Recipe[], food: readonly FoodAtHome[], today: Lo
 const toSuggestion = ({ recipe, usesExpiring, missing }: Ranked): RecipeSuggestion => ({
   id: recipe.id,
   title: recipe.title,
-  minutes: recipe.minutes,
+  ...(recipe.minutes === undefined ? {} : { minutes: recipe.minutes }),
   usesExpiring,
   missing,
 });
@@ -153,7 +175,7 @@ const toSuggestion = ({ recipe, usesExpiring, missing }: Ranked): RecipeSuggesti
  * ingredients and fewer minutes. Food past its use-by date is never suggested (food safety).
  */
 export function suggestRecipes(
-  recipes: readonly Recipe[],
+  recipes: readonly RankableRecipe[],
   food: readonly FoodAtHome[],
   today: LocalDate,
   limit: number,
@@ -164,7 +186,7 @@ export function suggestRecipes(
       (a, b) =>
         b.score - a.score ||
         a.missing.length - b.missing.length ||
-        a.recipe.minutes - b.recipe.minutes ||
+        minutesOf(a.recipe) - minutesOf(b.recipe) ||
         a.recipe.id.localeCompare(b.recipe.id),
     )
     .slice(0, Math.max(0, limit))
@@ -176,7 +198,7 @@ export function suggestRecipes(
  * food at home first (fewest missing ingredients), then what rescues more, then the quickest.
  */
 export function listRecipes(
-  recipes: readonly Recipe[],
+  recipes: readonly RankableRecipe[],
   food: readonly FoodAtHome[],
   today: LocalDate,
   tag?: RecipeTag,
@@ -187,10 +209,10 @@ export function listRecipes(
       (a, b) =>
         a.missing.length - b.missing.length ||
         b.score - a.score ||
-        a.recipe.minutes - b.recipe.minutes ||
+        minutesOf(a.recipe) - minutesOf(b.recipe) ||
         a.recipe.title.localeCompare(b.recipe.title, 'de-CH'),
     )
-    .map((ranked) => ({ ...toSuggestion(ranked), tags: ranked.recipe.tags }));
+    .map((ranked) => ({ ...toSuggestion(ranked), tags: [...ranked.recipe.tags] }));
 }
 
 export interface IngredientAtHome<TFood extends FoodAtHome = FoodAtHome> {
@@ -206,7 +228,7 @@ export interface IngredientAtHome<TFood extends FoodAtHome = FoodAtHome> {
  * so callers get back their own entries (with item ids) for «nach dem Kochen abbuchen».
  */
 export function ingredientsAtHome<TFood extends FoodAtHome>(
-  recipe: Recipe,
+  recipe: RankableRecipe,
   food: readonly TFood[],
   today: LocalDate,
 ): IngredientAtHome<TFood>[] {
