@@ -441,6 +441,48 @@ export const messages = {
     failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
   },
   /** «Wissen» (ADR-0041): what keeps how long, and how it stays good longer. */
+  recipes: {
+    title: 'Rezepte',
+    todayTitle: 'Heute kochen',
+    allTitle: 'Alle Rezepte',
+    allText: 'Die ganze Sammlung, zuerst was zu deinem Vorrat passt.',
+    listIntro: 'Zuerst die Rezepte, für die dir am wenigsten fehlt.',
+    todayEmpty: 'Gerade läuft nichts bald ab. Unter «Alle Rezepte» findest du Ideen.',
+    empty: 'Gerade gibt es keine Rezepte.',
+    listDetail: (minutes: number, missing: number, rescues: string) =>
+      [
+        `${String(minutes)} Min.`,
+        missing === 0
+          ? 'alles da'
+          : missing === 1
+            ? '1 Zutat fehlt'
+            : `${String(missing)} Zutaten fehlen`,
+        rescues === '' ? undefined : `rettet ${rescues}`,
+      ]
+        .filter(Boolean)
+        .join(' · '),
+    rescues: (food: string, minutes: number, missing: number) =>
+      `Rettet ${food} · ${String(minutes)} Min.${missing === 0 ? ' · alles da' : ` · ${String(missing)} fehlt`}`,
+    notFound: 'Dieses Rezept gibt es nicht (mehr).',
+    minutes: (minutes: number) => `${String(minutes)} Min.`,
+    servings: (servings: number) =>
+      servings === 1 ? '1 Portion' : `${String(servings)} Portionen`,
+    ingredients: 'Zutaten',
+    there: 'Da',
+    missing: 'Fehlt',
+    atHome: (food: string) => `Da: ${food}`,
+    staple: 'Grundvorrat',
+    optional: 'Wenn du es hast',
+    toList: 'Fehlendes auf die Liste',
+    onList: (count: number) =>
+      count === 0
+        ? 'Das steht schon alles auf der Liste.'
+        : count === 1
+          ? '1 Sache auf der Liste.'
+          : `${String(count)} Sachen auf der Liste.`,
+    steps: 'So geht’s',
+    failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
+  },
   knowledge: {
     intro: 'Was wie lange hält und wie es länger gut bleibt.',
     explainTitle: 'Kurz erklärt',

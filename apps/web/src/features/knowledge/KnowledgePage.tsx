@@ -1,14 +1,17 @@
-import { ChevronDown, Search } from 'lucide-react';
+import { BookOpen, ChevronDown, ChevronRight, Search } from 'lucide-react';
 import { useId, useState } from 'react';
+import { Link } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
 import { Card } from '../../ui/Card';
-import { GroupedList, GroupedListItem } from '../../ui/GroupedList';
+import { GROUPED_ROW_LINK, GroupedList, GroupedListItem } from '../../ui/GroupedList';
 import { ScoreRing } from '../../ui/ScoreRing';
+import { CookToday } from '../recipes/RecipeIdeas';
 import { factFor } from './food-facts';
 import { describeDays, shelfGuide, type GuideEntry } from './shelf-guide';
 
 const t = messages.knowledge;
+const r = messages.recipes;
 
 function Entry({ entry }: { entry: GuideEntry }) {
   const level = t.levels[entry.level];
@@ -71,6 +74,34 @@ export function KnowledgePage() {
         <h1 className="large-title">{messages.pages.knowledge}</h1>
         <p className="mt-1 text-ink-muted">{t.intro}</p>
       </div>
+
+      {/* Recipes come in under «Wissen», not as a sixth tab (ADR-0048). */}
+      <section aria-labelledby={`${searchId}-recipes`} className="space-y-3">
+        <h2 id={`${searchId}-recipes`} className="font-display text-xl font-semibold">
+          {r.title}
+        </h2>
+        <h3 className="px-4 text-sm font-semibold text-ink-muted uppercase">{r.todayTitle}</h3>
+        <CookToday />
+        <GroupedList>
+          <GroupedListItem>
+            <Link to="/knowledge/recipes" className={GROUPED_ROW_LINK}>
+              <div className="flex min-h-15 items-center gap-3 py-2.5 pr-3 pl-4">
+                <span
+                  aria-hidden="true"
+                  className="grid size-10 shrink-0 place-items-center rounded-xl bg-surface-muted text-basil-700"
+                >
+                  <BookOpen size={22} />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold">{r.allTitle}</p>
+                  <p className="text-sm text-ink-muted">{r.allText}</p>
+                </div>
+                <ChevronRight size={18} aria-hidden="true" className="shrink-0 text-ink-muted/60" />
+              </div>
+            </Link>
+          </GroupedListItem>
+        </GroupedList>
+      </section>
 
       {/* One food fact a day (ADR-0042), the same as after a rescue on that seed. */}
       <Card variant="tip">
