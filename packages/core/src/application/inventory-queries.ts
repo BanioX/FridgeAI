@@ -3,7 +3,7 @@ import { CONTRACT_V1 } from '../contract/operations';
 import { daysBetween, toLocalDate } from '../dates';
 import { expiryStatus, RESERVE_SOON_THRESHOLD_DAYS, soonThresholdFor } from '../expiry';
 import type { Id } from '../ids';
-import { summarizeImpact } from '../metrics';
+import { compareWasteSinceFirstMonth, summarizeImpact } from '../metrics';
 import type { InventoryItem, Product } from '../model/inventory';
 import type { InventoryItemView } from '../contract/operations';
 import type { AppContext, UseCase } from './command';
@@ -179,6 +179,12 @@ export function createInventoryQueries(ctx: AppContext) {
     };
   };
 
+  const impactStats: UseCase<'stats.impact'> = async (raw) => {
+    const input = CONTRACT_V1['stats.impact'].input.parse(raw);
+    const outcomes = await storage.outcomes.ofHousehold(input.householdId);
+    return { comparison: compareWasteSinceFirstMonth(outcomes, clock.today()) };
+  };
+
   return {
     'inventory.list': list,
     'inventory.listExpiring': listExpiring,
@@ -186,5 +192,6 @@ export function createInventoryQueries(ctx: AppContext) {
     'products.lookup': lookupProduct,
     'products.image': productImage,
     'stats.waste': wasteStats,
+    'stats.impact': impactStats,
   };
 }

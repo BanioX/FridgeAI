@@ -1,5 +1,6 @@
 import { BookOpen, CircleEllipsis, House, Plus, Refrigerator, type LucideIcon } from 'lucide-react';
 import { Link, Outlet, useLocation } from 'react-router';
+import { useAppBadge } from './app-badge';
 import { messages } from './messages.de-CH';
 
 interface NavItem {
@@ -37,6 +38,7 @@ function activeTab(path: string): string | undefined {
 
 export function AppShell() {
   const current = activeTab(useLocation().pathname);
+  useAppBadge();
   return (
     <div className="min-h-dvh">
       {/* No brand bar: as on iOS, the large title leads each page (ADR-0021). Content scrolls
