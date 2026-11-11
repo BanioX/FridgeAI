@@ -7,6 +7,7 @@ Brainstorming, laufend gepflegt (CLAUDE.md: «Ideen unterwegs»). Hier steht, wa
 | Datei | Thema |
 | --- | --- |
 | [`personalisierung.md`](./personalisierung.md) | Rezepte aus bald Ablaufendem (vorerst entfernt, ADR-0040), Menüplanung, Zielgruppen (Sport, Frugalismus, Tracking, «No-Brainer») |
+| [`gross-gedacht.md`](./gross-gedacht.md) | Was Rettich begehrenswert macht: neun Ebenen von den ersten 60 Sekunden bis zur Marke, Reihenfolge für drei Monate |
 | [`fahrplan-12-monate.md`](./fahrplan-12-monate.md) | Ist Cash möglich, Hochrechnung Food-Verlust, Wachstum auf 1'000 bis 1 Mio. Haushalte, Fahrplan Dez. 2026 bis Nov. 2027 |
 | [`komfort-und-geld.md`](./komfort-und-geld.md) | Mitbewerber (YAZIO, Open Food Facts, Bring!, NoWaste …), Nährwerte als Beifahrer, Komfort-Funktionen K1–K14, Bausteine für Geld G1–G10 |
 | [`monetarisierung.md`](./monetarisierung.md) | Gratis mit Werbung oder Pro ohne Werbung und Tracking, Partner, Büro |
