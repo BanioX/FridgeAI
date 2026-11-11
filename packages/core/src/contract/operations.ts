@@ -935,6 +935,22 @@ export const CONTRACT_V1 = {
       openDatabase: z.enum(['none', 'searched', 'unavailable']),
     }),
   }),
+  'receipts.known': query({
+    name: 'receipts.known',
+    summary: {
+      de: 'Welche dieser Quittungen schon übernommen sind, vor der Prüfung (nur der Hash).',
+      en: 'Which of these receipts were already imported, before the review (hash only).',
+    },
+    scopes: ['inventory:read'],
+    input: z.object({
+      ...queryBase,
+      hashes: z
+        .array(z.string().regex(/^[0-9a-f]{64}$/))
+        .min(1)
+        .max(50),
+    }),
+    output: z.object({ known: z.array(z.string()) }),
+  }),
   'household.export': query({
     name: 'household.export',
     summary: {

@@ -103,5 +103,17 @@ export function createReceiptHandlers(ctx: HandlerContext, addItem: Handler<'inv
     });
   };
 
-  return { 'receipts.import': importReceipt };
+  /** Before the review: which receipts are already in (ADR-0028); the import checks again. */
+  const knownReceipts: Handler<'receipts.known'> = async (raw) => {
+    const input = CONTRACT_V1['receipts.known'].input.parse(raw);
+    const wanted = new Set(input.hashes);
+    const stored = await db.receipts
+      .where('householdId')
+      .equals(input.householdId)
+      .filter((receipt) => receipt.deletedAt === undefined && wanted.has(receipt.hash))
+      .toArray();
+    return { known: [...new Set(stored.map((receipt) => receipt.hash))] };
+  };
+
+  return { 'receipts.import': importReceipt, 'receipts.known': knownReceipts };
 }
