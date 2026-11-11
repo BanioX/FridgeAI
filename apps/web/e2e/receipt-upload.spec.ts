@@ -269,6 +269,13 @@ test('reviews several receipts on one page and takes them all with one button', 
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 
+  // Leaving a receipt out takes its articles out of the count.
+  await dorf.getByLabel('Diese Quittung nicht übernehmen').check();
+  await expect(
+    page.getByRole('button', { name: 'Alle übernehmen · 2 Artikel aus 1 Quittung' }),
+  ).toHaveCount(2);
+  await dorf.getByLabel('Diese Quittung nicht übernehmen').uncheck();
+
   // One button for all, at the top and at the bottom; nothing is left out.
   const all = page.getByRole('button', { name: 'Alle übernehmen · 3 Artikel aus 2 Quittungen' });
   await expect(all).toHaveCount(2);
@@ -278,14 +285,18 @@ test('reviews several receipts on one page and takes them all with one button', 
   await expect(page.getByText('Coop Pouletbrust 2St. ca. 330g')).toBeVisible();
 });
 
-test('a receipt left out is not taken, and a known one shows as «schon erfasst»', async ({
-  page,
-}) => {
+test('a known receipt is named before the review and never taken twice', async ({ page }) => {
   await page.goto('/add/receipt');
   const files = page.getByLabel('PDF oder Foto wählen');
   await files.setInputFiles({ name: 'alt.pdf', mimeType: 'application/pdf', buffer: COOP });
   await page.getByRole('button', { name: '2 Artikel übernehmen' }).first().click();
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
+
+  // The same receipt alone: said at once, nothing to review.
+  await page.goto('/add/receipt');
+  await files.setInputFiles({ name: 'alt.pdf', mimeType: 'application/pdf', buffer: COOP });
+  await expect(page.getByText('Diese Quittung hast du schon übernommen.')).toBeVisible();
+  await expect(page.getByRole('button', { name: /übernehmen/ })).toHaveCount(0);
 
   // The same receipt again, a new one, and the new one twice (same file under two names).
   await page.goto('/add/receipt');
@@ -294,24 +305,13 @@ test('a receipt left out is not taken, and a known one shows as «schon erfasst�
     { name: 'neu.pdf', mimeType: 'application/pdf', buffer: SECOND },
     { name: 'neu-kopie.pdf', mimeType: 'application/pdf', buffer: SECOND },
   ]);
-  await expect(page.getByText('neu-kopie.pdf: schon erfasst')).toBeVisible();
-  const all = page.getByRole('button', { name: 'Alle übernehmen · 3 Artikel aus 2 Quittungen' });
-  await expect(all).toHaveCount(2);
-
-  // Leaving a receipt out takes its articles out of the count.
-  const dorf = page.getByRole('region', { name: /Musterdorf Bahnhof/ });
-  await dorf.getByLabel('Diese Quittung nicht übernehmen').check();
-  await expect(
-    page.getByRole('button', { name: 'Alle übernehmen · 2 Artikel aus 1 Quittung' }),
-  ).toHaveCount(2);
-  await dorf.getByLabel('Diese Quittung nicht übernehmen').uncheck();
-  await all.first().click();
-
-  // The known receipt is reported and left out; the new one went in.
   await expect(page.getByText('alt.pdf: schon erfasst')).toBeVisible();
-  await expect(page.getByText('1 Artikel aus 1 Quittung übernommen.')).toBeVisible();
-  await expect(page.getByText('Diese Quittung hast du schon übernommen.')).toBeVisible();
-  await page.goto('/inventory');
+  await expect(page.getByText('neu-kopie.pdf: schon erfasst')).toBeVisible();
+  await expect(page.getByRole('region', { name: /Coop · Musterstadt Zentrum/ })).toHaveCount(0);
+  const take = page.getByRole('button', { name: '1 Artikel übernehmen' });
+  await expect(take).toHaveCount(2);
+  await take.first().click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
   await expect(page.getByText('Naturaplan Bio Vollmilch 1L')).toBeVisible();
 });
 
