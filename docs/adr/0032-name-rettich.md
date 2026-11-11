@@ -23,7 +23,7 @@ Alban hat **«Rettich»** gewählt: Rettich und retten in einem Wort.
 - **Framing:** «Rettich rettet, was im Kühlschrank liegt.» Kurz: «Scan den Bon. Rette den Rest.» Im App Store zum Beispiel «Rettich: Vorrat & Reste retten».
 - **Technisch bleibt alles beim Alten,** damit nichts bricht:
   - Repo `BanioX/FridgeAI` und Pakete `@fridgeai/*`;
-  - die Web-Adresse `fridgeai.hyseni-alban.workers.dev`. Eine neue Adresse wäre für den Browser eine andere App, und die Pilot-Daten auf dem iPhone blieben zurück;
+  - die Web-Adresse `fridgeai.<konto>.workers.dev`. Eine neue Adresse wäre für den Browser eine andere App, und die Pilot-Daten auf dem iPhone blieben zurück;
   - der Name der Datenbank auf dem Gerät;
   - das Exportformat `fridgeai-export` und der Schlüssel `"fridgeai": 1` im KI-Import. Alte Exporte und Antworten funktionieren weiter.
 

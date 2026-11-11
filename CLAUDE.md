@@ -22,7 +22,7 @@ Karte für alle KI-Werkzeuge: [`AGENTS.md`](AGENTS.md) · SWELP (Darf, Tut, Lern
 5. **Freigabe:** Alles, was kostenlos ist, darf ich ohne Rückfrage entscheiden und nutzen (Dienste im Gratis-Plan, Open-Source-Dependencies, Tools; Alban, 6.11.2026). **Alban fragen vor:** allem, was Geld kostet, Preis-/Freemium-Grenzen, allem, was Nutzerdaten das Gerät neu verlassen lässt, und grösseren Abweichungen vom Produkt.
 6. **Ideen unterwegs:** Bei jeder Arbeit festhalten, was erweiterbar oder zusätzlich sinnvoll wäre, in [`docs/ideen/`](docs/ideen/) (Nutzen, für wen, Aufwand, Kosten). Umsetzen nur, was im Plan steht. Ideen mit Kosten oder neuen Datenflüssen entscheidet Alban. Grosse Hebel mit USP, die Abklärung brauchen (Partner, Verträge, Kosten, Recht), und das Geschäftsmodell parken in [`docs/ideen/parkplatz.md`](docs/ideen/parkplatz.md); bei jedem passenden Gespräch nachführen. Albans Brainstorming sortiert Claude ein (jetzt, später, Parkplatz) und entscheidet, was zum aktuellen Stand passt (7.11.2026).
 7. **Tempo:** Claude baut ohne Rückfrage weiter und optimiert, bis das Limit erreicht ist (Alban, 6.11.2026). Die Grenzen aus Punkt 5 gelten weiter.
-8. **CI-Minuten kosten Geld** (privates Repo, 7.11.2026): jeden Push lokal vollständig prüfen, wenige Pushes pro PR, gestapelte PRs nur wenn nötig, main nicht ohne Grund in Branches mergen. Reine Doku-PRs überspringen Tests und E2E automatisch.
+8. **Lokal zuerst prüfen** (Repo öffentlich seit 11.11.2026, GitHub Actions damit gratis; ADR-0049): jeden Push lokal vollständig prüfen, wenige Pushes pro PR, gestapelte PRs nur wenn nötig, main nicht ohne Grund in Branches mergen. Reine Doku-PRs überspringen Tests und E2E automatisch.
 9. **Wenig technische Schulden** (Alban, 7.11.2026): Nebenwirkungen in [`docs/swelp/nebenwirkungen.md`](docs/swelp/nebenwirkungen.md) (Test prüft), bewusste Abkürzungen in [`docs/schulden.md`](docs/schulden.md), Lektionen in [`docs/swelp/lernbuch.md`](docs/swelp/lernbuch.md), Begriffe im [Glossar](docs/glossar.md). Lieber eine Schuld eintragen als sie verschweigen.
 
 ## Pflege-Rhythmus (macht immer Claude, nie Alban – ADR-0017)
@@ -42,7 +42,8 @@ Karte für alle KI-Werkzeuge: [`AGENTS.md`](AGENTS.md) · SWELP (Darf, Tut, Lern
 - Partner- oder KI-Zugriff auf Haushaltsdaten nur mit ausdrücklicher, widerrufbarer Einwilligung pro Haushalt. Kein Verkauf von Einzeldaten.
 - Bilder von Quittungen werden nach der Auswertung nicht gespeichert (ausser expliziter Opt-in). Assets (OCR-Modelle, Worker) selbst hosten, kein CDN.
 - TypeScript `strict`, kein `any`. Neue Dependencies nur kostenlos, gut gepflegt und schlank, im PR begründen; im ausgelieferten Code nur permissive Lizenzen (MIT, Apache-2.0, ISC, BSD, OFL), nirgends GPL/AGPL (`pnpm licenses:check`, ADR-0015).
-- Lizenz: proprietär, alle Rechte bei Alban (`LICENSE`). Keine fremden Code-Schnipsel mit unklarer Lizenz übernehmen.
+- Lizenz: proprietär, alle Rechte bei Alban (`LICENSE`). Das Repo ist öffentlich einsehbar, frei verwenden darf den Code trotzdem niemand. Keine fremden Code-Schnipsel mit unklarer Lizenz übernehmen.
+- **Keine Adresse der App im Repo** und die App nie in Suchmaschinen (Alban, 11.11.2026; ADR-0049): `X-Robots-Tag` und `meta robots` stehen auf `noindex`.
 - Kamera nur nach Nutzeraktion, alle Berechtigungszustände und Fallbacks (Foto-Upload, manuell) behandeln.
 
 ## Befehle
