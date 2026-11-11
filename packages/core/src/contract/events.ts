@@ -121,6 +121,9 @@ export const DomainEventSchema = z.discriminatedUnion('type', [
       totalRappen: RappenSchema,
     }),
   ),
+  envelope('recipe.created', z.object({ recipeId: IdSchema })),
+  envelope('recipe.updated', z.object({ recipeId: IdSchema })),
+  envelope('recipe.deleted', z.object({ recipeId: IdSchema })),
   envelope(
     'household.imported',
     z.object({

@@ -66,3 +66,38 @@ test('says so for a recipe that does not exist', async ({ page }) => {
   await page.goto('/knowledge/recipes/gibt-es-nicht');
   await expect(page.getByText('Dieses Rezept gibt es nicht (mehr).')).toBeVisible();
 });
+
+test('writes an own recipe, opens it and finds it under «Meine Rezepte»', async ({ page }) => {
+  await page.goto('/knowledge');
+  const recipes = page.getByRole('region', { name: 'Rezepte' });
+  await recipes.getByRole('link', { name: /Rezept hinzufügen/ }).click();
+  await expect(page).toHaveURL(/\/knowledge\/recipes\/new$/);
+  await expect(page.getByRole('heading', { level: 1, name: 'Neues Rezept' })).toBeVisible();
+
+  await page.getByLabel('Titel').fill('Milchreis');
+  await page.getByLabel('Minuten').fill('40');
+  await page.getByLabel('Portionen').fill('2');
+  // A recipe copied from somewhere else: bullets and numbers go, empty lines too.
+  await page.getByLabel('Zutaten', { exact: true }).fill('• 1 l Milch\n\n2. 200 g Reis\n- Zimt');
+  await page.getByLabel('Schritte', { exact: true }).fill('1. Milch erwärmen.\n2. Reis dazugeben.');
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await page.getByRole('button', { name: 'Speichern', exact: true }).click();
+
+  await expect(page.getByRole('heading', { level: 1, name: 'Milchreis' })).toBeVisible();
+  await expect(page.getByText('40 Min. · 2 Portionen')).toBeVisible();
+  await expect(page.getByRole('heading', { level: 3, name: 'Fehlt', exact: true })).toBeVisible();
+  await expect(page.getByText('200 g Reis')).toBeVisible();
+  await expect(page.getByText('Reis dazugeben.')).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+
+  await page.goto('/knowledge/recipes');
+  await expect(page.getByRole('heading', { level: 3, name: 'Meine Rezepte' })).toBeVisible();
+  await page.getByRole('link', { name: /Milchreis/ }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Milchreis' })).toBeVisible();
+
+  // Delete asks first, on the page itself.
+  await page.getByRole('button', { name: 'Löschen', exact: true }).click();
+  await page.getByRole('button', { name: 'Ja, löschen' }).click();
+  await expect(page).toHaveURL(/\/knowledge\/recipes$/);
+  await expect(page.getByRole('link', { name: /Milchreis/ })).toHaveCount(0);
+});

@@ -6,7 +6,7 @@ import { messages } from '../../app/messages.de-CH';
 import { Card } from '../../ui/Card';
 import { GROUPED_ROW_LINK, GroupedList, GroupedListItem } from '../../ui/GroupedList';
 import { ScoreRing } from '../../ui/ScoreRing';
-import { CookToday } from '../recipes/RecipeIdeas';
+import { CookToday, OwnRecipes } from '../recipes/RecipeIdeas';
 import { factFor } from './food-facts';
 import { describeDays, shelfGuide, type GuideEntry } from './shelf-guide';
 
@@ -82,6 +82,7 @@ export function KnowledgePage() {
         </h2>
         <h3 className="px-4 text-sm font-semibold text-ink-muted uppercase">{r.todayTitle}</h3>
         <CookToday />
+        <OwnRecipes />
         <GroupedList>
           <GroupedListItem>
             <Link to="/knowledge/recipes" className={GROUPED_ROW_LINK}>

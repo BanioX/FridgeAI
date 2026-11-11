@@ -4,6 +4,7 @@ import type {
   Household,
   InventoryItem,
   Member,
+  OwnRecipe,
   OutcomeEvent,
   Product,
   ProductInfo,
@@ -65,6 +66,7 @@ export class FridgeDb extends Dexie {
   productImages!: EntityTable<ProductImageEntry, 'gtin'>;
   receipts!: EntityTable<Receipt, 'id'>;
   receiptLines!: EntityTable<ReceiptLine, 'id'>;
+  ownRecipes!: EntityTable<OwnRecipe, 'id'>;
 
   constructor(name = 'fridgeai') {
     super(name);
@@ -88,5 +90,7 @@ export class FridgeDb extends Dexie {
       receipts: 'id, householdId',
       receiptLines: 'id, householdId, receiptId',
     });
+    // «Meine Rezepte» (ADR-0048): a new table only, so existing data stays as it is.
+    this.version(6).stores({ ownRecipes: 'id, householdId' });
   }
 }

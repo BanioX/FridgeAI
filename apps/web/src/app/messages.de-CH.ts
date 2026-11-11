@@ -457,9 +457,9 @@ export const messages = {
     listIntro: 'Zuerst die Rezepte, für die dir am wenigsten fehlt.',
     todayEmpty: 'Gerade läuft nichts bald ab. Unter «Alle Rezepte» findest du Ideen.',
     empty: 'Gerade gibt es keine Rezepte.',
-    listDetail: (minutes: number, missing: number, rescues: string) =>
+    listDetail: (minutes: number | undefined, missing: number, rescues: string) =>
       [
-        `${String(minutes)} Min.`,
+        minutes === undefined ? undefined : `${String(minutes)} Min.`,
         missing === 0
           ? 'alles da'
           : missing === 1
@@ -469,8 +469,8 @@ export const messages = {
       ]
         .filter(Boolean)
         .join(' · '),
-    rescues: (food: string, minutes: number, missing: number) =>
-      `Rettet ${food} · ${String(minutes)} Min.${missing === 0 ? ' · alles da' : ` · ${String(missing)} fehlt`}`,
+    rescues: (food: string, minutes: number | undefined, missing: number) =>
+      `Rettet ${food}${minutes === undefined ? '' : ` · ${String(minutes)} Min.`}${missing === 0 ? ' · alles da' : ` · ${String(missing)} fehlt`}`,
     notFound: 'Dieses Rezept gibt es nicht (mehr).',
     minutes: (minutes: number) => `${String(minutes)} Min.`,
     servings: (servings: number) =>
@@ -490,6 +490,33 @@ export const messages = {
           : `${String(count)} Sachen auf der Liste.`,
     steps: 'So geht’s',
     failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
+    /** «Meine Rezepte» (ADR-0048, point 7): where a recipe of yours comes in. */
+    ownTitle: 'Meine Rezepte',
+    ownDetail: 'Dein Rezept',
+    addRecipe: 'Rezept hinzufügen',
+    addRecipeText: 'Schreib eines auf oder füg eines ein, das du irgendwo kopiert hast.',
+    back: 'Rezepte',
+    newTitle: 'Neues Rezept',
+    editTitle: 'Rezept bearbeiten',
+    form: {
+      title: 'Titel',
+      minutes: 'Minuten',
+      servings: 'Portionen',
+      ingredients: 'Zutaten',
+      ingredientsHint:
+        'Eine Zutat pro Zeile, zum Beispiel «200 g Hörnli». Du kannst ein Rezept einfach einfügen: Aufzählungszeichen und Nummern entfernt Rettich.',
+      steps: 'Schritte',
+      stepsHint: 'Ein Schritt pro Zeile.',
+      save: 'Speichern',
+      needTitle: 'Gib dem Rezept einen Titel.',
+      needIngredients: 'Schreib mindestens eine Zutat auf.',
+      needNumber: 'Bitte eine ganze Zahl eingeben.',
+    },
+    edit: 'Bearbeiten',
+    delete: 'Löschen',
+    deleteAsk: 'Dieses Rezept löschen?',
+    deleteYes: 'Ja, löschen',
+    cancel: 'Abbrechen',
   },
   knowledge: {
     intro: 'Was wie lange hält und wie es länger gut bleibt.',

@@ -75,6 +75,18 @@ export const routes: RouteObject[] = [
         }),
       },
       {
+        path: 'knowledge/recipes/new',
+        lazy: async () => ({
+          Component: (await import('../features/recipes/RecipeFormPage')).RecipeFormPage,
+        }),
+      },
+      {
+        path: 'knowledge/recipes/:recipeId/edit',
+        lazy: async () => ({
+          Component: (await import('../features/recipes/RecipeFormPage')).RecipeFormPage,
+        }),
+      },
+      {
         path: 'knowledge/recipes/:recipeId',
         lazy: async () => ({
           Component: (await import('../features/recipes/RecipePage')).RecipePage,
