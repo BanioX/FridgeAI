@@ -54,3 +54,24 @@ describe('closedItemFrom', () => {
     }
   });
 });
+
+describe('closedItemFrom «Verarbeiten»', () => {
+  it('reads a processed entry with its outcomes and the new item', () => {
+    const closed = {
+      kind: 'processed',
+      name: 'Kuchen',
+      outcomeIds: [id],
+      resultItemId: id,
+      location: 'fridge',
+    };
+    expect(closedItemFrom({ closed })).toEqual(closed);
+    expect(closedItemFrom({ closed: { ...closed, resultItemId: undefined } })).toEqual({
+      kind: 'processed',
+      name: 'Kuchen',
+      outcomeIds: [id],
+      location: 'fridge',
+    });
+    expect(closedItemFrom({ closed: { ...closed, outcomeIds: ['x'] } })).toBeNull();
+    expect(closedItemFrom({ closed: { ...closed, location: 'moon' } })).toBeNull();
+  });
+});
