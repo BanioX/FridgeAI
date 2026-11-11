@@ -43,7 +43,7 @@ test('counts a rescue only when the person confirms it on the brink', async ({ p
     /^Gerettet: Joghurt, etwa CHF \d+\.\d{2}\.$/,
   );
   await expect(page.getByText(/^Diesen Monat gerettet: CHF \d+\.\d{2}$/)).toBeVisible();
-  await expect(page.getByText('Wusstest du?')).toBeVisible();
+  await expect(page.getByText('Wusstest du schon?')).toBeVisible();
   await expect(page.getByText(/Danke/)).toHaveCount(0);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 

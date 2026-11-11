@@ -14,7 +14,7 @@ describe('food facts (ADR-0042)', () => {
   it('names its source whenever a fact has a number', () => {
     for (const fact of messages.knowledge.facts) {
       if (/\d/.test(fact)) {
-        expect(fact, fact).toMatch(/\((BAFU|BLV)\)\.$/);
+        expect(fact, fact).toMatch(/\((BAFU|BLV|FAO|UNEP|WWF)( \d{4})?\)\.$/);
       }
     }
   });

@@ -57,3 +57,12 @@ Eine Schweizer App, die Quittungs-Scan, Vorrat, Wert in CHF und geteilten Hausha
 Eine YAZIO-Analyse nennt 5–7 % Umwandlung, widerspricht sich dabei aber selbst ([`mitbewerber-yazio.md`](./mitbewerber-yazio.md)). Rettich rechnet weiter mit 2–5 %.
 
 Für Rettich heisst das: Jahresabo zuerst und den Preis tief halten. Der Vorschlag CHF 29 pro Jahr liegt im unteren Mittelfeld (NoWaste $7, YAZIO EUR 30–84, Samsung Food+ $60).
+
+## Quellen für «Wusstest du schon?» (11.11.2026)
+
+Die Fakten in der App (`messages.knowledge.facts`) nennen ihre Quelle in Klammern. Geprüft am 11.11.2026:
+
+- **FAO 2025:** SOFI 2025 (FAO, IFAD, UNICEF, WFP, WHO), Hunger 2024: rund 673 Mio. Menschen (8.2 %), Afrika 307 Mio. (über 20 %), 2.3 Mrd. mit mässiger oder schwerer Ernährungsunsicherheit ([WHO-Medienmitteilung 28.7.2025](https://www.who.int/news/item/28-07-2025-global-hunger-declines-but-rises-in-africa-and-western-asia-un-report), [UNICEF](https://data.unicef.org/resources/sofi-2025/)).
+- **UNEP 2024:** Food Waste Index Report 2024: 1.05 Mrd. t (19 % der Lebensmittel bei Handel und Haushalten), 60 % in Haushalten, 79 kg pro Person, mindestens eine Milliarde Mahlzeiten pro Tag, 8–10 % der Treibhausgase ([UNEP](https://www.unep.org/resources/publication/food-waste-index-report-2024), [Key Messages](https://wedocs.unep.org/bitstream/handle/20.500.11822/45275/Food-Waste-Index-2024-key-messages.pdf?sequence=8)).
+- **BAFU:** 2.8 Mio. t, rund 310 kg vermeidbare Verluste pro Person (Zwischenbericht 2025 der ZHAW, 2017: 330 kg, also rund −5 % statt der für den Kurs nötigen −25 %); Haushalte 28 % der vermeidbaren Verluste ([BAFU Food Waste](https://www.bafu.admin.ch/de/foodwaste)).
+- **WWF:** rund CHF 600 pro Haushalt und Jahr (WWF/Interface 2021, Tabelle oben).

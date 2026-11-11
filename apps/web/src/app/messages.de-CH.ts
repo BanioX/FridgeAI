@@ -485,13 +485,25 @@ export const messages = {
     noFreezer: 'Nicht zum Einfrieren',
     scoreLabel: (score: number, level: string) => `Haltbarkeit ${String(score)} von 10, ${level}`,
     levels: { high: 'heikel', medium: 'mittel', low: 'robust' },
-    didYouKnow: 'Wusstest du?',
+    didYouKnow: 'Wusstest du schon?',
     /**
      * Food facts (ADR-0042): tips without numbers, and only numbers with a checked source (L-17).
-     * One appears after a confirmed rescue and one a day on «Wissen».
+     * One appears after a confirmed rescue, and one a day on Start and «Wissen». Since 11.11.2026
+     * also awareness about hunger (Alban); sources in docs/ideen/markt-und-timing.md.
      */
     facts: [
-      'Rund ein Drittel der Lebensmittelverluste der Schweiz entsteht in den Haushalten (BAFU).',
+      'Mehr als ein Viertel der vermeidbaren Lebensmittelverluste der Schweiz entsteht in den Haushalten (BAFU).',
+      'In der Schweiz gehen pro Person und Jahr rund 310 kg Lebensmittel vermeidbar verloren, vom Feld bis zum Teller (BAFU).',
+      'Die Schweiz will die vermeidbaren Lebensmittelverluste bis 2030 halbieren. Bis 2025 sanken sie erst um rund 5 % (BAFU).',
+      'Ein Schweizer Haushalt entsorgt Lebensmittel im Wert von rund CHF 600 pro Jahr (WWF).',
+      'Weltweit hungerten 2024 rund 673 Millionen Menschen, etwa jeder zwölfte Mensch (FAO 2025).',
+      'In Afrika hungerte 2024 mehr als jeder fünfte Mensch, rund 307 Millionen (FAO 2025).',
+      'Rund 2,3 Milliarden Menschen lebten 2024 mit mässiger oder schwerer Ernährungsunsicherheit (FAO 2025).',
+      'Weltweit landen rund 19 % der Lebensmittel, die im Laden und zu Hause ankommen, im Abfall (UNEP 2024).',
+      'Rund 60 % der Lebensmittel, die weltweit im Abfall landen, kommen aus Haushalten (UNEP 2024).',
+      'Haushalte entsorgen weltweit jeden Tag mindestens eine Milliarde Mahlzeiten (UNEP 2024).',
+      'Lebensmittelverluste und -abfälle verursachen 8 bis 10 % der weltweiten Treibhausgase (UNEP 2024).',
+      'Überschüssige Lebensmittel aus Läden verteilen in der Schweiz Organisationen wie Tischlein deck dich und die Schweizer Tafel an Menschen mit wenig Geld.',
       'Mindestens haltbar bis heisst nicht «entsorgen»: Joghurt, Hartkäse und Teigwaren sind danach oft noch gut.',
       'Brot vom Vortag wird zu Fotzelschnitten, Croûtons oder Paniermehl.',
       'Äpfel und Bananen geben Reifegas ab. Getrennt gelagert reift das übrige Obst langsamer.',
