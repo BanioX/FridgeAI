@@ -101,7 +101,7 @@ describe('expiryAfterMove', () => {
         today,
         currentExpiresOn: current,
       }),
-    ).toEqual({ expiresOn: '2026-11-07' });
+    ).toEqual({ expiresOn: '2026-11-07', thawedOn: '2026-11-06' });
     expect(
       expiryAfterMove({
         category: milk,
@@ -110,7 +110,7 @@ describe('expiryAfterMove', () => {
         today,
         currentExpiresOn: current,
       }),
-    ).toEqual({ expiresOn: '2026-11-08' });
+    ).toEqual({ expiresOn: '2026-11-08', thawedOn: '2026-11-06' });
     expect(
       expiryAfterMove({
         category: bread,
@@ -119,7 +119,7 @@ describe('expiryAfterMove', () => {
         today,
         currentExpiresOn: current,
       }),
-    ).toEqual({ expiresOn: '2026-11-08' });
+    ).toEqual({ expiresOn: '2026-11-08', thawedOn: '2026-11-06' });
   });
 
   it('never makes an item last longer by moving it between fridge and pantry', () => {

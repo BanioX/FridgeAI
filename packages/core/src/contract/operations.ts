@@ -223,6 +223,9 @@ export const InventoryItemViewSchema = z.object({
   packageSize: PackageSizeSchema.optional(),
   /** Set once the pack is open; the expiry date then follows the opening rule. */
   openedOn: LocalDateSchema.optional(),
+  /** Day it went into the freezer / came out of it, for the badges «Eingefroren» and «Aufgetaut». */
+  frozenOn: LocalDateSchema.optional(),
+  thawedOn: LocalDateSchema.optional(),
   /** When it came home, e.g. for «Gerettet» only on food that kept longer (ADR-0039). */
   purchasedAt: IsoDateTimeSchema,
   /** Product facts, e.g. from Open Food Facts after a scan (step 10b, ODbL). */
@@ -610,7 +613,13 @@ export const CONTRACT_V1 = {
       en: 'Move an item, e.g. freeze it; the expiry date is re-estimated.',
     },
     scopes: ['inventory:write'],
-    input: z.object({ ...commandBase, itemId: IdSchema, to: StorageLocationSchema }),
+    input: z.object({
+      ...commandBase,
+      itemId: IdSchema,
+      to: StorageLocationSchema,
+      /** Freeze food the catalog calls unsuitable anyway; it keeps its date (freeze hint). */
+      allowUnsuitable: z.boolean().optional(),
+    }),
     output: z.object({ expiresOn: LocalDateSchema }),
   }),
   'products.setNutrition': command({

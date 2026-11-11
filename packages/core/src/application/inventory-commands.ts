@@ -516,13 +516,20 @@ export function createInventoryCommands(ctx: AppContext) {
     return runCommand('inventory.move', input.commandId, async () => {
       const item = await activeItem(storage, input.householdId, input.itemId);
       const category = categoryOf(await storage.products.get(item.productId));
-      const result = expiryAfterMove({
+      const today = clock.today();
+      const estimated = expiryAfterMove({
         category,
         from: item.location,
         to: input.to,
-        today: clock.today(),
+        today,
         currentExpiresOn: item.expiresOn,
       });
+      // «Trotzdem einfrieren» (freeze hint): food without freezer days keeps the date it has,
+      // because nothing in the catalog says how long it lasts there.
+      const result =
+        estimated === null && input.allowUnsuitable === true && input.to === 'freezer'
+          ? { expiresOn: item.expiresOn, frozenOn: today }
+          : estimated;
       if (result === null) {
         throw new CommandError(
           'unsuitable_location',
@@ -536,10 +543,16 @@ export function createInventoryCommands(ctx: AppContext) {
         expirySource: result.expiresOn === item.expiresOn ? item.expirySource : 'category_estimate',
         updatedAt: clock.now(),
       };
-      if (result.frozenOn === undefined) {
+      if (item.location !== input.to) {
+        // Freezing sets `frozenOn` and clears `thawedOn`; thawing does the opposite.
         delete updated.frozenOn;
-      } else {
-        updated.frozenOn = result.frozenOn;
+        delete updated.thawedOn;
+        if (result.frozenOn !== undefined) {
+          updated.frozenOn = result.frozenOn;
+        }
+        if (result.thawedOn !== undefined) {
+          updated.thawedOn = result.thawedOn;
+        }
       }
       await storage.items.put(InventoryItemSchema.parse(updated));
       await storage.events.append(

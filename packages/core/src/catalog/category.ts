@@ -94,6 +94,8 @@ export const CategorySchema = z
      * keeps only as long as an open pack (ADR-0038).
      */
     soldLoose: z.boolean().optional(),
+    /** Why it does not freeze well (shown before freezing food with no freezer shelf life). */
+    freezeNote: z.object({ de: z.string().min(1).max(140) }).optional(),
     /** Typical price of one pack, used when a receipt price is missing (marked as estimate). */
     avgPriceRappen: RappenSchema.min(0).optional(),
     /** Typical weight of one pack in grams, for the kg counter. */

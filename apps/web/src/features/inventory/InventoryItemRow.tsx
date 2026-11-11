@@ -1,5 +1,7 @@
-import type { InventoryItemView } from '@fridgeai/core';
+import { itemBadges, type InventoryItemView } from '@fridgeai/core';
+import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
+import { ItemBadges } from '../../ui/ItemBadges';
 import { ItemRow } from '../../ui/ItemRow';
 import type { Tone } from '../../ui/tones';
 import { itemMeta } from './item-meta';
@@ -18,6 +20,8 @@ export function InventoryItemRow({
   sliced?: boolean;
 }) {
   const image = useProductImage(item.gtin);
+  const { today } = useAppData();
+  const badges = itemBadges(item, today);
   return (
     <ItemRow
       emoji={item.emoji ?? ''}
@@ -25,6 +29,7 @@ export function InventoryItemRow({
       name={item.name}
       meta={itemMeta(item)}
       status={status}
+      badges={badges.length === 0 ? undefined : <ItemBadges badges={badges} max={2} />}
       chevron={chevron}
       sliced={sliced}
       shop={
