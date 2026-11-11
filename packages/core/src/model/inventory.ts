@@ -97,7 +97,7 @@ export const InventoryItemSchema = z.object({
   /** The price is a sum of estimated ingredient values (made items), not a receipt price. */
   priceEstimated: z.boolean().optional(),
   /**
-   * Where it came from when it was not bought (ADR-0051): «made» = selbst gemacht, «leftover» =
+   * Where it came from when it was not bought (ADR-0052): «made» = selbst gemacht, «leftover» =
    * Reste. Bought items have none.
    */
   origin: ItemOriginSchema.optional(),
@@ -161,7 +161,7 @@ export const OutcomeEventSchema = z
      */
     rescued: z.boolean().optional(),
     /**
-     * The item this one was processed into («Verarbeiten», ADR-0051). Its value moved on to that
+     * The item this one was processed into («Verarbeiten», ADR-0052). Its value moved on to that
      * item, so it counts in no value sum; the result counts when it is closed.
      */
     madeInto: IdSchema.optional(),

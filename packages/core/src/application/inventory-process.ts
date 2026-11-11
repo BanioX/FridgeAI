@@ -15,13 +15,13 @@ import { CommandError, createCommandKit, type AppContext, type UseCase } from '.
 import { activeItem } from './inventory-shared';
 import { createOutcomeWriter } from './outcome-writer';
 
-/** Without a category of its own, a result lands in the category of its kind (ADR-0051). */
+/** Without a category of its own, a result lands in the category of its kind (ADR-0052). */
 const CATEGORY_OF_KIND: Record<ItemOrigin, string> = {
   made: 'bakery-homemade',
   leftover: 'prepared-leftovers',
 };
 
-/** «Verarbeiten» (ADR-0051): ingredients are used up, a new item may come out; the value moves. */
+/** «Verarbeiten» (ADR-0052): ingredients are used up, a new item may come out; the value moves. */
 export function createProcessCommands(ctx: AppContext) {
   const { storage, clock, ids } = ctx;
   const { event, runCommand } = createCommandKit(ctx);

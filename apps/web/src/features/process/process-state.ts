@@ -1,6 +1,6 @@
 import { IdSchema, type Id } from '@fridgeai/core';
 
-/** What the recipe page hands to «Verarbeiten» when the person says «Gekocht» (ADR-0051). */
+/** What the recipe page hands to «Verarbeiten» when the person says «Gekocht» (ADR-0052). */
 export interface ProcessPrefill {
   recipeId: string;
   title: string;

@@ -142,7 +142,7 @@ describe('ProcessPage', () => {
       </AppDataProvider>,
     );
     fireEvent.click(await screen.findByRole('radio', { name: t.yes }));
-    expect((screen.getByLabelText(t.name) as HTMLInputElement).value).toBe('Reste: Risotto');
+    expect(screen.getByLabelText<HTMLInputElement>(t.name).value).toBe('Reste: Risotto');
     fireEvent.click(screen.getByRole('button', { name: t.save }));
     await screen.findByText('Vorrat Reste: Risotto');
     expect((await db.items.toArray()).find((item) => item.origin === 'leftover')).toBeDefined();

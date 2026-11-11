@@ -20,7 +20,7 @@ ADR-0040 hat die Rezepte am 8.11.2026 entfernt und festgehalten: Kommen sie zur�
 5. **Die Anwendungsfälle liegen in `packages/core/src/application/recipes.ts`** (ADR-0034), nicht mehr in der Datenschicht. Der Port `RecipeProvider` kommt zurück; die mitgelieferte Sammlung ist seine einzige Quelle.
 6. **Die Rezeptseite** zeigt Minuten und Portionen, die Zutaten getrennt in «Da» und «Fehlt» im Vergleich mit dem Vorrat (Grundvorrat zählt als «Da»), und die Schritte. «Fehlendes auf die Liste» setzt jede fehlende, nicht optionale Zutat mit dem bestehenden `shopping.addItem` auf «Nachkaufen». Was schon auf der Liste steht, kommt nicht doppelt dazu.
 7. **Eigene Rezepte («Meine Rezepte»)**, ein Ort, wo Rezepte hineinkommen, folgen in einem zweiten Schritt mit eigenem ADR-Nachtrag (siehe unten, umgesetzt am 11.11.2026).
-8. **«Nach dem Kochen abbuchen» bleibt vorerst draussen** (R-03). Abbuchen geht weiter über die Artikelseite, das Wegwischen und den Kühlschrank-Check.
+8. **«Nach dem Kochen abbuchen» (R-03)** blieb zuerst draussen und ist seit dem 11.11.2026 umgesetzt: «Gekocht» auf der Rezeptseite bucht die Zutaten ab und fragt «Reste in den Kühlschrank?» ([ADR-0052](0052-processing-value-moves-along.md)).
 
 ## Folgen
 

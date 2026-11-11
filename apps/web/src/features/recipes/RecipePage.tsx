@@ -110,7 +110,7 @@ export function RecipePage() {
     }
   }
 
-  // «Gekocht» (ADR-0051): the same flow as «Verarbeiten», with what is at home already chosen.
+  // «Gekocht» (ADR-0052): the same flow as «Verarbeiten», with what is at home already chosen.
   function cooked() {
     const prefill: ProcessPrefill = {
       recipeId,

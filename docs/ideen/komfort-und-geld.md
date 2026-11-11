@@ -56,7 +56,7 @@ Sortiert nach Wirkung auf Food Waste und Aufwand (S klein, M mittel, L gross).
 | K3 | **«Ist das noch gut?» (umgesetzt 11.11.2026)** beim Entsorgen von Ware mit Mindesthaltbarkeit: «Schauen, riechen, probieren», dann erst entsorgen | hoch | S | gratis | keine; der Text steht schon unter «Wissen» |
 | K4 | **Einfrieren mit einem Tipp (umgesetzt 11.11.2026)**, wenn das Verbrauchsdatum morgen ist (Hackfleisch, Fisch) | hoch | S | gratis | keine |
 | K5 | **Mengen-Tipp auf der Einkaufsliste:** «Brot entsorgst du oft: kleiner kaufen oder halb einfrieren» | hoch | S | gratis | keine; die Daten gibt es («Das entsorgst du oft») |
-| K6 | **Reste erfassen:** «Reste vom Abendessen», 3 Tage haltbar, mit einem Tipp | mittel | S | gratis | keine |
+| K6 | **Reste erfassen (umgesetzt 11.11.2026, [ADR-0052](../adr/0052-processing-value-moves-along.md)):** «Reste vom Abendessen», 3 Tage haltbar, mit einem Tipp | mittel | S | gratis | keine |
 | K7 | **Kühlschrank-Check als Stapel:** eine Karte nach der anderen wischen, 30 Sekunden | mittel | S–M | gratis | keine |
 | K8 | **Dauer-Scan:** mehrere Barcodes nacheinander, ohne jedes Mal zurück | mittel (Erfassen schneller) | S–M | gratis | keine |
 | K9 | **Haushalt teilen (WG):** alle sehen denselben Vorrat | hoch | L | gratis für einen Haushalt | Sync, neuer Datenfluss: Alban |
@@ -98,8 +98,8 @@ Alban: «Mehl zu Brot verarbeitet, dann kann man das badgen. Einen Kuchen backen
 | # | Idee | Nutzen | Aufwand |
 | --- | --- | --- | --- |
 | R2-1 | **Badges am Artikel** in passender Farbe: Eingefroren (Eis), Aufgetaut (Eis hell, neu), Geöffnet (Aprikose), Selbst gemacht (Weizen), Reste (Smaragd hell), Von der Theke (Oliv) | Zustand auf einen Blick | S–M. **Umgesetzt** (11.11.2026, ADR-0051) für Eingefroren, Aufgetaut, Geöffnet, Von der Theke; Selbst gemacht und Reste folgen mit R2-2/R2-3 |
-| R2-2 | **Verarbeiten:** Zutaten (auch Teile) werden verwertet, das Ergebnis kommt als neuer Artikel mit eigener Haltbarkeit in den Vorrat. Der Wert wandert mit, damit nichts doppelt zählt | Kuchen, Brot, Zopf, Reste ehrlich in der Bilanz | M |
-| R2-3 | **«Gekocht»** auf der Rezeptseite bucht die Zutaten ab und fragt «Reste in den Kühlschrank?» (ersetzt R-03 aus ADR-0048) | Kochen schliesst den Kreis | M |
+| R2-2 | **Verarbeiten (umgesetzt 11.11.2026, [ADR-0052](../adr/0052-processing-value-moves-along.md)):** Zutaten (auch Teile) werden verwertet, das Ergebnis kommt als neuer Artikel mit eigener Haltbarkeit in den Vorrat. Der Wert wandert mit, damit nichts doppelt zählt | Kuchen, Brot, Zopf, Reste ehrlich in der Bilanz | M |
+| R2-3 | **«Gekocht» (umgesetzt 11.11.2026)** auf der Rezeptseite bucht die Zutaten ab und fragt «Reste in den Kühlschrank?» (ersetzt R-03 aus ADR-0048) | Kochen schliesst den Kreis | M |
 | R2-4 | **Abzeichen** nach [`../abzeichen.md`](../abzeichen.md) | Freude, Wiederkommen, ohne Kaufanreiz | M |
 
 ## Für den Parkplatz

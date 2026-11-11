@@ -7,8 +7,7 @@ import {
 } from '../catalog/match';
 import type { Category } from '../catalog/category';
 import { CONTRACT_V1, type OperationOutput } from '../contract/operations';
-import { estimateExpiry, expiryAfterMove, expiryAfterOpening, soonThresholdFor } from '../expiry';
-import { canBeRescued, isAtRisk } from '../metrics';
+import { estimateExpiry, expiryAfterMove, expiryAfterOpening } from '../expiry';
 import {
   InventoryItemSchema,
   OutcomeEventSchema,
@@ -20,7 +19,6 @@ import type { Id } from '../ids';
 import type { IsoDateTime } from '../model/primitives';
 import { rappen } from '../money';
 import { toLocalDate } from '../dates';
-import { estimateFromCategory } from '../value';
 import { CommandError, createCommandKit, type AppContext, type UseCase } from './command';
 import { activeItem, categoryOf, EPSILON, factsOf } from './inventory-shared';
 import { createOutcomeWriter } from './outcome-writer';
@@ -31,7 +29,7 @@ import { createOutcomeWriter } from './outcome-writer';
  * storage ports, so the same code runs on the device and later on a server.
  */
 export function createInventoryCommands(ctx: AppContext) {
-  const { storage, clock, ids, actor } = ctx;
+  const { storage, clock, ids } = ctx;
   const { event, runCommand } = createCommandKit(ctx);
 
   const addItem: UseCase<'inventory.addItem'> = async (raw) => {

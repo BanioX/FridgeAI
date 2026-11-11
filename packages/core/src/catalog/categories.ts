@@ -1299,7 +1299,7 @@ export const CATEGORIES: readonly Category[] = [
       'Weinreste als Eiswürfel eingefroren eignen sich zum Kochen.',
     ],
   }),
-  // Made at home («Verarbeiten», ADR-0051): no price of their own, the value comes from the ingredients.
+  // Made at home («Verarbeiten», ADR-0052): no price of their own, the value comes from the ingredients.
   def({
     id: 'bakery-homemade',
     portion: { unit: 'pcs', splits: [8, 4] },

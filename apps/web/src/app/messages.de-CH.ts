@@ -192,7 +192,7 @@ export const messages = {
     rebought: (name: string) => `${name} steht bei «Nachkaufen».`,
     rebuyAlready: (name: string) => `${name} steht schon bei «Nachkaufen».`,
     rebuyFailed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
-    /** After «Verarbeiten» (ADR-0051): where the new item lies and how many ingredients went in. */
+    /** After «Verarbeiten» (ADR-0052): where the new item lies and how many ingredients went in. */
     processed: (name: string | null, place: string, count: number) =>
       [
         name === null ? 'Gekocht.' : `${name} ist ${place}.`,
@@ -361,7 +361,7 @@ export const messages = {
     keepsOpen: (days: number) =>
       days === 1 ? 'Offen etwa 1 Tag haltbar' : `Offen etwa ${String(days)} Tage haltbar`,
     back: 'Zurück zum Vorrat',
-    /** «Verarbeiten» (ADR-0051): a calm line for made and leftover items. */
+    /** «Verarbeiten» (ADR-0052): a calm line for made and leftover items. */
     madeFrom: (names: readonly string[]) => `Selbst gemacht aus: ${names.join(', ')}`,
     madeFromNone: 'Selbst gemacht',
     leftover: 'Reste',
@@ -510,7 +510,7 @@ export const messages = {
     shareFailed: 'Das Teilen hat nicht geklappt.',
   },
   /** «Wissen» (ADR-0041): what keeps how long, and how it stays good longer. */
-  /** «Verarbeiten», «Selbst gemacht», «Reste» and «Gekocht» (ADR-0051). */
+  /** «Verarbeiten», «Selbst gemacht», «Reste» and «Gekocht» (ADR-0052). */
   process: {
     title: 'Verarbeiten',
     intro: 'Wähl aus, was du verwendest, und sag, was daraus wird.',

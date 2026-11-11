@@ -128,7 +128,7 @@ export function matchCategoryByName(name: string): Category | null {
     return null;
   }
   const words = normalized.split(' ');
-  // «Reste: Lasagne», «Reste Risotto»: leftovers, whatever they are made of (ADR-0051).
+  // «Reste: Lasagne», «Reste Risotto»: leftovers, whatever they are made of (ADR-0052).
   if (words[0] === 'reste' || words[0] === 'resten') {
     return byId.get('prepared-leftovers') ?? null;
   }

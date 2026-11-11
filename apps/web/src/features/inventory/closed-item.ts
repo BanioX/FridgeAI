@@ -24,7 +24,7 @@ export type ClosedItem =
     }
   | { kind: 'deleted'; itemId: Id; name: string }
   /**
-   * «Verarbeiten» (ADR-0051): ingredients used up and, maybe, a new item. Undo gives the
+   * «Verarbeiten» (ADR-0052): ingredients used up and, maybe, a new item. Undo gives the
    * ingredients back (their outcomes) and removes the new item. `name` is empty for «Gekocht».
    */
   | {
@@ -50,18 +50,17 @@ export function closedItemFrom(state: unknown): ClosedItem | null {
     return null;
   }
   if (fields.kind === 'processed') {
-    const outcomeIds = Array.isArray(fields.outcomeIds)
+    const parsed = Array.isArray(fields.outcomeIds)
       ? fields.outcomeIds.map((value) => IdSchema.safeParse(value))
       : [];
+    const outcomeIds = parsed.flatMap((entry) => (entry.success ? [entry.data] : []));
     const resultItemId = IdSchema.safeParse(fields.resultItemId);
     const location = StorageLocationSchema.safeParse(fields.location);
-    return location.success && outcomeIds.every((entry) => entry.success)
+    return location.success && outcomeIds.length === parsed.length
       ? {
           kind: 'processed',
           name,
-          outcomeIds: outcomeIds
-            .flatMap((entry) => (entry.success ? [entry.data] : []))
-            .slice(0, 50),
+          outcomeIds: outcomeIds.slice(0, 50),
           ...(resultItemId.success ? { resultItemId: resultItemId.data } : {}),
           location: location.data,
         }

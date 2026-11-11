@@ -41,7 +41,7 @@ type OutcomeLike = Pick<
 
 /**
  * Whether an outcome counts in value sums: Bilanz, «Seit deinem ersten Monat», Auszüge, rescue
- * (ADR-0051). An ingredient that was processed into something («Verarbeiten») passed its value on
+ * (ADR-0052). An ingredient that was processed into something («Verarbeiten») passed its value on
  * to the result, which counts when it is verwertet or entsorgt; counting both would count a cake
  * twice. Undone outcomes (soft-deleted) never count. The one place for this rule.
  */

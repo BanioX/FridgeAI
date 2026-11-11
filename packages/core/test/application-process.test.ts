@@ -15,7 +15,7 @@ import {
   type Storage,
 } from '../src';
 
-/** «Verarbeiten» (ADR-0051) on memory storage: the value moves along and is never counted twice. */
+/** «Verarbeiten» (ADR-0052) on memory storage: the value moves along and is never counted twice. */
 let storage: Storage;
 let inventory: ReturnType<typeof createInventoryUseCases>;
 let exporter: ReturnType<typeof createHouseholdUseCases>;
@@ -61,7 +61,14 @@ const process = (fields: Record<string, unknown>) =>
     householdId,
     ingredients: [],
     ...fields,
-  } as never);
+  });
+
+const defined = <T>(value: T | undefined): T => {
+  if (value === undefined) {
+    throw new Error('Expected a value');
+  }
+  return value;
+};
 
 const stats = () => inventory['stats.waste']({ householdId, from, to });
 
@@ -81,7 +88,7 @@ describe('inventory.process', () => {
     const { flour, done } = await bakeCake();
     expect(done.outcomeIds).toHaveLength(3);
     expect(done.valueEstimated).toBe(true);
-    const cake = await storage.items.get(done.resultItemId as Id);
+    const cake = await storage.items.get(defined(done.resultItemId));
     expect(cake).toMatchObject({
       origin: 'made',
       location: 'fridge',
@@ -95,7 +102,7 @@ describe('inventory.process', () => {
     expect((await storage.items.get(flour.itemId))?.status).toBe('eaten');
     const outcomes = await storage.outcomes.ofHousehold(householdId);
     expect(outcomes.every((outcome) => outcome.madeInto === cake?.id)).toBe(true);
-    const product = await storage.products.get(cake?.productId as Id);
+    const product = await storage.products.get(defined(cake?.productId));
     expect(product?.categoryId).toBe('bakery-homemade');
     // The view names the ingredients.
     const view = (await inventory['inventory.list']({ householdId })).items.find(
@@ -123,11 +130,11 @@ describe('inventory.process', () => {
   it('makes leftovers from nothing: name only, 3 days, no value of its own', async () => {
     const done = await process({ result: { name: 'Reste: Lasagne', kind: 'leftover' } });
     expect(done.outcomeIds).toEqual([]);
-    const item = await storage.items.get(done.resultItemId as Id);
+    const item = await storage.items.get(defined(done.resultItemId));
     expect(item).toMatchObject({ origin: 'leftover', expiryKind: 'use_by', location: 'fridge' });
     expect(item?.priceRappen).toBeUndefined();
     expect(item?.expiresOn).toBe('2026-11-10');
-    expect((await storage.products.get(item?.productId as Id))?.categoryId).toBe(
+    expect((await storage.products.get(defined(item?.productId)))?.categoryId).toBe(
       'prepared-leftovers',
     );
   });
@@ -187,7 +194,7 @@ describe('honest numbers: the value moves along', () => {
     await inventory['inventory.recordOutcome']({
       commandId: next(),
       householdId,
-      itemId: done.resultItemId as Id,
+      itemId: defined(done.resultItemId),
       outcome: 'eaten',
     });
     expect(await stats()).toMatchObject({
@@ -203,7 +210,7 @@ describe('honest numbers: the value moves along', () => {
     await inventory['inventory.recordOutcome']({
       commandId: next(),
       householdId,
-      itemId: done.resultItemId as Id,
+      itemId: defined(done.resultItemId),
       outcome: 'wasted',
       wasteReason: 'too_much',
     });
@@ -250,7 +257,7 @@ describe('honest numbers: the value moves along', () => {
     await inventory['inventory.deleteItem']({
       commandId: next(),
       householdId,
-      itemId: done.resultItemId as Id,
+      itemId: defined(done.resultItemId),
     });
     expect((await storage.items.get(flour.itemId))?.status).toBe('active');
     expect(await stats()).toMatchObject({ usedRappen: 0, usedCount: 0 });
@@ -262,7 +269,7 @@ describe('honest numbers: the value moves along', () => {
     const eaten = await inventory['inventory.recordOutcome']({
       commandId: next(),
       householdId,
-      itemId: done.resultItemId as Id,
+      itemId: defined(done.resultItemId),
       outcome: 'eaten',
       quantity: 0.5,
     });
@@ -272,7 +279,9 @@ describe('honest numbers: the value moves along', () => {
       householdId,
       eventId: eaten.eventId,
     });
-    expect((await storage.items.get(done.resultItemId as Id))?.priceRappen).toBe(done.valueRappen);
+    expect((await storage.items.get(defined(done.resultItemId)))?.priceRappen).toBe(
+      done.valueRappen,
+    );
   });
 });
 

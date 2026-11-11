@@ -22,7 +22,7 @@ export interface OutcomeRequest {
   sharedWith?: ShareRecipient | undefined;
   /** Only counts when the item could be rescued (`canBeRescued`). */
   rescued?: boolean | undefined;
-  /** The item this one is processed into («Verarbeiten»): the value moves on (ADR-0051). */
+  /** The item this one is processed into («Verarbeiten»): the value moves on (ADR-0052). */
   madeInto?: Id | undefined;
 }
 

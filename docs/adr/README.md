@@ -59,3 +59,4 @@ Jeder Entscheid mit Folgen steht hier als eigene Datei `NNNN-titel.md` (ADR-0001
 | [0049](0049-public-repo-noindex.md) | Öffentliches Repo, App nicht in Suchmaschinen | angenommen | 2026-11-11 |
 | [0050](0050-impact-since-first-month.md) | Wirkung sichtbar: «Seit deinem ersten Monat» und Zahl am App-Symbol | angenommen | 2026-11-11 |
 | [0051](0051-item-badges-and-freeze-hint.md) | Badges am Artikel, «Aufgetaut» und der Einfrier-Hinweis | angenommen | 2026-11-11 |
+| [0052](0052-processing-value-moves-along.md) | Verarbeiten: der Wert wandert mit | angenommen | 2026-11-11 |

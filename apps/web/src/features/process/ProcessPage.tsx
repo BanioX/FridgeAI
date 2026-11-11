@@ -33,7 +33,7 @@ function portionsOf(item: InventoryItemView) {
 }
 
 /**
- * «Verarbeiten» (ADR-0051, Alban 11.11.2026): choose what goes in, say what comes out. Reached from
+ * «Verarbeiten» (ADR-0052, Alban 11.11.2026): choose what goes in, say what comes out. Reached from
  * an item («Verarbeiten»), the Erfassen hub («Reste erfassen», `?kind=leftover`) and a recipe
  * («Gekocht», prefilled through the router state). The value of the ingredients moves along.
  */

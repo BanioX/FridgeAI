@@ -100,7 +100,7 @@ function ClosedNotice() {
     setBusy(true);
     try {
       if (closed.kind === 'processed') {
-        // The ingredients come back, then the new item goes (ADR-0051).
+        // The ingredients come back, then the new item goes (ADR-0052).
         for (const eventId of closed.outcomeIds) {
           await inventory['inventory.undoOutcome']({ commandId: ids.next(), householdId, eventId });
         }
