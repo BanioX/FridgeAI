@@ -233,6 +233,28 @@ export const messages = {
     frozen: (name: string, date: string) => `${name} eingefroren. Haltbar bis ${date}.`,
     unfrozen: (name: string) => `${name} liegt wieder im Kühlschrank.`,
   },
+  /** Calm state badges on items (R2-1): a short text, colour only supports it. */
+  badges: {
+    frozen: (day: string) => `Eingefroren ${day}`,
+    thawed: 'Aufgetaut',
+    opened: 'Geöffnet',
+    loose: 'Von der Theke',
+  },
+  /** Before food that does not freeze well goes into the freezer (R2-1). */
+  freezeHint: {
+    title: 'Das friert nicht gut ein',
+    /** Where the catalog has no reason for the category. */
+    general: 'Eignet sich nicht zum Einfrieren.',
+    /** Several items: the others still go in. */
+    others: (n: number) =>
+      n === 1
+        ? 'Der andere Artikel wird trotzdem eingefroren.'
+        : `Die anderen ${String(n)} Artikel werden trotzdem eingefroren.`,
+    keep: 'Lieber nicht',
+    force: 'Trotzdem einfrieren',
+    kept: (names: readonly string[]) =>
+      `${names.join(', ')} ${names.length === 1 ? 'bleibt' : 'bleiben'}, wo ${names.length === 1 ? 'es' : 'sie'} ${names.length === 1 ? 'ist' : 'sind'}.`,
+  },
   swipe: {
     tip: 'Tipp: Wisch nach links, wenn du etwas verwertet hast, nach rechts, wenn du es entsorgt hast.',
     /** Visually hidden, read after the row name (WCAG 2.5.1: the item page has the buttons). */

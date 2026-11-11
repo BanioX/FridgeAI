@@ -29,6 +29,8 @@ interface Spec {
   location: StorageLocation;
   /** Days for [fridge, freezer, pantry]. */
   shelf: ShelfLife;
+  /** Why the food does not freeze well; only for categories without freezer days. */
+  freeze?: string;
   /** Notvorrat days, if it differs from the pantry value. */
   reserve?: number;
   /** Days the food keeps after opening. */
@@ -62,6 +64,7 @@ function def(spec: Spec): Category {
       ...(spec.reserve === undefined ? {} : { reserve: spec.reserve }),
     },
     ...(spec.opened === undefined ? {} : { afterOpeningDays: spec.opened }),
+    ...(spec.freeze === undefined ? {} : { freezeNote: { de: spec.freeze } }),
     ...(spec.loose === true ? { soldLoose: true } : {}),
     avgPriceRappen: rappen(spec.price),
     ...(spec.grams === undefined ? {} : { avgWeightGrams: spec.grams }),
@@ -200,6 +203,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'dairy-cheese-soft',
+    freeze: 'Quark wird körnig und trennt sich. Zum Backen geht er noch.',
     loose: true,
     portion: { unit: 'pcs', splits: [4] },
     opened: 3,
@@ -229,6 +233,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'dairy-eggs',
+    freeze: 'Eier platzen in der Schale. Aufgeschlagen und verquirlt lassen sie sich einfrieren.',
     portion: { unit: 'pcs', container: 'box', packs: [6, 10], splits: [] },
     de: 'Eier',
     emoji: '🥚',
@@ -424,6 +429,7 @@ export const CATEGORIES: readonly Category[] = [
   // Produce
   def({
     id: 'produce-salad',
+    freeze: 'Salat wird beim Auftauen matschig.',
     portion: { unit: 'pcs', splits: [2, 4] },
     de: 'Salat & Blattgemüse',
     emoji: '🥬',
@@ -451,6 +457,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'produce-tomatoes',
+    freeze: 'Tomaten werden beim Auftauen weich und wässrig. Gekocht oder püriert gehen sie noch.',
     portion: { unit: 'pcs', splits: [2] },
     de: 'Tomaten',
     emoji: '🍅',
@@ -477,6 +484,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'produce-cucumber',
+    freeze: 'Gurke besteht fast nur aus Wasser und wird beim Auftauen weich.',
     portion: { unit: 'pcs', splits: [2, 3] },
     de: 'Gurke',
     emoji: '🥒',
@@ -513,6 +521,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'produce-potatoes',
+    freeze: 'Rohe Kartoffeln werden beim Auftauen weich. Gekocht lassen sie sich einfrieren.',
     portion: { unit: 'g', splits: [4] },
     de: 'Kartoffeln',
     emoji: '🥔',
@@ -609,6 +618,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'produce-apples',
+    freeze: 'Äpfel und Birnen werden beim Auftauen weich und mehlig.',
     portion: { unit: 'pcs', splits: [2] },
     de: 'Äpfel & Birnen',
     emoji: '🍎',
@@ -645,6 +655,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'produce-citrus',
+    freeze: 'Zitrusfrüchte werden beim Auftauen weich. Der Saft lässt sich einfrieren.',
     portion: { unit: 'pcs', splits: [2] },
     de: 'Zitrusfrüchte',
     emoji: '🍊',
@@ -699,6 +710,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'produce-avocado',
+    freeze: 'Avocado wird beim Auftauen breiig.',
     portion: { unit: 'pcs', splits: [2] },
     de: 'Avocado',
     emoji: '🥑',
@@ -924,6 +936,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'pantry-canned',
+    freeze: 'Dosen können beim Einfrieren platzen. Der Inhalt lässt sich umfüllen.',
     portion: { unit: 'pcs', container: 'can', splits: [2] },
     opened: 3,
     de: 'Konserven',
@@ -1201,6 +1214,7 @@ export const CATEGORIES: readonly Category[] = [
   // Drinks
   def({
     id: 'drinks-juice',
+    freeze: 'Flaschen und Packungen können beim Einfrieren platzen.',
     portion: { unit: 'ml', container: 'pack', splits: [4] },
     opened: 5,
     de: 'Saft',
@@ -1229,6 +1243,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'drinks-soft',
+    freeze: 'Flaschen und Dosen können beim Einfrieren platzen.',
     portion: { unit: 'pcs', container: 'bottle', packs: [6], splits: [2] },
     opened: 3,
     de: 'Getränke & Wasser',
@@ -1257,6 +1272,7 @@ export const CATEGORIES: readonly Category[] = [
   }),
   def({
     id: 'drinks-alcohol',
+    freeze: 'Flaschen können beim Einfrieren platzen.',
     portion: { unit: 'pcs', container: 'bottle', packs: [6], splits: [2] },
     opened: 5,
     de: 'Bier & Wein',

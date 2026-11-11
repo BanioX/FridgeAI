@@ -5,7 +5,7 @@ import {
   shelfScore,
   expiryStatus,
   fallbackCategory,
-  isFreezable,
+  itemBadges,
   portionChoices,
   portioningOf,
   shouldAskStillGood,
@@ -26,6 +26,7 @@ import { PriceMemoryNote } from '../receipts/PriceMemoryNote';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { ChoiceChips } from '../../ui/ChoiceChips';
+import { ItemBadges } from '../../ui/ItemBadges';
 import { ShopBadge } from '../../ui/ShopBadge';
 import { ScoreRing } from '../../ui/ScoreRing';
 import { StatusChip } from '../../ui/StatusChip';
@@ -34,6 +35,7 @@ import { expiryBadge } from '../../ui/expiry-badge';
 import { parseAmount } from './add-item';
 import type { ClosedItem } from './closed-item';
 import { FROM_DETAIL } from './edit-state';
+import { useFreezeHint } from './FreezeHint';
 import { itemMeta } from './item-meta';
 import { formatQuantity } from '../../ui/quantity-text';
 import { portionLabel } from './portion-labels';
@@ -84,6 +86,7 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
   /** Set after the one-tap freeze: the date it had in the fridge, for «Rückgängig». */
   const [frozenFrom, setFrozenFrom] = useState<LocalDate | null>(null);
   const [busy, setBusy] = useState(false);
+  const freezeHint = useFreezeHint();
 
   if (item === undefined) {
     return <p className="sr-only">{messages.loading}</p>;
@@ -123,7 +126,8 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
     today,
     item.location,
   );
-  const canMove = item.location === 'freezer' || isFreezable(category);
+  // Any food can be put in the freezer; what does not freeze well asks first (R2-1).
+  const canMove = item.location === 'freezer' || category.isFood;
   // Haltbarkeit 1 to 10 (ADR-0038): an open pack scores by its days after opening.
   const score = shelfScore(category, { opened: item.openedOn !== undefined });
   const level = perishabilityOf(score);
@@ -208,11 +212,17 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
 
   const move = () =>
     run(async () => {
+      const to = item.location === 'freezer' ? 'fridge' : 'freezer';
+      const plan = to === 'freezer' ? await freezeHint.ask([item]) : { move: [item], force: false };
+      if (plan.move.length === 0) {
+        return null;
+      }
       const result = await inventory['inventory.move']({
         commandId: ids.next(),
         householdId,
         itemId: item.id,
-        to: item.location === 'freezer' ? 'fridge' : 'freezer',
+        to,
+        ...(plan.force ? { allowUnsuitable: true } : {}),
       });
       return t.moved(describeDate(result.expiresOn));
     });
@@ -257,6 +267,7 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
 
   return (
     <div className="space-y-6 pb-8">
+      {freezeHint.sheet}
       {back}
 
       <div className="flex items-center gap-4">
@@ -279,6 +290,9 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
             </p>
           )}
           <p className="text-ink-muted">{itemMeta(item)}</p>
+          <div className="mt-1.5 empty:hidden">
+            <ItemBadges badges={itemBadges(item, today)} />
+          </div>
           {item.retailer === undefined ? null : (
             <p className="mt-0.5 flex items-center gap-2 text-ink-muted">
               <ShopBadge retailer={item.retailer} size={20} />

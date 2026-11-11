@@ -82,6 +82,8 @@ export const InventoryItemSchema = z.object({
   expirySource: ExpirySourceSchema,
   /** Day the item went into the freezer, if it is frozen. */
   frozenOn: LocalDateSchema.optional(),
+  /** Day the item was taken out of the freezer; cleared when it is frozen again. */
+  thawedOn: LocalDateSchema.optional(),
   /** Day the pack was opened; with it the «after opening» rule applies (ADR-0011). */
   openedOn: LocalDateSchema.optional(),
   /** «Nach dem Öffnen innert N Tagen» from the label; overrides the category value. */
