@@ -12,7 +12,8 @@ test('bakes a cake from flour and eggs, then undoes it', async ({ page }) => {
   await addFood(page, 'Mehl');
   await addFood(page, 'Eier');
 
-  // From the item page: «Verarbeiten» preselects this item.
+  // From the item page: «Verarbeiten» preselects this item. Flour sits in the pantry.
+  await page.goto('/inventory?location=pantry');
   await page.getByRole('link', { name: /Mehl/ }).click();
   await page.getByRole('link', { name: 'Verarbeiten' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Verarbeiten' })).toBeVisible();
