@@ -80,8 +80,13 @@ function AddRecipeRow() {
   );
 }
 
-/** «Meine Rezepte» (ADR-0048, point 7): your own recipes first, then the row to add one. */
-export function OwnRecipes() {
+/**
+ * «Meine Rezepte» (ADR-0048, point 7): your own recipes first, then the row to add one. Under a
+ * section heading (Wissen) the title is an h3; right below the page title (Alle Rezepte) an h2,
+ * so heading levels never skip one (axe «heading-order»).
+ */
+export function OwnRecipes({ headingLevel = 3 }: { headingLevel?: 2 | 3 }) {
+  const Heading = headingLevel === 2 ? 'h2' : 'h3';
   const { householdId, recipes } = useAppData();
   const own = useLiveQuery(
     async () =>
@@ -95,7 +100,9 @@ export function OwnRecipes() {
   }
   return (
     <div className="space-y-2">
-      <h3 className="px-4 text-sm font-semibold text-ink-muted uppercase">{t.ownTitle}</h3>
+      <Heading className="px-4 text-sm font-semibold text-ink-muted uppercase">
+        {t.ownTitle}
+      </Heading>
       <GroupedList>
         {own.map((entry) => (
           <RecipeRow

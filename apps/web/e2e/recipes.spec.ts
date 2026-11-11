@@ -91,13 +91,14 @@ test('writes an own recipe, opens it and finds it under «Meine Rezepte»', asyn
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 
   await page.goto('/knowledge/recipes');
-  await expect(page.getByRole('heading', { level: 3, name: 'Meine Rezepte' })).toBeVisible();
-  await page.getByRole('link', { name: /Milchreis/ }).click();
+  await expect(page.getByRole('heading', { level: 2, name: 'Meine Rezepte' })).toBeVisible();
+  // The curated «Milchreis mit Zimt» is listed too; the own one has 40 minutes.
+  await page.getByRole('link', { name: /^Milchreis 40 Min/ }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Milchreis' })).toBeVisible();
 
   // Delete asks first, on the page itself.
   await page.getByRole('button', { name: 'Löschen', exact: true }).click();
   await page.getByRole('button', { name: 'Ja, löschen' }).click();
   await expect(page).toHaveURL(/\/knowledge\/recipes$/);
-  await expect(page.getByRole('link', { name: /Milchreis/ })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: /^Milchreis 40 Min/ })).toHaveCount(0);
 });

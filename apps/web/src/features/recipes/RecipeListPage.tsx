@@ -25,7 +25,7 @@ export function RecipeListPage() {
         <h1 className="large-title">{t.allTitle}</h1>
         <p className="mt-1 text-ink-muted">{t.listIntro}</p>
       </div>
-      <OwnRecipes />
+      <OwnRecipes headingLevel={2} />
       {curated.length === 0 ? (
         <p className="text-ink-muted">{t.empty}</p>
       ) : (
