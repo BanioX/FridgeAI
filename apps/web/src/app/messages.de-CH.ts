@@ -418,8 +418,15 @@ export const messages = {
   },
   shopping: {
     what: 'Was brauchst du?',
-    placeholder: 'z. B. Milch',
+    placeholder: 'z. B. Milch, 2 Joghurt, Brot und Eier',
+    hint: 'Tipp: Tipp aufs Mikrofon deiner Tastatur und sag es einfach.',
     add: 'Auf die Liste',
+    addedMany: (count: number) => `${String(count)} Sachen auf der Liste.`,
+    onListSome: (count: number) =>
+      count === 1
+        ? '1 stand schon auf der Liste.'
+        : `${String(count)} standen schon auf der Liste.`,
+    allOnList: 'Das steht schon alles auf der Liste.',
     added: (name: string) => `${name} ist auf der Liste.`,
     onList: (name: string) => `${name} steht schon auf der Liste.`,
     atHome: (amount: string, name: string, date: string) =>

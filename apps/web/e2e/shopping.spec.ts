@@ -14,14 +14,14 @@ test('shopping list: hints at food at home, checks off and puts it into the inve
 
   const what = page.getByLabel('Was brauchst du?');
   await what.fill('Milch');
-  await what.press('Enter');
+  await page.getByRole('button', { name: 'Auf die Liste' }).click();
   await expect(page.getByRole('status')).toHaveText(
     /^Milch ist auf der Liste\. Du hast noch 1 l Bio Vollmilch \(bis .+\)\.$/,
   );
   await expect(page.getByText(/^Noch da: 1 l, bis/)).toBeVisible();
   await what.fill('milch');
-  await what.press('Enter');
-  await expect(page.getByRole('status')).toContainText('milch steht schon auf der Liste.');
+  await page.getByRole('button', { name: 'Auf die Liste' }).click();
+  await expect(page.getByRole('status')).toContainText('Milch steht schon auf der Liste.');
 
   await what.fill('Ruchbrot');
   await page.getByRole('button', { name: 'Auf die Liste' }).click();
@@ -40,4 +40,18 @@ test('shopping list: hints at food at home, checks off and puts it into the inve
   await page.getByRole('button', { name: 'Milch löschen' }).click();
   await expect(page.getByRole('checkbox', { name: /Milch/ })).toHaveCount(0);
   await expect(page.getByRole('checkbox', { name: /Ruchbrot/ })).toBeChecked();
+});
+
+test('shopping list: one sentence becomes one entry per product', async ({ page }) => {
+  await page.goto('/shopping');
+  await page
+    .getByLabel('Was brauchst du?')
+    .fill('Milch, 2 Joghurt, ein Brot und 500 g Hackfleisch sowie Eier');
+  await page.getByRole('button', { name: 'Auf die Liste' }).click();
+  await expect(page.getByRole('status')).toHaveText('5 Sachen auf der Liste.');
+  for (const item of ['Milch', 'Joghurt', 'Brot', 'Hackfleisch', 'Eier']) {
+    await expect(page.getByRole('checkbox', { name: new RegExp(item) })).toBeVisible();
+  }
+  await expect(page.getByRole('checkbox', { name: /Hackfleisch.*500 g/ })).toBeVisible();
+  await expect(page.getByLabel('Was brauchst du?')).toHaveValue('');
 });
