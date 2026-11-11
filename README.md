@@ -152,6 +152,7 @@ CLAUDE.md            Arbeitsregeln für die KI-Entwicklung
 | [`docs/use-cases.md`](docs/use-cases.md) | Use Cases, Ökosystem- und Büro-Brainstorming |
 | [`docs/architecture.md`](docs/architecture.md) | Architektur und Skalierung |
 | [`docs/design.md`](docs/design.md) | Design-Tokens, Komponenten, Datumsfeld |
+| [`docs/marke.md`](docs/marke.md) | Markenbuch: Logo, Farben, Schrift, Ton, Regeln für Website und Social Media |
 | [`docs/blue-ocean.md`](docs/blue-ocean.md) | Strategie und Monetarisierung |
 | [`docs/ideen/`](docs/ideen/) | Ideen mit Nutzen, Aufwand und Kosten: Markt und Timing, Integrationen, Schutz, App Stores |
 | [`docs/privacy.md`](docs/privacy.md) | Datenschutzerklärung (Entwurf) |

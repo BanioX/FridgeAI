@@ -2,12 +2,13 @@
 
 > **Leitbild (Alban, 6.11.2026):** grün, food-freundlich, elegant und funktional. Seit 7.11.2026 premium: Smaragd, Silber, Onyx.
 > Umsetzung: Tokens in `apps/web/src/index.css` (`@theme`), Komponenten in `apps/web/src/ui/`.
+> Für Website, Social Media und andere KI-Werkzeuge: [`marke.md`](marke.md) (Markenbuch).
 
 ## Haltung
 
 - **Premium statt laut:** Smaragd als Markenfarbe, Silber als Grund, Onyx für Schrift und den einen dunklen Akzent, viel Weissraum. Keine Neon-Töne, keine Verläufe.
 - **Funktion vor Dekor:** Farbe trägt Bedeutung. Grün = frisch/ok, Aprikose = bald, Tomate = heute, Rot = nicht mehr essen. Jede Farbaussage hat zusätzlich Text oder Symbol (nie nur Farbe, wegen Farbsehschwäche).
-- **Elegant durch Typografie:** Eine weiche Serifenschrift für Titel und grosse Zahlen (CHF gerettet), eine klare Sans für alles Bedienbare.
+- **Elegant durch Typografie:** die Systemschrift (ADR-0021), grosse Titel und klare Gewichte statt einer zweiten Schrift.
 - **Daumenfreundlich:** Wichtige Aktionen unten, Touch-Ziele mindestens 44 px, eine Hauptaktion pro Screen.
 - **Immer sauber ausgerichtet** (Alban, 7.11.2026: «Clean UI»): In einer Fläche steht alles auf derselben Achse, entweder mittig oder an einer gemeinsamen Kante, nie etwas mittig und etwas unten. Text wird nie angeschnitten: Was nicht ganz Platz hat, erscheint erst, wenn es passt (z. B. nur das Symbol). Das gilt auch in Bewegung, etwa beim Wischen. Jede Vorschau für Alban wird darauf geprüft.
 
