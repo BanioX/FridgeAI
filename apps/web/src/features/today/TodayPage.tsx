@@ -1,6 +1,13 @@
-import { categoryById, fallbackCategory, itemValue, startOfMonth, sumRappen } from '@fridgeai/core';
+import {
+  categoryById,
+  fallbackCategory,
+  itemValue,
+  shouldSuggestFreezing,
+  startOfMonth,
+  sumRappen,
+} from '@fridgeai/core';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { ClipboardCheck } from 'lucide-react';
+import { ClipboardCheck, Snowflake } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { useAppData } from '../../app/AppData';
@@ -114,6 +121,19 @@ export function TodayPage() {
                         </Link>
                       )}
                     </SwipeAction>
+                    {shouldSuggestFreezing(item, today) ? (
+                      <button
+                        type="button"
+                        aria-label={messages.rescue.freezeLabel(item.name)}
+                        className="mr-4 mb-2 ml-auto flex min-h-11 w-fit items-center gap-2 rounded-xl px-3 font-semibold text-basil-700 transition-colors hover:bg-surface-muted"
+                        onClick={() => {
+                          swipe.freeze(item);
+                        }}
+                      >
+                        <Snowflake size={20} aria-hidden="true" />
+                        {messages.rescue.freeze}
+                      </button>
+                    ) : null}
                   </GroupedListItem>
                 ))}
               </GroupedList>

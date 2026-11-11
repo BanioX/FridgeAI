@@ -12,6 +12,7 @@ export * from './catalog/categories';
 export * from './catalog/category';
 export * from './dates';
 export * from './expiry';
+export * from './rescue-tips';
 export * from './export/csv';
 export * from './format';
 export * from './ids';

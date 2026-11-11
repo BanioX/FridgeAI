@@ -222,6 +222,17 @@ export const messages = {
       parcel: (n: number) => `${String(n)} Artikel`,
     },
   },
+  /** Small rescues before something is thrown away. */
+  rescue: {
+    /** Only for best-before dates; use-by food stays «Nicht mehr verwenden». */
+    stillGood:
+      'Ist das noch gut? Schauen, riechen, probieren. Mindestens haltbar bis heisst nicht entsorgen.',
+    freeze: 'Einfrieren',
+    /** «Hackfleisch einfrieren» for screen readers on the Start list. */
+    freezeLabel: (name: string) => `${name} einfrieren`,
+    frozen: (name: string, date: string) => `${name} eingefroren. Haltbar bis ${date}.`,
+    unfrozen: (name: string) => `${name} liegt wieder im Kühlschrank.`,
+  },
   swipe: {
     tip: 'Tipp: Wisch nach links, wenn du etwas verwertet hast, nach rechts, wenn du es entsorgt hast.',
     /** Visually hidden, read after the row name (WCAG 2.5.1: the item page has the buttons). */
@@ -349,6 +360,8 @@ export const messages = {
     opened: (date: string) => `Geöffnet. Neu haltbar bis ${date}.`,
     openedSame: 'Geöffnet. Das Datum bleibt gleich.',
     freeze: 'Einfrieren',
+    /** K4: shown above the outcome when the date is today or tomorrow. */
+    freezeTip: 'Heute oder morgen ist das Datum. Einfrieren rettet es.',
     thaw: 'Auftauen (in den Kühlschrank)',
     moved: (date: string) => `Verschoben. Neu haltbar bis ${date}.`,
     failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
