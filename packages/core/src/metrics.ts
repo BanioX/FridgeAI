@@ -1,4 +1,4 @@
-import { daysBetween, localDate, toLocalDate } from './dates';
+import { addDays, addMonths, daysBetween, localDate, toLocalDate } from './dates';
 import { expiryStatus, soonThresholdFor } from './expiry';
 import type { OutcomeEvent } from './model/inventory';
 import type { DateKind, LocalDate, StorageLocation } from './model/primitives';
@@ -132,5 +132,61 @@ export function summarizeImpact(
         : total === 0
           ? saved.length / (saved.length + wasted.length)
           : savedRappen / total,
+  };
+}
+
+/**
+ * Entsorgt in the last completed month against the household's first completed month (G1,
+ * ADR-0050). Months are first days (`YYYY-MM-01`) in Swiss time; `changePercent` is negative
+ * when less is thrown away.
+ */
+export interface WasteComparison {
+  firstMonth: LocalDate;
+  lastMonth: LocalDate;
+  firstWastedRappen: Rappen;
+  lastWastedRappen: Rappen;
+  /** Whole percent against the first month; below 0 is better, above 0 is worse. */
+  changePercent: number;
+}
+
+/**
+ * Compares full calendar months only (ADR-0050): the first month is the first one that starts on
+ * or after the day of the first recorded outcome, the last is the month before `today`'s. Null
+ * until they are two different months and the first one had something entsorgt (no division by
+ * zero, no made-up percentage). Undone outcomes do not count.
+ */
+export function compareWasteSinceFirstMonth(
+  outcomes: readonly OutcomeLike[],
+  today: LocalDate,
+): WasteComparison | null {
+  const days = outcomes
+    .filter((outcome) => outcome.deletedAt === undefined)
+    .map((outcome) => toLocalDate(outcome.at))
+    .sort();
+  const firstDay = days[0];
+  if (firstDay === undefined) {
+    return null;
+  }
+  const firstMonth =
+    firstDay === startOfMonth(firstDay) ? firstDay : addMonths(startOfMonth(firstDay), 1);
+  const lastMonth = addMonths(startOfMonth(today), -1);
+  if (firstMonth >= lastMonth) {
+    return null;
+  }
+  const wastedIn = (month: LocalDate) =>
+    summarizeImpact(outcomes, month, addDays(addMonths(month, 1), -1)).wastedRappen;
+  const first = wastedIn(firstMonth);
+  if (first === 0) {
+    return null;
+  }
+  const last = wastedIn(lastMonth);
+  const ratio = (100 * (last - first)) / first;
+  return {
+    firstMonth,
+    lastMonth,
+    firstWastedRappen: first,
+    lastWastedRappen: last,
+    // Symmetric rounding: 37.5 % less and 37.5 % more both round away from zero.
+    changePercent: Math.sign(ratio) * Math.round(Math.abs(ratio)) || 0,
   };
 }

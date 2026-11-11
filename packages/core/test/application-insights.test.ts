@@ -216,3 +216,34 @@ describe('insight queries on memory storage', () => {
     expect(habits[0]?.tip).toMatch(/kleine Packung/);
   });
 });
+
+describe('stats.impact', () => {
+  const wasted = (counter: number, at: string, value: number) => ({
+    id: id(counter),
+    householdId,
+    updatedAt: now,
+    itemId: id(counter + 50),
+    outcome: 'wasted' as const,
+    quantity: 1,
+    valueRappen: rappen(value),
+    valueEstimated: false,
+    owner: 'shared' as const,
+    at: IsoDateTimeSchema.parse(at),
+    by: actor,
+  });
+
+  it('compares the last completed month with the first one, computed from outcomes', async () => {
+    await storage.outcomes.add(wasted(20, '2026-09-01T10:00:00.000Z', 2010));
+    await storage.outcomes.add(wasted(21, '2026-10-10T10:00:00.000Z', 1240));
+    const result = await inventory['stats.impact']({ householdId });
+    expect(result.comparison).toMatchObject({
+      firstMonth: '2026-09-01',
+      lastMonth: '2026-10-01',
+      changePercent: -38,
+    });
+  });
+
+  it('is empty without outcomes', async () => {
+    expect(await inventory['stats.impact']({ householdId })).toEqual({ comparison: null });
+  });
+});

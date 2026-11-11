@@ -855,6 +855,28 @@ export const CONTRACT_V1 = {
       estimated: z.boolean(),
     }),
   }),
+  'stats.impact': query({
+    name: 'stats.impact',
+    summary: {
+      de: 'Entsorgt im letzten abgeschlossenen Monat gegenüber dem ersten abgeschlossenen Monat; leer, bis es zwei volle Monate gibt.',
+      en: 'Wasted value in the last completed month against the first completed month; null until two full months exist.',
+    },
+    scopes: ['stats:read'],
+    input: z.object({ ...queryBase }),
+    output: z.object({
+      comparison: z
+        .object({
+          /** First day of each month, Swiss calendar. */
+          firstMonth: LocalDateSchema,
+          lastMonth: LocalDateSchema,
+          firstWastedRappen: RappenSchema.min(1),
+          lastWastedRappen: RappenSchema.min(0),
+          /** Whole percent against the first month; below 0 is less wasted (ADR-0050). */
+          changePercent: z.int(),
+        })
+        .nullable(),
+    }),
+  }),
   'prices.memory': query({
     name: 'prices.memory',
     summary: {
