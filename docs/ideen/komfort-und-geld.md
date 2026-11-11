@@ -53,8 +53,8 @@ Sortiert nach Wirkung auf Food Waste und Aufwand (S klein, M mittel, L gross).
 | --- | --- | --- | --- | --- | --- |
 | K1 | **Erinnerung am Morgen:** «2 Sachen laufen heute ab» | hoch | M | gratis | Native App: lokale Mitteilung auf dem Gerät, kein Server, keine neuen Datenflüsse ([`benachrichtigungen.md`](./benachrichtigungen.md)) |
 | K2 | **Zahl am App-Symbol** für «Heute retten» (umgesetzt 11.11.2026, [ADR-0050](../adr/0050-impact-since-first-month.md)) | mittel | S | gratis | keine |
-| K3 | **«Ist das noch gut?»** beim Entsorgen von Ware mit Mindesthaltbarkeit: «Schauen, riechen, probieren», dann erst entsorgen | hoch | S | gratis | keine; der Text steht schon unter «Wissen» |
-| K4 | **Einfrieren mit einem Tipp**, wenn das Verbrauchsdatum morgen ist (Hackfleisch, Fisch) | hoch | S | gratis | keine |
+| K3 | **«Ist das noch gut?» (umgesetzt 11.11.2026)** beim Entsorgen von Ware mit Mindesthaltbarkeit: «Schauen, riechen, probieren», dann erst entsorgen | hoch | S | gratis | keine; der Text steht schon unter «Wissen» |
+| K4 | **Einfrieren mit einem Tipp (umgesetzt 11.11.2026)**, wenn das Verbrauchsdatum morgen ist (Hackfleisch, Fisch) | hoch | S | gratis | keine |
 | K5 | **Mengen-Tipp auf der Einkaufsliste:** «Brot entsorgst du oft: kleiner kaufen oder halb einfrieren» | hoch | S | gratis | keine; die Daten gibt es («Das entsorgst du oft») |
 | K6 | **Reste erfassen:** «Reste vom Abendessen», 3 Tage haltbar, mit einem Tipp | mittel | S | gratis | keine |
 | K7 | **Kühlschrank-Check als Stapel:** eine Karte nach der anderen wischen, 30 Sekunden | mittel | S–M | gratis | keine |

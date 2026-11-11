@@ -1,14 +1,22 @@
-import type { Id, InventoryItemView } from '@fridgeai/core';
+import {
+  shouldAskStillGood,
+  type Id,
+  type InventoryItemView,
+  type LocalDate,
+} from '@fridgeai/core';
 import { Undo2 } from 'lucide-react';
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
+import { describeDate } from '../../ui/date-text';
 import { formatQuantity } from '../../ui/quantity-text';
 import type { SwipeSide } from '../../ui/SwipeAction';
 import { swipePortion } from './swipe-portion';
 
 /** The toast stays this long; a new swipe replaces it earlier. */
 const TOAST_MS = 5000;
+/** A toast with a hint stays longer. */
+const HINT_TOAST_MS = 9000;
 const SEEN_KEY = 'fridgeai:swipe-tip-seen';
 
 /** Id of the visually hidden hint that rows point to with `aria-describedby`. */
@@ -36,8 +44,11 @@ function writeSeen(): void {
 interface Toast {
   key: number;
   text: string;
+  /** Calm second line, e.g. «Ist das noch gut?» after a best-before item was thrown away. */
+  hint?: string;
   /** `null` for an error message: nothing to undo. */
-  eventId: Id | null;
+  undo:
+    { kind: 'outcome'; eventId: Id } | { kind: 'freeze'; itemId: Id; expiresOn: LocalDate } | null;
 }
 
 /**
@@ -49,6 +60,8 @@ interface Toast {
  */
 export function useSwipeOutcome(): {
   sides: (item: InventoryItemView) => { end: SwipeSide; start: SwipeSide };
+  /** K4: one tap into the freezer, with «Rückgängig» in the toast. */
+  freeze: (item: InventoryItemView) => void;
   tip: ReactNode;
   toast: ReactNode;
 } {
@@ -63,9 +76,13 @@ export function useSwipeOutcome(): {
     if (toast === null) {
       return undefined;
     }
-    const timer = window.setTimeout(() => {
-      setToast(null);
-    }, TOAST_MS);
+    const timer = window.setTimeout(
+      () => {
+        setToast(null);
+      },
+      // The hint needs a moment longer to read.
+      toast.hint === undefined ? TOAST_MS : HINT_TOAST_MS,
+    );
     return () => {
       window.clearTimeout(timer);
     };
@@ -92,9 +109,40 @@ export function useSwipeOutcome(): {
                   formatQuantity(portion.quantity, item.unit),
                   outcome,
                 );
-          setToast({ key: Date.now(), text, eventId: result.eventId });
+          setToast({
+            key: Date.now(),
+            text,
+            // K3: a best-before date is no reason to throw it away; the toast says so, calmly.
+            ...(outcome === 'wasted' && shouldAskStillGood(item)
+              ? { hint: messages.rescue.stillGood }
+              : {}),
+            undo: { kind: 'outcome', eventId: result.eventId },
+          });
         } catch {
-          setToast({ key: Date.now(), text: messages.swipe.failed, eventId: null });
+          setToast({ key: Date.now(), text: messages.swipe.failed, undo: null });
+        }
+      })();
+    },
+    [householdId, ids, inventory],
+  );
+
+  const freeze = useCallback(
+    (item: InventoryItemView) => {
+      void (async () => {
+        try {
+          const result = await inventory['inventory.move']({
+            commandId: ids.next(),
+            householdId,
+            itemId: item.id,
+            to: 'freezer',
+          });
+          setToast({
+            key: Date.now(),
+            text: messages.rescue.frozen(item.name, describeDate(result.expiresOn)),
+            undo: { kind: 'freeze', itemId: item.id, expiresOn: item.expiresOn },
+          });
+        } catch {
+          setToast({ key: Date.now(), text: messages.swipe.failed, undo: null });
         }
       })();
     },
@@ -124,28 +172,40 @@ export function useSwipeOutcome(): {
     [record],
   );
 
-  const undo = async (eventId: Id) => {
+  const undo = async (action: NonNullable<Toast['undo']>) => {
     if (busy) {
       return;
     }
     setBusy(true);
     try {
-      await inventory['inventory.undoOutcome']({
-        commandId: ids.next(),
-        householdId,
-        eventId,
-      });
+      if (action.kind === 'outcome') {
+        await inventory['inventory.undoOutcome']({
+          commandId: ids.next(),
+          householdId,
+          eventId: action.eventId,
+        });
+      } else {
+        // Back to the fridge with the date it had before (`move` would re-estimate a thawed date).
+        await inventory['inventory.updateItem']({
+          commandId: ids.next(),
+          householdId,
+          itemId: action.itemId,
+          location: 'fridge',
+          expiresOn: action.expiresOn,
+        });
+      }
       setToast(null);
     } catch {
-      setToast({ key: Date.now(), text: messages.inventory.undoFailed, eventId: null });
+      setToast({ key: Date.now(), text: messages.inventory.undoFailed, undo: null });
     } finally {
       setBusy(false);
     }
   };
 
-  const undoId = toast?.eventId ?? null;
+  const undoAction = toast?.undo ?? null;
   return {
     sides,
+    freeze,
     tip: (
       <>
         <p id={SWIPE_HINT_ID} className="sr-only">
@@ -163,14 +223,19 @@ export function useSwipeOutcome(): {
         >
           {toast === null ? null : (
             <>
-              <p className="font-semibold">{toast.text}</p>
-              {undoId === null ? null : (
+              <div>
+                <p className="font-semibold">{toast.text}</p>
+                {toast.hint === undefined ? null : (
+                  <p className="text-sm text-white/80">{toast.hint}</p>
+                )}
+              </div>
+              {undoAction === null ? null : (
                 <button
                   type="button"
                   disabled={busy}
                   className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl px-3 font-semibold text-white transition-colors hover:bg-white/10 disabled:opacity-50"
                   onClick={() => {
-                    void undo(undoId);
+                    void undo(undoAction);
                   }}
                 >
                   <Undo2 size={20} aria-hidden="true" />

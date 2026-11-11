@@ -1,6 +1,7 @@
 import {
   expiryStatus,
   halfOf,
+  shouldAskStillGood,
   soonThresholdFor,
   type Id,
   type InventoryItemView,
@@ -271,6 +272,9 @@ function CheckCard({
           {t.wasted}
         </Button>
       </div>
+      {shouldAskStillGood(item) && item.expiresOn <= today ? (
+        <p className="text-sm text-ink-muted">{messages.rescue.stillGood}</p>
+      ) : null}
     </section>
   );
 }

@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto';
-import { cleanup, render, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { AppDataProvider } from '../../app/AppData';
@@ -144,5 +144,32 @@ describe('TodayPage', () => {
     window.localStorage.clear();
     renderPage(db);
     expect(await screen.findByRole('link', { name: messages.check.cardStart })).toBeDefined();
+  });
+
+  it('offers one-tap freezing for freezable fridge items due today or tomorrow, with undo', async () => {
+    const db = testDb();
+    await seedDb(db, [
+      { name: 'Hackfleisch', location: 'fridge', inDays: 1, expiryKind: 'use_by' },
+      { name: 'Gurke', location: 'fridge', inDays: 1 },
+      { name: 'Joghurt', location: 'fridge', inDays: 3 },
+    ]);
+    renderPage(db);
+
+    const freeze = await screen.findByRole('button', {
+      name: messages.rescue.freezeLabel('Hackfleisch'),
+    });
+    // Cucumber cannot be frozen, yoghurt is not due yet.
+    expect(screen.getAllByRole('button', { name: /einfrieren$/ })).toHaveLength(1);
+
+    fireEvent.click(freeze);
+    expect(await screen.findByText(/^Hackfleisch eingefroren\. Haltbar bis /)).toBeDefined();
+    expect(
+      screen.queryByRole('button', { name: messages.rescue.freezeLabel('Hackfleisch') }),
+    ).toBeNull();
+
+    fireEvent.click(screen.getByRole('button', { name: messages.inventory.undo }));
+    expect(
+      await screen.findByRole('button', { name: messages.rescue.freezeLabel('Hackfleisch') }),
+    ).toBeDefined();
   });
 });
