@@ -29,5 +29,5 @@ Was der Code ausserhalb seiner selbst bewirkt: ans Netz senden, auf dem Gerät s
 | SE-20 | Kamera (`getUserMedia`) | Barcode scannen, Licht | nur nach einem Tipp, ADR-0014 |
 | SE-21 | Dateiauswahl / Kamera-App (`capture`) | Quittung, Code, Nährwerttabelle als Bild; Licht auf dem iPhone | nur nach einem Tipp. Bilder werden gelesen, nie gespeichert |
 | SE-22 | Vibration (`navigator.vibrate`) | kurzes Feedback nach einem Scan oder Wischen | wo das Gerät es kann |
-| SE-23 | Teilen (`navigator.share`) | PDF-Bericht teilen | nur nach einem Tipp |
+| SE-23 | Teilen (`navigator.share`) | PDF-Bericht teilen; Einkaufsliste als Text teilen («Liste teilen», sonst Zwischenablage) | nur nach einem Tipp |
 | SE-24 | Dauerhafter Speicher (`navigator.storage.persist`) | Browser soll die Daten nicht bei Platzmangel löschen | beim Start |

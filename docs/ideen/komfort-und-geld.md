@@ -66,6 +66,8 @@ Sortiert nach Wirkung auf Food Waste und Aufwand (S klein, M mittel, L gross).
 | K13 | **Einkaufsliste weitergeben** als Text an Bring! oder WhatsApp | tief | S | gratis | keine |
 | K14 | **Sprach-Erfassung:** «Milch, Eier, Brot» | mittel | M | gratis | Prüfen, ob die Spracherkennung des Systems Daten an Apple oder Google schickt |
 
+**K5 und K13, Stand 11.11.2026:** umgesetzt auf «Nachkaufen». K5: unter einem Eintrag, dessen Kategorie der Haushalt oft entsorgt («Das entsorgst du oft»), steht eine ruhige Zeile mit dem Tipp der Kategorie (`shoppingTips` im Kern). K13: «Liste teilen» macht aus den offenen Einträgen Text, über `navigator.share` oder die Zwischenablage, nur nach einem Tipp; nichts geht automatisch raus.
+
 **K14, Stand 11.11.2026:** v1 ist umgesetzt als «Einkaufsliste aus einem Satz» auf «Nachkaufen»: Die Person diktiert über das Mikrofon der Tastatur oder tippt, `parseShoppingText` zerlegt den Satz auf dem Gerät. Keine Web Speech API, kein Datenfluss aus der App, keine Kosten (ob die Diktierfunktion der Tastatur selbst Daten an Apple oder Google schickt, entscheidet das Gerät der Person, nicht Rettich). Offen: Erfassen im Vorrat per Satz.
 
 ## Was es für Geld braucht

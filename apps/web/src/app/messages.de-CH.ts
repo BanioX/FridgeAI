@@ -447,6 +447,14 @@ export const messages = {
     remove: (name: string) => `${name} löschen`,
     toInventory: 'In den Vorrat legen',
     failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
+    /** K5: calm hint under a row whose category the household often throws away. */
+    oftenThrown: (tip: string | undefined) =>
+      `Entsorgst du oft. ${tip ?? 'Kleiner kaufen oder halb einfrieren.'}`,
+    /** K13: share the open entries as text. */
+    share: 'Liste teilen',
+    shareTitle: 'Nachkaufen',
+    copied: 'Kopiert.',
+    shareFailed: 'Das Teilen hat nicht geklappt.',
   },
   /** «Wissen» (ADR-0041): what keeps how long, and how it stays good longer. */
   recipes: {
