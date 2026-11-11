@@ -40,7 +40,8 @@ Unten fünf Tabs: **Start · Vorrat · ＋ Erfassen · Wissen · Mehr** ([ADR-00
 | **Barcode** | Unter ＋: Barcode, QR und GS1-DataMatrix (Datum aus dem Code). Im Dunkeln hilft «Licht» |
 | **Abschliessen** | «Verwertet» (gegessen, gekocht, verbraucht) oder «Entsorgt» (mit Grund), ganz oder in sinnvollen Portionen (⅛ Kuchen, ⅓ Käse, 2 von 4 Joghurts); in «Vorrat» und «Heute retten» auch per Wischen; vor dem Entsorgen von Ware mit Mindesthaltbarkeit der ruhige Hinweis «Ist das noch gut?» (nie bei Verbrauchsdatum) |
 | **Öffnungsregel** | «Nach dem Öffnen innert 21 Tagen» verkürzt das Datum automatisch |
-| **Einfrieren** | Umlagern mit neu geschätztem Datum |
+| **Einfrieren** | Umlagern mit neu geschätztem Datum; bei Lebensmitteln, die sich nicht eignen (Salat, Eier, Quark …), fragt ein Hinweis mit Grund erst nach: «Lieber nicht» oder «Trotzdem einfrieren» |
+| **Badges am Artikel** | Kleine Pillen für den Zustand: «Eingefroren 3.11.», «Aufgetaut», «Geöffnet», «Von der Theke»; in Listen höchstens zwei, auf der Artikelseite alle (ADR-0051) |
 | **Einfrieren mit einem Tipp** | Ist ein einfrierbarer Artikel aus dem Kühlschrank heute oder morgen fällig, bietet «Heute retten» und die Artikelseite «Einfrieren» mit einem Tipp an, mit «Rückgängig» |
 | **Kühlschrank-Check** | Einmal pro Woche jeden heiklen Artikel kurz bestätigen: noch da, halb, verwertet oder entsorgt; Robustes wie Getränke und ungeöffnete Saucen lässt er aus |
 | **Korrigieren** | Rückgängig nach Verwertet/Entsorgt, dazu «Nachkaufen» mit einem Tipp; Name, Kategorie, Ort, Datum, Menge und Preis ändern; Artikel löschen; im «Journal» unter «Mehr» Verwertetes und Entsorgtes nachträglich ändern oder löschen; der Filter «Alle · Verwertet · Entsorgt» lässt sich auch über einen Kreis der «Bilanz» öffnen |
