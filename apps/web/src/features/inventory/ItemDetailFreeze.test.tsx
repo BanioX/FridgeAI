@@ -30,7 +30,13 @@ describe('ItemDetailPage: badges and freeze hint', () => {
   it('freezes suitable food without a hint and shows the Eingefroren badge', async () => {
     await renderDetail({ name: 'Hackfleisch', location: 'fridge' });
     await screen.findByRole('heading', { level: 1, name: 'Hackfleisch' });
-    fireEvent.click(screen.getByRole('button', { name: messages.itemDetail.freeze }));
+    // A freezing tip card may offer the same button; the last one sits under «Mehr».
+    const buttons = screen.getAllByRole('button', { name: messages.itemDetail.freeze });
+    const last = buttons[buttons.length - 1];
+    if (last === undefined) {
+      throw new Error('Freeze button missing');
+    }
+    fireEvent.click(last);
     expect(await screen.findByText(/^Eingefroren \d+\.\d+\.$/)).toBeDefined();
     expect(screen.queryByRole('alertdialog')).toBeNull();
   });
