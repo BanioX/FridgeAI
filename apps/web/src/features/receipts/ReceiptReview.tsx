@@ -142,13 +142,21 @@ export function ReceiptReview({
   });
 
   const extras = sumRappen(receipt.lines.filter((line) => line.kind !== 'item').map(paid));
-  const title = [
-    t.retailers[receipt.retailer],
-    receipt.storeName,
-    receipt.purchasedOn === undefined ? undefined : formatSwissDate(receipt.purchasedOn),
-  ]
-    .filter(Boolean)
-    .join(' · ');
+  // Shop and branch on the first line, the date small below: long branch names wrap calmly at
+  // 390 px instead of pushing the date onto a line of its own. The hidden « · » keeps the
+  // accessible name «Coop · Musterstadt Zentrum · 05.11.2026».
+  const place = [t.retailers[receipt.retailer], receipt.storeName].filter(Boolean).join(' · ');
+  const title = (
+    <span className="min-w-0 flex-1">
+      <span className="block break-words">{place}</span>
+      {receipt.purchasedOn === undefined ? null : (
+        <span className="block text-sm font-normal text-ink-muted">
+          <span className="sr-only"> · </span>
+          {formatSwissDate(receipt.purchasedOn)}
+        </span>
+      )}
+    </span>
+  );
 
   return (
     <section aria-labelledby={`${id}-title`} className="space-y-3">
@@ -166,7 +174,7 @@ export function ReceiptReview({
               className="flex min-h-11 w-full items-center gap-2 rounded-lg text-left"
             >
               <ShopBadge retailer={receipt.retailer} />
-              <span className="min-w-0 flex-1 break-words">{title}</span>
+              {title}
               <ChevronDown
                 size={20}
                 aria-hidden="true"

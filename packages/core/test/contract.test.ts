@@ -42,6 +42,7 @@ describe('contract v1', () => {
       'rescue.offer',
       'receipts.import',
       'receipts.matchLine',
+      'receipts.known',
       'household.export',
       'household.import',
       'household.delete',

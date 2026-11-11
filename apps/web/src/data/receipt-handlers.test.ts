@@ -124,6 +124,18 @@ describe('receipts.import (ADR-0028)', () => {
     expect((await inventory['inventory.list']({ householdId })).items).toHaveLength(2);
   });
 
+  it('names known receipts before the review, by hash only', async () => {
+    await inventory['receipts.import'](receipt());
+    const known = await inventory['receipts.known']({
+      householdId,
+      hashes: ['a'.repeat(64), 'b'.repeat(64)],
+    });
+    expect(known).toEqual({ known: ['a'.repeat(64)] });
+    await expect(
+      inventory['receipts.known']({ householdId, hashes: ['not-a-hash'] }),
+    ).rejects.toThrow();
+  });
+
   it('hands receipts out with the export', async () => {
     await inventory['receipts.import'](receipt());
     const exported = await createHouseholdHandlers(ctx)['household.export']({ householdId });

@@ -108,6 +108,22 @@ export function ReceiptUpload() {
     }
   }
 
+  /** The hashes of receipts this household already has; on an error none (the import checks). */
+  async function alreadyImported(hashes: readonly string[]): Promise<ReadonlySet<string>> {
+    if (hashes.length === 0) {
+      return new Set();
+    }
+    try {
+      const { known } = await inventory['receipts.known']({
+        householdId,
+        hashes: hashes.slice(0, 50),
+      });
+      return new Set(known);
+    } catch {
+      return new Set();
+    }
+  }
+
   /** Reads all files first, one after the other; then one page shows them all. */
   async function start(files: readonly File[]) {
     if (files.length === 0) {
@@ -141,9 +157,17 @@ export function ReceiptUpload() {
         named.push({ fileName: file.name, review: result.review });
       }
     }
+    // Receipts already taken over are named before the review, not after «übernehmen».
+    const known = await alreadyImported(named.map((entry) => entry.review.hash));
+    for (const entry of named) {
+      if (known.has(entry.review.hash)) {
+        skipped.push({ fileName: entry.fileName, text: t.alreadyKnown });
+      }
+    }
+    const fresh = named.filter((entry) => !known.has(entry.review.hash));
     matchings.current.clear();
     setSections(
-      orderBySumCheck(named).map(({ fileName, review }, position) => ({
+      orderBySumCheck(fresh).map(({ fileName, review }, position) => ({
         key: `receipt-${String(position)}`,
         review,
         excluded: false,
@@ -154,7 +178,8 @@ export function ReceiptUpload() {
       setLeftOut(skipped);
       setStatus('');
     } else {
-      setStatus(skipped[0]?.text ?? '');
+      const reason = skipped[0]?.text ?? '';
+      setStatus(reason === t.alreadyKnown ? t.duplicate(1) : reason);
     }
     setBusy(false);
   }
