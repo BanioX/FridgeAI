@@ -50,6 +50,7 @@ Alles in diesem Parkplatz wartet auf den Pilot und seine Zahlen.
 | P23 | **Stammdaten-Pools** der Hersteller (GDSN, GS1 Schweiz trustbox) | Geprüfte Produktdaten mit Bild, Nährwerten und Allergenen, auch für Eigenmarken; so baut YAZIO seine «verifizierten» Produkte ([`mitbewerber-yazio.md`](./mitbewerber-yazio.md)) | Mitgliedschaft und Vertrag bei GS1 Schweiz, Kosten, Nutzungsrechte für eine App | geparkt |
 | P24 | **Laden-Buchstaben vor dem öffentlichen Start prüfen lassen**: die Buchstaben in der Gestaltung der Händler (oranges «c» und «M», kursives «D» auf Rot, «L» in gelber Scheibe auf Blau, «A» auf Dunkelblau mit warmem Rahmen), in der App und im PDF | Laden auf einen Blick erkennbar (Alban, 8.11.2026: «Behalte diese Logos», nachdem er kurz eigene Monogramme gesehen hatte) | Markenrecht: Farbe und Buchstabe allein, ohne die geschützten Logo-Zeichen, immer neben dem Namen, gilt als Verweis auf den Laden; vor dem Start mit einer Fachperson prüfen, sonst die Rettich-Monogramme aus #197 (Commit 5f020e6) zurückholen | geparkt |
 | P25 | **Awareness-App, kein Ernährungs-Tracker** (Alban, 8.11.2026: «Ich will kein Yazio sein … Ich will eigene Daseinsberechtigung»): Einnahmen später aus Provision beim Nachkaufen, Werbung und bezahlten Dashboards, nie aus Ernährungsdaten | Eigene Kategorie zwischen Vorrat, Geld und Food Waste; keine Konkurrenz zu Kalorien-Apps | Werbung widerspricht heute dem Versprechen «keine Werbung» im Datenschutz: nur ohne Tracking und nur mit Albans Entscheid. Bezahlte Dashboards brauchen Konten (P6). Säulen 7 und 8 unten, ADR-0046 | geparkt |
+| P26 | **Partner bei «Save Food, Fight Waste»** (Stiftung Pusch) in der Gruppe «Food Saver», neben Too Good To Go, foodwaste.ch und Tischlein deck dich | Glaubwürdigkeit, Sichtbarkeit bei Bund, Kantonen, Städten und Händlern, gleiche Zielgruppe (Haushalte) | Demo bei der Projektleitung, Partnerformular, Kosten unbekannt; Alban schreibt an (Entwurf in [`partner-und-sympathie.md`](./partner-und-sympathie.md)) | geparkt, nächster Schritt: Demo |
 
 ## P1 im Detail: Migros und Coop als Partner
 
@@ -134,6 +135,12 @@ Ein Partner-Adapter ist Arbeit von Tagen, nicht Monaten. Der Aufwand liegt beim 
 **Quellen:** [United Against Waste: Konzept hinter StreamUp](https://united-against-waste.ch/medien-article/vom-nebenstrom-zur-hauptidee-das-konzept-hinter-streamup/), [Startupticker: zweite Kohorte](https://www.startupticker.ch/en/news/streamup-selects-nine-food-tech-companies-for-second-accelerator-cohort), [Swiss Food & Nutrition Valley: Interview zu StreamUp](https://swissfoodnutritionvalley.com/five-questions-for-streamup-project-lead-tatjana-nebel-about-supporting-swiss-food-loss-reduction-solutions/).
 
 **Was es braucht:** Pilotzahlen (gerettete CHF und kg pro Haushalt und Monat), eine kurze Projektbeschreibung und je nach Programm eine Firmenform.
+
+**Nachtrag 11.11.2026** (von der [StreamUp-Seite](https://united-against-waste.ch/landing/streamup/) direkt gelesen):
+- StreamUp 2027 ist gratis, Bewerbungsschluss ist der **15. Dezember 2026**.
+- Mentoring läuft von März bis Juni 2027, als Abschluss gibt es die StreamUp Fair am Focus Food Save 2027 und das Label «StreamUp Approved».
+- Bedingung ist eine **juristische Person** (Start-up, Unternehmen oder Hochschule). Eine digitale Lösung ist ausdrücklich möglich.
+- Offen: Lässt UAW eine Einzelfirma gelten? Bei der Geschäftsstelle anfragen, Alban entscheidet. Details in [`partner-und-sympathie.md`](./partner-und-sympathie.md).
 
 **Weitere Quellen**, ohne Gewähr: Innosuisse (Innovationsscheck, Start-up-Coaching), Stiftungen für Nachhaltigkeit, Förderprogramme der Kantone.
 

@@ -23,6 +23,7 @@ Brainstorming, laufend gepflegt (CLAUDE.md: «Ideen unterwegs»). Hier steht, wa
 | [`produktdaten.md`](./produktdaten.md) | Bessere Produktdaten: Open Food Repo, Händler-Websites, Foto der Nährwerttabelle, gemeinsames Gedächtnis |
 | [`designsprache-garten.md`](./designsprache-garten.md) | Pflanzen als Bereiche, Reineclaude für Erfolg, Reifen statt Prozent |
 | [`markt-und-timing.md`](./markt-und-timing.md) | Food Waste in Zahlen, Ziele 2030, Konkurrenz, Abo-Kennzahlen |
+| [`partner-und-sympathie.md`](./partner-und-sympathie.md) | Warum Bring Migros-Prospekte zeigt (Werbung über Profital), woher YAZIO seine Daten hat, Mithalten als Einzelperson, Save Food und United Against Waste, StreamUp 2027, Entwurf für eine Demo-Anfrage |
 | [`mitbewerber-yazio.md`](./mitbewerber-yazio.md) | YAZIO geprüft: Zahlen, Datenquellen (Schweizer Nährwertdatenbank), Suche in Stufen, Wachstum ohne Werbebudget |
 | [`masterplan-bewertung.md`](./masterplan-bewertung.md) | Albans Masterplan: übernommen, später, Entscheide, Regeln |
 | [`swelper.md`](./swelper.md) | **SWELPER**, die Schaltzentrale als eigener Rahmen ausserhalb von Rettich: Trichter, Dispatcher, Stecker, Kontexte; führt SWELP über Agenten aus; wie Alban beim Entwickeln Aufgaben zieht und ablegt; Budget-Empfehlung, geprüfte Fakten, Stufenplan |
