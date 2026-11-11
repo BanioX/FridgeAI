@@ -419,7 +419,7 @@ export const messages = {
   shopping: {
     what: 'Was brauchst du?',
     placeholder: 'z. B. Milch, 2 Joghurt, Brot und Eier',
-    hint: 'Oder sag es: Tipp aufs Mikrofon deiner Tastatur. Kommas brauchst du keine.',
+    hint: 'Oder sag es: Tipp aufs Mikrofon deiner Tastatur.',
     add: 'Auf die Liste',
     addedMany: (count: number) => `${String(count)} Sachen auf der Liste.`,
     onListSome: (count: number) =>
