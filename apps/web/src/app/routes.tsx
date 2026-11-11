@@ -1,9 +1,15 @@
-import { createBrowserRouter, Navigate, type RouteObject } from 'react-router';
+import { createBrowserRouter, Navigate, useParams, type RouteObject } from 'react-router';
 import { PlaceholderPage } from '../features/placeholder/PlaceholderPage';
 import { TodayPage } from '../features/today/TodayPage';
 import { AppShell } from './AppShell';
 import { RouteError } from './RouteError';
 import { messages } from './messages.de-CH';
+
+/** An old link `/recipes/<id>` opens the same recipe under «Wissen». */
+function RecipeRedirect() {
+  const { recipeId = '' } = useParams();
+  return <Navigate to={`/knowledge/recipes/${encodeURIComponent(recipeId)}`} replace />;
+}
 
 export const routes: RouteObject[] = [
   {
@@ -63,6 +69,18 @@ export const routes: RouteObject[] = [
         }),
       },
       {
+        path: 'knowledge/recipes',
+        lazy: async () => ({
+          Component: (await import('../features/recipes/RecipeListPage')).RecipeListPage,
+        }),
+      },
+      {
+        path: 'knowledge/recipes/:recipeId',
+        lazy: async () => ({
+          Component: (await import('../features/recipes/RecipePage')).RecipePage,
+        }),
+      },
+      {
         path: 'shopping',
         lazy: async () => ({
           Component: (await import('../features/shopping/ShoppingPage')).ShoppingPage,
@@ -103,9 +121,11 @@ export const routes: RouteObject[] = [
       // «Mit eigener KI» was removed on 7.11.2026 (ADR-0012): old links land on «Erfassen».
       { path: 'add/ai', element: <Navigate to="/add" replace /> },
       { path: 'household', element: <Navigate to="/more" replace /> },
-      // Recipes were removed (ADR-0040); old links and home-screen shortcuts land on Start.
+      // Recipes live under «Wissen» (ADR-0048): old links to a recipe follow; the old tab «Kochen»
+      // lands on Start.
       { path: 'cook', element: <Navigate to="/" replace /> },
-      { path: 'recipes/*', element: <Navigate to="/" replace /> },
+      { path: 'recipes', element: <Navigate to="/knowledge/recipes" replace /> },
+      { path: 'recipes/:recipeId', element: <RecipeRedirect /> },
       // Demo data and design-system reference: dev and demo builds only (dead code in production).
       // Inline on purpose: the bundler drops the lazy chunks only for a literal condition here.
       ...(import.meta.env.DEV || import.meta.env.MODE === 'demo'

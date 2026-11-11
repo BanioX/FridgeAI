@@ -1,6 +1,6 @@
 # ADR-0040: Rezepte und der Tab «Kochen» fallen weg
 
-- **Status:** angenommen
+- **Status:** angenommen; teilweise abgelöst durch [ADR-0048](0048-recipes-return-under-wissen.md) (Rezepte kehren unter «Wissen» zurück)
 - **Datum:** 2026-11-08
 - **Entscheid von:** Alban
 

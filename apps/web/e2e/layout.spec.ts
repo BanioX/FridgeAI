@@ -23,6 +23,8 @@ test('no page scrolls sideways on a phone, even with a long «Schnell erfassen»
     '/inventory',
     '/add',
     '/knowledge',
+    '/knowledge/recipes',
+    '/knowledge/recipes/bananen-pancakes',
     '/more',
     '/more/reports',
     '/more/history',

@@ -1,7 +1,7 @@
 # Rettich – Use Cases (Brainstorming)
 
 > **Status:** Brainstorming zur Diskussion, Stand 6. November 2026.
-> **Nachtrag 9.11.2026:** Was davon gebaut ist, steht im [Plan](./plan.md#stand-nach-200-prs). Ein Abschluss heisst heute «Verwertet» oder «Entsorgt», «Weitergegeben» gibt es nicht mehr ([ADR-0046](adr/0046-awareness-verwertet-entsorgt.md)); die Rezepte sind entfernt ([ADR-0040](adr/0040-no-recipes.md)).
+> **Nachtrag 9.11.2026:** Was davon gebaut ist, steht im [Plan](./plan.md#stand-nach-200-prs). Ein Abschluss heisst heute «Verwertet» oder «Entsorgt», «Weitergegeben» gibt es nicht mehr ([ADR-0046](adr/0046-awareness-verwertet-entsorgt.md)); die Rezepte sind seit dem 11.11.2026 wieder da, unter «Wissen» ([ADR-0048](adr/0048-recipes-return-under-wissen.md)).
 > **Quellen:** [`brief.md`](./brief.md), Blue-Ocean-Analyse (6.11.2026), ATL1 «Unternehmensführung» (Okt. 2025), Businessplan ATL2 (März 2026). Zusammenfassung in [`blue-ocean.md`](./blue-ocean.md).
 
 ## Leitplanken fürs Brainstorming
@@ -172,7 +172,7 @@ Person ─ Haushalt ─ Haus ─ Quartier ─ Gemeinde ─ Kollektiv/Organisatio
 
 ## 3. Kochen & Verwerten: Rezepte
 
-> **Stand 8.11.2026:** Rezepte und der Tab «Kochen» sind entfernt ([ADR-0040](adr/0040-no-recipes.md)). Die Use Cases bleiben als spätere Möglichkeit stehen.
+> **Stand 11.11.2026:** Der Tab «Kochen» ist entfernt ([ADR-0040](adr/0040-no-recipes.md)); die kuratierten Rezepte, «Heute kochen» und «Alle Rezepte» sind unter «Wissen» zurück ([ADR-0048](adr/0048-recipes-return-under-wissen.md)). Abbuchen nach dem Kochen (R-03), eigene Rezepte und die Visionen bleiben spätere Möglichkeiten.
 
 | # | Use Case | Nutzen | Phase |
 | --- | --- | --- | --- |
