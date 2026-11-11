@@ -2,6 +2,30 @@
 
 Alle Änderungen an Rettich (bis 7.11.2026 FridgeAI), neueste zuerst. Wird mit `pnpm release` erzeugt (ADR-0017).
 
+## [0.12.0] – 2026-11-11
+
+**Rezepte unter «Wissen» mit «Da» und «Fehlt», jeden Tag ein «Wusstest du schon?», eine Einkaufsliste aus einem Satz, das öffentliche Repo ohne Suchmaschinen und das Markenbuch für Website und Social Media.**
+
+### Neu
+
+- recipes return as a section under Wissen (ADR-0048) ([#227](https://github.com/BanioX/FridgeAI/pull/227))
+- fact of the day on Start, with awareness facts on hunger ([#225](https://github.com/BanioX/FridgeAI/pull/225))
+- turn one dictated sentence into list items ([#224](https://github.com/BanioX/FridgeAI/pull/224))
+
+### Dokumentation
+
+- brand guide for website, social media and other AI tools ([#228](https://github.com/BanioX/FridgeAI/pull/228))
+- think big, nine layers that make Rettich desirable ([#223](https://github.com/BanioX/FridgeAI/pull/223))
+- solo operating model with about two hours a week ([#222](https://github.com/BanioX/FridgeAI/pull/222))
+- comfort features, what it takes to earn money, competitors ([#221](https://github.com/BanioX/FridgeAI/pull/221))
+- 12-month growth plan, cash sources and food-loss projection ([#220](https://github.com/BanioX/FridgeAI/pull/220))
+- revenue projection for CHF 1 once vs subscription, GS1 2D facts ([#219](https://github.com/BanioX/FridgeAI/pull/219))
+- bring the remaining docs up to v0.11.0 ([#215](https://github.com/BanioX/FridgeAI/pull/215))
+
+### Wartung
+
+- public repo, keep the app out of search engines ([#226](https://github.com/BanioX/FridgeAI/pull/226))
+
 ## [0.11.0] – 2026-11-08
 
 **Verwertet und Entsorgt, Wischen wie bei Spotify, die Laden-Buchstaben, mehrere Quittungen auf einmal und Ziehen auf einen Lagerort.**
