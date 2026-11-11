@@ -38,6 +38,7 @@ Damit Mensch und Maschine dasselbe meinen: Wort in der App (de-CH), Name im Code
 | **Lang drücken und ziehen** | `useDragToLocation`, `dropLocationFrom` | ein Artikel (oder alle ausgewählten) hängt am Finger und landet auf dem Lagerort-Tab, über dem du loslässt; die Knöpfe «Verschieben nach» bleiben der barrierefreie Weg | – |
 | **Laden-Buchstabe** | `ShopBadge`, `shopMark` (PDF) | ein Buchstabe pro Laden im Stil seines Schilds (Coop, Migros, Denner, Lidl, Aldi), immer neben dem Namen; nie die geschützten Marken selbst (P24 im Parkplatz) | – |
 | **Alle übernehmen** | `ReceiptReview`, `batchTotals` | mehrere Quittungen auf einer Seite prüfen und mit einem Knopf in den Vorrat legen | – |
+| **Einkaufsliste aus einem Satz** (K14) | `parseShoppingText` | Ein frei getippter oder per Tastatur-Mikrofon diktierter Satz wird zu einem Listeneintrag pro Produkt, mit Menge und Einheit, wenn genannt; läuft nur auf dem Gerät | – |
 | **Nachkaufen** | `shopping.*`, `ShoppingListItem` | Einkaufsliste | – |
 | **Haushalt** | `Household` | WG, Paar, Familie; hat eine Währung (ADR-0019) | – |
 | **Rappen** | `Rappen` (Typ) | Ganzzahl in der kleinsten Einheit der Haushaltswährung (TD-04) | Cent |

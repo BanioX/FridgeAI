@@ -1,4 +1,4 @@
-import type { Id, OperationOutput } from '@fridgeai/core';
+import { parseShoppingText, toBaseQuantity, type Id, type OperationOutput } from '@fridgeai/core';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { PackagePlus, Plus, X } from 'lucide-react';
 import { useId, useState } from 'react';
@@ -57,18 +57,44 @@ export function ShoppingPage() {
 
   const add = () =>
     run(async () => {
-      const wanted = name.trim();
-      if (wanted === '') {
+      const lines = parseShoppingText(name);
+      if (lines.length === 0) {
         return null;
       }
-      const result = await shopping['shopping.addItem']({
-        commandId: ids.next(),
-        householdId,
-        name: wanted,
-      });
+      const results: { name: string; result: OperationOutput<'shopping.addItem'> }[] = [];
+      for (const line of lines) {
+        const base =
+          line.quantity === undefined || line.unit === undefined
+            ? {}
+            : toBaseQuantity(line.quantity, line.unit);
+        const result = await shopping['shopping.addItem']({
+          commandId: ids.next(),
+          householdId,
+          name: line.name,
+          ...base,
+        });
+        results.push({ name: line.name, result });
+      }
       setName('');
-      const said = result.alreadyOnList ? t.onList(wanted) : t.added(wanted);
-      return result.atHome === undefined ? said : `${said} ${atHomeText(result.atHome)}`;
+      const first = results[0];
+      if (results.length === 1 && first !== undefined) {
+        const said = first.result.alreadyOnList ? t.onList(first.name) : t.added(first.name);
+        return first.result.atHome === undefined
+          ? said
+          : `${said} ${atHomeText(first.result.atHome)}`;
+      }
+      const fresh = results.filter((entry) => !entry.result.alreadyOnList);
+      const known = results.length - fresh.length;
+      const parts = [fresh.length === 0 ? t.allOnList : t.addedMany(fresh.length)];
+      if (known > 0 && fresh.length > 0) {
+        parts.push(t.onListSome(known));
+      }
+      for (const entry of fresh) {
+        if (entry.result.atHome !== undefined) {
+          parts.push(atHomeText(entry.result.atHome));
+        }
+      }
+      return parts.join(' ');
     });
 
   const check = (itemId: Id, checked: boolean) =>
@@ -107,6 +133,11 @@ export function ShoppingPage() {
               </span>
             )}
             {entry.name}
+            {entry.quantity === undefined || entry.unit === undefined ? null : (
+              <span className="ml-2 font-normal text-ink-muted">
+                {formatQuantity(entry.quantity, entry.unit)}
+              </span>
+            )}
           </span>
           {entry.atHome === undefined ? null : (
             <span className="block text-sm text-ink-muted">
@@ -159,23 +190,30 @@ export function ShoppingPage() {
         <label htmlFor={`${id}-name`} className="font-semibold">
           {t.what}
         </label>
-        <div className="flex gap-2">
-          <input
-            id={`${id}-name`}
-            value={name}
-            onChange={(event) => {
-              setName(event.target.value);
-            }}
-            placeholder={t.placeholder}
-            autoComplete="off"
-            enterKeyHint="done"
-            maxLength={80}
-            className="min-h-12 min-w-0 flex-1 rounded-xl border border-line bg-surface px-4 text-lg outline-none focus:border-basil-600"
-          />
-          <Button type="submit" icon={Plus} disabled={busy || name.trim() === ''}>
-            {t.add}
-          </Button>
-        </div>
+        <textarea
+          id={`${id}-name`}
+          value={name}
+          onChange={(event) => {
+            setName(event.target.value);
+          }}
+          placeholder={t.placeholder}
+          aria-describedby={`${id}-hint`}
+          autoComplete="off"
+          rows={3}
+          maxLength={500}
+          className="min-h-24 w-full rounded-xl border border-line bg-surface px-4 py-3 text-lg outline-none focus:border-basil-600"
+        />
+        <p id={`${id}-hint`} className="text-sm text-ink-muted">
+          {t.hint}
+        </p>
+        <Button
+          type="submit"
+          icon={Plus}
+          fullWidth
+          disabled={busy || parseShoppingText(name).length === 0}
+        >
+          {t.add}
+        </Button>
         <p role="status" className="min-h-6 font-semibold text-basil-800">
           {status}
         </p>
