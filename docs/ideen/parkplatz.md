@@ -110,7 +110,7 @@ Ein Partner-Adapter ist Arbeit von Tagen, nicht Monaten. Der Aufwand liegt beim 
 - **Etiketten selbst herstellen** wäre ein anderes Unternehmen: mit Fabriken, in einem Markt grosser Spezialisten.
 - **Der Kern der Idee ist «erfasst sich beim Bezahlen von selbst».** Das geht ohne eigene Hardware:
   1. **Digitaler Kassenzettel** vom Händler (P1): Die Kasse kennt jeden Artikel schon mit Barcode. Mit Einwilligung kommt der Einkauf von selbst in Rettich, mit demselben Erlebnis und ohne Etikett.
-  2. **2D-Code mit Ablaufdatum** (P10): Bis 2027 sollen Kassen 2D-Codes lesen können («Sunrise 2027»). Diese Codes tragen das Ablaufdatum, und Rettich liest sie schon.
+  2. **2D-Code mit Ablaufdatum** (P10): Bis Ende 2027 sollen Kassen 2D-Codes lesen können («Sunrise 2027»). Das ist ein Branchenziel, kein Gesetz, und das Ablaufdatum im Code ist freiwillig: Nur wer es mitdruckt, liefert es. Rettich liest es schon, wenn es drin ist.
   3. **Kamera im Kühlschrank:** Das gehört den Geräteherstellern (P12); Rettich wäre die Software darin.
 - **Lizenz statt Hardware:** Wertvoll ist die Logik, nicht das Etikett: was abläuft, was zu retten ist, wem was gehört, Rezepte. Sie liegt sauber getrennt in `packages/core`. Zwei Wege:
   - ein Vorrats-Modul für die App eines Händlers, bezahlt pro aktivem Haushalt;
