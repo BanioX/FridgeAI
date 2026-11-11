@@ -1,6 +1,6 @@
 import { AxeBuilder, expect, test } from './test';
 
-/** «Wissen» instead of «Kochen» (ADR-0040, ADR-0041): explanations and Haltbarkeit A–Z. */
+/** «Wissen» instead of «Kochen» (ADR-0040, ADR-0041, ADR-0048): explanations and Haltbarkeit A–Z. */
 test('explains the dates and finds how long a food keeps', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('navigation').getByRole('link', { name: 'Wissen' }).click();
@@ -18,7 +18,9 @@ test('explains the dates and finds how long a food keeps', async ({ page }) => {
   await expect(page.getByText(/Reste löffelweise im Eiswürfelbehälter/)).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 
-  // Old links to the recipes land on Start.
+  // The old tab «Kochen» lands on Start; an old recipe link follows to «Wissen» (ADR-0048).
   await page.goto('/cook');
   await expect(page).toHaveURL(/\/$/);
+  await page.goto('/recipes/bananen-pancakes');
+  await expect(page).toHaveURL(/\/knowledge\/recipes\/bananen-pancakes$/);
 });

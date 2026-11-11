@@ -28,7 +28,7 @@ Local-first PWA für Schweizer Haushalte (WGs, Paare, Familien). Rettich zeigt d
 
 ## Was die App heute kann
 
-Unten fünf Tabs: **Start · Vorrat · ＋ Erfassen · Wissen · Mehr** ([ADR-0031](docs/adr/0031-tab-navigation.md), [ADR-0041](docs/adr/0041-knowledge-tab.md)). Hinter ＋ liegen alle Wege in den Vorrat, unter «Wissen» was wie lange hält, unter «Mehr» Auszüge, Journal, Nachkaufen und «Deine Daten». Rezepte gibt es nicht mehr ([ADR-0040](docs/adr/0040-no-recipes.md)).
+Unten fünf Tabs: **Start · Vorrat · ＋ Erfassen · Wissen · Mehr** ([ADR-0031](docs/adr/0031-tab-navigation.md), [ADR-0041](docs/adr/0041-knowledge-tab.md)). Hinter ＋ liegen alle Wege in den Vorrat, unter «Wissen» was wie lange hält, unter «Mehr» Auszüge, Journal, Nachkaufen und «Deine Daten». Rezepte sind ein Abschnitt unter «Wissen», kein eigener Tab ([ADR-0048](docs/adr/0048-recipes-return-under-wissen.md), vorher entfernt mit [ADR-0040](docs/adr/0040-no-recipes.md)).
 
 | Bereich | Funktion |
 | --- | --- |
@@ -46,7 +46,7 @@ Unten fünf Tabs: **Start · Vorrat · ＋ Erfassen · Wissen · Mehr** ([ADR-00
 | **Produktdaten** | Nach dem Scan: Bild, Marke, Nährwerte, Nutri-Score, Allergene (Open Food Facts, 30 Tage offline); fehlen die Nährwerte, liest Rettich sie aus einem Foto oder Screenshot der Nährwerttabelle, auf dem Gerät |
 | **Nachkaufen** | Unter «Mehr»: ein Satz wie «Milch, 2 Joghurt und ein Brot» wird zur Liste (auch diktiert per Tastatur-Mikrofon), «Du hast noch …» gegen Doppelkäufe, abhaken, «In den Vorrat legen» |
 | **Bilanz** | Zwei Kreise «Verwertet» (Onyx) und «Entsorgt» (Rot) nach Wert, auf Start («Bilanz November») und auf der Quittung «Bilanz»; ein Tipp auf einen Kreis öffnet im Journal, was verwertet oder entsorgt wurde ([ADR-0046](docs/adr/0046-awareness-verwertet-entsorgt.md), [ADR-0047](docs/adr/0047-names-like-a-private-bank.md)). Gerettet (selbst bestätigt: «ohne Rettich im Abfall gelandet») und entsorgt diesen Monat in CHF und Artikeln, «x % gerettet von allem, was knapp wurde» ([ADR-0039](docs/adr/0039-rescue-confirmed.md)). Nach einer Rettung: «Gerettet: Joghurt, CHF 2.10», der Monat bis heute und ein «Wusstest du schon?» ([ADR-0042](docs/adr/0042-rescue-reward.md)). Auf Start wächst «Dein Rettich» mit jeder Rettung im Monat, bis «Vorbild» ([ADR-0043](docs/adr/0043-growing-rettich.md)) |
-| **Wissen** | «Kurz erklärt» (Mindesthaltbarkeits- und Verbrauchsdatum, richtig kühlen, einfrieren) und «Haltbarkeit A–Z»: jede Kategorie mit Score 1–10, wie lange sie zu, offen und eingefroren hält, und Tipps; mit Suche |
+| **Wissen** | «Rezepte»: «Heute kochen» (was bald abläuft zuerst) und «Alle Rezepte»; ein Rezept zeigt, was «Da» ist und was «Fehlt», und setzt Fehlendes mit einem Tipp auf «Nachkaufen». «Kurz erklärt» (Mindesthaltbarkeits- und Verbrauchsdatum, richtig kühlen, einfrieren) und «Haltbarkeit A–Z»: jede Kategorie mit Score 1–10, wie lange sie zu, offen und eingefroren hält, und Tipps; mit Suche |
 | **Mehr** | Auszüge, Journal, Nachkaufen, App installieren; unter «Deine Daten» als JSON exportieren, wieder importieren oder löschen, Datenschutz in Kürze |
 
 **Aussehen:** drei Premium-Töne (Smaragd, Silber, Onyx) nach Apples Human Interface Guidelines, Symbol: ein aufrechter weisser Rettich ([`docs/design.md`](docs/design.md)).

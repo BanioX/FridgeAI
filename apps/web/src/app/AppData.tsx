@@ -1,10 +1,12 @@
 import {
+  createRecipeQueries,
   createShoppingUseCases,
   householdCurrency,
   type CurrencyCode,
   type Id,
   type IdGenerator,
   type LocalDate,
+  type RecipeQueries,
   type ShoppingUseCases,
 } from '@fridgeai/core';
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
@@ -37,6 +39,7 @@ export interface AppData {
   inventory: InventoryHandlers;
   shopping: ShoppingUseCases;
   household: HouseholdHandlers;
+  recipes: RecipeQueries;
 }
 
 const AppDataContext = createContext<AppData | null>(null);
@@ -92,6 +95,7 @@ export function AppDataProvider({ children, db }: { children: ReactNode; db?: Fr
           inventory,
           shopping: createShoppingUseCases(appContext(context)),
           household: createHouseholdHandlers(context),
+          recipes: createRecipeQueries(appContext(context)),
         });
       })
       .catch(() => {
