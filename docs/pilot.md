@@ -4,7 +4,7 @@ Für den ersten Pilot mit Alban und einer weiteren Person. Stand: v0.11.0. Claud
 
 ## Einrichten (5 Minuten pro Person)
 
-1. Auf dem iPhone in **Safari** öffnen: `https://fridgeai.hyseni-alban.workers.dev`.
+1. Auf dem iPhone in **Safari** die Adresse der App öffnen, die du von Alban bekommst.
    - Voraussetzung: In Cloudflare ist unter Domains «Production» eingeschaltet ([`previews.md`](./previews.md)).
 2. **Auf den Home-Bildschirm legen:** unten «Teilen», dann «Zum Home-Bildschirm».
    - Das ist wichtig: Nur so behält das iPhone die Daten dauerhaft und startet Rettich offline wie eine App.

@@ -25,7 +25,7 @@ Rechtliche Lage (keine Rechtsberatung): Das Lesen öffentlicher Seiten ist eine 
 1. **Rettich sammelt öffentliche Produktdaten** der Händler-Websites, wo sie technisch erreichbar sind. Heute ist das Aldi (1'700 Lebensmittel). Lidl und Denner zeigen online kaum Lebensmittel (Aktionen, Weine) und folgen, wenn sich das ändert.
 2. **Leitplanken, nicht verhandelbar:**
    - **Kein Umgehen von Schutz:** keine Tarnung als Browser, kein Lösen von Captchas, keine wechselnden IP-Adressen und kein Login. Eine technische Sperre ist ein ausdrückliches Nein des Betreibers. Sie auszuhebeln ist keine Grauzone mehr und kann strafrechtlich relevant werden; das lässt sich nicht später per Einigung lösen. Migros und Coop fallen darum weg, solange sie sperren.
-   - **Ehrlicher Name** «RettichBot» mit Link zur App. **robots.txt wird beachtet**, höchstens eine Anfrage pro Sekunde und Händler.
+   - **Ehrlicher Name** «RettichBot» mit Link zum Repo (bis 11.11.2026 zur App, ADR-0049). **robots.txt wird beachtet**, höchstens eine Anfrage pro Sekunde und Händler.
    - **Nur Fakten:** Name, Marke, Grösse, Kategorie, Zutaten, Händler-Nummer und Barcode, falls vorhanden. Keine Bilder, keine Werbetexte, keine Preise ohne eigenen Entscheid.
    - **Stopp auf Zuruf:** Verlangt ein Händler, dass Rettich aufhört, endet das Sammeln für ihn sofort, und seine Daten werden mit dem nächsten Release entfernt.
 3. **Migros und Coop über Open Food Facts:** etwa 10'000 Migros- und 2'300 Coop-Produkte aus der Schweiz, mit Barcode und Laden. Die Lizenz ist ODbL: Quelle nennen («Daten von Open Food Facts»), und der daraus gebaute Datensatz steht unter derselben Lizenz. Abgefragt wird höchstens alle 7 Sekunden (Regel von Open Food Facts für die Suche).

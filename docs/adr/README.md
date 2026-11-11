@@ -55,3 +55,4 @@ Jeder Entscheid mit Folgen steht hier als eigene Datei `NNNN-titel.md` (ADR-0001
 | [0045](0045-retailer-catalog.md) | Produktdaten der Händler sammeln (höflicher Crawler) | angenommen; `retail-ch.json` noch ungenutzt (TD-16) | 2026-11-08 |
 | [0046](0046-awareness-verwertet-entsorgt.md) | Rettich ist eine Awareness-App: «verwertet» und «entsorgt» | angenommen | 2026-11-08 |
 | [0047](0047-names-like-a-private-bank.md) | Namen wie bei einer Schweizer Privatbank | angenommen | 2026-11-08 |
+| [0049](0049-public-repo-noindex.md) | Öffentliches Repo, App nicht in Suchmaschinen | angenommen | 2026-11-11 |

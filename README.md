@@ -55,7 +55,7 @@ Geplant: Teilen in WG und Familie, Kosten aufteilen, Push-Erinnerungen, die Bila
 
 ## Am Handy ausprobieren
 
-Die App: **https://fridgeai.hyseni-alban.workers.dev** (Stand `main`). Jeder Pull Request bekommt zusätzlich einen eigenen **Vorschau-Link** (Cloudflare schreibt ihn als Kommentar in den PR). Einrichtung und Tipps: [`docs/previews.md`](docs/previews.md).
+Die Adresse der App gibt Alban persönlich weiter. Sie steht bewusst nicht im Repo, und die App sagt Suchmaschinen «noindex» ([ADR-0049](docs/adr/0049-public-repo-noindex.md)). Jeder Pull Request bekommt zusätzlich einen eigenen **Vorschau-Link** (Cloudflare schreibt ihn als Kommentar in den PR). Einrichtung und Tipps: [`docs/previews.md`](docs/previews.md).
 
 1. Link öffnen (iPhone: Teilen → «Zum Home-Bildschirm» für App-Gefühl).
 2. In einem **Vorschau-Link** eines Pull Requests auf Start **«Beispieldaten laden»** tippen: Ein typischer WG-Kühlschrank erscheint. In der App auf `main` gibt es keine Beispieldaten, dort beginnst du mit einer Quittung oder einem Artikel.

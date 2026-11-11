@@ -11,6 +11,12 @@ test('shell renders, navigates and has no a11y violations', async ({ page }) => 
 
   const response = await page.goto('/');
   expect(response?.headers()['content-security-policy']).toContain("default-src 'self'");
+  // Never in search engines (ADR-0049): header and meta tag.
+  expect(response?.headers()['x-robots-tag']).toBe('noindex, nofollow');
+  await expect(page.locator('head meta[name="robots"]')).toHaveAttribute(
+    'content',
+    'noindex, nofollow',
+  );
   await expect(page.getByRole('heading', { level: 1, name: 'Start' })).toBeVisible();
   await expect(page.locator('head link[rel="manifest"]')).toHaveCount(1);
 

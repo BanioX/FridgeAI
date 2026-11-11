@@ -12,7 +12,7 @@ Was wir aus Fehlern gelernt haben, mit Beleg. Claude trägt ein, Alban kann jede
 | L-06 | Open Food Facts erlaubt etwa 10 Suchen pro Minute | Warteschlange mit höchstens 8 pro Minute, Fortschritt zeigen | #149 |
 | L-07 | Absolut positionierte `sr-only`-Texte entkommen einem Scroll-Container ohne `position` | Scroll-Container mit `relative`; E2E prüft seitliches Scrollen auf allen Seiten | #139 |
 | L-08 | Auf Squash-Merges gestapelte PRs bekommen Konflikte | Erst mergen, dann den nächsten auf main aufbauen; Stapel nur wenn nötig | #129, #134 |
-| L-09 | CI-Minuten kosten Geld (privates Repo) | Jeden Push lokal voll prüfen, Doku-PRs überspringen Tests | #130, CLAUDE.md |
+| L-09 | CI-Minuten kosten Geld (privates Repo bis 11.11.2026; seither öffentlich und gratis, die Regel gilt trotzdem) | Jeden Push lokal voll prüfen, Doku-PRs überspringen Tests | #130, CLAUDE.md |
 | L-10 | Ergebnisse von Hilfs-Agenten können gute Unit-Tests haben und trotzdem E2E brechen | Jedes Agenten-Ergebnis selbst reviewen und die volle E2E-Suite laufen lassen | #153, #157 |
 | L-11 | iOS fixiert Symbol und Speicher einer Web-App beim Hinzufügen zum Home-Bildschirm | Neues Symbol oder neue Adresse: vorher exportieren, danach importieren | #151, ADR-0020 |
 | L-12 | Unicode-Zeichen statt Escape-Sequenzen in Regex lösen `no-irregular-whitespace` aus | In Regex ` ` usw. schreiben, nie das Zeichen selbst | #152 |
