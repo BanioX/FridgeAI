@@ -4,6 +4,37 @@ Albans Fragen vom 11.11.2026: «Ist da Cash möglich für mich? Hochrechnung Foo
 
 Das ist ein Vorschlag von Claude. Entscheide mit Kosten, neuen Datenflüssen oder Partnerverträgen trifft Alban (CLAUDE.md). Grundlage sind die belegten Zahlen in [`markt-und-timing.md`](./markt-und-timing.md) und die Hochrechnung in [`monetarisierung.md`](./monetarisierung.md). Gerechnet wird mit 1 Nutzer = 1 Haushalt; das ist vorsichtig, weil sich in einer WG mehrere einen Haushalt teilen.
 
+## Betriebsmodell: allein, rund 2 Stunden pro Woche
+
+Alban, 11.11.2026: «Ich bin allein und bleibe es auch, zudem 90 % Job und 20 % Schule und das hier nebenbei. Du musst die ganze Arbeit machen.» Daraus folgen drei Regeln für alles in diesem Fahrplan:
+
+1. **Claude macht alles, was Text, Code oder Bild ist:**
+   - Programm und Tests, Releases, Doku;
+   - Datenschutzerklärung, Store-Texte und Screenshots;
+   - Startseite und Google-Seiten;
+   - Beiträge für Social Media, Pressetexte, Förderanträge, Mails an Partner (als Entwurf).
+2. **Alban macht nur, was eine Person mit Namen, Ausweis, Unterschrift oder Kreditkarte braucht:**
+   - Konten eröffnen, Domain kaufen;
+   - Mails abschicken, Anrufe;
+   - Entscheide mit Ja oder Nein.
+3. **Nur Wege ohne laufenden Betrieb:**
+   - Alles bleibt auf dem Gerät; der einzige Server ist später der Sync für «Haushalt teilen», Ende-zu-Ende verschlüsselt auf Cloudflare (Gratis-Plan).
+   - Bezahlt wird über die App-Stores: Sie rechnen ab, ziehen die MWST ein und erledigen Rückerstattungen.
+   - Wachstum über Kanäle, die allein laufen: Suche im App Store, Google-Seiten «Wie lange hält …?», die teilbare Bilanz, die Einladung in der WG.
+
+**Albans Woche:** Sonntag 20 Minuten Wochenbericht mit höchstens drei Ja/Nein-Fragen. Dazu höchstens 1 Stunde für das, was nur er kann (posten, eine Mail abschicken).
+
+**Einmalig im Dezember** (rund 6 Stunden, mit Schritt-für-Schritt-Anleitung von Claude):
+- Apple-Developer-Konto (USD 99 pro Jahr) und Google-Play-Konto (USD 25 einmal). Google verlangt bei neuen Einzelkonten einen geschlossenen Test mit 12 Personen während 14 Tagen.
+- Domain.
+- Codemagic-Konto: Die iOS-App wird auf einem Mac gebaut. Codemagic gibt Einzelpersonen 500 Gratis-Minuten pro Monat auf macOS, ohne eigenen Mac.
+- Eine Mail-Adresse für Support.
+- Eine Stunde Datenschutz-Prüfung durch eine Fachperson vor dem Store-Start.
+
+**Was im Fahrplan deshalb später kommt:**
+- Vertrieb mit Terminen (Händler, Gemeinden) erst ab rund 5'000 aktiven Haushalten und mit gemessener Wirkung, und dann zuerst per Mail.
+- Social Media nur auf einem Kanal, mit vorbereiteten Beiträgen.
+
 ## Ist Cash möglich?
 
 Ja, aber nicht dort, wo man es zuerst sucht.
