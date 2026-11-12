@@ -38,7 +38,7 @@ Prüfung aller Funktionen aus ADR-0048 bis ADR-0062 und der Funktionen ohne eige
 | Lagerort-Kacheln | ja | ja | – | – | – | Notvorrat-Quittung nein (K7) | – | – | – | – |
 | Sicherung | ja | – | – | – | ja | – | nach Import nein (K3) | nein (K10) | – | – |
 | Einräumen | – | ja | ja | – | – | – | – | nein (K10) | – | – |
-| Check Fach für Fach | nur wenn fällig (K5) | kein Einstieg (K5) | – | teilweise | ja | – | ja | nein (K10) | – | ja |
+| Check Fach für Fach | ja, wenn fällig | ja, unter «Mehr» jederzeit (K5) | – | teilweise | ja | – | ja | nein (K10) | – | ja |
 | Mehrere ändern | – | Platz fehlt (K11) | – | – | – | – | – | nein (K10) | – | – |
 
 Daten gehen keine verloren: Alle Tabellen stehen in der Sicherung und kommen beim Import zurück. Es fehlten nur Tests mit Hin und Zurück für einzelne Felder (K3).
@@ -51,7 +51,7 @@ Daten gehen keine verloren: Alle Tabellen stehen in der Sicherung und kommen bei
 | K2 | Journal zählt wie die Bilanz (Verarbeitetes nicht doppelt, «→ Kuchen»), Person an der Zeile | in Arbeit |
 | K3 | Tests mit Hin und Zurück für Person, Verarbeiten, Mindestbestand; «Letzte Sicherung» nach Import und Löschen | in Arbeit |
 | K4 | Badges «Selbst gemacht» und «Reste»; «etwa» auf Start | in Arbeit |
-| K5 | Kühlschrank-Check auch ohne Fälligkeit starten (Vorrat, Mehr); Person auf der Check-Karte | offen |
+| K5 | Kühlschrank-Check auch ohne Fälligkeit starten (Vorrat, Mehr); Person auf der Check-Karte | erledigt |
 | K6 | PDF: Plätze, Person und Verarbeitetes im Auszug | offen |
 | K7 | PDF: Abzeichen im Zeitraum; Quittung für den Notvorrat | offen |
 | K8 | «Datum fotografieren» auch beim Ändern und beim Einräumen | offen |

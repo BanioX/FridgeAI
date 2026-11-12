@@ -888,6 +888,15 @@ export const messages = {
     installIos:
       'In Safari unten auf «Teilen» tippen, dann «Zum Home-Bildschirm». Danach startet Rettich wie eine App, auch offline.',
     installOther: 'Im Browser-Menü «App installieren» oder «Zum Startbildschirm» wählen.',
+    /** The last fridge check, counted in days (null: there was none on this device). */
+    checkDetail: (days: number | null) =>
+      days === null
+        ? 'Noch nie'
+        : days === 0
+          ? 'Zuletzt heute'
+          : days === 1
+            ? 'Zuletzt gestern'
+            : `Zuletzt vor ${String(days)} Tagen`,
     reportsDetail: 'Bilanz, Vorrat und Einkäufe als PDF, zum Teilen',
     historyDetail: 'Verwertet und entsorgt: ansehen, ändern, löschen',
     shoppingDetail: 'Was du wieder brauchst',
