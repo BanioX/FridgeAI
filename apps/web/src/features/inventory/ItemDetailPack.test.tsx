@@ -13,8 +13,11 @@ import { ItemDetailPage } from './ItemDetailPage';
 
 const t = messages.itemDetail;
 
-/** A pack of 10 slices, `taken` of them already gone (one undone entry on top). */
-async function renderPack(quantity: number, taken: number) {
+/**
+ * A pack of 10 slices, `taken` of them already gone (one undone entry on top). With `perPack` the
+ * item is counted in packs of that size (ADR-0066).
+ */
+async function renderPack(quantity: number, taken: number, perPack?: number) {
   const db = testDb();
   const profile = await ensureLocalHousehold(db, browserClock, browserIds, {
     household: messages.defaults.householdName,
@@ -34,6 +37,7 @@ async function renderPack(quantity: number, taken: number) {
     location: 'fridge',
     quantity,
     unit: 'pcs',
+    ...(perPack === undefined ? {} : { piecesPerPack: perPack }),
   });
   const record = (amount: number) =>
     handlers['inventory.recordOutcome']({
@@ -121,6 +125,23 @@ describe('ItemDetailPage: what is left of the pack', () => {
     expect(menu.isConnected).toBe(false);
     const wasted = (await db.outcomes.toArray()).filter((entry) => entry.outcome === 'wasted');
     expect(wasted.map((entry) => entry.quantity)).toEqual([1]);
+  });
+
+  it('shows the opened pack and says what waits behind it (ADR-0066)', async () => {
+    // Two packs of 10, three slices gone: the ring is the opened pack, not all 20.
+    await renderPack(20, 3, 10);
+    expect(await screen.findByRole('img', { name: t.packLabel('7', '10') })).toBeDefined();
+    expect(screen.getByText(t.packBehind(1))).toBeDefined();
+    await userEvent.click(ring('7', '10'));
+    expect(await screen.findByText(t.packLeft('6', '10'))).toBeDefined();
+  });
+
+  it('keeps one status on the page: what a tap did is a polite live region', async () => {
+    await renderPack(10, 0);
+    await userEvent.click(ring('10', '10'));
+    const said = await screen.findByText(t.packTook('1', 'eaten'));
+    expect(said.getAttribute('aria-live')).toBe('polite');
+    expect(screen.queryAllByRole('status').every((status) => !status.contains(said))).toBe(true);
   });
 
   it('closes the item when the last slice goes', async () => {

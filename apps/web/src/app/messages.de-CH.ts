@@ -79,6 +79,23 @@ export const messages = {
     },
   },
   units: { pcs: 'Stk.', g: 'g', ml: 'ml' },
+  /** Pieces counted in packs (ADR-0066). */
+  packText: {
+    /** On the item page, where there is room. */
+    full: {
+      whole: (packs: number, per: string) =>
+        packs === 1 ? `1 Packung à ${per} Stk.` : `${String(packs)} Packungen à ${per} Stk.`,
+      both: (packs: number, per: string, open: string) =>
+        `${String(packs)} ${packs === 1 ? 'Packung' : 'Packungen'} à ${per} + ${open} Stk.`,
+    },
+    /** In a row of the list, next to the date: the long form was cut off at 390 px. */
+    short: {
+      whole: (packs: number, per: string) => `${String(packs)} × ${per} Stk.`,
+      both: (packs: number, per: string, open: string) =>
+        `${String(packs)} × ${per} + ${open} Stk.`,
+    },
+    opened: (open: string, per: string) => `${open} von ${per} Stk.`,
+  },
   locations: {
     fridge: 'Kühlschrank',
     freezer: 'Tiefkühler',
@@ -375,11 +392,17 @@ export const messages = {
     /** The strips behind a swiped row (Alban, 8.11.2026). */
     outcomes: { eaten: 'Verwertet', wasted: 'Entsorgt' },
     piece: '−1',
+    /** Counted in packs (ADR-0066): the swipe takes a pack, not a slice. */
+    pack: '1 Packung',
+    packRest: 'Rest der Packung',
     portion: '1 Portion',
     rest: 'alles',
     /** «1 Glace verwertet» or «1 Glace entsorgt» for whole pieces. */
     pieces: (count: number, name: string, outcome: 'eaten' | 'wasted') =>
       `${String(count)} ${name} ${outcome === 'eaten' ? 'verwertet' : 'entsorgt'}`,
+    /** «Schmelzkäse: 1 Packung verwertet», «Schmelzkäse: Rest der Packung (7 Stk.) entsorgt». */
+    packs: (name: string, whole: boolean, amount: string, outcome: 'eaten' | 'wasted') =>
+      `${name}: ${whole ? '1 Packung' : `Rest der Packung (${amount})`} ${outcome === 'eaten' ? 'verwertet' : 'entsorgt'}`,
     /** «Reis: 250 g verwertet» for amounts and fractions. */
     amount: (name: string, amount: string, outcome: 'eaten' | 'wasted') =>
       `${name}: ${amount} ${outcome === 'eaten' ? 'verwertet' : 'entsorgt'}`,
@@ -474,6 +497,9 @@ export const messages = {
     packLabel: (left: string, start: string) => `Packung: ${left} von ${start} übrig`,
     packTaken: (taken: string) => `${taken} schon verwertet oder entsorgt`,
     packFull: 'Ganze Packung',
+    /** Counted in packs (ADR-0066): the ring shows the pack in use, this what waits behind it. */
+    packBehind: (packs: number) =>
+      packs === 1 ? 'Dazu 1 ganze Packung' : `Dazu ${String(packs)} ganze Packungen`,
     /** Tap the ring: one piece verwertet; hold it or ⋯ for the menu (ADR-0063 Nachtrag). */
     packTap: (left: string, start: string) =>
       `Packung: ${left} von ${start} übrig. Tippen: 1 Stück verwertet.`,
@@ -823,7 +849,7 @@ export const messages = {
       },
       {
         title: 'Was von der Packung übrig ist',
-        text: 'Bei Stückware wie Eiern oder Käsescheiben zeigt die Artikelseite einen Ring mit einem Teil pro Stück, zum Beispiel «7 von 10 übrig». Tippst du auf den Ring, ist ein Stück verwertet; hältst du ihn gedrückt, kannst du ein Stück entsorgen oder das letzte zurücklegen.',
+        text: 'Bei Stückware wie Eiern oder Käsescheiben zeigt die Artikelseite einen Ring mit einem Teil pro Stück, zum Beispiel «7 von 10 übrig». Tippst du auf den Ring, ist ein Stück verwertet; hältst du ihn gedrückt, kannst du ein Stück entsorgen oder das letzte zurücklegen. Käsescheiben zählt Rettich als Packung: Ein Wisch in der Liste nimmt die ganze Packung, der Ring eine Scheibe.',
       },
     ],
     guideTitle: 'Haltbarkeit A–Z',

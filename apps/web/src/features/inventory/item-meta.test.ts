@@ -30,4 +30,17 @@ describe('itemMeta', () => {
     expect(itemMeta(withSpot, false)).toBe('1 Stk. · Vorrat');
     expect(itemMeta({ ...withSpot, spot: null })).toBe('1 Stk. · Vorrat');
   });
+
+  it('counts in packs where the item knows its pack (ADR-0066)', () => {
+    const packed = (quantity: number) =>
+      ({ quantity, unit: 'pcs', location: 'fridge', piecesPerPack: 10 }) as InventoryItemView;
+    // Short in a row of the list, in full on the item page.
+    expect(itemMeta(packed(10))).toBe('1 × 10 Stk. · Kühlschrank');
+    expect(itemMeta(packed(20))).toBe('2 × 10 Stk. · Kühlschrank');
+    expect(itemMeta(packed(7))).toBe('7 von 10 Stk. · Kühlschrank');
+    expect(itemMeta(packed(17))).toBe('1 × 10 + 7 Stk. · Kühlschrank');
+    expect(itemMeta(packed(10), true, 'full')).toBe('1 Packung à 10 Stk. · Kühlschrank');
+    expect(itemMeta(packed(20), true, 'full')).toBe('2 Packungen à 10 Stk. · Kühlschrank');
+    expect(itemMeta(packed(17), true, 'full')).toBe('1 Packung à 10 + 7 Stk. · Kühlschrank');
+  });
 });

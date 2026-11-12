@@ -4,7 +4,7 @@ Jeder Entscheid mit Folgen steht hier als eigene Datei `NNNN-titel.md` (ADR-0001
 
 **Pflege:** Wer ein ADR anlegt oder dessen Status ändert, führt diese Tabelle im selben PR nach. Ein abgelöstes ADR bleibt als Verlauf stehen, seine Statuszeile nennt das ADR, das es ablöst.
 
-**Stand:** 12.11.2026, 65 Entscheide.
+**Stand:** 12.11.2026, 66 Entscheide.
 
 | Nr. | Titel | Status | Datum |
 | --- | --- | --- | --- |
@@ -73,3 +73,4 @@ Jeder Entscheid mit Folgen steht hier als eigene Datei `NNNN-titel.md` (ADR-0001
 | [0063](0063-pack-left.md) | Packung: was übrig ist | angenommen | 2026-11-12 |
 | [0064](0064-fresh-nutrition.md) | Geschätzte Nährwerte für frische Lebensmittel (BLV) | angenommen | 2026-11-12 |
 | [0065](0065-ideas-stay-private.md) | Ideen und Vergleiche bleiben privat | angenommen | 2026-11-12 |
+| [0066](0066-pack-and-content.md) | Packung und Inhalt | angenommen | 2026-11-12 |

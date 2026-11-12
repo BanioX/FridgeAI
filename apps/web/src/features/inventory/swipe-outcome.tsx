@@ -113,11 +113,18 @@ export function useSwipeOutcome(): {
           const text =
             portion.kind === 'piece'
               ? messages.swipe.pieces(portion.quantity, item.name, outcome)
-              : messages.swipe.amount(
-                  item.name,
-                  formatQuantity(portion.quantity, item.unit),
-                  outcome,
-                );
+              : portion.kind === 'pack' || portion.kind === 'packRest'
+                ? messages.swipe.packs(
+                    item.name,
+                    portion.kind === 'pack',
+                    formatQuantity(portion.quantity, item.unit),
+                    outcome,
+                  )
+                : messages.swipe.amount(
+                    item.name,
+                    formatQuantity(portion.quantity, item.unit),
+                    outcome,
+                  );
           setToast({
             key: Date.now(),
             text,

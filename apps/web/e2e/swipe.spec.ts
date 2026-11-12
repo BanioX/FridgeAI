@@ -23,8 +23,8 @@ async function addGlace(page: Page) {
 }
 
 /** A negative distance swipes to the left («Verwertet»), a positive one to the right («Entsorgt»). */
-async function swipe(page: Page, distance: number) {
-  const row = page.getByRole('link', { name: /Glace/ });
+async function swipe(page: Page, distance: number, name = /Glace/) {
+  const row = page.getByRole('link', { name });
   // After a swipe the row springs back for 300 ms: measure it only once it stands still.
   let last: number | undefined;
   await expect
@@ -95,4 +95,21 @@ test('swipes left for «Verwertet», right for «Entsorgt», undoes, and a short
   await page.goBack();
   await expect(row).toBeVisible();
   await expect(page.getByText(/^Tipp: Wisch nach links/)).toBeHidden();
+});
+
+test('a swipe on cheese slices takes a pack, not one slice (ADR-0066)', async ({ page }) => {
+  await page.goto('/inventory/new');
+  await page.getByLabel('Was ist es?').fill('Schmelzkäse');
+  if (await page.getByLabel('Menge').isHidden()) {
+    await page.getByText('Mehr Angaben').click();
+  }
+  await page.getByLabel('Menge').fill('20');
+  await page.getByRole('button', { name: 'Speichern', exact: true }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
+  const row = page.getByRole('link', { name: /Schmelzkäse/ });
+  await expect(row).toContainText('2 × 10 Stk.');
+
+  await swipe(page, -200, /Schmelzkäse/);
+  await expect(page.getByText('Schmelzkäse: 1 Packung verwertet')).toBeVisible();
+  await expect(row).toContainText('1 × 10 Stk.');
 });

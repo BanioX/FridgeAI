@@ -100,6 +100,11 @@ export const InventoryItemSchema = z.object({
   /** For pieces: how they are packed and what one contains («2 Becher à 180 g»). */
   container: ContainerSchema.optional(),
   packageSize: PackageSizeSchema.optional(),
+  /**
+   * Pieces in one pack, e.g. 10 slices of Schmelzkäse (ADR-0066): a swipe then takes a pack, the
+   * ring on the item page a piece. Absent: every piece is its own pack (4 Becher Joghurt).
+   */
+  piecesPerPack: z.int().min(2).max(200).optional(),
   purchasedAt: IsoDateTimeSchema,
   /** Calendar day of expiry (Europe/Zurich), not an instant. */
   expiresOn: LocalDateSchema,

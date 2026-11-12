@@ -97,8 +97,18 @@ describe('portioning', () => {
     });
   });
 
-  it('counts cheese slices one by one in packs of 8, 10 or 12 (ADR-0063)', () => {
-    expect(byId('dairy-cheese-slices')).toEqual({ unit: 'pcs', packs: [8, 10, 12], splits: [] });
+  it('counts cheese slices as a pack of 10, 8 or 12 (ADR-0063, ADR-0066)', () => {
+    expect(byId('dairy-cheese-slices')).toEqual({
+      unit: 'pcs',
+      packs: [10, 8, 12],
+      sharedPack: true,
+      splits: [],
+    });
+  });
+
+  it('counts only cheese slices as a pack: eggs and yoghurt stand for themselves', () => {
+    const shared = CATEGORIES.filter((category) => portioningOf(category).sharedPack === true);
+    expect(shared.map((category) => category.id)).toEqual(['dairy-cheese-slices']);
   });
 
   it('counts bananas and yoghurt cups, cuts cake in eighths and hard cheese in thirds', () => {

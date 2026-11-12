@@ -19,12 +19,15 @@ export type PackOutcome = 'eaten' | 'wasted';
  */
 export function PackControl({
   pack,
+  behind = 0,
   busy,
   note,
   onTake,
   onUndo,
 }: {
   pack: PackLeft;
+  /** Whole packs waiting behind the one the ring shows (ADR-0066). */
+  behind?: number;
   busy: boolean;
   /** What the last tap did, with an undo while it is the last action. */
   note: { text: string; undoable: boolean } | null;
@@ -66,80 +69,82 @@ export function PackControl({
   };
 
   return (
-    <div className="mt-4 flex items-start gap-3 border-t border-line pt-4">
-      <button
-        type="button"
-        disabled={busy}
-        aria-label={t.packTap(left, start)}
-        aria-haspopup="dialog"
-        className="-m-1 shrink-0 select-none rounded-full p-1 [-webkit-touch-callout:none] hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-basil-600 active:scale-95 disabled:opacity-60"
-        onPointerDown={() => {
-          held.current = false;
-          stop();
-          timer.current = window.setTimeout(() => {
+    <div className="mt-4 space-y-1 border-t border-line pt-4">
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          disabled={busy}
+          aria-label={t.packTap(left, start)}
+          aria-haspopup="dialog"
+          className="-m-1 shrink-0 select-none rounded-full p-1 [-webkit-touch-callout:none] hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-basil-600 active:scale-95 disabled:opacity-60"
+          onPointerDown={() => {
+            held.current = false;
+            stop();
+            timer.current = window.setTimeout(() => {
+              held.current = true;
+              setMenu(true);
+            }, HOLD_MS);
+          }}
+          onPointerUp={stop}
+          onPointerLeave={stop}
+          onContextMenu={(event) => {
+            // Long press on a phone and right click on a computer open the menu.
+            event.preventDefault();
+            stop();
             held.current = true;
             setMenu(true);
-          }, HOLD_MS);
-        }}
-        onPointerUp={stop}
-        onPointerLeave={stop}
-        onContextMenu={(event) => {
-          // Long press on a phone and right click on a computer open the menu.
-          event.preventDefault();
-          stop();
-          held.current = true;
-          setMenu(true);
-        }}
-        onClick={() => {
-          stop();
-          if (held.current) {
-            held.current = false;
-            return;
-          }
-          onTake('eaten');
-        }}
-      >
-        <PackRing pack={pack} label={t.packLabel(left, start)} />
-      </button>
-      <div className="min-w-0 flex-1">
-        <p className="font-semibold">{t.packLeft(left, start)}</p>
-        <div role="status" className="text-sm text-ink-muted">
-          {note === null ? (
-            pack.start > pack.left ? (
-              t.packTaken(formatPieces(pack.start - pack.left))
-            ) : (
-              t.packFull
-            )
-          ) : (
-            <span className="flex flex-wrap items-center gap-x-2">
-              <span className="font-semibold text-basil-800">{note.text}</span>
-              {note.undoable ? (
-                <button
-                  type="button"
-                  disabled={busy}
-                  className="min-h-11 font-semibold text-basil-700 underline-offset-2 hover:underline"
-                  onClick={onUndo}
-                >
-                  {t.undo}
-                </button>
-              ) : null}
-            </span>
-          )}
+          }}
+          onClick={() => {
+            stop();
+            if (held.current) {
+              held.current = false;
+              return;
+            }
+            onTake('eaten');
+          }}
+        >
+          <PackRing pack={pack} label={t.packLabel(left, start)} />
+        </button>
+        <div className="min-w-0 flex-1">
+          <p className="font-semibold">{t.packLeft(left, start)}</p>
+          <p className="text-sm text-ink-muted">
+            {behind > 0
+              ? t.packBehind(behind)
+              : pack.start > pack.left
+                ? t.packTaken(formatPieces(pack.start - pack.left))
+                : t.packFull}
+          </p>
         </div>
-        <p className="text-xs text-ink-muted">{t.packHint}</p>
+        <button
+          type="button"
+          disabled={busy}
+          aria-label={t.packMore}
+          aria-haspopup="dialog"
+          className="flex size-11 shrink-0 items-center justify-center rounded-full text-ink-muted hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-basil-600"
+          onClick={() => {
+            setMenu(true);
+          }}
+        >
+          <Ellipsis size={20} aria-hidden="true" />
+        </button>
       </div>
-      <button
-        type="button"
-        disabled={busy}
-        aria-label={t.packMore}
-        aria-haspopup="dialog"
-        className="flex size-11 shrink-0 items-center justify-center rounded-full text-ink-muted hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-basil-600"
-        onClick={() => {
-          setMenu(true);
-        }}
-      >
-        <Ellipsis size={20} aria-hidden="true" />
-      </button>
+      {/* Always there, so a screen reader hears what a tap did; the page keeps its one status. */}
+      <div className={note === null ? 'sr-only' : 'flex items-center gap-x-3 text-sm'}>
+        <span aria-live="polite" className="font-semibold text-basil-800">
+          {note?.text ?? ''}
+        </span>
+        {note?.undoable === true ? (
+          <button
+            type="button"
+            disabled={busy}
+            className="min-h-11 font-semibold text-basil-700 underline-offset-2 hover:underline"
+            onClick={onUndo}
+          >
+            {t.undo}
+          </button>
+        ) : null}
+      </div>
+      <p className="text-xs text-ink-muted">{t.packHint}</p>
       {menu ? (
         <div
           className="fixed inset-0 z-40 flex items-end justify-center bg-onyx/40"

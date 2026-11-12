@@ -109,6 +109,9 @@ export function createInventoryCommands(ctx: AppContext) {
         unit: input.unit,
         ...(input.container === undefined ? {} : { container: input.container }),
         ...(input.packageSize === undefined ? {} : { packageSize: input.packageSize }),
+        ...(input.piecesPerPack === undefined || input.unit !== 'pcs'
+          ? {}
+          : { piecesPerPack: input.piecesPerPack }),
         purchasedAt: now,
         expiresOn,
         expiryKind: input.expiryKind ?? productCategory.dateKind,

@@ -568,6 +568,15 @@ describe('packaging, opening and reasons', () => {
     });
   });
 
+  it('stores the pieces of a pack, but only for pieces (ADR-0066)', async () => {
+    const slices = await add({ name: 'Schmelzkäse', quantity: 10, piecesPerPack: 10 });
+    const rice = await add({ name: 'Reis', quantity: 500, unit: 'g', piecesPerPack: 10 });
+    expect((await db.items.get(slices.itemId))?.piecesPerPack).toBe(10);
+    expect((await db.items.get(rice.itemId))?.piecesPerPack).toBeUndefined();
+    const { items } = await handlers['inventory.list']({ householdId });
+    expect(items.find((view) => view.id === slices.itemId)?.piecesPerPack).toBe(10);
+  });
+
   it('applies the opening rule to a pack that is already open when added', async () => {
     const { itemId, expiresOn } = await add({
       name: 'Rahm',
