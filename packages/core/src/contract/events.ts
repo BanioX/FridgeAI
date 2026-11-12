@@ -52,7 +52,7 @@ export const DomainEventSchema = z.discriminatedUnion('type', [
       from: StorageLocationSchema,
       to: StorageLocationSchema,
       expiresOn: LocalDateSchema,
-      /** The date before the move, so «Vorausschauend» knows it was not yet past (ADR-0053). */
+      /** The date before the move, so «Vorausschauend» knows it was not yet past (ADR-0054). */
       previousExpiresOn: LocalDateSchema.optional(),
     }),
   ),
@@ -138,7 +138,7 @@ export const DomainEventSchema = z.discriminatedUnion('type', [
   ),
   envelope(
     'check.completed',
-    /** A «Kühlschrank-Check» was walked through to the end (ADR-0053): for «Treu». */
+    /** A «Kühlschrank-Check» was walked through to the end (ADR-0054): for «Treu». */
     z.object({ itemCount: z.int().min(1).max(500) }),
   ),
   envelope('recipe.created', z.object({ recipeId: IdSchema })),

@@ -4,7 +4,7 @@ import { categoryById, fallbackCategory } from '../catalog/match';
 import type { AppContext, UseCase } from './command';
 
 /**
- * `stats.achievements` (ADR-0053, docs/abzeichen.md): reads the household's own data through the
+ * `stats.achievements` (ADR-0054, docs/abzeichen.md): reads the household's own data through the
  * ports and lets the pure `achievements` compute. Nothing is stored; nothing leaves the device.
  */
 export function createAchievementQueries({ storage, clock }: AppContext) {

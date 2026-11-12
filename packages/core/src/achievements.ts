@@ -70,7 +70,7 @@ const FOOD_GROUPS_NEEDED = 4;
 /** The ingredient outcomes of a «Gekocht» without a result are written just before its event. */
 const COOKED_WINDOW_MS = 60_000;
 
-/** Notvorrat food groups (ADR-0053): the catalogue's groups mapped to categories. */
+/** Notvorrat food groups (ADR-0054): the catalogue's groups mapped to categories. */
 const FOOD_GROUP_OF: Record<string, string> = {
   'pantry-rice': 'grain',
   'pantry-pasta': 'grain',
@@ -117,7 +117,7 @@ function fromSum(points: readonly { on: LocalDate; value: number }[]): Measure {
 }
 
 /**
- * The achievements of a household (docs/abzeichen.md, ADR-0053): per achievement the tier, the day
+ * The achievements of a household (docs/abzeichen.md, ADR-0054): per achievement the tier, the day
  * it was reached and the progress. Pure and computed on every call from the household's own data;
  * nothing is stored (ADR-0020). Outcomes that were undone and rows that were deleted do not count.
  */
@@ -350,7 +350,7 @@ function leftoverDays(
 
 /**
  * Vorausschauend: items moved into the freezer while their date was not yet past, one per item.
- * A move without the old date (before ADR-0053) counts; the app cannot tell, and the freeze hint
+ * A move without the old date (before ADR-0054) counts; the app cannot tell, and the freeze hint
  * only offers food that is still good.
  */
 function foresightDays(events: readonly DomainEvent[], live: (itemId: Id) => boolean): LocalDate[] {

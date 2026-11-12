@@ -20,7 +20,7 @@ import {
 } from './achievements-fixtures';
 
 /**
- * The achievements (docs/abzeichen.md, ADR-0053): the catalogue and every tier boundary of the
+ * The achievements (docs/abzeichen.md, ADR-0054): the catalogue and every tier boundary of the
  * counting achievements. The rules of each family are in `achievements-rules.test.ts`.
  */
 describe('the catalogue', () => {

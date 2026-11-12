@@ -13,7 +13,7 @@ import {
 import { first } from './achievements-fixtures';
 
 /**
- * `stats.achievements` and `inventory.completeCheck` on memory storage (ADR-0053): the use case
+ * `stats.achievements` and `inventory.completeCheck` on memory storage (ADR-0054): the use case
  * reads the household's data through the ports; undo and delete take progress away again.
  */
 let storage: Storage;
