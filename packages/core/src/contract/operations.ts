@@ -256,6 +256,8 @@ export const InventoryItemViewSchema = z.object({
   madeFrom: z.array(z.string()).optional(),
   container: ContainerSchema.optional(),
   packageSize: PackageSizeSchema.optional(),
+  /** Pieces in one pack (ADR-0066); absent when every piece is its own pack. */
+  piecesPerPack: z.int().min(2).max(200).optional(),
   /** Set once the pack is open; the expiry date then follows the opening rule. */
   openedOn: LocalDateSchema.optional(),
   /** Bought loose at the counter («Von der Theke»), so open from the day it came home. */
@@ -471,6 +473,8 @@ export const CONTRACT_V1 = {
       /** For pieces: «2 Becher à 180 g». */
       container: ContainerSchema.optional(),
       packageSize: PackageSizeSchema.optional(),
+      /** For pieces: how many make one pack, «1 Packung à 10 Scheiben» (ADR-0066). */
+      piecesPerPack: z.int().min(2).max(200).optional(),
       expiresOn: LocalDateSchema.optional(),
       expiryKind: DateKindSchema.optional(),
       expirySource: ExpirySourceSchema.optional(),

@@ -40,9 +40,11 @@ describe('parseAmount', () => {
 });
 
 describe('suggestedAmount', () => {
-  it('suggests one piece for counted food', () => {
-    expect(suggestedAmount(category('dairy-eggs'))).toEqual({ amount: 1, unit: 'pcs' });
+  it('suggests one piece for counted food, one pack where the category has packs', () => {
     expect(suggestedAmount(category('produce-bananas'))).toEqual({ amount: 1, unit: 'pcs' });
+    // ADR-0066: eggs and cheese slices come in packs; the first size is the proposal.
+    expect(suggestedAmount(category('dairy-eggs'))).toEqual({ amount: 6, unit: 'pcs' });
+    expect(suggestedAmount(category('dairy-cheese-slices'))).toEqual({ amount: 10, unit: 'pcs' });
   });
 
   it('suggests the typical pack in a natural unit', () => {

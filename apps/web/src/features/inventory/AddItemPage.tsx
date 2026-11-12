@@ -9,6 +9,7 @@ import {
   matchCategoryByName,
   minLocalDate,
   parseScannedCode,
+  piecesPerPackFor,
   portioningOf,
   shelfLifeAt,
   StorageLocationSchema,
@@ -280,6 +281,8 @@ export function AddItemPage() {
     setSaving(true);
     try {
       const base = toBaseQuantity(amount, unit);
+      const perPack =
+        base.unit === 'pcs' ? piecesPerPackFor(base.quantity, portioning.packs) : undefined;
       await inventory['inventory.addItem']({
         commandId: ids.next(),
         householdId,
@@ -289,6 +292,8 @@ export function AddItemPage() {
         quantity: base.quantity,
         unit: base.unit,
         ...(base.unit === 'pcs' && container !== '' ? { container } : {}),
+        // «10er» means one pack of 10 slices: a swipe takes the pack, the ring a slice (ADR-0066).
+        ...(perPack === undefined ? {} : { piecesPerPack: perPack }),
         // Without a chosen date the handler estimates the same date the form showed.
         ...(dateChoice === null ? {} : { expiresOn }),
         ...(dateFromCode === undefined
@@ -490,27 +495,29 @@ export function AddItemPage() {
               </p>
               {portioning.packs === undefined ? null : (
                 <div role="group" aria-label={t.packsLabel} className="flex flex-wrap gap-2">
-                  {portioning.packs.map((count) => {
-                    const selected = unit === 'pcs' && amount === count;
-                    return (
-                      <button
-                        key={count}
-                        type="button"
-                        aria-pressed={selected}
-                        onClick={() => {
-                          setAmountText(String(count));
-                          setUnitChoice('pcs');
-                        }}
-                        className={`min-h-10 rounded-full border px-4 text-sm font-semibold transition-colors ${
-                          selected
-                            ? 'border-basil-700 bg-basil-700 text-white'
-                            : 'border-line bg-surface text-ink hover:bg-surface-muted'
-                        }`}
-                      >
-                        {t.pack(count)}
-                      </button>
-                    );
-                  })}
+                  {[...portioning.packs]
+                    .sort((a, b) => a - b)
+                    .map((count) => {
+                      const selected = unit === 'pcs' && amount === count;
+                      return (
+                        <button
+                          key={count}
+                          type="button"
+                          aria-pressed={selected}
+                          onClick={() => {
+                            setAmountText(String(count));
+                            setUnitChoice('pcs');
+                          }}
+                          className={`min-h-10 rounded-full border px-4 text-sm font-semibold transition-colors ${
+                            selected
+                              ? 'border-basil-700 bg-basil-700 text-white'
+                              : 'border-line bg-surface text-ink hover:bg-surface-muted'
+                          }`}
+                        >
+                          {t.pack(count)}
+                        </button>
+                      );
+                    })}
                 </div>
               )}
             </div>

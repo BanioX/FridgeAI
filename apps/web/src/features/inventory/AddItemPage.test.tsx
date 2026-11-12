@@ -94,6 +94,17 @@ describe('AddItemPage', () => {
     expect(await screen.findByText('/inventory?location=fridge')).toBeDefined();
   });
 
+  it('saves cheese slices as one pack of 10 by default (ADR-0066)', async () => {
+    const db = testDb();
+    await renderPage('/inventory/new', db);
+    await userEvent.type(screen.getByLabelText(t.name), 'Schmelzkäse');
+    await userEvent.click(screen.getByRole('button', { name: t.save }));
+    await screen.findByText(/^\/inventory\?location=fridge$/);
+    const [item] = await db.items.toArray();
+    expect(item?.quantity).toBe(10);
+    expect(item?.piecesPerPack).toBe(10);
+  });
+
   it('keeps cheese from the counter only as long as an open pack (ADR-0038)', async () => {
     const db = testDb();
     await renderPage('/inventory/new', db);

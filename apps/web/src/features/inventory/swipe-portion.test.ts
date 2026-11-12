@@ -35,4 +35,20 @@ describe('swipePortion', () => {
     });
     expect(swipePortion({ quantity: 100, unit: 'g' }, 0)).toEqual({ kind: 'rest', quantity: 100 });
   });
+
+  it('takes a whole pack, or the rest of the opened one, when the item is counted in packs', () => {
+    // ADR-0066: a swipe on Schmelzkäse means the pack, not one slice.
+    expect(swipePortion({ quantity: 10, unit: 'pcs', piecesPerPack: 10 })).toEqual({
+      kind: 'pack',
+      quantity: 10,
+    });
+    expect(swipePortion({ quantity: 17, unit: 'pcs', piecesPerPack: 10 })).toEqual({
+      kind: 'packRest',
+      quantity: 7,
+    });
+    expect(swipePortion({ quantity: 2.5, unit: 'pcs', piecesPerPack: 6 })).toEqual({
+      kind: 'packRest',
+      quantity: 2.5,
+    });
+  });
 });

@@ -28,13 +28,14 @@ export const formatAmount = (amount: number): string =>
   formatDecimal(amount, { digits: 3, group: false });
 
 /**
- * What the form pre-fills for a category: one piece for counted food, otherwise the typical pack
+ * What the form pre-fills for a category: one piece (or one pack) for counted food, otherwise the typical pack
  * in a natural unit, rounded to a number people see on packs (1030 g milk → 1 l, 300 g → 300 g).
  */
 export function suggestedAmount(category: Category): { amount: number; unit: InputUnit } {
-  const { unit } = portioningOf(category);
+  const { unit, packs } = portioningOf(category);
   if (unit === 'pcs') {
-    return { amount: 1, unit: 'pcs' };
+    // Eggs and cheese slices come in packs: the first size of the category (ADR-0066).
+    return { amount: packs?.[0] ?? 1, unit: 'pcs' };
   }
   const typical = category.avgWeightGrams ?? (unit === 'g' ? 500 : 1000);
   const step = typical < 1000 ? 50 : 100;

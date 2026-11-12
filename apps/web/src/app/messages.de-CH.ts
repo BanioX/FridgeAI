@@ -79,6 +79,14 @@ export const messages = {
     },
   },
   units: { pcs: 'Stk.', g: 'g', ml: 'ml' },
+  /** Pieces counted in packs (ADR-0066). */
+  packText: {
+    whole: (packs: number, per: string) =>
+      packs === 1 ? `1 Packung à ${per} Stk.` : `${String(packs)} Packungen à ${per} Stk.`,
+    opened: (open: string, per: string) => `${open} von ${per} Stk.`,
+    both: (packs: number, per: string, open: string) =>
+      `${String(packs)} ${packs === 1 ? 'Packung' : 'Packungen'} à ${per} + ${open} Stk.`,
+  },
   locations: {
     fridge: 'Kühlschrank',
     freezer: 'Tiefkühler',
@@ -375,11 +383,17 @@ export const messages = {
     /** The strips behind a swiped row (Alban, 8.11.2026). */
     outcomes: { eaten: 'Verwertet', wasted: 'Entsorgt' },
     piece: '−1',
+    /** Counted in packs (ADR-0066): the swipe takes a pack, not a slice. */
+    pack: '1 Packung',
+    packRest: 'Rest der Packung',
     portion: '1 Portion',
     rest: 'alles',
     /** «1 Glace verwertet» or «1 Glace entsorgt» for whole pieces. */
     pieces: (count: number, name: string, outcome: 'eaten' | 'wasted') =>
       `${String(count)} ${name} ${outcome === 'eaten' ? 'verwertet' : 'entsorgt'}`,
+    /** «Schmelzkäse: 1 Packung verwertet», «Schmelzkäse: Rest der Packung (7 Stk.) entsorgt». */
+    packs: (name: string, whole: boolean, amount: string, outcome: 'eaten' | 'wasted') =>
+      `${name}: ${whole ? '1 Packung' : `Rest der Packung (${amount})`} ${outcome === 'eaten' ? 'verwertet' : 'entsorgt'}`,
     /** «Reis: 250 g verwertet» for amounts and fractions. */
     amount: (name: string, amount: string, outcome: 'eaten' | 'wasted') =>
       `${name}: ${amount} ${outcome === 'eaten' ? 'verwertet' : 'entsorgt'}`,
