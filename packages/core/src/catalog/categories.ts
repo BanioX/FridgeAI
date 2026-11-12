@@ -1318,7 +1318,8 @@ export const CATEGORIES: readonly Category[] = [
     owner: 'shared',
     keywords: [
       'hausgemacht',
-      'torte',
+      // «Torte» alone is a bought dessert (ADR-0053); a cake baked at home gets this category
+      // through «Verarbeiten» (kind «made»), not through its name.
       'muffin',
       'selbstgebacken',
       'selbst gemacht',

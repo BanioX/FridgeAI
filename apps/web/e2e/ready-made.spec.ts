@@ -15,7 +15,7 @@ test('a Skyr Cheesecake is a Fertigprodukt and does not count as Joghurt for Bir
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
 
   await page.getByRole('link', { name: /Skyr Cheesecake/ }).click();
-  await expect(page.getByRole('listitem').filter({ hasText: 'Fertigprodukt' })).toBeVisible();
+  await expect(page.getByRole('listitem').filter({ hasText: /^Fertigprodukt$/ })).toBeVisible();
   const kind = page.getByRole('group', { name: 'Art des Artikels' });
   await expect(kind.getByRole('radio', { name: 'Fertigprodukt' })).toBeChecked();
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
@@ -25,6 +25,9 @@ test('a Skyr Cheesecake is a Fertigprodukt and does not count as Joghurt for Bir
   await expect(page.getByRole('heading', { level: 1, name: 'Birchermüesli' })).toBeVisible();
   const missing = page.getByRole('heading', { level: 3, name: 'Fehlt', exact: true });
   await expect(missing).toBeVisible();
-  await expect(page.getByText(/Milch oder Joghurt/)).toBeVisible();
+  // The ingredient row, not the step that also names it: Joghurt stays missing.
+  await expect(
+    page.getByRole('listitem').filter({ hasText: '2 dl Milch oder Joghurt' }),
+  ).toContainText('Fehlt');
   await expect(page.getByText(/^Da: Skyr Cheesecake/)).toHaveCount(0);
 });
