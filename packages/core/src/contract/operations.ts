@@ -233,6 +233,8 @@ export const InventoryItemViewSchema = z.object({
   /** Day it went into the freezer / came out of it, for the badges «Eingefroren» and «Aufgetaut». */
   frozenOn: LocalDateSchema.optional(),
   thawedOn: LocalDateSchema.optional(),
+  /** Own call, absent = the category decides: true = Fertigprodukt, false = Zum Kochen. */
+  readyMade: z.boolean().optional(),
   /** When it came home, e.g. for «Gerettet» only on food that kept longer (ADR-0039). */
   purchasedAt: IsoDateTimeSchema,
   /** Product facts, e.g. from Open Food Facts after a scan (step 10b, ODbL). */
@@ -260,6 +262,8 @@ export const ProductLookupSchema = z.object({
   nutrition: NutritionSchema.optional(),
   nutriScore: z.enum(['a', 'b', 'c', 'd', 'e']).optional(),
   allergens: z.array(z.string()).optional(),
+  /** The database calls it ready to eat (NOVA 4, desserts, meals): the add form presets it. */
+  readyMade: z.boolean().optional(),
   /** `household`: known from an earlier item; `off`: Open Food Facts (ODbL, attribution). */
   source: z.enum(['household', 'off', 'openfoodrepo', 'partner']),
   /** Where brand and nutrition originally came from, also for household products (ODbL). */
@@ -413,6 +417,8 @@ export const CONTRACT_V1 = {
       afterOpeningDays: AfterOpeningDaysSchema.optional(),
       /** For packs that are already open when added (the opening rule applies from that day). */
       openedOn: LocalDateSchema.optional(),
+      /** From the barcode lookup (NOVA 4, desserts, meals): a Fertigprodukt whatever the category. */
+      readyMade: z.boolean().optional(),
     }),
     output: z.object({ itemId: IdSchema, expiresOn: LocalDateSchema }),
   }),
@@ -439,6 +445,8 @@ export const CONTRACT_V1 = {
         quantity: QuantitySchema.optional(),
         /** Value of what is left; null removes a wrong price (then estimates apply). */
         priceRappen: RappenSchema.min(0).nullable().optional(),
+        /** «Zum Kochen» (false) or «Fertigprodukt» (true); null goes back to the category. */
+        readyMade: z.boolean().nullable().optional(),
       })
       .refine(
         (input) =>
@@ -450,6 +458,7 @@ export const CONTRACT_V1 = {
             input.expiryKind,
             input.quantity,
             input.priceRappen,
+            input.readyMade,
           ].some((value) => value !== undefined),
         { message: 'Nothing to change' },
       ),
@@ -463,6 +472,7 @@ export const CONTRACT_V1 = {
           'expiryKind',
           'quantity',
           'priceRappen',
+          'readyMade',
         ]),
       ),
     }),

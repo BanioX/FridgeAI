@@ -87,6 +87,8 @@ export const InventoryItemSchema = z.object({
   frozenOn: LocalDateSchema.optional(),
   /** Day the item was taken out of the freezer; cleared when it is frozen again. */
   thawedOn: LocalDateSchema.optional(),
+  /** Own call: true = Fertigprodukt, false = Zum Kochen; absent = the category decides (ADR-0053). */
+  readyMade: z.boolean().optional(),
   /** Day the pack was opened; with it the «after opening» rule applies (ADR-0011). */
   openedOn: LocalDateSchema.optional(),
   /** «Nach dem Öffnen innert N Tagen» from the label; overrides the category value. */

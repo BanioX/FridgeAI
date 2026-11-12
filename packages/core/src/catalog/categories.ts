@@ -37,6 +37,8 @@ interface Spec {
   opened?: number;
   /** Also sold loose at the counter; then it keeps like an open pack. */
   loose?: boolean;
+  /** Always ready to eat (Fertigprodukt): never counts as a raw ingredient (ADR-0053). */
+  ready?: boolean;
   /** Unit, container, pack sizes and fractions (default: pieces in quarters). */
   portion?: Portioning;
   /** Price of a typical pack in Rappen; weight of a typical pack in grams. */
@@ -66,6 +68,7 @@ function def(spec: Spec): Category {
     ...(spec.opened === undefined ? {} : { afterOpeningDays: spec.opened }),
     ...(spec.freeze === undefined ? {} : { freezeNote: { de: spec.freeze } }),
     ...(spec.loose === true ? { soldLoose: true } : {}),
+    ...(spec.ready === true ? { ready: true } : {}),
     avgPriceRappen: rappen(spec.price),
     ...(spec.grams === undefined ? {} : { avgWeightGrams: spec.grams }),
     ...(spec.portion === undefined ? {} : { portioning: spec.portion }),
@@ -1116,6 +1119,7 @@ export const CATEGORIES: readonly Category[] = [
     portion: { unit: 'pcs', splits: [4] },
     de: 'Süsses & Snacks',
     emoji: '🍫',
+    ready: true,
     group: 'pantry',
     dateKind: 'best_before',
     location: 'pantry',
@@ -1170,6 +1174,7 @@ export const CATEGORIES: readonly Category[] = [
     portion: { unit: 'pcs', splits: [8, 4] },
     de: 'Tiefkühl-Pizza & Fertiges',
     emoji: '🍕',
+    ready: true,
     group: 'frozen',
     dateKind: 'best_before',
     location: 'freezer',
@@ -1182,7 +1187,6 @@ export const CATEGORIES: readonly Category[] = [
       'tiefkühlpizza',
       'pommes frites',
       'pommes',
-      'lasagne',
       'fischstäbli',
       'nuggets',
       'tk menü',
@@ -1198,6 +1202,7 @@ export const CATEGORIES: readonly Category[] = [
     opened: 30,
     de: 'Glace',
     emoji: '🍦',
+    ready: true,
     group: 'frozen',
     dateKind: 'best_before',
     location: 'freezer',
@@ -1350,6 +1355,7 @@ export const CATEGORIES: readonly Category[] = [
     portion: { unit: 'pcs', splits: [2] },
     de: 'Fertiggerichte & Salate',
     emoji: '🥗',
+    ready: true,
     group: 'prepared',
     dateKind: 'use_by',
     location: 'fridge',
@@ -1361,15 +1367,44 @@ export const CATEGORIES: readonly Category[] = [
       'fertiggericht',
       'fertigsalat',
       'fertigmenü',
-      'convenience',
       'wähe',
       'sandwich',
       'sushi',
       'pastasalat',
+      'lasagne',
     ],
     tips: [
       'Fertiggerichte für die ersten Tage nach dem Einkauf einplanen, sie halten am kürzesten.',
       'Ungeöffnet kühl lagern, geöffnet am gleichen Tag aufbrauchen.',
+    ],
+  }),
+  def({
+    id: 'prepared-desserts',
+    portion: { unit: 'pcs', container: 'cup', splits: [2] },
+    opened: 2,
+    ready: true,
+    de: 'Desserts',
+    emoji: '🍰',
+    group: 'prepared',
+    dateKind: 'best_before',
+    location: 'fridge',
+    shelf: [7, 60, null],
+    price: 390,
+    grams: 150,
+    owner: 'buyer',
+    keywords: [
+      'cheesecake',
+      'tiramisu',
+      'pudding',
+      'mousse',
+      'panna cotta',
+      'creme brulee',
+      'torte',
+      'dessert',
+    ],
+    tips: [
+      'Desserts halten nur wenige Tage: früh geniessen, was kurz vor dem Datum steht.',
+      'Kuchen und Torten lassen sich stückweise einfrieren.',
     ],
   }),
   def({

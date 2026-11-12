@@ -94,6 +94,11 @@ interface Hit {
 }
 /** Added to the score of a keyword that is not a flavour or origin word. */
 const STRONG = 100;
+/**
+ * Added on top for a keyword of a ready-made category (Fertigprodukt): «Skyr Cheesecake» is a
+ * dessert, not yoghurt, «Sandwich Schinken» a ready meal, not cold cuts (ADR-0053).
+ */
+const READY = 1000;
 
 function bestMatch(words: readonly string[], normalized: string, cut: boolean): Hit | null {
   let best: Hit | null = null;
@@ -105,7 +110,9 @@ function bestMatch(words: readonly string[], normalized: string, cut: boolean): 
             cut ? cutOff(word, keyword) : word === keyword || word.endsWith(keyword),
           );
       // Weak words count as short as possible, so any other keyword beats them.
-      const score = matches ? (isWeak(category, keyword) ? 0 : STRONG) + keyword.length : -1;
+      const weak = isWeak(category, keyword);
+      const bonus = weak ? 0 : STRONG + (category.ready === true ? READY : 0);
+      const score = matches ? bonus + keyword.length : -1;
       if (score >= 0 && (best === null || score > best.score)) {
         best = { category, score };
       }

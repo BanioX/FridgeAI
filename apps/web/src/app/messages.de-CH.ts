@@ -249,6 +249,7 @@ export const messages = {
   badges: {
     frozen: (day: string) => `Eingefroren ${day}`,
     thawed: 'Aufgetaut',
+    ready: 'Fertigprodukt',
     opened: 'Geöffnet',
     loose: 'Von der Theke',
   },
