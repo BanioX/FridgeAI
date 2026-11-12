@@ -21,6 +21,7 @@ import { InventoryItemRow } from '../inventory/InventoryItemRow';
 import { SWIPE_HINT_ID, useSwipeOutcome } from '../inventory/swipe-outcome';
 import { SwipeAction } from '../../ui/SwipeAction';
 import { RecentAchievements } from '../achievements/RecentAchievements';
+import { ClimateCard } from '../climate/ClimateCard';
 import { checkDue, readLastCheck } from '../check/check-state';
 import { ImpactCard } from './ImpactCard';
 import { ImpactSince } from './ImpactSince';
@@ -150,6 +151,7 @@ export function TodayPage() {
 
       <ImpactCard from={startOfMonth(today)} to={today} />
       <ImpactSince />
+      <ClimateCard />
       <RecentAchievements />
       {all.length > 0 ? (
         <Card variant="tip">
