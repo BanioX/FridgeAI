@@ -4,7 +4,7 @@ Jeder Entscheid mit Folgen steht hier als eigene Datei `NNNN-titel.md` (ADR-0001
 
 **Pflege:** Wer ein ADR anlegt oder dessen Status ändert, führt diese Tabelle im selben PR nach. Ein abgelöstes ADR bleibt als Verlauf stehen, seine Statuszeile nennt das ADR, das es ablöst.
 
-**Stand:** 12.11.2026, 57 Entscheide.
+**Stand:** 12.11.2026, 58 Entscheide.
 
 | Nr. | Titel | Status | Datum |
 | --- | --- | --- | --- |
@@ -65,3 +65,4 @@ Jeder Entscheid mit Folgen steht hier als eigene Datei `NNNN-titel.md` (ADR-0001
 | [0055](0055-settle-pots.md) | Töpfe: Auswahl abschliessen | angenommen | 2026-11-12 |
 | [0056](0056-storage-spots.md) | Plätze mit Foto: wo ist was? | angenommen | 2026-11-12 |
 | [0057](0057-climate-balance.md) | Klimabilanz: CO₂e, Wasser, Fläche, Kehricht | angenommen | 2026-11-12 |
+| [0058](0058-owner-badge.md) | Gehört: Initialen am Artikel | angenommen | 2026-11-12 |
