@@ -23,7 +23,7 @@ Kleine Hilfen mit System: weniger suchen, schneller abschliessen, weniger doppel
 | O6 | **Doppelkauf-Hinweis**: Auf der Einkaufsliste steht bei einem Produkt, das noch da ist, «Zuhause: 2, Türfach». | Weniger doppelt kaufen, weniger entsorgen | S |
 | O7 | **Mehrere auf einmal ändern** (umgesetzt, 12.11.2026): im Auswahlmodus «Ändern» setzt Datum, «Angebrochen» oder «Gehört» für alle. | Nach dem Einkauf oder dem Öffnen einer Packung schneller | S |
 | O8 | **Topf «Rezept»**: Auswahl hineinziehen, Rettich zeigt Rezepte, die genau diese Artikel brauchen. | Aus dem, was da ist, kochen; verbindet O1 mit den Rezepten (ADR-0048) | S–M · **umgesetzt** (12.11.2026), auf der Seite «Verarbeiten» statt als eigener Topf ([ADR-0061](../adr/0061-recipes-for-selection.md)) |
-| O9 | **Check Fach für Fach**: Der Kühlschrank-Check geht die Plätze der Reihe nach durch, mit Foto. | Schneller, weil man vor dem Fach steht | M |
+| O9 | **Check Fach für Fach**: Der Kühlschrank-Check geht die Plätze der Reihe nach durch, mit Foto. | Schneller, weil man vor dem Fach steht | M · **umgesetzt (12.11.2026)**: Fächer in Kühlschrank-Reihenfolge, dann die übrigen Plätze, Artikel ohne Platz zuletzt; Platzzeile mit Foto über der Karte |
 
 ## Später
 
