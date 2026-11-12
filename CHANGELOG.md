@@ -2,6 +2,26 @@
 
 Alle Änderungen an Rettich (bis 7.11.2026 FridgeAI), neueste zuerst. Wird mit `pnpm release` erzeugt (ADR-0017).
 
+## [0.17.0] – 2026-11-12
+
+### Neu
+
+- pack and content – a swipe takes a pack, the ring a piece (ADR-0066) ([#284](https://github.com/BanioX/FridgeAI/pull/284))
+- tap the pack ring to take a piece; hold it for a menu ([#282](https://github.com/BanioX/FridgeAI/pull/282))
+
+### Behoben
+
+- polish at 390 px – long chip, hyphenation, gaps and title spacing ([#285](https://github.com/BanioX/FridgeAI/pull/285))
+- find the last release by its commit, not by a tag ([#283](https://github.com/BanioX/FridgeAI/pull/283))
+
+### Dokumentation
+
+- what is built and how
+
+### Wartung
+
+- keep the public repo to what is built (ADR-0065)
+
 ## [0.16.0] – 2026-11-12
 
 ### Neu
