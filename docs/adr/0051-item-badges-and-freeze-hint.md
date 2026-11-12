@@ -21,3 +21,7 @@ Der Zustand eines Artikels (eingefroren, aufgetaut, geöffnet, offen gekauft) wa
 
 - Die Artikelseite bietet «Einfrieren» für jedes Lebensmittel an, nicht nur für einfrierbare.
 - Kein neuer Datenfluss, keine Abhängigkeit.
+
+## Nachtrag (12.11.2026): Selbst gemacht und Reste
+
+Die Zustandsabzeichen für `origin` sind da (ADR-0052): «Selbst gemacht» (`made`) und «Reste» (`leftover`) stehen als ruhige Silber-Pillen vor den übrigen Abzeichen, in der Vorratsliste (höchstens zwei pro Zeile) und auf der Artikelseite. Die Startkarte «Wert im Kühlschrank» gibt `priceEstimated` an `itemValue` weiter, damit der Wert selbst gemachter Artikel, der von geschätzten Zutaten kommt, «etwa» zeigt.

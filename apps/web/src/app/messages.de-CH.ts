@@ -326,6 +326,8 @@ export const messages = {
   },
   /** Calm state badges on items (R2-1): a short text, colour only supports it. */
   badges: {
+    made: 'Selbst gemacht',
+    leftover: 'Reste',
     frozen: (day: string) => `Eingefroren ${day}`,
     thawed: 'Aufgetaut',
     ready: 'Fertigprodukt',
@@ -473,7 +475,7 @@ export const messages = {
     },
     back: 'Zurück zum Vorrat',
     /** «Verarbeiten» (ADR-0052): a calm line for made and leftover items. */
-    madeFrom: (names: readonly string[]) => `Selbst gemacht aus: ${names.join(', ')}`,
+    madeFrom: (names: readonly string[]) => `Aus: ${names.join(', ')}`,
     madeFromNone: 'Selbst gemacht',
     leftover: 'Reste',
     leftoverFrom: (names: readonly string[]) => `Reste aus: ${names.join(', ')}`,

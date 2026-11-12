@@ -4,6 +4,8 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { ItemBadges } from './ItemBadges';
 
 const all: ItemBadge[] = [
+  { kind: 'made' },
+  { kind: 'leftover' },
   { kind: 'frozen', on: localDate('2026-11-03') },
   { kind: 'thawed', on: localDate('2026-11-10') },
   { kind: 'ready' },
@@ -17,6 +19,8 @@ describe('ItemBadges', () => {
   it('shows every badge as text, the frozen one with its short day', () => {
     render(<ItemBadges badges={all} />);
     expect(screen.getAllByRole('listitem').map((li) => li.textContent)).toEqual([
+      'Selbst gemacht',
+      'Reste',
       'Eingefroren 3.11.',
       'Aufgetaut',
       'Fertigprodukt',
@@ -37,7 +41,9 @@ describe('ItemBadges', () => {
 
   it('gives the tones their classes: ice filled, ice outline, apricot outline, olive', () => {
     render(<ItemBadges badges={all} />);
-    const [frozen, thawed, ready, opened, loose] = screen.getAllByRole('listitem');
+    const [made, leftover, frozen, thawed, ready, opened, loose] = screen.getAllByRole('listitem');
+    expect(made?.className).toContain('bg-surface-muted');
+    expect(leftover?.className).toContain('bg-surface-muted');
     expect(frozen?.className).toContain('bg-ice-bg');
     expect(thawed?.className).toContain('border-ice');
     expect(ready?.className).toContain('bg-surface-muted');

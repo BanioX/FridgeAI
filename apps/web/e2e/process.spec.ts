@@ -28,7 +28,7 @@ test('bakes a cake from flour and eggs, then undoes it', async ({ page }) => {
     'Schokoladenkuchen ist im Kühlschrank. 2 Zutaten verwertet.',
   );
   await page.getByRole('link', { name: /Schokoladenkuchen/ }).click();
-  await expect(page.getByText('Selbst gemacht aus: Mehl, Eier')).toBeVisible();
+  await expect(page.getByText('Aus: Mehl, Eier')).toBeVisible();
 
   // Back to the Vorrat, undo from a fresh processing is covered by the unit tests; here the new
   // item is simply there and the ingredients are gone.
