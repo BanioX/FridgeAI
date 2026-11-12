@@ -138,7 +138,9 @@ describe('ShoppingPage', () => {
     renderPage(db);
     expect(await screen.findByText(messages.minStock.note)).toBeDefined();
     await addToList('Brot');
-    await screen.findByText('Brot');
+    // Wait for the end of the add (its message), not only the row: otherwise the rest of the
+    // command can run after the test environment is gone («window is not defined» under load).
+    expect(await screen.findByText(t.added('Brot'))).toBeDefined();
     expect(screen.getAllByText(messages.minStock.note)).toHaveLength(1);
   });
 });
