@@ -23,6 +23,7 @@ describe('contract v1', () => {
       'inventory.history',
       'inventory.open',
       'inventory.move',
+      'inventory.process',
       'products.setNutrition',
       'products.lookup',
       'products.search',

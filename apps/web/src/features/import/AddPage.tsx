@@ -1,5 +1,12 @@
 import { useLiveQuery } from 'dexie-react-hooks';
-import { ChevronRight, PencilLine, Receipt, ScanBarcode, type LucideIcon } from 'lucide-react';
+import {
+  ChevronRight,
+  PencilLine,
+  Receipt,
+  ScanBarcode,
+  Soup,
+  type LucideIcon,
+} from 'lucide-react';
 import { Link } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
@@ -80,6 +87,12 @@ export function AddPage() {
           detail={t.barcode}
         />
         <Tile to="/inventory/new" icon={PencilLine} title={t.manualTitle} detail={t.manual} />
+        <Tile
+          to="/add/process?kind=leftover"
+          icon={Soup}
+          title={t.leftoversTitle}
+          detail={t.leftovers}
+        />
       </div>
 
       {empty === true ? (

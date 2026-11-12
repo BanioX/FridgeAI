@@ -121,6 +121,19 @@ export const DomainEventSchema = z.discriminatedUnion('type', [
       totalRappen: RappenSchema,
     }),
   ),
+  envelope(
+    'item.processed',
+    z.object({
+      /** The items that went in; may be empty for «Reste erfassen». */
+      ingredientIds: z.array(IdSchema).max(50),
+      /** The new item; none when nothing was left («Gekocht, nichts übrig»). */
+      resultId: IdSchema.optional(),
+      /** The recipe it was started from, if any. */
+      recipeId: z.string().min(1).max(80).optional(),
+      /** `made` = selbst gemacht, `leftover` = Reste, `cooked` = gekocht, nichts übrig. */
+      kind: z.enum(['made', 'leftover', 'cooked']),
+    }),
+  ),
   envelope('recipe.created', z.object({ recipeId: IdSchema })),
   envelope('recipe.updated', z.object({ recipeId: IdSchema })),
   envelope('recipe.deleted', z.object({ recipeId: IdSchema })),

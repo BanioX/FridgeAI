@@ -1,5 +1,5 @@
 import { daysBetween, toLocalDate } from '../dates';
-import { isRescue, summarizeImpact, type ImpactSummary } from '../metrics';
+import { countsInValue, isRescue, summarizeImpact, type ImpactSummary } from '../metrics';
 import { rappen, sumRappen, type Rappen } from '../money';
 import type { OutcomeEvent, WasteReason } from '../model/inventory';
 import type { DateKind, LocalDate, Retailer, StorageLocation, Unit } from '../model/primitives';
@@ -136,7 +136,7 @@ export function buildReport(input: {
 
   const active = input.outcomes.filter((outcome) => {
     const day = toLocalDate(outcome.at);
-    return outcome.deletedAt === undefined && day >= from && day <= to;
+    return countsInValue(outcome) && day >= from && day <= to;
   });
   const months = monthsBetween(from, to).map((month) => {
     const inMonth = active.filter((outcome) => toLocalDate(outcome.at).startsWith(month));

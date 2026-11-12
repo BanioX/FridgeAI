@@ -13,6 +13,7 @@ import {
 } from '../model/receipt';
 import {
   InventoryItemSchema,
+  ItemOriginSchema,
   NutritionSchema,
   OutcomeEventSchema,
   ProductSchema,
@@ -219,6 +220,12 @@ export const InventoryItemViewSchema = z.object({
   expirySource: ExpirySourceSchema,
   owner: OwnerSchema,
   priceRappen: RappenSchema.min(0).optional(),
+  /** The price is a sum of estimated ingredient values («Verarbeiten»), not a receipt price. */
+  priceEstimated: z.boolean().optional(),
+  /** `made` = selbst gemacht, `leftover` = Reste; bought items have none. */
+  origin: ItemOriginSchema.optional(),
+  /** Names of the items it was made from, e.g. «Mehl», «Eier», «Butter». */
+  madeFrom: z.array(z.string()).optional(),
   container: ContainerSchema.optional(),
   packageSize: PackageSizeSchema.optional(),
   /** Set once the pack is open; the expiry date then follows the opening rule. */
@@ -621,6 +628,54 @@ export const CONTRACT_V1 = {
       allowUnsuitable: z.boolean().optional(),
     }),
     output: z.object({ expiresOn: LocalDateSchema }),
+  }),
+  'inventory.process': command({
+    name: 'inventory.process',
+    summary: {
+      de: 'Verarbeiten: Zutaten verwerten und daraus etwas Neues machen (Kuchen, Reste); der Wert wandert mit.',
+      en: 'Process items: use up ingredients and make something new (a cake, leftovers); the value moves along.',
+    },
+    scopes: ['inventory:write'],
+    input: z
+      .object({
+        ...commandBase,
+        /** What goes in, whole or in part (default: all of it). May be empty for «Reste erfassen». */
+        ingredients: z
+          .array(z.object({ itemId: IdSchema, quantity: QuantitySchema.optional() }))
+          .max(50),
+        /** What comes out; none = «nichts übrig» (the ingredients count as verwertet). */
+        result: z
+          .object({
+            name: z.string().trim().min(1).max(120),
+            kind: ItemOriginSchema,
+            location: StorageLocationSchema.default('fridge'),
+            categoryId: CategoryIdSchema.optional(),
+          })
+          .optional(),
+        /** The recipe it was started from («Gekocht»). */
+        recipeId: z.string().min(1).max(80).optional(),
+      })
+      .refine((input) => input.result !== undefined || input.ingredients.length > 0, {
+        message: 'Nothing to process: give ingredients or a result',
+      })
+      .refine(
+        (input) =>
+          new Set(input.ingredients.map((entry) => entry.itemId)).size === input.ingredients.length,
+        {
+          message: 'Each ingredient only once',
+        },
+      ),
+    output: z.object({
+      /** The new item; absent when nothing was left. */
+      resultItemId: IdSchema.optional(),
+      /** The ingredient outcomes, to undo them one by one (`inventory.undoOutcome`). */
+      outcomeIds: z.array(IdSchema),
+      /** Value that moved on: the sum of the ingredients. */
+      valueRappen: RappenSchema.min(0),
+      valueEstimated: z.boolean(),
+      /** Expiry of the new item; absent when nothing was left. */
+      expiresOn: LocalDateSchema.optional(),
+    }),
   }),
   'products.setNutrition': command({
     name: 'products.setNutrition',
