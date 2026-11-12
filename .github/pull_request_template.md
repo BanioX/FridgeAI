@@ -18,5 +18,6 @@
 - [ ] Offline-Verhalten und Kamera-Fallbacks bedacht
 - [ ] Keine personenbezogenen Daten in Logs, Fixtures oder Commits
 - [ ] UI-Texte de-CH («ss», Du-Form), a11y-Basics (Labels, Kontrast, Fokus)
+- [ ] Neue Funktion auf allen Flächen nachgezogen oder bewusst weggelassen (`docs/flaechen.md`)
 - [ ] Doku/ADR aktualisiert
 - [ ] Von Opus reviewt

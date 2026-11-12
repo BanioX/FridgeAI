@@ -9,6 +9,7 @@ Rettich ist eine local-first PWA für Schweizer Haushalte: Sie zeigt, was du ver
 2. [`docs/swelp/README.md`](./docs/swelp/README.md): was der Code darf (Darf), was er bewirkt (Tut, [`nebenwirkungen.md`](./docs/swelp/nebenwirkungen.md)), was wir gelernt haben (Lernt, [`lernbuch.md`](./docs/swelp/lernbuch.md)).
 3. [`docs/schulden.md`](./docs/schulden.md): bekannte Schulden; nichts davon unbemerkt vergrössern.
 4. [`docs/glossar.md`](./docs/glossar.md): Begriffe in App, Code und Regionen.
+   Dazu [`docs/flaechen.md`](./docs/flaechen.md): auf welchen Flächen eine neue Funktion erscheinen muss.
 5. Das passende ADR (Verzeichnis mit Status: [`docs/adr/README.md`](./docs/adr/README.md)) und der Plan in [`docs/plan.md`](./docs/plan.md), Abschnitt «Stand nach 200 PRs».
 
 ## Karte des Codes (drei Schichten, ADR-0034)
