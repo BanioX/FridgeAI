@@ -25,7 +25,7 @@ export function SelectableRow({
   return (
     <label
       {...dragProps}
-      className="relative flex cursor-pointer items-center pl-4 [-webkit-touch-callout:none] select-none active:bg-surface-muted"
+      className="relative flex cursor-pointer items-center pl-4 [-webkit-touch-callout:none] select-none active:bg-surface-muted [&_a]:[-webkit-user-drag:none] [&_img]:pointer-events-none [&_img]:[-webkit-user-drag:none]"
     >
       <input
         type="checkbox"

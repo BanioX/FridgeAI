@@ -111,7 +111,8 @@ describe('InventoryPage', () => {
     await userEvent.click(screen.getByRole('checkbox', { name: 'Vollmilch' }));
     expect(screen.getByText('1 ausgewählt')).toBeDefined();
     // Milk is not suitable for a pantry: it stays, is named, and the selection stays.
-    const bar = screen.getByRole('region', { name: 'Auswahl verschieben' });
+    // The tabs turn into «Verschieben nach» while something is chosen.
+    const bar = screen.getByRole('group', { name: 'Verschieben nach' });
     await userEvent.click(within(bar).getByRole('button', { name: 'Vorrat' }));
     expect(
       await screen.findByText('Vollmilch gehört nicht in den Vorrat, bleibt hier.'),

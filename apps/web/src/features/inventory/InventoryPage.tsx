@@ -24,10 +24,10 @@ import { GROUPED_ROW_LINK, GroupedList, GroupedListItem } from '../../ui/Grouped
 import { InventoryItemRow } from './InventoryItemRow';
 import { locationOrder } from './item-meta';
 import { SelectableRow } from './SelectableRow';
-import { dropKey, sameTarget, type DropTarget, type SettleAction } from './drop-target';
+import type { DropTarget, SettleAction } from './drop-target';
 import { useMembers } from '../people/use-members';
 import { BulkEditSheet } from './BulkEditSheet';
-import { SelectionBar } from './SelectionBar';
+import { MoveTargets } from './MoveTargets';
 import { SettlePots } from './SettlePots';
 import { useDragToLocation } from './use-drag-to-location';
 import type { BulkChanges } from './bulk-edit';
@@ -335,7 +335,7 @@ export function InventoryPage() {
   });
 
   return (
-    <div className={`space-y-5 ${chosen.length > 0 ? 'pb-44' : 'pb-8'}`}>
+    <div className="space-y-5 pb-8">
       <div className="flex items-center justify-between gap-3">
         <h1 className="large-title">{messages.pages.inventory}</h1>
         <button
@@ -349,50 +349,61 @@ export function InventoryPage() {
 
       <ClosedNotice />
 
-      <div
-        role="tablist"
-        aria-label={t.tabsLabel}
-        className="grid grid-cols-4 gap-0.5 rounded-xl bg-surface-muted p-0.5"
-      >
-        {locationOrder.map((location, index) => {
-          const active = location === selected;
-          return (
-            <button
-              key={location}
-              ref={(node) => {
-                if (node === null) {
-                  tabRefs.current.delete(location);
-                } else {
-                  tabRefs.current.set(location, node);
-                }
-              }}
-              type="button"
-              role="tab"
-              id={tabId(location)}
-              aria-selected={active}
-              aria-controls={panelId(location)}
-              tabIndex={active ? 0 : -1}
-              onClick={() => {
-                select(location);
-              }}
-              onKeyDown={(event) => {
-                onKeyDown(event, index);
-              }}
-              data-drop-target={dropKey({ kind: 'location', location })}
-              className={`flex min-h-12 min-w-0 flex-col items-center justify-center rounded-[0.625rem] px-1 text-center text-[0.8125rem] leading-tight hyphens-auto transition-colors ${
-                active
-                  ? 'bg-basil-700 font-semibold text-white shadow-card'
-                  : sameTarget(drag.over, { kind: 'location', location })
-                    ? 'relative z-10 bg-basil-50 font-semibold text-ink outline-2 outline-basil-600 motion-safe:scale-105'
-                    : `font-medium text-ink hover:bg-surface ${drag.dragging ? 'outline-2 -outline-offset-2 outline-dashed outline-basil-600' : ''}`
-              }`}
-            >
-              <span>{messages.locations[location]}</span>
-              <span className="text-xs tabular-nums">{countOf(location)}</span>
-            </button>
-          );
-        })}
-      </div>
+      {/* While items are chosen, the tabs turn into «Verschieben nach» in the same box: one place
+          for tap and drop, nothing twice (Alban, 12.11.2026). */}
+      {chosen.length > 0 ? (
+        <MoveTargets
+          from={selected}
+          busy={mover.busy || settler.busy || editor.busy}
+          dragging={drag.dragging}
+          over={drag.over}
+          onMove={(to) => {
+            void moveChosen(to);
+          }}
+        />
+      ) : (
+        <div
+          role="tablist"
+          aria-label={t.tabsLabel}
+          className="grid grid-cols-4 gap-0.5 rounded-xl bg-surface-muted p-0.5"
+        >
+          {locationOrder.map((location, index) => {
+            const active = location === selected;
+            return (
+              <button
+                key={location}
+                ref={(node) => {
+                  if (node === null) {
+                    tabRefs.current.delete(location);
+                  } else {
+                    tabRefs.current.set(location, node);
+                  }
+                }}
+                type="button"
+                role="tab"
+                id={tabId(location)}
+                aria-selected={active}
+                aria-controls={panelId(location)}
+                tabIndex={active ? 0 : -1}
+                onClick={() => {
+                  select(location);
+                }}
+                onKeyDown={(event) => {
+                  onKeyDown(event, index);
+                }}
+                className={`flex min-h-12 min-w-0 flex-col items-center justify-center rounded-[0.625rem] px-1 text-center text-[0.8125rem] leading-tight hyphens-auto transition-colors ${
+                  active
+                    ? 'bg-basil-700 font-semibold text-white shadow-card'
+                    : 'font-medium text-ink hover:bg-surface'
+                }`}
+              >
+                <span>{messages.locations[location]}</span>
+                <span className="text-xs tabular-nums">{countOf(location)}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {selection.active ? (
         <SettlePots
@@ -405,7 +416,14 @@ export function InventoryPage() {
         />
       ) : null}
 
-      <div role="tabpanel" id={panelId(selected)} aria-labelledby={tabId(selected)} tabIndex={0}>
+      <div
+        role="tabpanel"
+        id={panelId(selected)}
+        {...(chosen.length > 0
+          ? { 'aria-label': messages.locations[selected] }
+          : { 'aria-labelledby': tabId(selected) })}
+        tabIndex={0}
+      >
         {items === undefined ? (
           <p className="sr-only">{messages.loading}</p>
         ) : visible.length === 0 ? (
@@ -423,19 +441,36 @@ export function InventoryPage() {
         ) : (
           <div className="space-y-2">
             {selection.active ? (
-              <button
-                type="button"
-                onClick={() => {
-                  if (allChosen) {
-                    selection.clear();
-                  } else {
-                    selection.selectAll(visible.map((item) => item.id));
-                  }
-                }}
-                className="inline-flex min-h-11 items-center rounded-xl font-semibold text-basil-700"
-              >
-                {allChosen ? t.select.none : t.select.all}
-              </button>
+              <div className="flex flex-wrap items-center justify-between gap-x-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (allChosen) {
+                      selection.clear();
+                    } else {
+                      selection.selectAll(visible.map((item) => item.id));
+                    }
+                  }}
+                  className="inline-flex min-h-11 items-center rounded-xl font-semibold text-basil-700"
+                >
+                  {allChosen ? t.select.none : t.select.all}
+                </button>
+                {chosen.length > 0 ? (
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold">{t.select.count(chosen.length)}</p>
+                    <button
+                      type="button"
+                      disabled={mover.busy || editor.busy}
+                      onClick={() => {
+                        setEditing(true);
+                      }}
+                      className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-line px-4 text-sm font-semibold text-basil-700 transition-colors hover:bg-basil-50 disabled:opacity-50"
+                    >
+                      {t.select.edit}
+                    </button>
+                  </div>
+                ) : null}
+              </div>
             ) : (
               swipe.tip
             )}
@@ -483,7 +518,8 @@ export function InventoryPage() {
                   <GroupedListItem key={item.id}>
                     <div
                       {...drag.rowProps(item.id)}
-                      className="[-webkit-touch-callout:none] select-none"
+                      // iOS: a long press must not start Safari's own drag of the link or the picture.
+                      className="[-webkit-touch-callout:none] select-none [&_a]:[-webkit-user-drag:none] [&_img]:pointer-events-none [&_img]:[-webkit-user-drag:none]"
                     >
                       <SwipeAction {...swipe.sides(item)}>
                         {({ sliced }) => (
@@ -509,19 +545,6 @@ export function InventoryPage() {
       {settler.toast}
       {editor.toast}
       {drag.parcel}
-      {chosen.length > 0 ? (
-        <SelectionBar
-          count={chosen.length}
-          from={selected}
-          busy={mover.busy || editor.busy}
-          onMove={(to) => {
-            void moveChosen(to);
-          }}
-          onEdit={() => {
-            setEditing(true);
-          }}
-        />
-      ) : null}
       {editing && chosen.length > 0 ? (
         <BulkEditSheet
           count={chosen.length}

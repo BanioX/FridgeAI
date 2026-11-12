@@ -48,7 +48,7 @@ test('the selection bar names unsuitable items and still moves the suitable ones
   await page.getByRole('button', { name: 'Auswählen' }).click();
   await page.getByText('Kopfsalat', { exact: true }).click();
   await page.getByText('Hackfleisch', { exact: true }).click();
-  const bar = page.getByRole('region', { name: 'Auswahl verschieben' });
+  const bar = page.getByRole('group', { name: 'Verschieben nach' });
   await bar.getByRole('button', { name: 'Tiefkühler', exact: true }).click();
 
   const hint = page.getByRole('alertdialog');
