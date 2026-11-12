@@ -120,7 +120,7 @@ export function MinStockRow({
         </div>
       ) : null}
       <p className="text-sm text-ink-muted">{t.help}</p>
-      <p role="status" className="text-sm text-today">
+      <p role="status" className="text-sm text-today empty:hidden">
         {failed ? t.failed : null}
       </p>
     </div>

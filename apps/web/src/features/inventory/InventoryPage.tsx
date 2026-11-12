@@ -192,6 +192,8 @@ function ClosedNotice() {
         <div className="flex flex-wrap gap-1">
           {closed.kind === 'deleted' ||
           closed.kind === 'processed' ||
+          // Already on «Nachkaufen» through the minimum stock (ADR-0059): no second offer.
+          closed.addedToList === true ||
           note?.done === true ? null : (
             <Button
               variant="ghost"
