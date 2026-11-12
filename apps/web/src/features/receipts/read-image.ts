@@ -27,9 +27,13 @@ async function prepare(file: Blob): Promise<HTMLCanvasElement> {
 /**
  * Reads the text of a receipt photo or screenshot on the device (ADR-0028) with tesseract.js:
  * engine, worker and German model are self-hosted and loaded only when a picture is chosen. The
- * picture never leaves the device and is not stored.
+ * picture never leaves the device and is not stored. `mode: 'sparse'` is for a few printed words
+ * such as a best-before date; the default reads a receipt as one block.
  */
-export async function readImageText(file: Blob): Promise<string> {
+export async function readImageText(
+  file: Blob,
+  options: { mode?: 'block' | 'sparse' } = {},
+): Promise<string> {
   const [{ createWorker, OEM, PSM }, worker, simdCore, plainCore] = await Promise.all([
     import('tesseract.js'),
     import('tesseract.js/dist/worker.min.js?url'),
@@ -48,7 +52,9 @@ export async function readImageText(file: Blob): Promise<string> {
   // Older devices without WebAssembly SIMD take the slower engine.
   const ocr = await start(simdCore.default).catch(() => start(plainCore.default));
   try {
-    await ocr.setParameters({ tessedit_pageseg_mode: PSM.SINGLE_BLOCK });
+    await ocr.setParameters({
+      tessedit_pageseg_mode: options.mode === 'sparse' ? PSM.SPARSE_TEXT : PSM.SINGLE_BLOCK,
+    });
     const { data } = await ocr.recognize(await prepare(file));
     return data.text;
   } finally {
