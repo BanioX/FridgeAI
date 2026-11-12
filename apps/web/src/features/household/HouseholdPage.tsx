@@ -1,4 +1,4 @@
-import { HouseholdExportSchema, type HouseholdExport } from '@fridgeai/core';
+import { formatSwissDate, HouseholdExportSchema, type HouseholdExport } from '@fridgeai/core';
 import { Download, ShieldCheck, Trash2, Upload } from 'lucide-react';
 import { useRef, useState, type ChangeEvent } from 'react';
 import { useAppData } from '../../app/AppData';
@@ -6,6 +6,7 @@ import { messages } from '../../app/messages.de-CH';
 import { BackLink } from '../../ui/BackLink';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
+import { readLastBackup, writeLastBackup } from './backup-state';
 import { exportFileName, saveFile } from './export-files';
 
 const t = messages.household;
@@ -21,6 +22,7 @@ export function HouseholdPage() {
   const [confirming, setConfirming] = useState(false);
   const [busy, setBusy] = useState(false);
   const [pending, setPending] = useState<{ name: string; data: HouseholdExport } | null>(null);
+  const [lastBackup, setLastBackup] = useState(readLastBackup);
   const fileInput = useRef<HTMLInputElement>(null);
 
   async function run(action: () => Promise<string | null>) {
@@ -43,6 +45,8 @@ export function HouseholdPage() {
       const data = await household['household.export']({ householdId });
       const name = exportFileName(today, 'json');
       saveFile(name, 'application/json', `${JSON.stringify(data, null, 2)}\n`);
+      writeLastBackup(today);
+      setLastBackup(today);
       return t.exported(name);
     });
 
@@ -111,6 +115,9 @@ export function HouseholdPage() {
         >
           {t.exportJson}
         </Button>
+        <p className="text-sm text-ink-muted">
+          {lastBackup === null ? t.noBackup : t.lastBackup(formatSwissDate(lastBackup))}
+        </p>
         <input
           ref={fileInput}
           type="file"

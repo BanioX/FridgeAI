@@ -15,6 +15,8 @@ test('exports the data, deletes everything after asking and imports the export a
   await page.getByRole('link', { name: /^Deine Daten/ }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Deine Daten' })).toBeVisible();
   await expect(page.getByText('Kein Konto, kein Tracking, keine Werbung.')).toBeVisible();
+  // Visible backups: the page says when this device last exported.
+  await expect(page.getByText('Noch keine Sicherung von diesem Gerät.')).toBeVisible();
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations).toEqual([]);
 
@@ -30,6 +32,7 @@ test('exports the data, deletes everything after asking and imports the export a
   expect(data.format).toBe('fridgeai-export');
   expect(data.items).toHaveLength(1);
   await expect(page.getByRole('status')).toHaveText(`${json.suggestedFilename()} ist gespeichert.`);
+  await expect(page.getByText(/^Letzte Sicherung: \d{2}\.\d{2}\.\d{4}\.$/)).toBeVisible();
 
   await expect(page.getByRole('button', { name: /CSV/ })).toHaveCount(0);
 

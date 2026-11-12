@@ -1,4 +1,7 @@
 import {
+  type LocalDate,
+  toLocalDate,
+  daysBetween,
   categoryById,
   fallbackCategory,
   itemValue,
@@ -7,7 +10,7 @@ import {
   sumRappen,
 } from '@fridgeai/core';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { ClipboardCheck, Snowflake } from 'lucide-react';
+import { ClipboardCheck, HardDriveDownload, Snowflake } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { useAppData } from '../../app/AppData';
@@ -23,6 +26,7 @@ import { SwipeAction } from '../../ui/SwipeAction';
 import { RecentAchievements } from '../achievements/RecentAchievements';
 import { ClimateCard } from '../climate/ClimateCard';
 import { checkDue, readLastCheck } from '../check/check-state';
+import { backupDue, readLastBackup } from '../household/backup-state';
 import { ImpactCard } from './ImpactCard';
 import { LocationTiles } from './LocationTiles';
 import { locationCounts } from './location-counts';
@@ -40,6 +44,7 @@ export function TodayPage() {
   const swipe = useSwipeOutcome();
   // Read once per visit; a finished check writes it before coming back here.
   const [lastCheck] = useState(readLastCheck);
+  const [lastBackup] = useState(readLastBackup);
   const all = useLiveQuery(
     async () => (await inventory['inventory.list']({ householdId })).items,
     [householdId],
@@ -65,6 +70,11 @@ export function TodayPage() {
   const estimated = fridgeValues.some((value) => value.estimated);
   const showCheck = fridgeValues.length > 0 && checkDue(lastCheck, today);
   const urgent = urgentItems(expiring);
+  const oldestAddedOn = all.reduce<LocalDate | null>((oldest, item) => {
+    const added = toLocalDate(item.purchasedAt);
+    return oldest === null || added < oldest ? added : oldest;
+  }, null);
+  const showBackup = backupDue(lastBackup, today, all.length, oldestAddedOn);
   const t = messages.today;
 
   return (
@@ -94,6 +104,24 @@ export function TodayPage() {
             className="inline-flex min-h-11 items-center justify-center rounded-xl bg-basil-700 px-4 font-semibold text-white transition-colors hover:bg-basil-800 active:bg-basil-900"
           >
             {messages.check.cardStart}
+          </Link>
+        </Card>
+      ) : null}
+
+      {showBackup ? (
+        <Card variant="tip" className="space-y-3">
+          <h2 className="flex items-center gap-2 font-semibold">
+            <HardDriveDownload size={20} aria-hidden="true" />
+            {t.backup.title}
+          </h2>
+          <p>
+            {lastBackup === null ? t.backup.never : t.backup.since(daysBetween(lastBackup, today))}
+          </p>
+          <Link
+            to="/more/data"
+            className="inline-flex min-h-11 items-center justify-center rounded-xl bg-basil-700 px-4 font-semibold text-white transition-colors hover:bg-basil-800 active:bg-basil-900"
+          >
+            {t.backup.action}
           </Link>
         </Card>
       ) : null}
