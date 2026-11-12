@@ -639,6 +639,26 @@ describe('packaging, opening and reasons', () => {
     ).toEqual({ expiresOn: '2026-11-08', shortened: false });
   });
 
+  it('lists what already went from an item, for «7 von 10 übrig»', async () => {
+    const { itemId } = await add({ name: 'Schmelzkäse', quantity: 10 });
+    const viewOf = async () =>
+      (await handlers['inventory.list']({ householdId })).items.find((view) => view.id === itemId);
+    expect((await viewOf())?.takenQuantity).toBeUndefined();
+    const record = (outcome: 'eaten' | 'wasted', quantity: number) =>
+      handlers['inventory.recordOutcome']({
+        commandId: ids.next(),
+        householdId,
+        itemId,
+        outcome,
+        quantity,
+      });
+    await record('eaten', 2);
+    await record('wasted', 1);
+    const { eventId } = await record('eaten', 1);
+    await handlers['inventory.undoOutcome']({ commandId: ids.next(), householdId, eventId });
+    expect(await viewOf()).toMatchObject({ quantity: 7, takenQuantity: 3 });
+  });
+
   it('records why food was thrown away and who got shared food', async () => {
     const { itemId } = await add({ name: 'Joghurt', quantity: 4 });
     const wasted = await handlers['inventory.recordOutcome']({

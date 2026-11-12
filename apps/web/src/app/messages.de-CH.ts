@@ -469,6 +469,11 @@ export const messages = {
     /** Haltbarkeit 1 to 10, 10 = keeps longest (Alban, 8.11.2026). */
     score: (score: number) => `Haltbarkeit ${String(score)}/10`,
     scoreLabel: (score: number, level: string) => `Haltbarkeit ${String(score)} von 10, ${level}`,
+    /** «7 von 10 übrig» for a pack of pieces (Alban, 12.11.2026). */
+    packLeft: (left: string, start: string) => `${left} von ${start} übrig`,
+    packLabel: (left: string, start: string) => `Packung: ${left} von ${start} übrig`,
+    packTaken: (taken: string) => `${taken} schon verwertet oder entsorgt`,
+    packFull: 'Ganze Packung',
     keepsOpen: (days: number) =>
       days === 1 ? 'Offen etwa 1 Tag haltbar' : `Offen etwa ${String(days)} Tage haltbar`,
     /** «Zutat oder Fertigprodukt» (ADR-0053): recipes only use what is cooked with. */
@@ -803,6 +808,10 @@ export const messages = {
       {
         title: 'Nährwerte bei Frischem',
         text: 'Frisches wie Pouletbrust, Rindshack oder Äpfel hat kein Etikett. Rettich zeigt dafür Durchschnittswerte aus der Schweizer Nährwertdatenbank des BLV und schreibt «geschätzt» dazu. Fotografierst du eine Nährwerttabelle, gelten deren Werte.',
+      },
+      {
+        title: 'Was von der Packung übrig ist',
+        text: 'Bei Stückware wie Eiern oder Käsescheiben zeigt die Artikelseite einen Ring mit einem Teil pro Stück, zum Beispiel «7 von 10 übrig». Rettich rechnet das aus dem, was du schon verwertet oder entsorgt hast.',
       },
     ],
     guideTitle: 'Haltbarkeit A–Z',

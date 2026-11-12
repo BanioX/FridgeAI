@@ -238,6 +238,11 @@ export const InventoryItemViewSchema = z.object({
   location: StorageLocationSchema,
   quantity: QuantitySchema,
   unit: UnitSchema,
+  /**
+   * What already went from it (verwertet, entsorgt, verarbeitet), computed from the journal. With
+   * `quantity` it gives the start of the pack: «7 von 10 übrig».
+   */
+  takenQuantity: z.number().positive().optional(),
   expiresOn: LocalDateSchema,
   expiryKind: DateKindSchema,
   expirySource: ExpirySourceSchema,

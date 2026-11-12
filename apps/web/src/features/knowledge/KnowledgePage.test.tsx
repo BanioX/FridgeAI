@@ -34,7 +34,12 @@ describe('KnowledgePage «Rettich im Alltag»', () => {
     }
     expect(section.querySelectorAll('details')).toHaveLength(t.everyday.length);
     expect(t.everyday.map((item) => item.title)).toEqual(
-      expect.arrayContaining(['Klimabilanz', 'Datum fotografieren', 'Sicherung']),
+      expect.arrayContaining([
+        'Klimabilanz',
+        'Datum fotografieren',
+        'Sicherung',
+        'Was von der Packung übrig ist',
+      ]),
     );
   });
 
