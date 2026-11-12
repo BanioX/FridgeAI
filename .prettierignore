@@ -1,5 +1,9 @@
 pnpm-lock.yaml
 coverage/
+
+# Erzeugt von scripts/catalog/blv-nutrition.mjs, ein Lebensmittel pro Zeile (ADR-0064)
+packages/core/src/nutrition/fresh-nutrition.data.ts
+scripts/catalog/blv-fresh.json
 dist/
 playwright-report/
 test-results/
