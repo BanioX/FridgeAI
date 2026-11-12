@@ -55,6 +55,47 @@ describe('ProcessPage', () => {
     expect(items.filter((item) => item.status === 'eaten')).toHaveLength(2);
   });
 
+  it('preselects every item of the link, once per `item`, and still reads a single one', async () => {
+    const db = await renderProcess('/add/process', [
+      { name: 'Mehl', location: 'pantry' },
+      { name: 'Eier', location: 'fridge' },
+      { name: 'Butter', location: 'fridge' },
+    ]);
+    await screen.findByRole('button', { name: /Mehl/ });
+    expect(screen.queryByText(t.chosen(1))).toBeNull();
+    cleanup();
+
+    const products = await db.products.toArray();
+    const idOf = async (name: string) => {
+      const product = products.find((entry) => entry.name === name);
+      return (await db.items.toArray()).find((item) => item.productId === product?.id)?.id ?? '';
+    };
+    const one = await idOf('Mehl');
+    const two = await idOf('Eier');
+    render(
+      <AppDataProvider db={db}>
+        <MemoryRouter initialEntries={[`/add/process?item=${one}&item=${two}`]}>
+          <Routes>
+            <Route path="/add/process" element={<ProcessPage />} />
+          </Routes>
+        </MemoryRouter>
+      </AppDataProvider>,
+    );
+    expect(await screen.findByText(t.chosen(2))).toBeDefined();
+    cleanup();
+
+    render(
+      <AppDataProvider db={db}>
+        <MemoryRouter initialEntries={[`/add/process?item=${one}`]}>
+          <Routes>
+            <Route path="/add/process" element={<ProcessPage />} />
+          </Routes>
+        </MemoryRouter>
+      </AppDataProvider>,
+    );
+    expect(await screen.findByText(t.chosen(1))).toBeDefined();
+  });
+
   it('asks for a name and for ingredients before saving', async () => {
     await renderProcess('/add/process', [{ name: 'Mehl', location: 'pantry' }]);
     fireEvent.click(await screen.findByRole('button', { name: t.save }));

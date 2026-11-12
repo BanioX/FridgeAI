@@ -64,11 +64,11 @@ export function ProcessPage() {
     return <p className="sr-only">{messages.loading}</p>;
   }
 
-  // Set up once the stock is known: the item of the link, or what the recipe has at home.
+  // Set up once the stock is known: the items of the link (`?item=` once per item), or what the recipe has at home.
   const start: Amounts = new Map(
-    [params.get('item'), ...(prefill?.itemIds ?? [])]
-      .filter((id): id is string => id !== null)
-      .flatMap((id) => (items.some((item) => item.id === id) ? [[id as Id, null] as const] : [])),
+    [...params.getAll('item'), ...(prefill?.itemIds ?? [])].flatMap((id) =>
+      items.some((item) => item.id === id) ? [[id as Id, null] as const] : [],
+    ),
   );
   const amounts = picked ?? start;
   const itemOf = (id: Id) => items.find((item) => item.id === id);
