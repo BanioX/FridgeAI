@@ -101,7 +101,7 @@ Alban: «Mehl zu Brot verarbeitet, dann kann man das badgen. Einen Kuchen backen
 | R2-1b | **Zutat oder Fertigprodukt** (Alban, 11.11.2026: Skyr Cheesecake ist kein Joghurt für Müesli): Rolle je Kategorie, neue Kategorie Desserts, Schalter am Artikel, Hinweis aus dem Barcode (NOVA 4), Badge «Fertigprodukt», Rezepte zählen nur Zutaten, ausser das Rezept verlangt Fertiges (Oreo Cheesecake) | Ehrliche Rezeptvorschläge, kein Convenience-Essen als «Joghurt» | S–M. **Umgesetzt** (11.11.2026, ADR-0053) |
 | R2-2 | **Verarbeiten (umgesetzt 11.11.2026, [ADR-0052](../adr/0052-processing-value-moves-along.md)):** Zutaten (auch Teile) werden verwertet, das Ergebnis kommt als neuer Artikel mit eigener Haltbarkeit in den Vorrat. Der Wert wandert mit, damit nichts doppelt zählt | Kuchen, Brot, Zopf, Reste ehrlich in der Bilanz | M |
 | R2-3 | **«Gekocht» (umgesetzt 11.11.2026)** auf der Rezeptseite bucht die Zutaten ab und fragt «Reste in den Kühlschrank?» (ersetzt R-03 aus ADR-0048) | Kochen schliesst den Kreis | M |
-| R2-4 | **Abzeichen** nach [`../abzeichen.md`](../abzeichen.md) | Freude, Wiederkommen, ohne Kaufanreiz | M |
+| R2-4 | **Abzeichen (umgesetzt 12.11.2026, [ADR-0054](../adr/0054-achievements.md))** nach [`../abzeichen.md`](../abzeichen.md); «Gemeinsam» folgt mit «Haushalt teilen» | Freude, Wiederkommen, ohne Kaufanreiz | M |
 
 ## Für den Parkplatz
 
