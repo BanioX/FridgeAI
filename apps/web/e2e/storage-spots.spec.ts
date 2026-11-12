@@ -2,9 +2,9 @@ import { AxeBuilder, expect, test } from './test';
 
 test.use({ viewport: { width: 390, height: 844 } });
 
-/** A 1×1 pixel PNG, built in the test: no real photo in the repo. */
+/** An 8×6 pixel green PNG with valid checksums: no real photo in the repo. */
 const TINY_PNG = Buffer.from(
-  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4z8DwHwAFAAH/q842iQAAAABJRU5ErkJggg==',
+  'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAGCAIAAABxZ0isAAAAEUlEQVR42mMQiXPCihgGUgIA270hwa7lp5MAAAAASUVORK5CYII=',
   'base64',
 );
 
