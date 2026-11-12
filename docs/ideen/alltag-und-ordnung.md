@@ -1,6 +1,6 @@
 # Alltag und Ordnung
 
-Kleine Hilfen mit System: weniger suchen, schneller abschliessen, weniger doppelt kaufen. Aus Albans Nachricht vom 12.11.2026: Töpfe zum Ablegen im Auswahlmodus und ein Foto, wo was gelagert ist («ich finde manchmal nicht, wo meine Frau den Zucker hingepackt hat»). Claude sortiert ein (jetzt, bald, später, Parkplatz), nach der Regel in [`README.md`](./README.md): Nutzen, für wen, Aufwand, was es braucht, Geld.
+Kleine Hilfen mit System: weniger suchen, schneller abschliessen, weniger doppelt kaufen. Aus Albans Nachrichten vom 12.11.2026: Töpfe zum Ablegen im Auswahlmodus, ein Foto, wo was gelagert ist («ich finde manchmal nicht, wo meine Frau den Zucker hingepackt hat»), ein «Gehört»-Badge für das eigene Dessert und die Klimabilanz. Claude sortiert ein (jetzt, bald, später, Parkplatz), nach der Regel in [`README.md`](./README.md): Nutzen, für wen, Aufwand, was es braucht, Geld.
 
 ## Jetzt (in Arbeit)
 
@@ -9,6 +9,8 @@ Kleine Hilfen mit System: weniger suchen, schneller abschliessen, weniger doppel
 | O1 | **Töpfe im Auswahlmodus**: oben neben den Lagerorten vier Felder, Verwertet (grün), Entsorgt (rot), Verarbeiten, Nachkaufen. Tippen oder Artikel hineinziehen. Einfrieren bleibt der Tab «Tiefkühler». | Nach dem Kochen oder Aufräumen mehrere Artikel auf einmal abschliessen statt einzeln wischen. Alle | M | Nichts Neues: die bestehenden Befehle. Die Frage «Ohne Rettich im Abfall gelandet?» kommt einmal für alle knappen Artikel (ADR-0039). ADR-0055 |
 | O2 | **Plätze mit Foto, «Wo ist was?»**: ein Platz wie «Oberer Schrank links» oder «Gemüsefach», wahlweise mit Foto. Er gehört zum Produkt, jede neue Packung erbt ihn. Suche «Was suchst du?» über alles. | Nichts mehr suchen, auch wenn jemand anderes eingeräumt hat. WGs, Paare, Familien | M–L | Foto nur auf dem Gerät, verkleinert, im Export und beim Löschen dabei (ADR-0020). ADR-0056 |
 | O3 | **Suche als Adresse** (`/more/spots?q=zucker`) | Ein iPhone-Kurzbefehl «Wo ist der Zucker?» öffnet die Antwort direkt | S | Teil von O2 |
+| O14 | **«Gehört»-Badge mit Initialen**: Wer einen Artikel nur für sich gekauft hat (das Dessert), markiert ihn; die Initialen stehen am Artikel. Ohne Markierung gehört er allen und alle dürfen ihn verwerten. | Weniger Streit in WGs und Paaren, klare Regeln im Büro-Kühlschrank (P20, P3). WGs, Paare, Büros | S–M | Das Datenmodell kennt den Besitzer schon («shared» oder eine Person); es fehlen Personen im Haushalt und die Oberfläche. Auf mehreren Handys erst mit Sync |
+| O15 | **Klimabilanz**: CO₂e, Wasser und Fläche, die in der Herstellung des geretteten Essens steckten, dazu das Gewicht und die gesparten Kehrichtsäcke; auf Start und als eigene Ansicht mit Grafik | Rettung wird greifbar, nicht nur in Franken. Alle | M | Daten: Clark et al. (2022), PNAS, via Our World in Data (CC BY 4.0); Kehricht: Preisüberwacher (35-Liter-Sack ≈ 4,89 kg). Energie fehlt in der Quelle. ADR-0057 |
 
 **Grenze heute:** Plätze und Fotos liegen auf einem Gerät. Damit die Partnerin oder der Mitbewohner sie auf dem eigenen Handy sieht, braucht es Konto und Sync (Meilenstein C, Plan). Bis dahin: dasselbe Gerät oder Export und Import.
 
