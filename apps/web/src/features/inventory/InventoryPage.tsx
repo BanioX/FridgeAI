@@ -24,10 +24,13 @@ import { GROUPED_ROW_LINK, GroupedList, GroupedListItem } from '../../ui/Grouped
 import { InventoryItemRow } from './InventoryItemRow';
 import { locationOrder } from './item-meta';
 import { SelectableRow } from './SelectableRow';
+import { dropKey, sameTarget, type DropTarget, type SettleAction } from './drop-target';
 import { SelectionBar } from './SelectionBar';
+import { SettlePots } from './SettlePots';
 import { useDragToLocation } from './use-drag-to-location';
 import { useMoveSelected } from './use-move-selected';
 import { useSelection } from './use-selection';
+import { useSettleSelected } from './use-settle-selected';
 import { SWIPE_HINT_ID, useSwipeOutcome } from './swipe-outcome';
 
 /** Id of the visually hidden drag hint that selectable rows point to. */
@@ -221,6 +224,8 @@ export function InventoryPage() {
   const swipe = useSwipeOutcome();
   const selection = useSelection(selected);
   const mover = useMoveSelected();
+  const settler = useSettleSelected();
+  const navigate = useNavigate();
 
   const items = useLiveQuery(
     async () => (await inventory['inventory.list']({ householdId })).items,
@@ -267,8 +272,32 @@ export function InventoryPage() {
     }
   };
 
+  /** The pots: «Verwertet», «Entsorgt» and «Nachkaufen» record at once, «Verarbeiten» opens its page. */
+  const settleChosen = async (action: SettleAction) => {
+    if (mover.busy || settler.busy || chosen.length === 0) {
+      return;
+    }
+    if (action === 'process') {
+      const query = new URLSearchParams(chosen.map((item) => ['item', item.id]));
+      selection.stop();
+      void navigate(`/add/process?${query.toString()}`);
+      return;
+    }
+    if (await settler.settle(chosen, action)) {
+      selection.stop();
+    }
+  };
+
+  const dropOn = (to: DropTarget) => {
+    if (to.kind === 'location') {
+      void moveChosen(to.location);
+    } else {
+      void settleChosen(to.action);
+    }
+  };
+
   const drag = useDragToLocation({
-    enabled: !mover.busy,
+    enabled: !mover.busy && !settler.busy,
     selecting: selection.active,
     from: selected,
     begin: (id) => {
@@ -283,9 +312,7 @@ export function InventoryPage() {
         ? (visible.find((item) => item.id === id)?.name ?? t.select.parcel(1))
         : t.select.parcel(count);
     },
-    drop: (to) => {
-      void moveChosen(to);
-    },
+    drop: dropOn,
   });
 
   return (
@@ -332,11 +359,11 @@ export function InventoryPage() {
               onKeyDown={(event) => {
                 onKeyDown(event, index);
               }}
-              data-drop-location={location}
+              data-drop-target={dropKey({ kind: 'location', location })}
               className={`flex min-h-12 min-w-0 flex-col items-center justify-center rounded-[0.625rem] px-1 text-center text-[0.8125rem] leading-tight hyphens-auto transition-colors ${
                 active
                   ? 'bg-basil-700 font-semibold text-white shadow-card'
-                  : drag.over === location
+                  : sameTarget(drag.over, { kind: 'location', location })
                     ? 'relative z-10 bg-basil-50 font-semibold text-ink outline-2 outline-basil-600 motion-safe:scale-105'
                     : `font-medium text-ink hover:bg-surface ${drag.dragging ? 'outline-2 -outline-offset-2 outline-dashed outline-basil-600' : ''}`
               }`}
@@ -347,6 +374,17 @@ export function InventoryPage() {
           );
         })}
       </div>
+
+      {selection.active ? (
+        <SettlePots
+          disabled={chosen.length === 0 || mover.busy || settler.busy}
+          dragging={drag.dragging}
+          over={drag.over}
+          onPick={(action) => {
+            void settleChosen(action);
+          }}
+        />
+      ) : null}
 
       <div role="tabpanel" id={panelId(selected)} aria-labelledby={tabId(selected)} tabIndex={0}>
         {items === undefined ? (
@@ -449,6 +487,7 @@ export function InventoryPage() {
       </div>
       {swipe.toast}
       {mover.toast}
+      {settler.toast}
       {drag.parcel}
       {chosen.length > 0 ? (
         <SelectionBar

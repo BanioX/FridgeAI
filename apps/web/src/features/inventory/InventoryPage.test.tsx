@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto';
-import { cleanup, render, screen, within } from '@testing-library/react';
+import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, useLocation } from 'react-router';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -10,7 +10,13 @@ import { testDb } from '../../data/test-helpers';
 import { InventoryPage } from './InventoryPage';
 
 function Search() {
-  return <output data-testid="search">{useLocation().search}</output>;
+  const { pathname, search } = useLocation();
+  return (
+    <>
+      <output data-testid="search">{search}</output>
+      <output data-testid="path">{pathname}</output>
+    </>
+  );
 }
 
 function renderPage(db = testDb(), path = '/inventory') {
@@ -25,6 +31,7 @@ function renderPage(db = testDb(), path = '/inventory') {
 }
 
 const search = () => screen.getByTestId('search').textContent;
+const path = () => screen.getByTestId('path').textContent;
 
 async function seeded() {
   const db = testDb();
@@ -114,5 +121,136 @@ describe('InventoryPage', () => {
     expect(await screen.findByText('Vollmilch liegt jetzt im Tiefkühler.')).toBeDefined();
     expect(screen.queryByText('1 ausgewählt')).toBeNull();
     expect(screen.getByRole('button', { name: 'Auswählen' })).toBeDefined();
+  });
+  describe('the pots', () => {
+    async function seededPots() {
+      const db = testDb();
+      await seedDb(db, [
+        { name: 'Joghurt', location: 'fridge', inDays: 5 },
+        { name: 'Butter', location: 'fridge', inDays: 30 },
+        { name: 'Hummus', location: 'fridge', inDays: 0 },
+      ]);
+      return db;
+    }
+    const itemIdOf = async (db: ReturnType<typeof testDb>, name: string) => {
+      const product = (await db.products.toArray()).find((entry) => entry.name === name);
+      return (await db.items.toArray()).find((item) => item.productId === product?.id)?.id;
+    };
+    const pots = () => screen.getByRole('region', { name: 'Auswahl abschliessen' });
+
+    it('appear only in select mode and stay disabled until something is chosen', async () => {
+      renderPage(await seededPots());
+      await screen.findByText('Joghurt');
+      expect(screen.queryByRole('region', { name: 'Auswahl abschliessen' })).toBeNull();
+      await userEvent.click(screen.getByRole('button', { name: 'Auswählen' }));
+      const verwertet = within(pots()).getByRole('button', { name: 'Verwertet' });
+      expect((verwertet as HTMLButtonElement).disabled).toBe(true);
+      await userEvent.click(screen.getByRole('checkbox', { name: 'Joghurt' }));
+      expect((verwertet as HTMLButtonElement).disabled).toBe(false);
+    });
+
+    it('records the whole rest as verwertet, says so and takes it back with Rückgängig', async () => {
+      const db = await seededPots();
+      renderPage(db);
+      await screen.findByText('Joghurt');
+      await userEvent.click(screen.getByRole('button', { name: 'Auswählen' }));
+      await userEvent.click(screen.getByRole('checkbox', { name: 'Joghurt' }));
+      await userEvent.click(screen.getByRole('checkbox', { name: 'Butter' }));
+      await userEvent.click(within(pots()).getByRole('button', { name: 'Verwertet' }));
+      expect(await screen.findByText('2 Artikel verwertet.')).toBeDefined();
+      expect(await db.outcomes.toArray()).toHaveLength(2);
+      expect((await db.outcomes.toArray()).every((o) => o.outcome === 'eaten')).toBe(true);
+      // Select mode ended.
+      expect(screen.getByRole('button', { name: 'Auswählen' })).toBeDefined();
+
+      await userEvent.click(screen.getByRole('button', { name: 'Rückgängig' }));
+      await waitFor(async () => {
+        expect((await db.items.toArray()).every((item) => item.status === 'active')).toBe(true);
+      });
+    });
+
+    it('records entsorgt without a reason and adds the calm hint for best-before food', async () => {
+      const db = await seededPots();
+      renderPage(db);
+      await screen.findByText('Joghurt');
+      await userEvent.click(screen.getByRole('button', { name: 'Auswählen' }));
+      await userEvent.click(screen.getByRole('checkbox', { name: 'Joghurt' }));
+      await userEvent.click(within(pots()).getByRole('button', { name: 'Entsorgt' }));
+      expect(await screen.findByText('Joghurt entsorgt.')).toBeDefined();
+      expect(screen.getByText(messages.rescue.stillGood)).toBeDefined();
+      const [outcome] = await db.outcomes.toArray();
+      expect(outcome).toMatchObject({ outcome: 'wasted' });
+      expect(outcome?.wasteReason).toBeUndefined();
+    });
+
+    it('asks the rescue question once for food due today; only «Ja» counts as rescued', async () => {
+      const db = await seededPots();
+      renderPage(db);
+      await screen.findByText('Hummus');
+      await userEvent.click(screen.getByRole('button', { name: 'Auswählen' }));
+      await userEvent.click(screen.getByRole('checkbox', { name: 'Hummus' }));
+      await userEvent.click(screen.getByRole('checkbox', { name: 'Butter' }));
+      await userEvent.click(within(pots()).getByRole('button', { name: 'Verwertet' }));
+
+      const sheet = await screen.findByRole('alertdialog');
+      expect(
+        within(sheet).getByText(messages.itemDetail.rescueQuestion, { selector: 'h2' }),
+      ).toBeDefined();
+      expect(within(sheet).getByText('Hummus')).toBeDefined();
+      expect(within(sheet).queryByText('Butter')).toBeNull();
+      expect(within(sheet).getByRole('radio', { name: 'Nein' })).toHaveProperty('checked', true);
+      await userEvent.click(within(sheet).getByRole('radio', { name: 'Ja, gerettet' }));
+      await userEvent.click(within(sheet).getByRole('button', { name: 'Als verwertet speichern' }));
+      expect(await screen.findByText('2 Artikel verwertet.')).toBeDefined();
+
+      const outcomes = await db.outcomes.toArray();
+      expect(outcomes).toHaveLength(2);
+      expect(outcomes.filter((o) => o.rescued === true).map((o) => o.itemId)).toEqual([
+        await itemIdOf(db, 'Hummus'),
+      ]);
+    });
+
+    it('records nothing when the rescue question is cancelled', async () => {
+      const db = await seededPots();
+      renderPage(db);
+      await screen.findByText('Hummus');
+      await userEvent.click(screen.getByRole('button', { name: 'Auswählen' }));
+      await userEvent.click(screen.getByRole('checkbox', { name: 'Hummus' }));
+      await userEvent.click(within(pots()).getByRole('button', { name: 'Verwertet' }));
+      await userEvent.click(
+        within(await screen.findByRole('alertdialog')).getByRole('button', { name: 'Abbrechen' }),
+      );
+      expect(screen.queryByRole('alertdialog')).toBeNull();
+      expect(await db.outcomes.toArray()).toHaveLength(0);
+      expect(screen.getByText('1 ausgewählt')).toBeDefined();
+    });
+
+    it('puts the products on the shopping list and keeps them in stock', async () => {
+      const db = await seededPots();
+      renderPage(db);
+      await screen.findByText('Joghurt');
+      await userEvent.click(screen.getByRole('button', { name: 'Auswählen' }));
+      await userEvent.click(screen.getByRole('checkbox', { name: 'Joghurt' }));
+      await userEvent.click(within(pots()).getByRole('button', { name: 'Nachkaufen' }));
+      expect(await screen.findByText('Joghurt steht bei «Nachkaufen».')).toBeDefined();
+      expect(await db.shoppingItems.toArray()).toMatchObject([{ name: 'Joghurt' }]);
+      expect((await db.items.toArray()).every((item) => item.status === 'active')).toBe(true);
+      expect(screen.getByRole('button', { name: 'Auswählen' })).toBeDefined();
+    });
+
+    it('opens «Verarbeiten» with all chosen items and leaves select mode', async () => {
+      const db = await seededPots();
+      renderPage(db);
+      await screen.findByText('Joghurt');
+      await userEvent.click(screen.getByRole('button', { name: 'Auswählen' }));
+      await userEvent.click(screen.getByRole('checkbox', { name: 'Joghurt' }));
+      await userEvent.click(screen.getByRole('checkbox', { name: 'Butter' }));
+      await userEvent.click(within(pots()).getByRole('button', { name: 'Verarbeiten' }));
+      const idOf = (name: string) => itemIdOf(db, name);
+      expect(path()).toBe('/add/process');
+      expect(search()).toBe(
+        `?item=${String(await idOf('Joghurt'))}&item=${String(await idOf('Butter'))}`,
+      );
+    });
   });
 });
