@@ -4,7 +4,7 @@ Jeder Entscheid mit Folgen steht hier als eigene Datei `NNNN-titel.md` (ADR-0001
 
 **Pflege:** Wer ein ADR anlegt oder dessen Status ändert, führt diese Tabelle im selben PR nach. Ein abgelöstes ADR bleibt als Verlauf stehen, seine Statuszeile nennt das ADR, das es ablöst.
 
-**Stand:** 8.11.2026, 47 Entscheide.
+**Stand:** 12.11.2026, 55 Entscheide.
 
 | Nr. | Titel | Status | Datum |
 | --- | --- | --- | --- |
@@ -62,3 +62,4 @@ Jeder Entscheid mit Folgen steht hier als eigene Datei `NNNN-titel.md` (ADR-0001
 | [0052](0052-processing-value-moves-along.md) | Verarbeiten: der Wert wandert mit | angenommen | 2026-11-11 |
 | [0053](0053-ingredient-or-ready-made.md) | Zutat oder Fertigprodukt: Rolle je Kategorie, Badge, Rezept-Regel | angenommen | 2026-11-11 |
 | [0054](0054-achievements.md) | Abzeichen berechnen, nie speichern | angenommen | 2026-11-12 |
+| [0055](0055-settle-pots.md) | Töpfe: Auswahl abschliessen | angenommen | 2026-11-12 |
