@@ -30,3 +30,7 @@ Alban (12.11.2026): «Namens- oder Initialen-Badge, falls jemand sich selbst ein
 ## Nachtrag: Besitz im Journal
 
 Die Einträge des Journals (`inventory.history`) tragen den Besitzer-Schnappschuss des Abschlusses (`owner`). Die Zeile zeigt die Initialen wie im Vorrat, nur ab zwei Personen im Haushalt; bei «Allen» bleibt sie ohne Markierung.
+
+## Nachtrag (12.11.2026): auch im PDF
+
+Die Initialen stehen im Gesamtauszug als kleines Zeichen und in den Quittungen in der Notiz, nur bei einer Person als Besitz und nur ab zwei Personen im Haushalt. Das entscheidet der Kern (`ownerInitials` bei `reports.build`), die Oberfläche zeichnet nur.

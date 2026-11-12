@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { localDate } from '../src/dates';
+import { uuidV7 } from '../src/ids';
 import { IsoDateTimeSchema } from '../src/model/primitives';
 import { rappen } from '../src/money';
 import { buildReport, type ReportItem, type ReportOutcome } from '../src/reports/report';
@@ -37,6 +38,8 @@ const closed = (
   categoryId,
   ...extra,
 });
+
+const cakeId = uuidV7(1_762_500_000_000, new Uint8Array(10));
 
 describe('buildReport (ADR-0030)', () => {
   const report = buildReport({
@@ -83,6 +86,47 @@ describe('buildReport (ADR-0030)', () => {
       ['Milch', -2],
       ['Skyr', 1],
     ]);
+  });
+
+  it('counts processed ingredients in the period, with the value that moved on (ADR-0052)', () => {
+    const cake = buildReport({
+      today,
+      from: localDate('2026-11-01'),
+      to: today,
+      items: [
+        {
+          ...item('Kuchen', '2026-11-12', 800),
+          origin: 'made',
+          spot: 'Türfach',
+          ownerInitials: 'MK',
+        },
+      ],
+      outcomes: [
+        closed('eaten', '2026-11-03T10:00:00.000Z', 120, 'bakery-bread', {
+          madeInto: cakeId,
+        }),
+        closed('eaten', '2026-11-04T10:00:00.000Z', 80, 'bakery-bread', {
+          madeInto: cakeId,
+        }),
+        closed('eaten', '2026-10-04T10:00:00.000Z', 55, 'bakery-bread', {
+          madeInto: cakeId,
+        }),
+        closed('eaten', '2026-11-05T10:00:00.000Z', 70, 'bakery-bread', {
+          madeInto: cakeId,
+          deletedAt: IsoDateTimeSchema.parse('2026-11-05T11:00:00.000Z'),
+        }),
+      ],
+      purchases: [],
+    });
+    expect(cake.impact.processed).toEqual({ count: 2, valueRappen: 200 });
+    // Processed ingredients count nowhere else (no double counting).
+    expect(cake.impact.savedRappen).toBe(0);
+    expect(cake.fridge.items[0]).toMatchObject({
+      origin: 'made',
+      spot: 'Türfach',
+      ownerInitials: 'MK',
+    });
+    expect(report.impact.processed).toEqual({ count: 0, valueRappen: 0 });
   });
 
   it('sums rescued and wasted per month in the period, without undone outcomes', () => {

@@ -3,6 +3,7 @@ import {
   IsoDateTimeSchema,
   localDate,
   rappen,
+  uuidV7,
   type FootprintSummary,
   type Report,
   type ReportItem,
@@ -25,6 +26,7 @@ export function sampleReport(): Report {
     value: number,
     valueEstimated = false,
     retailer?: ReportItem['retailer'],
+    extra: Partial<ReportItem> = {},
   ): ReportItem => ({
     name,
     categoryId,
@@ -35,6 +37,7 @@ export function sampleReport(): Report {
     valueRappen: rappen(value),
     valueEstimated,
     ...(retailer === undefined ? {} : { retailer }),
+    ...extra,
   });
   const items: ReportItem[] = [
     {
@@ -45,11 +48,44 @@ export function sampleReport(): Report {
       ...item('Poulet Brust', 'meat-poultry', 'fridge', 400, 'g', '2026-11-07', 1190),
       expiryKind: 'use_by',
     },
-    item('Joghurt Erdbeer', 'dairy-yoghurt', 'fridge', 3, 'pcs', '2026-11-08', 210, false, 'coop'),
+    item('Joghurt Erdbeer', 'dairy-yoghurt', 'fridge', 3, 'pcs', '2026-11-08', 210, false, 'coop', {
+      spot: 'Türfach',
+      ownerInitials: 'MK',
+    }),
     item('Nüsslisalat', 'produce-salad', 'fridge', 100, 'g', '2026-11-09', 350),
     item('Vollmilch', 'dairy-milk', 'fridge', 1000, 'ml', '2026-11-12', 165, false, 'migros'),
     item('Gruyère', 'dairy-cheese-hard', 'fridge', 250, 'g', '2026-12-02', 640, false, 'denner'),
     item('Rüebli', 'produce-carrots', 'fridge', 1000, 'g', '2026-11-20', 220, true),
+    item(
+      'Schokoladenkuchen',
+      'bakery-homemade',
+      'fridge',
+      1,
+      'pcs',
+      '2026-11-11',
+      760,
+      true,
+      undefined,
+      {
+        origin: 'made',
+        ownerInitials: 'EB',
+      },
+    ),
+    item(
+      'Lasagne',
+      'prepared-ready-meals',
+      'fridge',
+      2,
+      'pcs',
+      '2026-11-10',
+      480,
+      true,
+      undefined,
+      {
+        origin: 'leftover',
+        spot: 'Mittleres Fach',
+      },
+    ),
     item('Glace Vanille', 'frozen-icecream', 'freezer', 6, 'pcs', '2027-05-01', 690),
     item('Erbsen', 'frozen-vegetables', 'freezer', 750, 'g', '2027-08-01', 395),
     item('Spaghetti', 'pantry-pasta', 'pantry', 500, 'g', '2027-09-01', 180, true),
@@ -104,6 +140,16 @@ export function sampleReport(): Report {
     }),
     outcome('2026-11-03', 'eaten', 'fish-smoked-salmon', 790, 200),
     outcome('2026-11-05', 'eaten', 'bakery-bread', 420, 500),
+    // The cake's ingredients: their value moved on to the cake (ADR-0052).
+    ...[
+      ['2026-11-02', 'pantry-flour', 140],
+      ['2026-11-02', 'dairy-butter', 230],
+      ['2026-11-02', 'dairy-eggs', 190],
+    ].map(([day, category, value]) =>
+      outcome(String(day), 'eaten', String(category), Number(value), 200, {
+        madeInto: uuidV7(1_762_500_000_000, new Uint8Array(10)),
+      }),
+    ),
   ];
   const purchase = (retailer: ReportPurchase['retailer'], day: string, total: number) => ({
     retailer,

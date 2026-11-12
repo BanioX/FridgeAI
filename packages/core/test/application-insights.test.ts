@@ -7,6 +7,7 @@ import {
   rappen,
   uuidV7,
   type Id,
+  type InventoryItem,
   type Storage,
 } from '../src';
 
@@ -121,6 +122,66 @@ describe('insight queries on memory storage', () => {
     expect(report.fridge.itemCount).toBe(2);
     expect(report.fridge.valueRappen).toBeGreaterThan(0);
     expect(report.shopping.receiptCount).toBe(0);
+  });
+
+  it('reports.build carries spot, owner initials and origin (ADR-0056, 0058, 0052)', async () => {
+    const [mia, noah] = [next(), next()];
+    const member = (memberId: Id, displayName: string) => ({
+      id: memberId,
+      householdId,
+      displayName,
+      role: 'member' as const,
+      joinedAt: now,
+      updatedAt: now,
+    });
+    await storage.members.add(member(mia, 'Mia Keller'));
+    const spotId = next();
+    await storage.spots.add({
+      id: spotId,
+      householdId,
+      updatedAt: now,
+      name: 'Türfach',
+      location: 'fridge',
+      createdAt: now,
+    });
+    const setup = async (name: string, change: Partial<InventoryItem>, spot?: Id) => {
+      const { itemId } = await add(name);
+      const item = await storage.items.get(itemId);
+      if (item === undefined) {
+        throw new Error('item missing');
+      }
+      if (spot !== undefined) {
+        const product = await storage.products.get(item.productId);
+        if (product !== undefined) {
+          await storage.products.put({ ...product, spotId: spot });
+        }
+      }
+      await storage.items.put({ ...item, ...change });
+    };
+    const build = async () =>
+      Object.fromEntries(
+        (
+          await inventory['reports.build']({
+            householdId,
+            from: localDate('2026-11-01'),
+            to: localDate('2026-11-07'),
+          })
+        ).fridge.items.map((i) => [i.name, i]),
+      );
+    await setup('Milch', { owner: mia }, spotId);
+    await setup('Kuchen', { origin: 'made' });
+    await setup('Rest', { location: 'pantry' }, spotId);
+    // One person only: no initials.
+    let items = await build();
+    expect(items.Milch).toMatchObject({ spot: 'Türfach' });
+    expect(items.Milch?.ownerInitials).toBeUndefined();
+    await storage.members.add(member(noah, 'Noah Frei'));
+    items = await build();
+    expect(items.Milch).toMatchObject({ spot: 'Türfach', ownerInitials: 'MK' });
+    expect(items.Kuchen).toMatchObject({ origin: 'made' });
+    expect(items.Kuchen?.ownerInitials).toBeUndefined();
+    // The spot lies in the fridge; the item is in the pantry now.
+    expect(items.Rest?.spot).toBeUndefined();
   });
 
   /** An item that came from a receipt of `retailer` (line and receipt written like the import). */

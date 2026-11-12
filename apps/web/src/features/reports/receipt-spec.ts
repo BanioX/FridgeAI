@@ -276,7 +276,12 @@ export function receiptSpec(
                 here.map((item) => ({
                   label: item.name,
                   value: itemValue(item),
-                  note: `${formatQuantity(item.quantity, item.unit)} · ${badge(item)}`,
+                  note: [
+                    formatQuantity(item.quantity, item.unit),
+                    ...(item.spot === undefined ? [] : [item.spot]),
+                    badge(item),
+                    ...(item.ownerInitials === undefined ? [] : [item.ownerInitials]),
+                  ].join(' · '),
                 })),
               ],
         totals: [

@@ -26,12 +26,12 @@ Prüfung aller Funktionen aus ADR-0048 bis ADR-0062 und der Funktionen ohne eige
 | Funktion | Start | Liste | Artikel | Journal | Bilanz | PDF | Export | Wissen | Suche | Abzeichen |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Rezepte, eigene Rezepte (0048) | – | – | über «Verarbeiten» | – | ja | – | ja | ja | nein (K12) | ja |
-| Verarbeiten, Reste (0052) | «etwa» fehlt (K4) | Badge fehlt (K4) | ja | zählt doppelt (K2) | ja | nein (K6) | ja | ja | ja | ja |
+| Verarbeiten, Reste (0052) | «etwa» fehlt (K4) | Badge fehlt (K4) | ja | zählt doppelt (K2) | ja | ja | ja | ja | ja | ja |
 | Abzeichen (0054) | ja | – | – | – | ja | nein (K7) | ja | ja | – | – |
 | Töpfe (0055) | – | ja | – | ja | – | – | – | ja | – | – |
-| Plätze, «Wo ist was?» (0056) | ja | ja | ja | – | ja | nein (K6) | ja | ja | ja (Fachnamen) | – |
+| Plätze, «Wo ist was?» (0056) | ja | ja | ja | – | ja | ja | ja | ja | ja (Fachnamen) | – |
 | Klimabilanz (0057) | ja | – | – | – | ja | nein (K1) | ja | ja | – | – |
-| «Gehört» (0058) | ja | ja | ja | nein (K2) | – | nein (K6) | ja | ja | ja (nach Person) | – |
+| «Gehört» (0058) | ja | ja | ja | nein (K2) | – | ja | ja | ja | ja (nach Person) | – |
 | Mindestbestand (0059) | – | ja | ja | – | – | – | ja | ja | – | – |
 | Rezepte zur Auswahl (0061) | – | ja | ja | – | – | – | – | ja | – | – |
 | Datum fotografieren (0062) | – | – | ja (Ändern, Einräumen) | – | – | – | ja | ja | – | – |
@@ -52,7 +52,7 @@ Daten gehen keine verloren: Alle Tabellen stehen in der Sicherung und kommen bei
 | K3 | Tests mit Hin und Zurück für Person, Verarbeiten, Mindestbestand; «Letzte Sicherung» nach Import und Löschen | in Arbeit |
 | K4 | Badges «Selbst gemacht» und «Reste»; «etwa» auf Start | in Arbeit |
 | K5 | Kühlschrank-Check auch ohne Fälligkeit starten (Vorrat, Mehr); Person auf der Check-Karte | erledigt |
-| K6 | PDF: Plätze, Person und Verarbeitetes im Auszug | offen |
+| K6 | PDF: Plätze, Person und Verarbeitetes im Auszug | erledigt |
 | K7 | PDF: Abzeichen im Zeitraum; Quittung für den Notvorrat | offen |
 | K8 | «Datum fotografieren» auch beim Ändern und beim Einräumen | erledigt |
 | K9 | «Wo ist was?» findet Fachnamen und Personen | erledigt |

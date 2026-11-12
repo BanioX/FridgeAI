@@ -92,7 +92,7 @@ describe('receiptSpec', () => {
   });
 
   it('lists one place at a time', () => {
-    expect(labels('fridge')).toHaveLength(7);
+    expect(labels('fridge')).toHaveLength(9);
     expect(labels('freezer')).toEqual(['Glace Vanille', 'Erbsen']);
     expect(labels('pantry')).toEqual(['Spaghetti', 'Basmati-Reis']);
     expect(spec('freezer').title).toBe('Im Tiefkühler');
@@ -102,6 +102,18 @@ describe('receiptSpec', () => {
     });
     // An estimated price is marked like on the app's list.
     expect(spec('pantry').sections[0]?.[0]?.value).toBe(`${chf(180)} *`);
+  });
+
+  it('adds the spot and the owner to the note of a place receipt (ADR-0056, 0058)', () => {
+    const notes = Object.fromEntries(
+      (spec('fridge').sections[0] ?? []).map((post) => [post.label, post.note ?? '']),
+    );
+    expect(notes['Joghurt Erdbeer']).toMatch(/^3 Stk\. · Türfach · .+ · MK$/);
+    expect(notes.Lasagne).toContain('Mittleres Fach');
+    expect(notes.Lasagne).not.toContain('Türfach');
+    // No spot and no owner: the note stays as it was.
+    expect(notes.Vollmilch).not.toContain('·  ·');
+    expect(notes.Vollmilch?.split(' · ')).toHaveLength(2);
   });
 
   it('says so when a receipt has nothing to list', () => {

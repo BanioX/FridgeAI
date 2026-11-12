@@ -30,6 +30,10 @@ export function reportInsights(report: Report, money: Money = CHF_MONEY): string
   if (report.fridge.urgent.length > 0) {
     lines.push(t.urgent(report.fridge.urgent.length));
   }
+  const { processed } = report.impact;
+  if (processed.count > 0) {
+    lines.push(t.processed(processed.count, money.format(processed.valueRappen)));
+  }
   const [shop] = report.shopping.byRetailer;
   if (shop !== undefined) {
     lines.push(t.shop(messages.priceMemory.shops[shop.retailer], money.format(shop.spentRappen)));

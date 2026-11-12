@@ -102,6 +102,12 @@ const ReportItemSchema = z.object({
   valueEstimated: z.boolean(),
   /** Where it was bought, from its receipt; absent when unknown («other») or not from a receipt. */
   retailer: RetailerSchema.optional(),
+  /** The spot's name (ADR-0056), only when the spot lies in the item's location. */
+  spot: z.string().optional(),
+  /** The owner's initials (ADR-0058); only for a non-shared owner with two or more people. */
+  ownerInitials: z.string().optional(),
+  /** «Selbst gemacht» or «Reste» (ADR-0052). */
+  origin: ItemOriginSchema.optional(),
 });
 const ReportSchema = z.object({
   today: LocalDateSchema,
@@ -134,6 +140,8 @@ const ReportSchema = z.object({
     usedCount: z.int().min(0),
     sharedRappen: RappenSchema,
     sharedCount: z.int().min(0),
+    /** Ingredients processed in the period and the value that moved on (ADR-0052). */
+    processed: z.object({ count: z.int().min(0), valueRappen: RappenSchema }),
     wastedItems: z.array(
       z.object({
         name: z.string(),
