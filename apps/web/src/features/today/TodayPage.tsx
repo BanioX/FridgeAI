@@ -24,6 +24,8 @@ import { RecentAchievements } from '../achievements/RecentAchievements';
 import { ClimateCard } from '../climate/ClimateCard';
 import { checkDue, readLastCheck } from '../check/check-state';
 import { ImpactCard } from './ImpactCard';
+import { LocationTiles } from './LocationTiles';
+import { locationCounts } from './location-counts';
 import { ImpactSince } from './ImpactSince';
 import { factFor } from '../knowledge/food-facts';
 import { StartIntro } from './StartIntro';
@@ -77,6 +79,8 @@ export function TodayPage() {
           {estimated ? <p className="mt-1 text-sm text-silver">{t.estimated}</p> : null}
         </Card>
       ) : null}
+
+      {all.length > 0 ? <LocationTiles counts={locationCounts(all, urgent)} /> : null}
 
       {showCheck ? (
         <Card variant="tip" className="space-y-3">

@@ -86,6 +86,14 @@ export const messages = {
     reserve: 'Notvorrat',
   },
   today: {
+    /** The four tiles on Start, one per storage location (Alban, 12.11.2026). */
+    locationTiles: {
+      title: 'Lagerorte',
+      label: (location: string, items: number, urgent: number) =>
+        `${location}: ${items === 1 ? '1 Artikel' : `${String(items)} Artikel`}${
+          urgent === 0 ? '' : `, ${String(urgent)} bald fällig`
+        }`,
+    },
     valueLabel: 'liegen gerade in deinem Kühlschrank',
     estimated: 'teilweise geschätzt',
     expiringTitle: 'Heute retten',
