@@ -1,5 +1,7 @@
+import { daysBetween } from '@fridgeai/core';
 import {
   Award,
+  ClipboardCheck,
   FileChartColumn,
   HistoryIcon,
   Leaf,
@@ -9,9 +11,12 @@ import {
   Smartphone,
   Users,
 } from 'lucide-react';
+import { useState } from 'react';
+import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
 import { Card } from '../../ui/Card';
 import { MenuList } from '../../ui/MenuList';
+import { readLastCheck } from '../check/check-state';
 
 const t = messages.more;
 
@@ -33,6 +38,8 @@ const isIos = () => /iPhone|iPad|iPod/.test(navigator.userAgent);
  * data and privacy, the install hint – as one menu, so the tab bar keeps four clear places.
  */
 export function MorePage() {
+  const { today } = useAppData();
+  const [lastCheck] = useState(readLastCheck);
   return (
     <div className="space-y-6">
       <h1 className="large-title">{messages.pages.more}</h1>
@@ -49,6 +56,12 @@ export function MorePage() {
 
       <MenuList
         entries={[
+          {
+            to: '/check',
+            icon: ClipboardCheck,
+            title: messages.pages.check,
+            detail: t.checkDetail(lastCheck === null ? null : daysBetween(lastCheck, today)),
+          },
           {
             to: '/more/reports',
             icon: FileChartColumn,

@@ -44,6 +44,14 @@ test('weekly fridge check: half, thrown away, back, still there', async ({ page 
   await expect(page.getByRole('link', { name: /Vollmilch/ })).toBeVisible();
 });
 
+test('the check can be started any time from «Mehr»', async ({ page }) => {
+  await page.goto('/more');
+  const entry = page.getByRole('link', { name: /Kühlschrank-Check/ });
+  await expect(entry).toContainText('Noch nie');
+  await entry.click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Kühlschrank-Check' })).toBeVisible();
+});
+
 test('says so when the fridge is empty', async ({ page }) => {
   await page.goto('/check');
   await expect(page.getByText('Im Kühlschrank liegt nichts.', { exact: false })).toBeVisible();

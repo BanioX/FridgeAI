@@ -16,6 +16,8 @@ import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { StatusChip } from '../../ui/StatusChip';
 import { expiryBadge } from '../../ui/expiry-badge';
+import { OwnerMark } from '../people/OwnerMark';
+import { useMembers } from '../people/use-members';
 import { itemMeta } from '../inventory/item-meta';
 import { useProductImage } from '../inventory/use-product-image';
 import { SpotThumb } from '../spots/SpotThumb';
@@ -222,6 +224,8 @@ function CheckCard({
   onAnswer: (choice: CheckAnswer) => void;
 }) {
   const image = useProductImage(item.gtin);
+  const members = useMembers();
+  const showOwner = item.owner !== 'shared' && (members?.length ?? 0) >= 2;
   const badge = expiryBadge(
     expiryStatus(item.expiresOn, today, item.expiryKind, soonThresholdFor(item.location)),
     item.expiresOn,
@@ -265,9 +269,12 @@ function CheckCard({
           <img src={image} alt="" className="size-16 shrink-0 rounded-xl object-contain" />
         )}
         <div className="min-w-0 flex-1">
-          <h2 id="check-item" ref={heading} tabIndex={-1} className="text-xl font-semibold">
-            {item.name}
-          </h2>
+          <div className="flex items-center gap-2">
+            <h2 id="check-item" ref={heading} tabIndex={-1} className="text-xl font-semibold">
+              {item.name}
+            </h2>
+            {showOwner ? <OwnerMark ownerId={item.owner} /> : null}
+          </div>
           <p className="text-ink-muted">{itemMeta(item)}</p>
           <div className="mt-2">
             <StatusChip tone={badge.tone}>{badge.label}</StatusChip>
