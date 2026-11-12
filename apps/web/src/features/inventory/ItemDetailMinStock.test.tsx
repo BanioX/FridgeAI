@@ -47,7 +47,12 @@ describe('ItemDetailPage «Immer da haben» (ADR-0059)', () => {
     await waitFor(async () => {
       expect((await db.products.toArray())[0]?.minStock).toBe(2);
     });
-    expect(within(group()).getByRole<HTMLInputElement>('radio', { name: '2' }).checked).toBe(true);
+    // The page reads the value back through a live query: wait for the render, not only the write.
+    await waitFor(() => {
+      expect(within(group()).getByRole<HTMLInputElement>('radio', { name: '2' }).checked).toBe(
+        true,
+      );
+    });
     fireEvent.click(within(group()).getByRole('radio', { name: t.off }));
     await waitFor(async () => {
       expect((await db.products.toArray())[0]?.minStock).toBeUndefined();
