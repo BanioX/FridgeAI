@@ -44,6 +44,11 @@ function piecesAsFraction(quantity: number): string | null {
   return null;
 }
 
+/** A number of pieces without the unit: «7», «9½», «0.3». */
+export function formatPieces(quantity: number): string {
+  return piecesAsFraction(quantity) ?? formatDecimal(quantity);
+}
+
 /**
  * «¾ Stk.», «1½ Stk.», «0.3 Stk.», «300 g», «1.25 kg», «3 dl»: in the natural unit with Swiss
  * numbers (ADR-0018); pieces as fractions where people would say them.
@@ -51,7 +56,7 @@ function piecesAsFraction(quantity: number): string | null {
 export function formatQuantity(quantity: number, unit: Unit): string {
   const shown = displayQuantity(quantity, unit);
   if (shown.unit === 'pcs') {
-    return `${piecesAsFraction(quantity) ?? formatDecimal(shown.amount)} ${messages.units.pcs}`;
+    return `${formatPieces(quantity)} ${messages.units.pcs}`;
   }
   return `${formatDecimal(shown.amount)} ${messages.inputUnits[shown.unit]}`;
 }

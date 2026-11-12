@@ -7,6 +7,7 @@ import {
   fallbackCategory,
   isReadyMade,
   itemBadges,
+  packLeft,
   portionChoices,
   portioningOf,
   shouldAskStillGood,
@@ -40,6 +41,7 @@ import { Card } from '../../ui/Card';
 import { ChoiceChips } from '../../ui/ChoiceChips';
 import { ItemBadges } from '../../ui/ItemBadges';
 import { ShopBadge } from '../../ui/ShopBadge';
+import { PackRing } from '../../ui/PackRing';
 import { ScoreRing } from '../../ui/ScoreRing';
 import { StatusChip } from '../../ui/StatusChip';
 import { describeDate } from '../../ui/date-text';
@@ -49,7 +51,7 @@ import type { ClosedItem } from './closed-item';
 import { FROM_DETAIL } from './edit-state';
 import { useFreezeHint } from './FreezeHint';
 import { itemMeta } from './item-meta';
-import { formatQuantity } from '../../ui/quantity-text';
+import { formatPieces, formatQuantity } from '../../ui/quantity-text';
 import { portionLabel } from './portion-labels';
 import { ItemOwner } from '../people/ItemOwner';
 import { MinStockRow } from './MinStockRow';
@@ -154,6 +156,7 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
   const canMove = item.location === 'freezer' || category.isFood;
   // Haltbarkeit 1 to 10 (ADR-0038): an open pack scores by its days after opening.
   const score = shelfScore(category, { opened: item.openedOn !== undefined });
+  const pack = packLeft(item);
   const level = perishabilityOf(score);
   // «Gerettet» only when it really was on the brink, never for thrown away food (ADR-0039).
   const rescuable = outcome !== 'wasted' && canBeRescued(item, today);
@@ -442,6 +445,24 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
             ) : null}
           </div>
         </div>
+        {pack === undefined ? null : (
+          <div className="mt-4 flex items-center gap-3 border-t border-line pt-4">
+            <PackRing
+              pack={pack}
+              label={t.packLabel(formatPieces(pack.left), formatPieces(pack.start))}
+            />
+            <div>
+              <p className="font-semibold">
+                {t.packLeft(formatPieces(pack.left), formatPieces(pack.start))}
+              </p>
+              <p className="text-sm text-ink-muted">
+                {pack.start > pack.left
+                  ? t.packTaken(formatPieces(pack.start - pack.left))
+                  : t.packFull}
+              </p>
+            </div>
+          </div>
+        )}
       </Card>
 
       <ItemOwner item={item} />
