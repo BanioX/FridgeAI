@@ -115,6 +115,8 @@ export const InventoryItemSchema = z.object({
   readyMade: z.boolean().optional(),
   /** Day the pack was opened; with it the «after opening» rule applies (ADR-0011). */
   openedOn: LocalDateSchema.optional(),
+  /** Bought loose at the counter (ADR-0038): open from the day it came home, badge «Von der Theke». */
+  fromCounter: z.boolean().optional(),
   /** «Nach dem Öffnen innert N Tagen» from the label; overrides the category value. */
   afterOpeningDays: z.int().min(0).max(3650).optional(),
   /** The date before opening shortened it, to restore it on undo. */

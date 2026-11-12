@@ -76,13 +76,16 @@ export function createInventoryCommands(ctx: AppContext) {
         estimateExpiry(productCategory, input.location, today) ??
         estimateExpiry(productCategory, productCategory.defaultLocation, today) ??
         addDays(today, 7);
-      // A pack that is already open follows the opening rule from the day it was opened.
+      // A pack that is already open follows the opening rule from the day it was opened; one from
+      // the counter is open from today.
+      const fromCounter = input.fromCounter === true;
+      const openedOn = input.openedOn ?? (fromCounter ? today : undefined);
       const opened =
-        input.openedOn === undefined
+        openedOn === undefined
           ? undefined
           : expiryAfterOpening({
               expiresOn: sealedExpiresOn,
-              today: input.openedOn,
+              today: openedOn,
               ...(input.afterOpeningDays === undefined
                 ? {}
                 : { itemAfterOpeningDays: input.afterOpeningDays }),
@@ -114,7 +117,8 @@ export function createInventoryCommands(ctx: AppContext) {
         ...(input.afterOpeningDays === undefined
           ? {}
           : { afterOpeningDays: input.afterOpeningDays }),
-        ...(input.openedOn === undefined ? {} : { openedOn: input.openedOn, sealedExpiresOn }),
+        ...(openedOn === undefined ? {} : { openedOn, sealedExpiresOn }),
+        ...(fromCounter ? { fromCounter: true } : {}),
         ...(input.readyMade === undefined ? {} : { readyMade: input.readyMade }),
         ...(input.priceRappen === undefined ? {} : { priceRappen: input.priceRappen }),
         owner: input.owner,

@@ -582,6 +582,27 @@ describe('packaging, opening and reasons', () => {
     });
   });
 
+  it('keeps «Von der Theke» apart from a pack opened on the day it came home', async () => {
+    const counter = await add({ name: 'Mozzarella', fromCounter: true });
+    expect(await db.items.get(counter.itemId)).toMatchObject({
+      openedOn: '2026-11-06',
+      fromCounter: true,
+      expirySource: 'after_opening',
+    });
+    // A sealed pack, opened at home the same day (Alban, 12.11.2026): no counter.
+    const sealed = await add({ name: 'Mozzarella' });
+    await handlers['inventory.open']({
+      commandId: ids.next(),
+      householdId,
+      itemId: sealed.itemId,
+    });
+    const { items } = await handlers['inventory.list']({ householdId });
+    const viewOf = (id: string) => items.find((view) => view.id === id);
+    expect(viewOf(counter.itemId)).toMatchObject({ openedOn: '2026-11-06', fromCounter: true });
+    expect(viewOf(sealed.itemId)?.openedOn).toBe('2026-11-06');
+    expect(viewOf(sealed.itemId)?.fromCounter).toBeUndefined();
+  });
+
   it('opens a pack: Grana Padano until March keeps 21 days from today', async () => {
     const { itemId } = await add({ name: 'Grana Padano', expiresOn: '2027-03-15' });
     const commandId = ids.next();

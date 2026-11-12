@@ -1,8 +1,6 @@
-import { categoryById } from './catalog/match';
-import { toLocalDate } from './dates';
 import { isReadyMade } from './ready-made';
 import type { ItemOrigin } from './model/inventory';
-import type { IsoDateTime, LocalDate, StorageLocation } from './model/primitives';
+import type { LocalDate, StorageLocation } from './model/primitives';
 
 /**
  * Calm state badges of an item (Alban, 11.11.2026). `made` and `leftover` come from «Verarbeiten»
@@ -23,11 +21,11 @@ export type ItemBadgeKind = ItemBadge['kind'];
 export interface BadgeSource {
   location: StorageLocation;
   categoryId: string;
-  purchasedAt: IsoDateTime;
   frozenOn?: LocalDate | undefined;
   thawedOn?: LocalDate | undefined;
   readyMade?: boolean | undefined;
   openedOn?: LocalDate | undefined;
+  fromCounter?: boolean | undefined;
   origin?: ItemOrigin | undefined;
 }
 
@@ -39,8 +37,9 @@ export interface BadgeSource {
  *   two badges still says what the item is.
  * - Eingefroren reads the location, not only `frozenOn` (it can stay set after an undo).
  * - Aufgetaut: `thawedOn` set and the item is out of the freezer.
- * - Von der Theke is not stored on its own (ADR-0038): a pack of a category sold loose that was
- *   opened on the day it came home. It replaces Geöffnet, which it implies.
+ * - Von der Theke reads `fromCounter`, set when it was added (ADR-0038, Nachtrag 12.11.2026). It
+ *   replaces Geöffnet, which it implies. A pack opened at home on the day it came home stays
+ *   Geöffnet; older counter items without the flag show Geöffnet too.
  * - Fertigprodukt: the item says so, or its category is a ready one (ADR-0053).
  * - A day after `today` (clock skew, imported data) shows no badge.
  */
@@ -62,10 +61,7 @@ export function itemBadges(item: BadgeSource, today: LocalDate): ItemBadge[] {
     badges.push({ kind: 'ready' });
   }
   if (openedOn !== undefined && openedOn <= today) {
-    const loose =
-      categoryById(item.categoryId)?.soldLoose === true &&
-      openedOn === toLocalDate(item.purchasedAt);
-    badges.push(loose ? { kind: 'loose' } : { kind: 'opened', on: openedOn });
+    badges.push(item.fromCounter === true ? { kind: 'loose' } : { kind: 'opened', on: openedOn });
   }
   return badges;
 }
