@@ -34,7 +34,7 @@ const customDays = (text: string) => {
  * inside the app; sharing is a tap away there.
  */
 export function ReportCard() {
-  const { householdId, inventory, today } = useAppData();
+  const { householdId, householdName, inventory, today } = useAppData();
   const money = useMoney();
   const navigate = useNavigate();
   const daysId = useId();
@@ -61,24 +61,27 @@ export function ReportCard() {
     setBusy(true);
     setStatus(t.creating);
     try {
-      const report = await inventory['reports.build']({
-        householdId,
-        from: chosen.period.from,
-        to: chosen.period.to,
-      });
+      const period = { householdId, from: chosen.period.from, to: chosen.period.to };
+      const [report, footprint] = await Promise.all([
+        inventory['reports.build'](period),
+        inventory['stats.footprint'](period),
+      ]);
       const { loadPdfPictures } = await import('./pdf-assets');
       const pictures = await loadPdfPictures();
-      const options = { household: messages.defaults.householdName, createdOn: today, pictures };
+      const options = { household: householdName, createdOn: today, pictures };
       let blob: Blob;
       if (kind === 'full') {
         const { reportPdf } = await import('./report-pdf');
-        blob = await reportPdf(report, { ...options, period: detail, money });
+        blob = await reportPdf(report, { ...options, period: detail, money, footprint });
       } else {
         const [{ receiptPdf }, { receiptSpec }] = await Promise.all([
           import('./receipt-pdf'),
           import('./receipt-spec'),
         ]);
-        blob = await receiptPdf(receiptSpec(report, kind, { money, days }), { ...options, detail });
+        blob = await receiptPdf(receiptSpec(report, kind, { money, days, footprint }), {
+          ...options,
+          detail,
+        });
       }
       const name = kind === 'full' ? 'rettich-bericht' : `rettich-quittung-${kind}`;
       openReport({

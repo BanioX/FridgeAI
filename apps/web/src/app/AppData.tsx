@@ -32,6 +32,8 @@ import { messages } from './messages.de-CH';
 export interface AppData {
   db: FridgeDb;
   householdId: Id;
+  /** The household's name as stored (the default until it is renamed or imported). */
+  householdName: string;
   memberId: Id;
   ids: IdGenerator;
   /** Household currency (ADR-0019); amounts are integers in its smallest unit. */
@@ -91,6 +93,7 @@ export function AppDataProvider({ children, db }: { children: ReactNode; db?: Fr
         setData({
           db: database,
           householdId: profile.household.id,
+          householdName: profile.household.name,
           memberId: profile.member.id,
           ids: browserIds,
           currency: householdCurrency(profile.household),
