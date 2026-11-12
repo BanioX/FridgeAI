@@ -326,6 +326,8 @@ export const messages = {
   },
   /** Calm state badges on items (R2-1): a short text, colour only supports it. */
   badges: {
+    made: 'Selbst gemacht',
+    leftover: 'Reste',
     frozen: (day: string) => `Eingefroren ${day}`,
     thawed: 'Aufgetaut',
     ready: 'Fertigprodukt',
