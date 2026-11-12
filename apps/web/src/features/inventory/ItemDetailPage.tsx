@@ -51,6 +51,7 @@ import { useFreezeHint } from './FreezeHint';
 import { itemMeta } from './item-meta';
 import { formatQuantity } from '../../ui/quantity-text';
 import { portionLabel } from './portion-labels';
+import { ItemOwner } from '../people/ItemOwner';
 import { OtherPacks } from './OtherPacks';
 import { ProductFacts } from './ProductFacts';
 import { useInventoryItem } from './use-item';
@@ -438,6 +439,8 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
           </div>
         </div>
       </Card>
+
+      <ItemOwner item={item} />
 
       {shouldSuggestFreezing(item, today) ? (
         <Card variant="tip" className="flex items-center justify-between gap-3">

@@ -20,6 +20,8 @@ interface ItemRowProps {
   shop?: { retailer: Retailer; label: string } | undefined;
   /** Calm state badges under the meta line (at most two in a row). */
   badges?: ReactNode;
+  /** Who it belongs to (initials circle) beside the name; none = everyone's. */
+  owner?: ReactNode;
 }
 
 /**
@@ -36,6 +38,7 @@ export function ItemRow({
   sliced = false,
   shop,
   badges,
+  owner,
 }: ItemRowProps) {
   const picture =
     image === undefined ? (
@@ -80,7 +83,10 @@ export function ItemRow({
           readable instead of «Rauc…». */}
       <div className="flex min-w-0 flex-1 items-center gap-3 max-[359px]:flex-col max-[359px]:items-start max-[359px]:gap-1">
         <div className="min-w-0 flex-1 max-[359px]:w-full">
-          <p className="truncate font-semibold">{name}</p>
+          <p className="flex items-center gap-1.5 font-semibold">
+            <span className="truncate">{name}</span>
+            {owner}
+          </p>
           <p className="flex items-center gap-1.5 text-sm text-ink-muted">
             {shop === undefined ? null : (
               <>
