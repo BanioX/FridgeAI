@@ -99,6 +99,11 @@ const STRONG = 100;
  * dessert, not yoghurt, «Sandwich Schinken» a ready meal, not cold cuts (ADR-0053).
  */
 const READY = 1000;
+/**
+ * Added on top for a keyword of several words: it names one product exactly. «Sandwich Toast» is
+ * bread for sandwiches, not a sandwich; «Butter Toast» is toast, not butter.
+ */
+const PHRASE = 10_000;
 
 function bestMatch(words: readonly string[], normalized: string, cut: boolean): Hit | null {
   let best: Hit | null = null;
@@ -111,7 +116,8 @@ function bestMatch(words: readonly string[], normalized: string, cut: boolean): 
           );
       // Weak words count as short as possible, so any other keyword beats them.
       const weak = isWeak(category, keyword);
-      const bonus = weak ? 0 : STRONG + (category.ready === true ? READY : 0);
+      const phrase = keyword.includes(' ') ? PHRASE : 0;
+      const bonus = weak ? phrase : STRONG + (category.ready === true ? READY : 0) + phrase;
       const score = matches ? bonus + keyword.length : -1;
       if (score >= 0 && (best === null || score > best.score)) {
         best = { category, score };
@@ -124,10 +130,10 @@ function bestMatch(words: readonly string[], normalized: string, cut: boolean): 
 /**
  * Guesses the category from a product name («Vollmilch», «M-Budget Bratwurst»). German compounds
  * carry their meaning at the end (Voll-milch, Basmati-reis), so a keyword matches a whole word or
- * the end of a word; multi-word keywords match as a phrase. The longest keyword wins, flavour and
- * origin words only when nothing else matches, and a product named before a comma wins over the
- * flavour after it. Cut-off receipt words match a long keyword inside
- * them, and «TK» moves the guess to the freezer.
+ * the end of a word; multi-word keywords match as a phrase and win over single words. Then the
+ * longest keyword wins, flavour and origin words only when nothing else matches, and a product
+ * named before a comma wins over the flavour after it. Cut-off receipt words match a long keyword
+ * inside them, and «TK» moves the guess to the freezer.
  */
 export function matchCategoryByName(name: string): Category | null {
   const normalized = normalizeFoodText(name);
