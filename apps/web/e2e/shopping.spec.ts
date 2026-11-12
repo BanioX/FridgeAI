@@ -18,7 +18,8 @@ test('shopping list: hints at food at home, checks off and puts it into the inve
   await expect(page.getByRole('status')).toHaveText(
     /^Milch ist auf der Liste\. Du hast noch 1 l Bio Vollmilch \(bis .+\)\.$/,
   );
-  await expect(page.getByText(/^Noch da: 1 l, bis/)).toBeVisible();
+  // Where it lies: here the storage location, a remembered spot when there is one (ADR-0056).
+  await expect(page.getByText(/^Noch da: 1 l, bis .+ · Kühlschrank$/)).toBeVisible();
   await what.fill('milch');
   await page.getByRole('button', { name: 'Auf die Liste' }).click();
   await expect(page.getByRole('status')).toContainText('Milch steht schon auf der Liste.');
