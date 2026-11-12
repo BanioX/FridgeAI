@@ -26,7 +26,7 @@ interface PackSize {
  * House brands of Swiss shops, normalised: they help to rank, but block a search when the open
  * database lists the product without them.
  */
-const HOUSE_BRANDS = new Set([
+export const HOUSE_BRANDS: ReadonlySet<string> = new Set([
   'coop',
   'naturaplan',
   'prix',

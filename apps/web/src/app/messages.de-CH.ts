@@ -130,7 +130,7 @@ export const messages = {
       title: 'Wirf kein Geld in den Abfall.',
       text: 'Rettich weiss, was du zu Hause hast, was bald abläuft und was du rettest. Alles bleibt auf deinem Gerät.',
       receipt: 'Quittung hochladen',
-      photo: 'Quittung fotografieren',
+      photo: 'Foto aufnehmen',
       barcode: 'Barcode scannen',
       item: 'Artikel erfassen',
       waysLabel: 'Weitere Wege in den Vorrat',
@@ -874,6 +874,10 @@ export const messages = {
         text: 'Tippe im Vorrat auf «Auswählen». Mit «Verschieben nach» legst du alles an einen anderen Ort, mit den Töpfen darunter schliesst du die Auswahl ab: verwertet, entsorgt, verarbeitet oder nachkaufen.',
       },
       {
+        title: 'Foto aufnehmen',
+        text: 'Fotografiere eine Packung oder eine Quittung. Rettich erkennt, was es ist, und liest auf dem Gerät Name, Menge, Datum und einen Barcode. Bei einer Packung wählst du aus bis zu drei Vorschlägen. Frisches ohne Etikett tippst du ein.',
+      },
+      {
         title: 'Datum fotografieren',
         text: 'Beim Erfassen kannst du das Datum auf der Packung fotografieren. Rettich liest es auf dem Gerät und speichert das Foto nicht.',
       },
@@ -1479,6 +1483,27 @@ export const messages = {
     startTitle: 'Zum Start: einmal Bestand aufnehmen',
     start:
       'Hast du noch Quittungen der letzten Tage? Lade sie hoch, dann kennt Rettich deinen Kühlschrank in wenigen Minuten. Was nicht auf einer Quittung steht, scannst du einfach.',
+  },
+  /** «Foto aufnehmen» (ADR-0068): a pack or a receipt, read on the device. */
+  photo: {
+    title: 'Foto aufnehmen',
+    intro:
+      'Fotografiere eine Packung oder eine Quittung. Rettich liest Name, Menge und Datum auf deinem Gerät und speichert das Foto nicht.',
+    take: 'Foto aufnehmen',
+    choose: 'Aus Fotos wählen',
+    reading: 'Rettich liest das Foto …',
+    preview: 'Dein Foto',
+    hubDetail: 'Packung oder Quittung',
+    found: {
+      title: 'Aus dem Foto',
+      date: (date: string) => `Haltbar bis ${date}`,
+      amount: (amount: string) => `Menge ${amount}`,
+      code: 'Barcode erkannt',
+      suggestions: 'Ist es eines davon?',
+      nothing: 'Rettich hat kein Produkt erkannt. Tipp den Namen ein.',
+      noText:
+        'Auf dem Foto steht kein lesbarer Text. Bei Frischem ohne Etikett tippst du den Namen ein.',
+    },
   },
   receiptUpload: {
     match: {

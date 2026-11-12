@@ -1,5 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import {
+  Camera,
   ChevronRight,
   PencilLine,
   Receipt,
@@ -7,16 +8,42 @@ import {
   Soup,
   type LucideIcon,
 } from 'lucide-react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
+import { CameraInput } from '../../ui/CameraInput';
 import { Card } from '../../ui/Card';
 import { QuickAdd } from '../inventory/QuickAdd';
+import { handOverPhoto } from '../photo/photo-handover';
 
 const t = messages.addHub;
 
 const FOCUS =
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-basil-600';
+
+const TILE = `flex min-h-36 flex-col justify-between gap-3 rounded-2xl bg-surface p-4 shadow-card transition-colors hover:bg-surface-muted ${FOCUS}`;
+
+function TileBody({
+  icon: Icon,
+  title,
+  detail,
+}: {
+  icon: LucideIcon;
+  title: string;
+  detail: string;
+}) {
+  return (
+    <>
+      <span className="flex size-11 items-center justify-center rounded-xl bg-surface-muted text-basil-700">
+        <Icon size={24} aria-hidden="true" />
+      </span>
+      <span>
+        <span className="block font-semibold">{title}</span>
+        <span className="block text-sm text-ink-muted">{detail}</span>
+      </span>
+    </>
+  );
+}
 
 /** A smaller way in: a white tile with its picture on top (Barcode, Von Hand). */
 function Tile({
@@ -31,17 +58,8 @@ function Tile({
   detail: string;
 }) {
   return (
-    <Link
-      to={to}
-      className={`flex min-h-36 flex-col justify-between gap-3 rounded-2xl bg-surface p-4 shadow-card transition-colors hover:bg-surface-muted ${FOCUS}`}
-    >
-      <span className="flex size-11 items-center justify-center rounded-xl bg-surface-muted text-basil-700">
-        <Icon size={24} aria-hidden="true" />
-      </span>
-      <span>
-        <span className="block font-semibold">{title}</span>
-        <span className="block text-sm text-ink-muted">{detail}</span>
-      </span>
+    <Link to={to} className={TILE}>
+      <TileBody icon={Icon} title={title} detail={detail} />
     </Link>
   );
 }
@@ -53,6 +71,7 @@ function Tile({
  */
 export function AddPage() {
   const { householdId, inventory } = useAppData();
+  const navigate = useNavigate();
   const empty = useLiveQuery(
     async () => (await inventory['inventory.list']({ householdId })).items.length === 0,
     [householdId, inventory],
@@ -80,6 +99,18 @@ export function AddPage() {
       </Link>
 
       <div className="grid grid-cols-2 gap-3">
+        {/* A pack or a receipt: Rettich reads the photo and sees which it is (ADR-0068). */}
+        <CameraInput
+          className={TILE}
+          onPhotos={([file]) => {
+            if (file !== undefined) {
+              handOverPhoto(file);
+              void navigate('/add/photo');
+            }
+          }}
+        >
+          <TileBody icon={Camera} title={messages.photo.take} detail={messages.photo.hubDetail} />
+        </CameraInput>
         <Tile
           to="/inventory/new?scan=1"
           icon={ScanBarcode}

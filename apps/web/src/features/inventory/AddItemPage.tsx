@@ -26,7 +26,7 @@ import {
 } from '@fridgeai/core';
 import { useEffect, useId, useRef, useState } from 'react';
 import { ChevronDown, Lightbulb } from 'lucide-react';
-import { useNavigate, useSearchParams } from 'react-router';
+import { useLocation, useNavigate, useSearchParams } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { useMoney } from '../../app/money';
 import { messages } from '../../app/messages.de-CH';
@@ -48,11 +48,13 @@ import {
 } from './add-item';
 import { locationOrder } from './item-meta';
 import { NameSearch, type FoundProduct } from './NameSearch';
+import { photoPrefillFrom } from './photo-prefill';
 import { PriceMemoryNote } from '../receipts/PriceMemoryNote';
 import { OwnerChoice } from '../people/OwnerChoice';
 import { useMembers } from '../people/use-members';
 
 const t = messages.addItem;
+const tp = messages.photo.found;
 const boughtOptions = [
   { value: 'packed' as const, label: t.packed },
   { value: 'loose' as const, label: t.loose },
@@ -74,6 +76,17 @@ export function AddItemPage() {
   const example = money.format(rappen(395), { currency: false });
   const navigate = useNavigate();
   const [params] = useSearchParams();
+  // What «Foto aufnehmen» read from a label (ADR-0068): suggestions until the person decides.
+  const routerState: unknown = useLocation().state;
+  const [photo] = useState(() => photoPrefillFrom(routerState));
+  const photoAmount = photo?.label.amount;
+  const photoExpiry =
+    photo?.label.expiresOn === undefined
+      ? null
+      : {
+          expiresOn: photo.label.expiresOn,
+          ...(photo.label.expiryKind === undefined ? {} : { kind: photo.label.expiryKind }),
+        };
   const id = useId();
   const fromTab = StorageLocationSchema.safeParse(params.get('location'));
   const nameInput = useRef<HTMLInputElement>(null);
@@ -85,10 +98,14 @@ export function AddItemPage() {
   const [locationChoice, setLocationChoice] = useState<StorageLocation | null>(
     fromTab.success ? fromTab.data : null,
   );
-  const [amountText, setAmountText] = useState<string | null>(null);
-  const [unitChoice, setUnitChoice] = useState<InputUnit | null>(null);
+  const [amountText, setAmountText] = useState<string | null>(
+    photoAmount === undefined ? null : formatAmount(photoAmount.quantity),
+  );
+  const [unitChoice, setUnitChoice] = useState<InputUnit | null>(photoAmount?.unit ?? null);
   const [containerChoice, setContainerChoice] = useState<Container | '' | null>(null);
-  const [dateChoice, setDateChoice] = useState<{ value: LocalDate | null } | null>(null);
+  const [dateChoice, setDateChoice] = useState<{ value: LocalDate | null } | null>(
+    photoExpiry === null ? null : { value: photoExpiry.expiresOn },
+  );
   /** What the household often throws away (ADR-0038), for a hint while adding more of it. */
   const [habits, setHabits] = useState<readonly WasteHabit[]>([]);
   useEffect(() => {
@@ -128,7 +145,7 @@ export function AddItemPage() {
   const [scanStatus, setScanStatus] = useState('');
   /** The date read from a photo of the pack (ADR-0062), and what was said about it. */
   const [photoDate, setPhotoDate] = useState<{ expiresOn: LocalDate; kind?: DateKind } | null>(
-    null,
+    photoExpiry,
   );
   const [photoStatus, setPhotoStatus] = useState('');
   const [fromOpenFoodFacts, setFromOpenFoodFacts] = useState(false);
@@ -265,6 +282,34 @@ export function AddItemPage() {
     void lookUp(product.gtin, picked);
   }
 
+  // A barcode on the photo goes the way of a scanned code (ADR-0068), once the form is there.
+  useEffect(() => {
+    const code = photo?.code;
+    if (code === undefined) {
+      return;
+    }
+    const timer = setTimeout(() => {
+      onCode(code);
+    }, 0);
+    return () => {
+      clearTimeout(timer);
+    };
+    // Only when the form opens with a photo.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  /** A suggestion from the label: the person picks it, then it goes the way of a name-search hit. */
+  function pickSuggestion(suggestion: NonNullable<typeof photo>['label']['suggestions'][number]) {
+    pickFound({
+      ...suggestion,
+      categoryId:
+        matchCategoryByName(suggestion.name)?.id ??
+        photo?.label.categoryId ??
+        fallbackCategory().id,
+      source: 'off',
+    });
+  }
+
   async function save() {
     setSubmitted(true);
     setStatus('');
@@ -349,6 +394,64 @@ export function AddItemPage() {
           </p>
         ) : null}
       </div>
+
+      {photo === null ? null : (
+        <Card className="space-y-3">
+          <h2 className="font-semibold">{tp.title}</h2>
+          {photo.empty ? (
+            <p className="text-ink-muted">{tp.noText}</p>
+          ) : (
+            <>
+              {photoExpiry === null &&
+              photoAmount === undefined &&
+              photo.code === undefined ? null : (
+                <ul className="flex flex-wrap gap-2 text-sm">
+                  {photoExpiry === null ? null : (
+                    <li className="rounded-full bg-basil-50 px-3 py-1 font-semibold text-basil-800">
+                      {tp.date(formatSwissDate(photoExpiry.expiresOn))}
+                    </li>
+                  )}
+                  {photoAmount === undefined ? null : (
+                    <li className="rounded-full bg-basil-50 px-3 py-1 font-semibold text-basil-800">
+                      {tp.amount(
+                        `${formatAmount(photoAmount.quantity)} ${messages.units[photoAmount.unit]}`,
+                      )}
+                    </li>
+                  )}
+                  {photo.code === undefined ? null : (
+                    <li className="rounded-full bg-basil-50 px-3 py-1 font-semibold text-basil-800">
+                      {tp.code}
+                    </li>
+                  )}
+                </ul>
+              )}
+              {photo.label.suggestions.length > 0 && pickedName === null ? (
+                <div className="space-y-2">
+                  <p className="text-sm font-semibold">{tp.suggestions}</p>
+                  <div className="flex flex-col gap-2">
+                    {photo.label.suggestions.map((suggestion) => (
+                      <button
+                        key={suggestion.gtin}
+                        type="button"
+                        onClick={() => {
+                          pickSuggestion(suggestion);
+                        }}
+                        className="min-h-11 rounded-xl border border-line bg-surface px-4 py-2 text-left font-semibold transition-colors hover:bg-basil-50"
+                      >
+                        {[suggestion.brand, suggestion.name, suggestion.packSize]
+                          .filter(Boolean)
+                          .join(' · ')}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : photo.label.suggestions.length === 0 && photo.code === undefined ? (
+                <p className="text-ink-muted">{tp.nothing}</p>
+              ) : null}
+            </>
+          )}
+        </Card>
+      )}
 
       <form
         noValidate

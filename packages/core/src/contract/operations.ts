@@ -1338,6 +1338,33 @@ export const CONTRACT_V1 = {
       openDatabase: z.enum(['none', 'searched', 'unavailable']),
     }),
   }),
+  'products.fromLabel': query({
+    name: 'products.fromLabel',
+    summary: {
+      de: 'Aus dem Text eines Etiketts Datum, Menge, Kategorie und passende Produkte lesen (ADR-0068).',
+      en: 'Read date, amount, category and matching products from the text of a pack label.',
+    },
+    scopes: ['inventory:read'],
+    /** The text read from the photo on the device. Searched only in the shipped catalog, offline. */
+    input: z.object({ ...queryBase, text: z.string().max(5000) }),
+    output: z.object({
+      expiresOn: LocalDateSchema.optional(),
+      expiryKind: DateKindSchema.optional(),
+      amount: z
+        .object({ quantity: z.number().positive(), unit: z.enum(['g', 'ml', 'pcs']) })
+        .optional(),
+      categoryId: CategoryIdSchema.optional(),
+      /** At most three, best first; the person picks one or none. */
+      suggestions: z.array(
+        z.object({
+          gtin: GtinSchema,
+          name: z.string().min(1).max(120),
+          brand: z.string().max(80).optional(),
+          packSize: z.string().max(30).optional(),
+        }),
+      ),
+    }),
+  }),
   'receipts.known': query({
     name: 'receipts.known',
     summary: {

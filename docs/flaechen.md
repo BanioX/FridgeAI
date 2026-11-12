@@ -38,6 +38,7 @@ Prüfung aller Funktionen aus ADR-0048 bis ADR-0066 und der Funktionen ohne eige
 | Lagerort-Kacheln | ja | ja | – | – | – | Notvorrat-Quittung nein (K7) | – | – | – | – |
 | Sicherung | ja | – | – | – | ja | – | ja, auch nach Import (K3) | ja | – | – |
 | Einräumen | – | ja | ja | – | – | – | – | ja | – | – |
+| Foto aufnehmen (0068) | ja | – | ja (Erfassen) | – | – | – | – (Foto nicht gespeichert) | ja | ja (Katalog) | – |
 | Vorrat nach Art (0067) | – | ja | – | – | – | – | – (Anzeige, auf dem Gerät gemerkt) | – | – | – |
 | Check Fach für Fach | ja, wenn fällig | ja, unter «Mehr» jederzeit (K5) | – | teilweise | ja | – | ja | ja | – | ja |
 | Mehrere ändern | – | ja (K11) | – | – | – | – | – | ja | – | – |

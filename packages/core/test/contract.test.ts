@@ -57,6 +57,7 @@ describe('contract v1', () => {
       'rescue.offer',
       'receipts.import',
       'receipts.matchLine',
+      'products.fromLabel',
       'receipts.known',
       'household.members',
       'household.addMember',

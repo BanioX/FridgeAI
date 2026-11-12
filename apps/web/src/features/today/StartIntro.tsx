@@ -6,7 +6,8 @@ import { messages } from '../../app/messages.de-CH';
 import { Card } from '../../ui/Card';
 import { GroupedList, GroupedListItem } from '../../ui/GroupedList';
 import { factFor } from '../knowledge/food-facts';
-import { handOverReceiptPhotos, ReceiptPhotoInput } from '../receipts/ReceiptPhotoInput';
+import { CameraInput } from '../../ui/CameraInput';
+import { handOverPhoto } from '../photo/photo-handover';
 import { RettichGrowth } from './RettichGrowth';
 
 const t = messages.today.intro;
@@ -52,16 +53,19 @@ export function StartIntro() {
           {/* Alban, 12.11.2026: Barcode and a photo straight from Start, next to typing. */}
           <ul aria-label={t.waysLabel} className="grid grid-cols-3 gap-2">
             <li className="grid">
-              <ReceiptPhotoInput
+              {/* A pack or a receipt: Rettich reads the photo and sees which it is (ADR-0068). */}
+              <CameraInput
                 className={WAY}
-                onPhotos={(files) => {
-                  handOverReceiptPhotos(files);
-                  void navigate('/add/receipt');
+                onPhotos={([file]) => {
+                  if (file !== undefined) {
+                    handOverPhoto(file);
+                    void navigate('/add/photo');
+                  }
                 }}
               >
                 <Camera size={22} aria-hidden="true" />
                 {t.photo}
-              </ReceiptPhotoInput>
+              </CameraInput>
             </li>
             <li className="grid">
               <WayLink to="/inventory/new?scan=1" icon={ScanBarcode} label={t.barcode} />

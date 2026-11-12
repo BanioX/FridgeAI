@@ -1,5 +1,6 @@
 import {
   createInventoryUseCases,
+  createLabelUseCases,
   createReceiptMatchUseCases,
   createSpotUseCases,
 } from '@fridgeai/core';
@@ -24,6 +25,7 @@ export function createInventoryHandlers(ctx: HandlerContext) {
     ...createProductSearchHandler(ctx),
     ...createReceiptHandlers(ctx, inventory['inventory.addItem']),
     ...createReceiptMatchUseCases(app),
+    ...createLabelUseCases(app),
   };
 }
 
