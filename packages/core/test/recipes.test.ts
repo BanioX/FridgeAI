@@ -7,6 +7,7 @@ import {
   ingredientsAtHome,
   listRecipes,
   matchesIngredient,
+  recipesForChosen,
   RecipeSchema,
   suggestRecipes,
   type FoodAtHome,
@@ -276,5 +277,90 @@ describe('Zutat oder Fertigprodukt (ADR-0053)', () => {
         cheesecake,
       ),
     ).toBe(false);
+  });
+});
+
+describe('recipesForChosen (ADR-0061)', () => {
+  const at = (
+    itemId: string,
+    name: string,
+    categoryId: string,
+    expiresOn: string,
+    kind?: DateKind,
+  ) => ({
+    ...food(name, categoryId, expiresOn, kind),
+    itemId,
+  });
+  const eggs = at('i1', 'Eier', 'dairy-eggs', '2026-11-20');
+  const spinach = at('i2', 'Blattspinat', 'produce-leafy', '2026-11-07');
+  const potatoes = at('i3', 'Kartoffeln', 'produce-potatoes', '2026-11-30');
+  const homeFood = [eggs, spinach, potatoes];
+
+  it('uses only the chosen items and lists them in the order chosen', () => {
+    const [first] = recipesForChosen([omelette], homeFood, ['i2', 'i1'], today, 3);
+    expect(first).toMatchObject({ id: 'omelette', uses: ['Blattspinat', 'Eier'], missing: [] });
+    // Food that is at home but not chosen does not count as used.
+    expect(recipesForChosen([omelette], homeFood, ['i1'], today, 3)[0]?.uses).toEqual(['Eier']);
+  });
+
+  it('skips recipes without a chosen item, unknown ids and a limit of zero', () => {
+    expect(recipesForChosen([soup], homeFood, ['i1'], today, 3)).toEqual([]);
+    expect(recipesForChosen([omelette], homeFood, ['nope'], today, 3)).toEqual([]);
+    expect(recipesForChosen([omelette], homeFood, ['i1'], today, 0)).toEqual([]);
+  });
+
+  it('counts missing ingredients against all food at home, not only the chosen', () => {
+    const [entry] = recipesForChosen([soup], homeFood, ['i3'], today, 3);
+    expect(entry?.missing).toEqual(['Karotten']);
+    const [covered] = recipesForChosen([omelette], homeFood, ['i1'], today, 3);
+    expect(covered?.missing).toEqual([]);
+  });
+
+  it('never counts food past its use-by date', () => {
+    const old = at('i4', 'Eier', 'dairy-eggs', '2026-11-01', 'use_by');
+    expect(recipesForChosen([omelette], [old], ['i4'], today, 3)).toEqual([]);
+  });
+
+  it('ranks more chosen items first, then urgency, fewer missing, minutes and id', () => {
+    const both = recipe('zeta', 40, [
+      { text: 'Eier', categories: ['dairy-eggs'] },
+      { text: 'Spinat', words: ['spinat'] },
+    ]);
+    const urgent = recipe('urgent', 40, [
+      { text: 'Spinat', words: ['spinat'] },
+      { text: 'Salz', staple: true },
+    ]);
+    const calm = recipe('calm', 5, [
+      { text: 'Eier', categories: ['dairy-eggs'] },
+      { text: 'Salz', staple: true },
+    ]);
+    const order = (list: Recipe[]) =>
+      recipesForChosen(list, homeFood, ['i1', 'i2'], today, 5).map((entry) => entry.id);
+    expect(order([calm, urgent, both])).toEqual(['zeta', 'urgent', 'calm']);
+
+    const lacking = recipe('a-lacking', 10, [
+      { text: 'Eier', categories: ['dairy-eggs'] },
+      { text: 'Karotten', categories: ['produce-carrots'] },
+    ]);
+    const complete = recipe('b-complete', 30, [
+      { text: 'Eier', categories: ['dairy-eggs'] },
+      { text: 'Salz', staple: true },
+    ]);
+    const quick = recipe('c-quick', 5, [
+      { text: 'Eier', categories: ['dairy-eggs'] },
+      { text: 'Salz', staple: true },
+    ]);
+    const slow = recipe('d-slow', 50, [
+      { text: 'Eier', categories: ['dairy-eggs'] },
+      { text: 'Salz', staple: true },
+    ]);
+    const byTie = recipesForChosen([slow, lacking, complete, quick], homeFood, ['i1'], today, 5);
+    expect(byTie.map((entry) => entry.id)).toEqual([
+      'c-quick',
+      'b-complete',
+      'd-slow',
+      'a-lacking',
+    ]);
+    expect(recipesForChosen([slow, complete], homeFood, ['i1'], today, 1)).toHaveLength(1);
   });
 });

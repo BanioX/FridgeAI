@@ -61,4 +61,27 @@ describe('recipe queries', () => {
       recipe: null,
     });
   });
+
+  it('recipes.withItems finds recipes for the chosen items only', async () => {
+    const { ctx, inventory, recipes } = setup();
+    const { itemId } = await inventory['inventory.addItem']({
+      commandId: ctx.ids.next(),
+      householdId,
+      name: 'Vollmilch',
+      location: 'fridge',
+      quantity: 1,
+      unit: 'pcs',
+      owner: 'shared',
+      expiresOn: localDate('2026-11-12'),
+    });
+    const { recipes: found } = await recipes['recipes.withItems']({
+      householdId,
+      itemIds: [itemId],
+    });
+    expect(found.length).toBeGreaterThan(0);
+    expect(found.length).toBeLessThanOrEqual(3);
+    expect(found.every((entry) => entry.uses.includes('Vollmilch'))).toBe(true);
+    expect(found[0]?.source).toBe('curated');
+    await expect(recipes['recipes.withItems']({ householdId, itemIds: [] })).rejects.toThrow();
+  });
 });

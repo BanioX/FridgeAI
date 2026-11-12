@@ -96,6 +96,45 @@ describe('ProcessPage', () => {
     expect(await screen.findByText(t.chosen(1))).toBeDefined();
   });
 
+  it('shows recipes for the chosen items of the link and hides the section without a hit', async () => {
+    const db = await renderProcess('/add/process', [
+      { name: 'Vollmilch', location: 'fridge' },
+      { name: 'Zzyzx', location: 'fridge' },
+    ]);
+    await screen.findByRole('button', { name: /Vollmilch/ });
+    cleanup();
+    const products = await db.products.toArray();
+    const items = await db.items.toArray();
+    const idOf = (name: string) =>
+      items.find((item) => item.productId === products.find((entry) => entry.name === name)?.id)
+        ?.id ?? '';
+    const open = (name: string) =>
+      render(
+        <AppDataProvider db={db}>
+          <MemoryRouter initialEntries={[`/add/process?item=${idOf(name)}`]}>
+            <Routes>
+              <Route path="/add/process" element={<ProcessPage />} />
+            </Routes>
+          </MemoryRouter>
+        </AppDataProvider>,
+      );
+
+    open('Vollmilch');
+    expect(await screen.findByRole('heading', { name: t.recipesTitle })).toBeDefined();
+    await screen.findByRole('heading', { name: t.recipesTitle });
+    const links = (await screen.findAllByRole('link')).filter((link) =>
+      (link.getAttribute('href') ?? '').startsWith('/knowledge/recipes/'),
+    );
+    expect(links.length).toBeGreaterThan(0);
+    expect(links.length).toBeLessThanOrEqual(3);
+    expect(screen.getAllByText(t.recipeUses('Vollmilch')).length).toBeGreaterThan(0);
+    cleanup();
+
+    open('Zzyzx');
+    await screen.findByText(t.chosen(1));
+    expect(screen.queryByRole('heading', { name: t.recipesTitle })).toBeNull();
+  });
+
   it('asks for a name and for ingredients before saving', async () => {
     await renderProcess('/add/process', [{ name: 'Mehl', location: 'pantry' }]);
     fireEvent.click(await screen.findByRole('button', { name: t.save }));

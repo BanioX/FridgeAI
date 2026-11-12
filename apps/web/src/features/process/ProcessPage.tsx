@@ -17,6 +17,7 @@ import { BackLink } from '../../ui/BackLink';
 import { Button } from '../../ui/Button';
 import { ChoiceChips } from '../../ui/ChoiceChips';
 import { GroupedList, GroupedListItem } from '../../ui/GroupedList';
+import { RecipeRow } from '../recipes/RecipeIdeas';
 import { formatQuantity } from '../../ui/quantity-text';
 import type { ClosedItem } from '../inventory/closed-item';
 import { portionLabel } from '../inventory/portion-labels';
@@ -38,7 +39,7 @@ function portionsOf(item: InventoryItemView) {
  * («Gekocht», prefilled through the router state). The value of the ingredients moves along.
  */
 export function ProcessPage() {
-  const { householdId, ids, inventory } = useAppData();
+  const { householdId, ids, inventory, recipes } = useAppData();
   const navigate = useNavigate();
   const location = useLocation();
   const [params] = useSearchParams();
@@ -49,6 +50,19 @@ export function ProcessPage() {
     async () => (await inventory['inventory.list']({ householdId })).items,
     [householdId, inventory],
   );
+  // Recipes for exactly the items of the link (ADR-0061); no hits or still loading: nothing shown.
+  const linked = params.getAll('item').join(',');
+  const withChosen = useLiveQuery(async () => {
+    const itemIds = linked === '' ? [] : (linked.split(',') as Id[]);
+    try {
+      return itemIds.length === 0
+        ? []
+        : (await recipes['recipes.withItems']({ householdId, itemIds })).recipes;
+    } catch {
+      // A hand-written link with an odd id: just no recipes.
+      return [];
+    }
+  }, [householdId, recipes, linked]);
   const [picked, setPicked] = useState<Amounts | null>(null);
   const [search, setSearch] = useState('');
   const [choice, setChoice] = useState<ResultChoice>(
@@ -157,6 +171,31 @@ export function ProcessPage() {
         <h1 className="large-title">{t.title}</h1>
         <p className="mt-1 text-ink-muted">{fromRecipe ? prefill.title : t.intro}</p>
       </div>
+
+      {withChosen === undefined || withChosen.length === 0 ? null : (
+        <section aria-labelledby="process-recipes" className="space-y-3">
+          <h2 id="process-recipes" className="text-xl font-semibold">
+            {t.recipesTitle}
+          </h2>
+          <GroupedList>
+            {withChosen.map((entry) => (
+              <RecipeRow
+                key={entry.id}
+                id={entry.id}
+                title={entry.title}
+                detail={
+                  <>
+                    <span className="block">{t.recipeUses(entry.uses.join(', '))}</span>
+                    {entry.missing.length === 0 ? null : (
+                      <span className="block">{t.recipeMissing(entry.missing.join(', '))}</span>
+                    )}
+                  </>
+                }
+              />
+            ))}
+          </GroupedList>
+        </section>
+      )}
 
       <section aria-labelledby="process-ingredients" className="space-y-3">
         <div className="flex items-baseline justify-between gap-3">
