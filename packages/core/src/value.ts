@@ -5,7 +5,10 @@ import type { Unit } from './model/primitives';
 /**
  * Estimated value and weight of a quantity of food from its category's typical pack
  * (used when no receipt price is known; always marked as an estimate in the UI).
- * `pcs` counts packs; grams and millilitres are related to the typical pack weight.
+ * `pcs` counts pieces as the category counts them: a pack where the category has no pack sizes
+ * (a bag of apples), a single piece where it has (one egg of a 10er box, one bottle of a six-pack);
+ * the category's price and weight are per such piece. Grams and millilitres are related to that
+ * weight.
  */
 export function estimateFromCategory(
   quantity: number,
