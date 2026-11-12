@@ -30,3 +30,7 @@ Es gibt noch keine Synchronisation (Meilenstein C). Bis dahin teilt ein Haushalt
 ## Nachtrag (12.11.2026): Platz für mehrere Artikel
 
 «Ändern» im Auswahlmodus setzt auch den Platz (K11). Das Feld «Platz» erscheint nur, wenn alle gewählten Artikel am selben Lagerort liegen (der Platz gehört zu genau einem Lagerort): die Plätze dieses Orts und «Kein fester Platz». Hat der Ort noch keine Plätze, steht ein Hinweis statt des Feldes; neue Plätze entstehen weiter nur auf der Artikelseite oder unter «Wo ist was?». Weil der Platz am Produkt hängt, ruft «Ändern» `products.setSpot` einmal je Produkt auf, auch wenn mehrere Packungen gewählt sind; ein Fehler betrifft alle Packungen dieses Produkts und wird wie bei den anderen Feldern genannt.
+
+## Nachtrag (12.11.2026): auch im PDF
+
+Der Platz steht im Gesamtauszug hinter dem Namen («· Türfach») und in der Quittung für Kühlschrank, Tiefkühler und Vorrat in der Notiz; nur wenn er im Lagerort des Artikels liegt (`reports.build`, Feld `spot`).

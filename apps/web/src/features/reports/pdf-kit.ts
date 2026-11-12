@@ -463,6 +463,22 @@ export function shopMark(
   });
 }
 
+/**
+ * The «Gehört» mark (ADR-0058) of a list row: the owner's initials in a small round-cornered tile,
+ * in the style of the shop tile. `left` is the left edge; returns the width drawn.
+ */
+export function ownerMark(doc: jsPDF, initials: string, left: number, middle: number): number {
+  const style: TextStyle = { size: 6.5, color: PDF_COLOR.muted, bold: true };
+  const width = Math.max(SHOP_MARK, measure(doc, initials, style) + 2);
+  card(doc, { x: left, y: middle - SHOP_MARK / 2, width, height: SHOP_MARK }, PDF_COLOR.oat, 1);
+  write(doc, initials, left + width / 2, middle + 0.1, {
+    ...style,
+    align: 'center',
+    baseline: 'middle',
+  });
+  return width;
+}
+
 /** A dashed rule like on a till receipt. */
 export function dashed(
   doc: jsPDF,

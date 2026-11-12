@@ -36,3 +36,7 @@ Alban (11.11.2026): «Mehl zu Brot verarbeitet … einen Kuchen backen und Eier 
 ## Nachtrag: das Journal folgt der Zählregel
 
 Das Journal (`inventory.history`) zählte verarbeitete Zutaten mit vollem Wert als «Verwertet», sein Total wich von der Bilanz ab. Jetzt trägt jeder Eintrag `countsInValue` (aus `countsInValue` in `metrics.ts`, die Regel steht weiter an einer Stelle) und bei verarbeiteten Zutaten `madeInto` (`itemId`, Name des Ergebnisses). Die Zeile zeigt «→ Bananenkuchen» statt eines Werts, das Total zählt nur Einträge mit `countsInValue` und stimmt damit mit der Bilanz überein. Ausgabe-Erweiterung, keine neue Operation.
+
+## Nachtrag (12.11.2026): auch im PDF
+
+Der Gesamtauszug nennt «Selbst gemacht» und «Reste» als Text, und «Was auffällt» sagt: «N Zutaten verarbeitet, CHF X wanderten weiter» (`impact.processed`). Der Wert wird dort nicht mitgezählt, er steht beim Ergebnis; kein «gespart».

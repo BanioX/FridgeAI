@@ -27,6 +27,7 @@ const empty: Report = {
     usedCount: 0,
     sharedRappen: rappen(0),
     sharedCount: 0,
+    processed: { count: 0, valueRappen: rappen(0) },
     wastedItems: [],
     months: [],
     topWasted: [],
