@@ -2,6 +2,38 @@
 
 Alle Änderungen an Rettich (bis 7.11.2026 FridgeAI), neueste zuerst. Wird mit `pnpm release` erzeugt (ADR-0017).
 
+## [0.16.0] – 2026-11-12
+
+### Neu
+
+- category Käsescheiben counted in slices ([#280](https://github.com/BanioX/FridgeAI/pull/280))
+- ring with what is left of a pack of pieces ([#277](https://github.com/BanioX/FridgeAI/pull/277))
+- estimated nutrition for fresh food on the item page (BLV) ([#279](https://github.com/BanioX/FridgeAI/pull/279))
+- nutrition data for fresh food from the Swiss database (BLV) ([#276](https://github.com/BanioX/FridgeAI/pull/276))
+- places, owner and processed food in the PDF reports (K6) ([#275](https://github.com/BanioX/FridgeAI/pull/275))
+- «Kurz erklärt» for the everyday features (K10) ([#274](https://github.com/BanioX/FridgeAI/pull/274))
+- «Wo ist was?» finds spot names and people (K9) ([#272](https://github.com/BanioX/FridgeAI/pull/272))
+- «Ändern» sets the place for several items (K11) ([#270](https://github.com/BanioX/FridgeAI/pull/270))
+- «Datum fotografieren» when editing and putting away ([#271](https://github.com/BanioX/FridgeAI/pull/271))
+- start the fridge check any time from «Mehr»; owner on its cards ([#269](https://github.com/BanioX/FridgeAI/pull/269))
+- climate balance in the PDF reports (K1) ([#267](https://github.com/BanioX/FridgeAI/pull/267))
+- «Selbst gemacht» and «Reste» badges; «etwa» on Start (K4) ([#264](https://github.com/BanioX/FridgeAI/pull/264))
+
+### Behoben
+
+- «Von der Theke» is stored when added, not guessed from the opening day ([#273](https://github.com/BanioX/FridgeAI/pull/273))
+- the Journal counts like the Bilanz; owner on its rows (K2) ([#266](https://github.com/BanioX/FridgeAI/pull/266))
+- full import round trips and the backup date after import or delete ([#265](https://github.com/BanioX/FridgeAI/pull/265))
+
+### Dokumentation
+
+- surface matrix after the consistency wave (K1–K11 done) ([#281](https://github.com/BanioX/FridgeAI/pull/281))
+- every feature on every surface (flaechen.md, DoD, L-29) ([#263](https://github.com/BanioX/FridgeAI/pull/263))
+
+### Tests
+
+- Testing Library waits up to 5 s (L-30) ([#268](https://github.com/BanioX/FridgeAI/pull/268))
+
 ## [0.15.0] – 2026-11-12
 
 ### Neu
