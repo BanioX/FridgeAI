@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto';
-import { cleanup, render, screen, within } from '@testing-library/react';
+import { cleanup, waitFor, render, screen, within } from '@testing-library/react';
 import { MemberSchema, type Id } from '@fridgeai/core';
 import { MemoryRouter } from 'react-router';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -103,9 +103,13 @@ describe('HistoryPage: owner', () => {
   it('shows the owner badge on the rows with two or more people', async () => {
     const { db } = await bakedAndEaten(true);
     renderJournal(db);
-    const badges = await screen.findAllByRole('img', { name: messages.owner.badgeLabel('Mia') });
     // Every row has the owner snapshot of its item: Mia's ingredients and the cake made of them.
-    expect(badges).toHaveLength(3);
+    // The marks appear row by row (each reads the members), so wait for all three, not the first.
+    await waitFor(() => {
+      expect(screen.getAllByRole('img', { name: messages.owner.badgeLabel('Mia') })).toHaveLength(
+        3,
+      );
+    });
   });
 
   it('shows no badge with one person', async () => {
