@@ -1,4 +1,4 @@
-import { daysBetween, localDate, type LocalDate } from '@fridgeai/core';
+import { daysBetween, localDate, toLocalDate, type LocalDate } from '@fridgeai/core';
 
 /**
  * Visible backups: Rettich keeps everything on this device (local-first), so a lost or reset phone
@@ -36,7 +36,7 @@ const KEY = 'fridgeai:last-backup';
 
 type Store = Pick<Storage, 'getItem' | 'setItem'>;
 
-function localStore(): Store | undefined {
+function localStore(): (Store & Pick<Storage, 'removeItem'>) | undefined {
   try {
     return window.localStorage;
   } catch {
@@ -46,7 +46,7 @@ function localStore(): Store | undefined {
 }
 
 /** The day of the last export on this device, if any. */
-export function readLastBackup(store = localStore()): LocalDate | null {
+export function readLastBackup(store: Store | undefined = localStore()): LocalDate | null {
   try {
     const value = store?.getItem(KEY) ?? null;
     return value === null ? null : localDate(value);
@@ -55,10 +55,33 @@ export function readLastBackup(store = localStore()): LocalDate | null {
   }
 }
 
-export function writeLastBackup(today: LocalDate, store = localStore()): void {
+export function writeLastBackup(today: LocalDate, store: Store | undefined = localStore()): void {
   try {
     store?.setItem(KEY, today);
   } catch {
     // Not worth bothering the person: the reminder just shows up again.
+  }
+}
+
+/** A full delete leaves nothing to restore from this device's last export: forget the date. */
+export function clearLastBackup(
+  store: Pick<Storage, 'removeItem'> | undefined = localStore(),
+): void {
+  try {
+    store?.removeItem(KEY);
+  } catch {
+    // Blocked storage: nothing was written, nothing to clear.
+  }
+}
+
+/**
+ * After an import the data is exactly as saved in the file, so the file's own export time is the
+ * date of the backup it restores (Swiss day); without a usable time it counts as today.
+ */
+export function backupDayOfImport(exportedAt: string | undefined, today: LocalDate): LocalDate {
+  try {
+    return exportedAt === undefined ? today : toLocalDate(exportedAt);
+  } catch {
+    return today;
   }
 }

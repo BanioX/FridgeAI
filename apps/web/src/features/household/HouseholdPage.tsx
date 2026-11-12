@@ -6,7 +6,12 @@ import { messages } from '../../app/messages.de-CH';
 import { BackLink } from '../../ui/BackLink';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
-import { readLastBackup, writeLastBackup } from './backup-state';
+import {
+  backupDayOfImport,
+  clearLastBackup,
+  readLastBackup,
+  writeLastBackup,
+} from './backup-state';
 import { exportFileName, saveFile } from './export-files';
 
 const t = messages.household;
@@ -81,6 +86,8 @@ export function HouseholdPage() {
         data,
         confirm: true,
       });
+      // The restored data is as old as the file: Start must not say «Noch keine Sicherung».
+      writeLastBackup(backupDayOfImport(data.exportedAt, today));
       // Start again as the imported household.
       window.location.assign('/');
       return null;
@@ -89,6 +96,7 @@ export function HouseholdPage() {
   const deleteAll = () =>
     run(async () => {
       await household['household.delete']({ commandId: ids.next(), householdId, confirm: true });
+      clearLastBackup();
       // A fresh start: the app creates a new, empty local household.
       window.location.assign('/');
       return null;

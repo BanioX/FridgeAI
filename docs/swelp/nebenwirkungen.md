@@ -21,7 +21,7 @@ Was der Code ausserhalb seiner selbst bewirkt: ans Netz senden, auf dem Gerät s
 | SE-12 | sessionStorage | `fridgeai:reloaded-for-update` | Zeitpunkt des letzten Neuladens für ein Update | bis der Tab zu ist |
 | SE-13 | Cache Storage | Service Worker (Workbox) | App-Dateien, OCR-Modelle und der Produktkatalog (`/catalog/*.json`, Cache `catalog`) für den Offline-Betrieb | bis zum nächsten Update; der Katalog wird im Hintergrund erneuert |
 | SE-14 | localStorage | `fridgeai:swipe-tip-seen` | Tipp «Wisch einen Artikel nach links» schon gesehen | bis zum Löschen der Website-Daten |
-| SE-26 | localStorage | `fridgeai:last-backup` | Tag des letzten Exports auf diesem Gerät, für «Letzte Sicherung» und den Monats-Hinweis auf Start | bis zum Löschen der Website-Daten |
+| SE-26 | localStorage | `fridgeai:last-backup` | Tag des letzten Exports (nach einem Import: Exportdatum der Datei; nach «Alle Daten löschen» entfernt) auf diesem Gerät, für «Letzte Sicherung» und den Monats-Hinweis auf Start | bis zum Löschen der Website-Daten |
 
 ## Geräte-Funktionen
 
