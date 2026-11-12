@@ -70,6 +70,11 @@ export interface ReceiptSpec {
   empty?: string;
   /** Two rings above the posts: «Verwertet» and «Entsorgt» (ADR-0046), share 0–1. */
   rings?: { used: ReceiptRing; wasted: ReceiptRing };
+  /**
+   * Posts after the totals, kept together on one piece of paper (the «Klimabilanz» of the Bilanz):
+   * the money part stays complete, the climate block follows whole on the next page if needed.
+   */
+  after?: ReceiptPost[];
   /** A small source line above the thank-you (the CC BY 4.0 attribution of the Klimabilanz). */
   source?: string;
 }
@@ -196,9 +201,8 @@ export function receiptSpec(
               note: messages.reports.pdf.receipts(report.shopping.receiptCount),
             },
           ],
-          ...(climate.length === 0 ? [] : [climate]),
         ],
-        ...(climate.length === 0 ? {} : { source: t.climateSource }),
+        ...(climate.length === 0 ? {} : { after: climate, source: t.climateSource }),
         totals: [
           {
             label: t.rate,

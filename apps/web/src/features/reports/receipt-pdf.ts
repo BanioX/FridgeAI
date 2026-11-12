@@ -79,7 +79,16 @@ export async function receiptPdf(
       },
     });
   }
-  const tail = [totals(spec.totals), foot(options, spec.source)];
+  // Without posts after the totals, the totals close the receipt together with the foot. With
+  // them (the Klimabilanz), the totals end the money part and the block after them stays whole.
+  const after = spec.after;
+  const tail =
+    after === undefined
+      ? [totals(spec.totals), foot(options, spec.source)]
+      : [foot(options, spec.source)];
+  if (after !== undefined) {
+    body.push(totals(spec.totals), afterBlock(after));
+  }
   const continued: Block = {
     height: 14,
     draw: (d, y) => {
@@ -178,6 +187,21 @@ function postBlock(post: ReceiptPost): Block {
       write(doc, post.label, LEFT, y + 4, style, RIGHT - LEFT - valueWidth - 4);
       if (post.note !== undefined) {
         write(doc, `  ${post.note}`, LEFT, y + 8.6, mono(8.5, C.muted), RIGHT - LEFT);
+      }
+    },
+  };
+}
+
+/** Posts drawn as one block after a dashed rule, so a page break never splits them. */
+function afterBlock(posts: readonly ReceiptPost[]): Block {
+  const parts = [rule('dashed'), ...posts.map(postBlock)];
+  return {
+    height: parts.reduce((sum, part) => sum + part.height, 0),
+    draw: (doc, y) => {
+      let at = y;
+      for (const part of parts) {
+        part.draw(doc, at);
+        at += part.height;
       }
     },
   };

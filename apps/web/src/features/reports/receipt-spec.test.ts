@@ -22,8 +22,12 @@ describe('receiptSpec', () => {
   describe('Klimabilanz on the Bilanz receipt', () => {
     const withFootprint = (footprint = sampleFootprint()) =>
       receiptSpec(sampleReport(), 'impact', { money: CHF_MONEY, days: 3, footprint });
+    const all = (receipt: ReturnType<typeof withFootprint>) => [
+      ...receipt.sections.flat(),
+      ...(receipt.after ?? []),
+    ];
     const posts = (receipt: ReturnType<typeof withFootprint>) =>
-      receipt.sections.flat().map((post) => `${post.label} ${post.value}`);
+      all(receipt).map((post) => `${post.label} ${post.value}`);
 
     it('adds rescued food, CO2e, water, land and the Kehricht estimate', () => {
       const receipt = withFootprint();
@@ -37,10 +41,12 @@ describe('receiptSpec', () => {
           'KEHRICHT etwa CHF 2.08',
         ]),
       );
-      expect(receipt.sections.flat().find((post) => post.label === 'KEHRICHT')?.note).toBe(
+      // After the totals, as one block: the money part of the receipt stays complete.
+      expect(receipt.sections.map((section) => section.length)).toEqual([2, 2]);
+      expect(all(receipt).find((post) => post.label === 'KEHRICHT')?.note).toBe(
         'etwa 1,3 Säcke à 35 l',
       );
-      expect(receipt.sections.flat()[4]?.note).toBe('35 % geschätzt');
+      expect(receipt.after?.[0]?.note).toBe('35 % geschätzt');
       expect(receipt.source).toContain('CC BY 4.0');
     });
 
