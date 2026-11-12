@@ -51,6 +51,7 @@ import { useFreezeHint } from './FreezeHint';
 import { itemMeta } from './item-meta';
 import { formatQuantity } from '../../ui/quantity-text';
 import { portionLabel } from './portion-labels';
+import { ItemOwner } from '../people/ItemOwner';
 import { OtherPacks } from './OtherPacks';
 import { ProductFacts } from './ProductFacts';
 import { useInventoryItem } from './use-item';
@@ -333,8 +334,9 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
             className="size-20 shrink-0 rounded-xl border border-line bg-surface object-contain"
           />
         )}
-        <div className="min-w-0">
-          <h1 className="large-title">{item.name}</h1>
+        <div className="min-w-0 flex-1">
+          {/* A long single word («Schokoladenmousse») must break, not widen the page (like L-23). */}
+          <h1 className="large-title break-words hyphens-auto">{item.name}</h1>
           {item.brand === undefined && item.packSize === undefined ? null : (
             <p className="text-sm text-ink-muted">
               {[item.brand, item.packSize].filter((part) => part !== undefined).join(' · ')}
@@ -438,6 +440,8 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
           </div>
         </div>
       </Card>
+
+      <ItemOwner item={item} />
 
       {shouldSuggestFreezing(item, today) ? (
         <Card variant="tip" className="flex items-center justify-between gap-3">

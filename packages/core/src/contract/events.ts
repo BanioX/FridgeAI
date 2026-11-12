@@ -156,6 +156,13 @@ export const DomainEventSchema = z.discriminatedUnion('type', [
       outcomeCount: z.int().min(0),
     }),
   ),
+  envelope('member.added', z.object({ memberId: IdSchema })),
+  envelope('member.renamed', z.object({ memberId: IdSchema })),
+  envelope(
+    'member.removed',
+    /** `itemsShared`: how many items became «Allen» (ADR-0058). */
+    z.object({ memberId: IdSchema, itemsShared: z.int().min(0) }),
+  ),
   envelope('rescue.offered', z.object({ offerId: IdSchema, itemId: IdSchema })),
   envelope(
     'rescue.claimed',

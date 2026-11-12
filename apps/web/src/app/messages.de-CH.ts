@@ -30,6 +30,7 @@ export const messages = {
     check: 'Kühlschrank-Check',
     achievements: 'Abzeichen',
     climate: 'Klimabilanz',
+    people: 'Personen',
   },
   placeholder: 'Kommt bald.',
   loading: 'Rettich wird geladen …',
@@ -327,6 +328,7 @@ export const messages = {
     categoryHint: 'Davon hängen der Lagerort und das geschätzte Ablaufdatum ab.',
     more: 'Mehr Angaben',
     moreWith: (summary: string) => `Mehr Angaben · ${summary}`,
+    ownerSummary: (name: string) => `Gehört ${name}`,
     location: 'Wo lagerst du es?',
     /** «Das entsorgst du oft» (ADR-0038): from the household's own history, on the device. */
     habit: (times: number, names: readonly string[]) =>
@@ -820,6 +822,7 @@ export const messages = {
     dataDetail: 'Exportieren, löschen, was mit deinen Daten passiert',
     achievementsDetail: 'Was du gerettet, gekocht und geplant hast',
     climateDetail: 'CO₂e, Wasser und Fläche von dem, was du gerettet hast',
+    peopleDetail: 'Wer im Haushalt ist und wem was gehört',
     spotsDetail: 'Plätze mit Foto, damit alle alles finden',
   },
   /** «Wo ist was?» (ADR-0056): named storage spots with an optional photo. */
@@ -930,6 +933,42 @@ export const messages = {
     },
     attribution: 'Daten: Clark et al. (2022), PNAS, via Our World in Data, CC BY 4.0',
   },
+  /** «Gehört» (ADR-0058): a mark that something is for one person. Without it, it is for all. */
+  owner: {
+    legend: 'Gehört',
+    everyone: 'Allen',
+    /** Screen-reader text of the initials circle. */
+    badgeLabel: (name: string) => `Gehört ${name}`,
+    /** The calm line on the item page; nothing is blocked. */
+    ask: (name: string) => `Gehört ${name}. Frag lieber, bevor du es verwertest.`,
+    failed: 'Das konnte nicht gespeichert werden. Bitte versuch es nochmals.',
+  },
+  people: {
+    intro: 'Wer im Haushalt etwas für sich kauft, markiert es. Ohne Markierung gehört es allen.',
+    deviceNote:
+      'Rettich läuft vorerst auf einem Gerät, zum Beispiel einem gemeinsamen Tablet in der Küche. Eigene Geräte pro Person kommen mit dem Abgleich (Meilenstein C).',
+    listLabel: 'Personen im Haushalt',
+    you: '(du)',
+    add: 'Person hinzufügen',
+    name: 'Name',
+    namePlaceholder: 'z. B. Mia',
+    nameMissing: 'Bitte gib einen Namen an.',
+    nameTaken: 'Diesen Namen gibt es schon im Haushalt.',
+    save: 'Speichern',
+    cancel: 'Abbrechen',
+    /** Read after the visible name of a person row: «Mia umbenennen». */
+    editSuffix: 'umbenennen',
+    rename: 'Name ändern',
+    remove: 'Person entfernen',
+    removeQuestion: (name: string) =>
+      `${name} entfernen? Die Sachen von ${name} gehören danach allen.`,
+    removeConfirm: 'Ja, entfernen',
+    added: (name: string) => `${name} ist dabei.`,
+    renamed: (name: string) => `Name geändert: ${name}.`,
+    removed: (name: string) => `${name} ist nicht mehr dabei.`,
+    failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
+    ownerHint: 'Die Person, die Rettich auf diesem Gerät nutzt, bleibt immer im Haushalt.',
+  },
   household: {
     data: 'Mitnehmen und löschen',
     dataText:
@@ -957,6 +996,7 @@ export const messages = {
       'Quittungszeilen sucht Rettich zuerst auf dem Gerät. Nur ohne sicheren Treffer geht der Produktname an Open Food Facts, ohne Preise, Laden und Datum.',
       'Fotos von Quittungen und Codes werden nur gelesen, nie gespeichert.',
       'Fotos von Plätzen («Wo ist was?») bleiben auf diesem Gerät und gehören zu deinem Export.',
+      'Die Namen der Personen im Haushalt bleiben ebenfalls auf diesem Gerät.',
       'Kein Konto, kein Tracking, keine Werbung.',
     ],
   },

@@ -16,7 +16,7 @@ Was der Code ausserhalb seiner selbst bewirkt: ans Netz senden, auf dem Gerät s
 
 | Kennung | Ort | Schlüssel | Was | Wie lange |
 | --- | --- | --- | --- | --- |
-| SE-10 | IndexedDB | `fridgeai` | Haushalt, Vorrat, Abschlüsse, Einkaufsliste, Quittungen (Zeilen, nie Bilder), Ereignisse, Produkt-Cache, Packungsbilder | bis zum Löschen in «Mehr» (ADR-0020) |
+| SE-10 | IndexedDB | `fridgeai` | Haushalt, Personen (nur Namen), Vorrat, Abschlüsse, Einkaufsliste, Quittungen (Zeilen, nie Bilder), Ereignisse, Produkt-Cache, Packungsbilder | bis zum Löschen in «Mehr» (ADR-0020) |
 | SE-11 | localStorage | `fridgeai:last-fridge-check` | Tag des letzten Kühlschrank-Checks | bis zum Löschen der Website-Daten |
 | SE-12 | sessionStorage | `fridgeai:reloaded-for-update` | Zeitpunkt des letzten Neuladens für ein Update | bis der Tab zu ist |
 | SE-13 | Cache Storage | Service Worker (Workbox) | App-Dateien, OCR-Modelle und der Produktkatalog (`/catalog/*.json`, Cache `catalog`) für den Offline-Betrieb | bis zum nächsten Update; der Katalog wird im Hintergrund erneuert |

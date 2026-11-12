@@ -7,6 +7,7 @@ import {
   ShieldCheck,
   ShoppingBasket,
   Smartphone,
+  Users,
 } from 'lucide-react';
 import { messages } from '../../app/messages.de-CH';
 import { Card } from '../../ui/Card';
@@ -71,6 +72,12 @@ export function MorePage() {
             icon: Award,
             title: messages.pages.achievements,
             detail: t.achievementsDetail,
+          },
+          {
+            to: '/more/people',
+            icon: Users,
+            title: messages.pages.people,
+            detail: t.peopleDetail,
           },
           {
             to: '/shopping',

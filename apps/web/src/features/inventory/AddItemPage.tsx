@@ -18,6 +18,7 @@ import {
   type Gtin,
   type InputUnit,
   type LocalDate,
+  type Owner,
   type StorageLocation,
   type WasteHabit,
   rappen,
@@ -46,6 +47,8 @@ import {
 import { locationOrder } from './item-meta';
 import { NameSearch, type FoundProduct } from './NameSearch';
 import { PriceMemoryNote } from '../receipts/PriceMemoryNote';
+import { OwnerChoice } from '../people/OwnerChoice';
+import { useMembers } from '../people/use-members';
 
 const t = messages.addItem;
 const boughtOptions = [
@@ -104,6 +107,13 @@ export function AddItemPage() {
   /** Cheese, cold cuts or a dip from the counter keep only as long as an open pack. */
   const [bought, setBought] = useState<'packed' | 'loose'>('packed');
   const [priceText, setPriceText] = useState('');
+  /** «Gehört» (ADR-0058): everyone's unless the person marks it; only asked with two or more people. */
+  const [ownerChoice, setOwnerChoice] = useState<Owner>('shared');
+  const members = useMembers();
+  const askOwner = members !== undefined && members.length >= 2;
+  const ownerName = askOwner
+    ? members.find((member) => member.id === ownerChoice)?.displayName
+    : undefined;
   const [submitted, setSubmitted] = useState(false);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState('');
@@ -156,6 +166,7 @@ export function AddItemPage() {
       : null,
     price === undefined || price === null || price < 0 ? null : money.format(price),
     categoryChoice === null ? null : category.name.de,
+    ownerName === undefined ? null : t.ownerSummary(ownerName),
   ]);
 
   const errors = {
@@ -278,6 +289,7 @@ export function AddItemPage() {
         // From the counter: open from the day it was bought, the opening rule sets the date.
         ...(loose ? { openedOn: today } : {}),
         ...(readyHint ? { readyMade: true } : {}),
+        ...(askOwner && ownerChoice !== 'shared' ? { owner: ownerChoice } : {}),
       });
       void navigate(`/inventory?location=${location}`);
     } catch {
@@ -547,6 +559,10 @@ export function AddItemPage() {
               </p>
               <PriceMemoryNote name={name} />
             </div>
+
+            {askOwner ? (
+              <OwnerChoice members={members} value={ownerChoice} onChange={setOwnerChoice} />
+            ) : null}
 
             <div className="space-y-1.5">
               <label htmlFor={`${id}-category`} className="font-semibold">
