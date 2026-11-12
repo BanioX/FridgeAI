@@ -119,6 +119,7 @@ export function createInventoryQueries(ctx: AppContext) {
         categoryId: category.id,
         source: found.source,
         ...factsOf(found),
+        ...(found.readyMade === true ? { readyMade: true } : {}),
       },
     };
   };

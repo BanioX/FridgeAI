@@ -15,6 +15,7 @@ export const OFF_FIELDS = [
   'brands',
   'quantity',
   'categories_tags',
+  'nova_group',
   'nutriments',
   'nutriscore_grade',
   'allergens_tags',
@@ -34,6 +35,7 @@ const OffResponseSchema = z.object({
       brands: z.string().optional(),
       quantity: z.string().optional(),
       categories_tags: z.array(z.string()).optional(),
+      nova_group: z.union([z.number(), z.string()]).optional(),
       nutriments: z.record(z.string(), z.unknown()).optional(),
       nutriscore_grade: z.string().optional(),
       allergens_tags: z.array(z.string()).optional(),
@@ -96,6 +98,31 @@ function nutritionOf(
   return parsed.success ? parsed.data : undefined;
 }
 
+/**
+ * Category tags that name ready-to-eat food (ADR-0053): desserts and ready meals. Whole tags, so
+ * «en:meat» or «en:meals-with-meat-ingredients» do not count by accident.
+ */
+const READY_TAGS = new Set([
+  'desserts',
+  'dairy-desserts',
+  'cheesecakes',
+  'puddings',
+  'mousses',
+  'tiramisu',
+  'meals',
+  'prepared-meals',
+  'ready-meals',
+  'sandwiches',
+  'pizzas',
+  'lasagnes',
+  'frozen-desserts',
+]);
+
+/** NOVA group 4 (ultra-processed) or a ready-food category: a Fertigprodukt, whatever it is called. */
+function isReadyFood(nova: number | string | undefined, tags: readonly string[]): boolean {
+  return Number(nova) === 4 || tags.some((tag) => READY_TAGS.has(tag));
+}
+
 /** Turns an Open Food Facts API answer into `ProductInfo`, or null if it names no product. */
 export function parseOffProduct(json: unknown, gtin: Gtin): ProductInfo | null {
   const parsed = OffResponseSchema.safeParse(json);
@@ -121,6 +148,7 @@ export function parseOffProduct(json: unknown, gtin: Gtin): ProductInfo | null {
     .slice(0, 20);
   const categoryHints = (product.categories_tags ?? []).map(untag).slice(0, 20);
   const imageUrl = product.image_front_small_url?.trim();
+  const readyMade = isReadyFood(product.nova_group, categoryHints);
   return {
     gtin,
     name,
@@ -128,6 +156,7 @@ export function parseOffProduct(json: unknown, gtin: Gtin): ProductInfo | null {
     ...(brand === undefined ? {} : { brand }),
     ...(packSize === undefined ? {} : { packSize }),
     ...(categoryHints.length === 0 ? {} : { categoryHints }),
+    ...(readyMade ? { readyMade } : {}),
     ...(nutrition === undefined ? {} : { nutrition }),
     ...(nutriScore === undefined ? {} : { nutriScore }),
     ...(allergens.length === 0 ? {} : { allergens }),

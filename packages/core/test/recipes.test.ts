@@ -6,12 +6,15 @@ import {
   fitsFeierabend,
   ingredientsAtHome,
   listRecipes,
+  matchesIngredient,
   RecipeSchema,
   suggestRecipes,
   type FoodAtHome,
   type Recipe,
 } from '../src/recipes/recipe';
 import { RECIPES } from '../src/recipes/recipes.de-CH';
+import { matchCategoryByName } from '../src/catalog/match';
+import { ownRecipeToRankable, parseIngredientLine } from '../src/recipes/own-recipe';
 
 const today = localDate('2026-11-06');
 
@@ -201,5 +204,74 @@ describe('ingredientsAtHome', () => {
       { text: 'Käse', staple: false, optional: true, atHome: [] },
       { text: 'Salz', staple: true, optional: false, atHome: [] },
     ]);
+  });
+});
+
+describe('Zutat oder Fertigprodukt (ADR-0053)', () => {
+  /** Food as the app builds it: the category comes from the matcher, as when adding by name. */
+  const named = (name: string, readyMade?: boolean): FoodAtHome => ({
+    ...food(name, matchCategoryByName(name)?.id ?? 'pantry-other', '2026-11-20'),
+    ...(readyMade === undefined ? {} : { readyMade }),
+  });
+  const bircher = RECIPES.find((entry) => entry.id === 'birchermuesli');
+  const milkOrYoghurt = bircher?.ingredients[1];
+
+  it('does not let a Skyr Cheesecake stand in for the Joghurt of a Birchermüesli', () => {
+    expect(bircher).toBeDefined();
+    const cheesecake = named('Skyr Cheesecake');
+    expect(cheesecake.categoryId).toBe('prepared-desserts');
+    const [, joghurt] = ingredientsAtHome(bircher!, [cheesecake], today);
+    expect(joghurt?.atHome).toEqual([]);
+    expect(suggestRecipes([bircher!], [cheesecake], today, 3)).toEqual([]);
+    const listed = listRecipes([bircher!], [cheesecake], today)[0];
+    expect(listed?.missing).toContain('2 dl Milch oder Joghurt');
+  });
+
+  it('lets an Emmi Skyr Nature count as Joghurt', () => {
+    const skyr = named('Emmi Skyr Nature');
+    expect(skyr.categoryId).toBe('dairy-yoghurt');
+    expect(matchesIngredient(milkOrYoghurt!, skyr)).toBe(true);
+    const [, joghurt] = ingredientsAtHome(bircher!, [skyr], today);
+    expect(joghurt?.atHome).toEqual([skyr]);
+    expect(listRecipes([bircher!], [skyr], today)[0]?.missing).not.toContain(
+      '2 dl Milch oder Joghurt',
+    );
+  });
+
+  it('follows the item over the category in both directions', () => {
+    expect(matchesIngredient(milkOrYoghurt!, named('Joghurt Nature', true))).toBe(false);
+    const dessert = named('Tiramisu', false);
+    const tiramisu = { text: 'Tiramisu', categories: ['prepared-desserts'] };
+    expect(matchesIngredient(RecipeSchema.shape.ingredients.element.parse(tiramisu), dessert)).toBe(
+      true,
+    );
+  });
+
+  it('counts Oreos for an own recipe that asks for Oreo, but not for Joghurt', () => {
+    const oreos = named('Oreo Kekse');
+    expect(oreos.categoryId).toBe('pantry-sweets');
+    const ownRecipe = ownRecipeToRankable({
+      id: 'own-oreo' as never,
+      householdId: 'h' as never,
+      updatedAt: '2026-11-11T09:00:00.000Z' as never,
+      title: 'Oreo Cheesecake',
+      ingredients: [parseIngredientLine('200 g Oreo'), parseIngredientLine('2 dl Joghurt')],
+      steps: ['Mischen.'],
+      createdAt: '2026-11-11T09:00:00.000Z' as never,
+    });
+    const [oreo, joghurt] = ingredientsAtHome(ownRecipe, [oreos], today);
+    expect(oreo?.atHome).toEqual([oreos]);
+    expect(joghurt?.atHome).toEqual([]);
+  });
+
+  it('reads the ingredient category, not the food name, for the exception', () => {
+    // «Oreo» as a bare word does not make a ready food count for a non-ready ingredient.
+    const cheesecake = named('Skyr Cheesecake');
+    expect(
+      matchesIngredient(
+        RecipeSchema.shape.ingredients.element.parse({ text: 'Skyr', words: ['skyr'] }),
+        cheesecake,
+      ),
+    ).toBe(false);
   });
 });

@@ -50,6 +50,7 @@ export function createRecipeQueries(ctx: AppContext, provider: RecipeProvider = 
           categoryId: category.id,
           expiresOn: item.expiresOn,
           expiryKind: item.expiryKind,
+          readyMade: item.readyMade,
         };
       });
   }
