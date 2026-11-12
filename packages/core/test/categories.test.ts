@@ -97,6 +97,10 @@ describe('portioning', () => {
     });
   });
 
+  it('counts cheese slices one by one in packs of 8, 10 or 12 (ADR-0063)', () => {
+    expect(byId('dairy-cheese-slices')).toEqual({ unit: 'pcs', packs: [8, 10, 12], splits: [] });
+  });
+
   it('counts bananas and yoghurt cups, cuts cake in eighths and hard cheese in thirds', () => {
     expect(byId('produce-bananas').unit).toBe('pcs');
     expect(byId('dairy-yoghurt')).toMatchObject({ unit: 'pcs', container: 'cup' });
