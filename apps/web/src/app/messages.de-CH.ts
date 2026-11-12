@@ -199,6 +199,14 @@ export const messages = {
   },
   inventory: {
     tabsLabel: 'Lagerorte',
+    /** «Einräumen» after a receipt: where each new article goes. */
+    putAway: {
+      title: 'Einräumen',
+      subline: (count: number) =>
+        `Was wohin gehört: ${count === 1 ? '1 Artikel' : `${String(count)} Artikel`} aus deiner Quittung.`,
+      noSpot: 'Ohne festen Platz',
+      done: 'Fertig',
+    },
     empty: 'Hier liegt noch nichts.',
     reserveTip:
       'Der Bund empfiehlt einen Notvorrat für rund eine Woche und 9 Liter Wasser pro Person.',

@@ -33,6 +33,12 @@ export const routes: RouteObject[] = [
         }),
       },
       {
+        path: 'inventory/put-away',
+        lazy: async () => ({
+          Component: (await import('../features/inventory/PutAwayPage')).PutAwayPage,
+        }),
+      },
+      {
         path: 'inventory/:itemId/edit',
         lazy: async () => ({
           Component: (await import('../features/inventory/EditItemPage')).EditItemPage,

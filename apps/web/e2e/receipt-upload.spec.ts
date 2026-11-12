@@ -53,9 +53,19 @@ test('uploads a receipt PDF, shows names and prices and takes the food over', as
   expect(results.violations).toEqual([]);
 
   await review.getByRole('button', { name: '2 Artikel übernehmen' }).first().click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Einräumen' })).toBeVisible();
+  // «Einräumen» tells where each new article goes: the fridge first, then the pantry.
+  await expect(page.getByText('Was wohin gehört: 2 Artikel aus deiner Quittung.')).toBeVisible();
+  await expect(
+    page.getByRole('region', { name: 'Kühlschrank' }).getByText('Coop Pouletbrust'),
+  ).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Vorrat' }).getByText('Semmeli 80G')).toBeVisible();
   await expect(page.getByText('Coop Pouletbrust 2St. ca. 330g')).toBeVisible();
   await expect(page.getByText('Shampoo Classic')).toHaveCount(0);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await page.getByRole('button', { name: 'Fertig' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
+  await expect(page.getByText('Coop Pouletbrust 2St. ca. 330g')).toBeVisible();
   // The shop's monogram stands on the row, with its name as text for screen readers.
   const row = page.getByRole('link', { name: /Coop Pouletbrust/ });
   await expect(row).toContainText('Gekauft bei Coop');
@@ -193,15 +203,15 @@ test('remembers prices: «zuletzt …» and «… % teurer als sonst» on the ne
   // Invented receipts; «Coop» is in the product name, so the shop is recognised.
   let review = await upload(semmeli('01.11.26', 'Coop Semmeli 80G 2.0 0.70 1.40 0 A', '1.40'));
   await review.getByRole('button', { name: '1 Artikel übernehmen' }).first().click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Einräumen' })).toBeVisible();
   review = await upload(semmeli('03.11.26', 'Coop Semmeli 80G 2.0 0.85 1.70 0 A', '1.70'));
   await expect(review.getByText('zuletzt 0.70/Stück bei Coop')).toBeVisible();
   await review.getByRole('button', { name: '1 Artikel übernehmen' }).first().click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Einräumen' })).toBeVisible();
   review = await upload(semmeli('06.11.26', 'Coop Semmeli 80G 1.0 0.95 0.95 0 A', '0.95'));
   await expect(review.getByText('22 % teurer als sonst')).toBeVisible();
   await review.getByRole('button', { name: '1 Artikel übernehmen' }).first().click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Einräumen' })).toBeVisible();
 
   // The item page and the add form remember too (dates in the text, the 120-day window aside).
   await page.goto('/inventory?location=pantry');
@@ -280,7 +290,7 @@ test('reviews several receipts on one page and takes them all with one button', 
   const all = page.getByRole('button', { name: 'Alle übernehmen · 3 Artikel aus 2 Quittungen' });
   await expect(all).toHaveCount(2);
   await all.first().click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Einräumen' })).toBeVisible();
   await expect(page.getByText('Naturaplan Bio Vollmilch 1L')).toBeVisible();
   await expect(page.getByText('Coop Pouletbrust 2St. ca. 330g')).toBeVisible();
 });
@@ -290,7 +300,7 @@ test('a known receipt is named before the review and never taken twice', async (
   const files = page.getByLabel('PDF oder Foto wählen');
   await files.setInputFiles({ name: 'alt.pdf', mimeType: 'application/pdf', buffer: COOP });
   await page.getByRole('button', { name: '2 Artikel übernehmen' }).first().click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Einräumen' })).toBeVisible();
 
   // The same receipt again, a new one, and the new one twice (same file under two names).
   await page.goto('/add/receipt');
@@ -305,7 +315,7 @@ test('a known receipt is named before the review and never taken twice', async (
   const take = page.getByRole('button', { name: '1 Artikel übernehmen' });
   await expect(take).toHaveCount(2);
   await take.first().click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Einräumen' })).toBeVisible();
   await expect(page.getByText('Naturaplan Bio Vollmilch 1L')).toBeVisible();
 });
 

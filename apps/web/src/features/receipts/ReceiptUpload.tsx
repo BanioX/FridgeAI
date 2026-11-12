@@ -192,6 +192,7 @@ export function ReceiptUpload() {
     const done = new Set<string>();
     const known: LeftOut[] = [];
     let articles = 0;
+    const itemIds: string[] = [];
     let failed = 0;
     for (const { key, review: current, fileName } of taken) {
       const { receipt } = current;
@@ -237,6 +238,7 @@ export function ReceiptUpload() {
           known.push({ fileName, text: t.alreadyKnown });
         } else {
           articles += result.itemIds.length;
+          itemIds.push(...result.itemIds);
         }
       } catch {
         failed += 1;
@@ -246,7 +248,12 @@ export function ReceiptUpload() {
     // A failed receipt stays on the page: a retry cannot import anything twice (fixed commandId).
     setSections((previous) => previous.filter((section) => !done.has(section.key)));
     if (failed === 0 && known.length === 0) {
-      void navigate('/inventory');
+      // Everything went in: «Einräumen» says where each new article goes.
+      void navigate(
+        itemIds.length === 0
+          ? '/inventory'
+          : `/inventory/put-away?${new URLSearchParams(itemIds.map((id) => ['item', id])).toString()}`,
+      );
       return;
     }
     setLeftOut((previous) => [...previous, ...known]);
