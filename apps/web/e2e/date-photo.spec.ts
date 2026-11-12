@@ -40,7 +40,9 @@ test('reads the date from a photo when editing an item as well', async ({ page }
   await page.goto('/inventory/new');
   await page.getByLabel('Was ist es?').fill('Butter');
   await page.getByRole('button', { name: 'Speichern', exact: true }).click();
-  await page.getByText('Butter').click();
+  // Wait for the Vorrat: on the add form «Butter» is also a suggestion and a category.
+  await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
+  await page.getByRole('link', { name: /Butter/ }).click();
   await page.getByRole('link', { name: 'Bearbeiten' }).click();
   await page
     .getByLabel('Datum fotografieren')

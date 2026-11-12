@@ -916,10 +916,11 @@ export const messages = {
   /** «Wo ist was?» (ADR-0056): named storage spots with an optional photo. */
   spots: {
     intro:
-      'Halte fest, wo etwas liegt, auf Wunsch mit einem Foto. Alles bleibt auf diesem Gerät. Bis es Konten gibt, teilst du Plätze über dasselbe Gerät oder über Export und Import.',
+      'Halte fest, wo etwas liegt, auf Wunsch mit einem Foto. Alles bleibt auf diesem Gerät. Bis es Konten gibt, teilst du Plätze über dasselbe Gerät oder über Export und Import. Suchen kannst du nach Artikel, Platz oder Person.',
     searchLabel: 'Was suchst du?',
     searchPlaceholder: 'z. B. Zucker',
-    searchNone: (query: string) => `Zu «${query}» ist nichts im Vorrat.`,
+    searchNone: (query: string) =>
+      `Zu «${query}» gibt es keinen Treffer bei Artikeln, Plätzen und Personen.`,
     searchResults: (count: number) => (count === 1 ? '1 Treffer' : `${String(count)} Treffer`),
     noSpotYet: 'Noch kein Platz festgehalten',
     spotsTitle: 'Plätze',
