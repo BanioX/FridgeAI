@@ -1,4 +1,6 @@
 import type { AppContext } from './command';
+import { createAchievementQueries } from './achievements';
+import { createCheckCommands } from './check';
 import { createInventoryCommands } from './inventory-commands';
 import { createProcessCommands } from './inventory-process';
 import { createInsightQueries } from './insights';
@@ -14,6 +16,8 @@ export function createInventoryUseCases(ctx: AppContext) {
     ...createInventoryQueries(ctx),
     ...createInventoryCommands(ctx),
     ...createProcessCommands(ctx),
+    ...createCheckCommands(ctx),
+    ...createAchievementQueries(ctx),
     ...createInsightQueries(ctx),
   };
 }

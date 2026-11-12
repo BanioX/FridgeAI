@@ -167,6 +167,22 @@ export interface WasteComparison {
 }
 
 /**
+ * The household's first full month (ADR-0050): the first month that starts on or after the day of
+ * the first recorded outcome. Null without outcomes. Undone outcomes do not count.
+ */
+export function firstFullMonth(outcomes: readonly OutcomeLike[]): LocalDate | null {
+  const days = outcomes
+    .filter((outcome) => outcome.deletedAt === undefined)
+    .map((outcome) => toLocalDate(outcome.at))
+    .sort();
+  const firstDay = days[0];
+  if (firstDay === undefined) {
+    return null;
+  }
+  return firstDay === startOfMonth(firstDay) ? firstDay : addMonths(startOfMonth(firstDay), 1);
+}
+
+/**
  * Compares full calendar months only (ADR-0050): the first month is the first one that starts on
  * or after the day of the first recorded outcome, the last is the month before `today`'s. Null
  * until they are two different months and the first one had something entsorgt (no division by
@@ -176,16 +192,10 @@ export function compareWasteSinceFirstMonth(
   outcomes: readonly OutcomeLike[],
   today: LocalDate,
 ): WasteComparison | null {
-  const days = outcomes
-    .filter((outcome) => outcome.deletedAt === undefined)
-    .map((outcome) => toLocalDate(outcome.at))
-    .sort();
-  const firstDay = days[0];
-  if (firstDay === undefined) {
+  const firstMonth = firstFullMonth(outcomes);
+  if (firstMonth === null) {
     return null;
   }
-  const firstMonth =
-    firstDay === startOfMonth(firstDay) ? firstDay : addMonths(startOfMonth(firstDay), 1);
   const lastMonth = addMonths(startOfMonth(today), -1);
   if (firstMonth >= lastMonth) {
     return null;

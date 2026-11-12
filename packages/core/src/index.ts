@@ -40,6 +40,7 @@ export * from './quantity';
 export * from './import/ai-import';
 export * from './catalog/open-food-facts';
 export * from './metrics';
+export * from './achievements';
 export * from './frequent-products';
 export * from './waste-habits';
 export * from './shopping/parse-shopping-text';
