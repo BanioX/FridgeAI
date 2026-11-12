@@ -22,6 +22,7 @@ Alban (6.11.2026): «Mach das als Regel, dass GitHub alle 10 oder alle 50 oder a
 - **Versionierung:** Semantic Versioning. In 0.x erhöht ein `feat` die Minor-, ein `fix` die Patch-Version. Bis 1.0 gelten Releases auf GitHub als Vorabversion (Prerelease). 1.0 kommt mit dem öffentlichen Release (Schritt 12).
 - **Changelog:** wird aus den Commit-Titeln erzeugt, mit deutschen Überschriften (Neu, Behoben, Dokumentation, Tests, Wartung) und Links zu den PRs. Die Einträge selbst bleiben englisch wie die Commits (CLAUDE.md).
 - **Tag durch GitHub, nicht von Hand:** Das Tag entsteht serverseitig beim Release (`gh release create --target`). So braucht es keinen Tag-Push, der in der Entwicklungsumgebung ohnehin gesperrt ist, und kein Release wird vergessen. Für Notfälle lässt sich der Workflow von Hand starten (`workflow_dispatch`).
+- **Letztes Release über den Commit, nicht über das Tag** (12.11.2026): `pnpm release` sucht den letzten Release-Commit auf `main` und zählt ab dort. Seit der Verlauf neu geschrieben ist (ADR-0065), zeigen die älteren Tags nicht mehr in `main`.
 - **Keine neue Dependency:** `scripts/release.mjs` nutzt nur Git und Node. Der Release-Workflow nutzt das `gh`-CLI der GitHub-Runner mit dem eingebauten Token (kein Secret).
 
 ## Konsequenzen
