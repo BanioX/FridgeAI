@@ -194,6 +194,7 @@ export const messages = {
       ].filter((part) => part !== '');
       return parts.join(', ');
     },
+    noSpot: 'Ohne festen Platz',
     toToday: 'Zum Start',
     failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
   },
