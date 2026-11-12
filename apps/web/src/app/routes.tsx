@@ -129,6 +129,12 @@ export const routes: RouteObject[] = [
         }),
       },
       {
+        path: 'more/achievements',
+        lazy: async () => ({
+          Component: (await import('../features/achievements/AchievementsPage')).AchievementsPage,
+        }),
+      },
+      {
         path: 'more/data',
         lazy: async () => ({
           Component: (await import('../features/household/HouseholdPage')).HouseholdPage,

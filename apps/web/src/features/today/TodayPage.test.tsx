@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto';
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { AppDataProvider } from '../../app/AppData';
@@ -163,9 +163,12 @@ describe('TodayPage', () => {
 
     fireEvent.click(freeze);
     expect(await screen.findByText(/^Hackfleisch eingefroren\. Haltbar bis /)).toBeDefined();
-    expect(
-      screen.queryByRole('button', { name: messages.rescue.freezeLabel('Hackfleisch') }),
-    ).toBeNull();
+    // The list follows the database a moment later.
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('button', { name: messages.rescue.freezeLabel('Hackfleisch') }),
+      ).toBeNull();
+    });
 
     fireEvent.click(screen.getByRole('button', { name: messages.inventory.undo }));
     expect(

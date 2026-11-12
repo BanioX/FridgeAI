@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ACHIEVEMENT_FAMILIES, ACHIEVEMENT_IDS } from '../achievements-catalogue';
 import { IdSchema } from '../ids';
 import { RappenSchema } from '../money';
 import { DomainEventSchema } from './events';
@@ -687,6 +688,16 @@ export const CONTRACT_V1 = {
       expiresOn: LocalDateSchema.optional(),
     }),
   }),
+  'inventory.completeCheck': command({
+    name: 'inventory.completeCheck',
+    summary: {
+      de: 'Einen Kühlschrank-Check als abgeschlossen melden (für das Abzeichen «Treu»).',
+      en: 'Report a fridge check as finished (for the «Treu» achievement).',
+    },
+    scopes: ['inventory:write'],
+    input: z.object({ ...commandBase, itemCount: z.int().min(1).max(500) }),
+    output: z.object({ completedOn: LocalDateSchema }),
+  }),
   'products.setNutrition': command({
     name: 'products.setNutrition',
     summary: {
@@ -997,6 +1008,32 @@ export const CONTRACT_V1 = {
           changePercent: z.int(),
         })
         .nullable(),
+    }),
+  }),
+  'stats.achievements': query({
+    name: 'stats.achievements',
+    summary: {
+      de: 'Abzeichen mit Stufe, Datum der Freischaltung und Fortschritt; aus den Daten berechnet, nie gespeichert.',
+      en: 'Achievements with tier, the day it was reached and progress; computed from the data, never stored.',
+    },
+    scopes: ['stats:read'],
+    input: z.object({ ...queryBase }),
+    output: z.object({
+      achievements: z.array(
+        z.object({
+          id: z.enum(ACHIEVEMENT_IDS),
+          family: z.enum(ACHIEVEMENT_FAMILIES),
+          /** 0 = not reached; one-time achievements are 0 or 1. */
+          tier: z.union([z.literal(0), z.literal(1), z.literal(2), z.literal(3)]),
+          /** The day the current tier was first reached (Europe/Zurich); null at tier 0. */
+          reachedOn: LocalDateSchema.nullable(),
+          /** Where the person stands and what the next tier needs (null at the top). */
+          progress: z.object({
+            current: z.number().min(0),
+            next: z.number().positive().nullable(),
+          }),
+        }),
+      ),
     }),
   }),
   'prices.memory': query({

@@ -20,6 +20,7 @@ import { GROUPED_ROW_LINK, GroupedList, GroupedListItem } from '../../ui/Grouped
 import { InventoryItemRow } from '../inventory/InventoryItemRow';
 import { SWIPE_HINT_ID, useSwipeOutcome } from '../inventory/swipe-outcome';
 import { SwipeAction } from '../../ui/SwipeAction';
+import { RecentAchievements } from '../achievements/RecentAchievements';
 import { checkDue, readLastCheck } from '../check/check-state';
 import { ImpactCard } from './ImpactCard';
 import { ImpactSince } from './ImpactSince';
@@ -149,6 +150,7 @@ export function TodayPage() {
 
       <ImpactCard from={startOfMonth(today)} to={today} />
       <ImpactSince />
+      <RecentAchievements />
       {all.length > 0 ? (
         <Card variant="tip">
           <strong>{messages.knowledge.didYouKnow}</strong> {factFor(today)}

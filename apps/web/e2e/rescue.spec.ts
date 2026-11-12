@@ -38,7 +38,8 @@ test('counts a rescue only when the person confirms it on the brink', async ({ p
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
 
   // The reward (ADR-0042): what it was worth, the month so far and a food fact, no «Danke».
-  await expect(page.getByRole('status')).toHaveText(
+  // The first rescue also brings the note «Neues Abzeichen» (ADR-0054), a second status.
+  await expect(page.getByRole('status').filter({ hasText: 'Gerettet:' })).toHaveText(
     // No price from a receipt: the value is an estimate and says so.
     /^Gerettet: Joghurt, etwa CHF \d+\.\d{2}\.$/,
   );

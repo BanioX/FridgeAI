@@ -1,6 +1,6 @@
 # Rettich – Abzeichen-Katalog
 
-> Alban, 11.11.2026: «Man kann auch Abzeichen gewinnen wie Koch, Sparsam, Überlebenskünstler. Das könnte Leuten gefallen.» Dieser Katalog legt fest, welche Abzeichen es gibt, wofür und wie sie aussehen. Gebaut wird er in Runde 2 (nach «Verarbeiten» und «Gekocht»), siehe [`ideen/komfort-und-geld.md`](ideen/komfort-und-geld.md).
+> Alban, 11.11.2026: «Man kann auch Abzeichen gewinnen wie Koch, Sparsam, Überlebenskünstler. Das könnte Leuten gefallen.» Dieser Katalog legt fest, welche Abzeichen es gibt, wofür und wie sie aussehen. Gebaut seit 12.11.2026 (Runde 2, [ADR-0054](adr/0054-achievements.md)), bis auf «Gemeinsam»; siehe [`ideen/komfort-und-geld.md`](ideen/komfort-und-geld.md).
 
 ## Grundsätze
 
@@ -119,6 +119,15 @@
   - Resteküche zählt verwertete Artikel mit Herkunft «Reste».
 
 ## Umsetzung (Runde 2)
+
+**Gebaut (12.11.2026, [ADR-0054](adr/0054-achievements.md)):** alle 18 Abzeichen ausser «Gemeinsam» (später, braucht «Haushalt teilen»). Entschieden werden musste:
+
+- **Fortschritt:** ganze Prozent wie in der Bilanz; die 10 Abschlüsse gelten für den verglichenen Monat, nicht für den Grundmonat.
+- **Alles im Blick:** zählt Artikel, die jetzt im Kühlschrank liegen; Mindesthaltbarkeits- und Verbrauchsdatum zählen gleich.
+- **Treu:** Die Stufe folgt der längsten Folge, der Fortschritt der laufenden.
+- **Überlebenskunst:** Wasser nur aus der Kategorie «Trinkwasser-Vorrat», fünf Gruppen auf Kategorien abgebildet, nur die Vielfalt (keine Mengen); wird der Vorrat verbraucht, ist es wieder offen.
+- **Gekocht und Verarbeiten:** ein Ereignis gilt nur, solange sein Ergebnis oder seine Zutaten-Ausgänge nicht rückgängig gemacht oder gelöscht sind.
+- **Neu:** Ereignis `check.completed`, `item.moved` mit `previousExpiresOn`.
 
 - **Core:**
   - Die reine Funktion `achievements(input, today)` liefert pro Abzeichen Stufe, Datum der Freischaltung und Fortschritt.

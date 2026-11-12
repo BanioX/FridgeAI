@@ -1,4 +1,5 @@
 import {
+  Award,
   FileChartColumn,
   HistoryIcon,
   ShieldCheck,
@@ -56,6 +57,12 @@ export function MorePage() {
             icon: HistoryIcon,
             title: messages.pages.history,
             detail: t.historyDetail,
+          },
+          {
+            to: '/more/achievements',
+            icon: Award,
+            title: messages.pages.achievements,
+            detail: t.achievementsDetail,
           },
           {
             to: '/shopping',
