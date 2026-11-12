@@ -1,4 +1,5 @@
 import {
+  BLV_VERSION,
   formatDecimal,
   parseNutritionLabel,
   type InventoryItemView,
@@ -41,7 +42,7 @@ function allergenNames(tags: readonly string[]): string[] {
   });
 }
 
-function NutritionTable({ nutrition }: { nutrition: Nutrition }) {
+function NutritionTable({ nutrition, caption }: { nutrition: Nutrition; caption?: string }) {
   const rows = NUTRIENTS.flatMap((key) => {
     const value = nutrition[key];
     return value === undefined ? [] : [{ key, value }];
@@ -51,7 +52,9 @@ function NutritionTable({ nutrition }: { nutrition: Nutrition }) {
   }
   return (
     <table className="w-full text-sm tabular-nums">
-      <caption className="mb-1 text-left text-ink-muted">{t.per[nutrition.basis]}</caption>
+      <caption className="mb-1 text-left text-ink-muted">
+        {caption ?? t.per[nutrition.basis]}
+      </caption>
       <tbody>
         {rows.map(({ key, value }) => (
           <tr key={key} className="border-t border-line/70">
@@ -75,7 +78,7 @@ function NutritionTable({ nutrition }: { nutrition: Nutrition }) {
  * Nutrition from a photo or screenshot of the label: read on the device with the receipt OCR
  * (ADR-0028), shown for a check, saved only on «Speichern». The picture is never stored or sent.
  */
-function NutritionPhoto({ item }: { item: InventoryItemView }) {
+function NutritionPhoto({ item, intro }: { item: InventoryItemView; intro: string }) {
   const { householdId, ids, inventory } = useAppData();
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState('');
@@ -121,7 +124,7 @@ function NutritionPhoto({ item }: { item: InventoryItemView }) {
 
   return (
     <div className="space-y-3">
-      <p className="text-sm text-ink-muted">{t.photo.missing}</p>
+      <p className="text-sm text-ink-muted">{intro}</p>
       <label className="inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-xl border border-line bg-surface px-5 font-semibold text-ink transition-colors hover:bg-surface-muted has-disabled:cursor-not-allowed has-disabled:opacity-50 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-basil-600">
         <Camera size={20} aria-hidden="true" />
         {t.photo.choose}
@@ -175,6 +178,7 @@ export function ProductFacts({ item }: { item: InventoryItemView }) {
   const { nutrition, nutriScore } = item;
   const allergens = allergenNames(item.allergens ?? []);
   const fromPhoto = nutrition?.source === 'manual';
+  const estimated = nutrition?.source === 'blv';
   return (
     <details className="group rounded-2xl border border-line bg-surface p-5 shadow-card">
       <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 font-semibold">
@@ -196,16 +200,30 @@ export function ProductFacts({ item }: { item: InventoryItemView }) {
       </summary>
       <div className="mt-3 space-y-4">
         {nutrition === undefined ? (
-          <NutritionPhoto item={item} />
+          <NutritionPhoto item={item} intro={t.photo.missing} />
         ) : (
-          <NutritionTable nutrition={nutrition} />
+          <NutritionTable
+            nutrition={nutrition}
+            {...(estimated ? { caption: t.estimated.per(t.per[nutrition.basis]) } : {})}
+          />
         )}
+        {estimated ? (
+          <>
+            <p className="text-xs text-ink-muted">
+              {item.nutritionFood === undefined
+                ? null
+                : `${t.estimated.average(item.nutritionFood)} `}
+              {t.estimated.source(BLV_VERSION)}
+            </p>
+            <NutritionPhoto item={item} intro={t.estimated.photo} />
+          </>
+        ) : null}
         {allergens.length === 0 ? null : (
           <p className="text-sm">
             <span className="font-semibold">{t.allergens}:</span> {allergens.join(', ')}
           </p>
         )}
-        {nutrition === undefined && item.productSource !== 'off' ? null : (
+        {estimated || (nutrition === undefined && item.productSource !== 'off') ? null : (
           <p className="text-xs text-ink-muted">
             {fromPhoto ? t.photo.note : t.hint}{' '}
             {item.productSource === 'off' && !fromPhoto ? (

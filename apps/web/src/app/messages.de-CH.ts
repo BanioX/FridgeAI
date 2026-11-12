@@ -581,6 +581,14 @@ export const messages = {
       molluscs: 'Weichtiere',
     } as Record<string, string | undefined>,
     hint: 'Angaben aus einer offenen Datenbank, ohne Gewähr. Massgebend ist die Packung.',
+    /** Unprocessed fresh food without a label: average values of the BLV database (ADR-0064). */
+    estimated: {
+      per: (basis: string) => `Nährwerte ${basis} · geschätzt`,
+      average: (food: string) => `Durchschnitt für ${food}. Unverarbeitet, darum ohne Etikett.`,
+      source: (version: string) => `Quelle: Schweizer Nährwertdatenbank ${version}, BLV`,
+      photo:
+        'Hast du eine Packung mit Nährwerttabelle? Fotografiere sie, dann gelten ihre Werte statt der Schätzung.',
+    },
     imageCredit: 'Bild: Open Food Facts (CC BY-SA)',
     photo: {
       missing:
@@ -791,6 +799,10 @@ export const messages = {
       {
         title: 'Sicherung',
         text: 'Alles bleibt auf diesem Gerät. Darum lohnt sich ab und zu ein Export unter «Mehr» bei «Mitnehmen und löschen». So gehen deine Daten nicht verloren, wenn das Gerät ausfällt.',
+      },
+      {
+        title: 'Nährwerte bei Frischem',
+        text: 'Frisches wie Pouletbrust, Rindshack oder Äpfel hat kein Etikett. Rettich zeigt dafür Durchschnittswerte aus der Schweizer Nährwertdatenbank des BLV und schreibt «geschätzt» dazu. Fotografierst du eine Nährwerttabelle, gelten deren Werte.',
       },
     ],
     guideTitle: 'Haltbarkeit A–Z',

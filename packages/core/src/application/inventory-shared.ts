@@ -5,6 +5,7 @@ import type { Id } from '../ids';
 import type { InventoryItem, Product, StorageSpot } from '../model/inventory';
 import type { Retailer } from '../model/primitives';
 import type { Storage } from '../ports/storage';
+import { freshNutrition } from '../nutrition/fresh-nutrition';
 import { CommandError } from './command';
 
 export const EPSILON = 1e-9;
@@ -38,10 +39,17 @@ export function toView(
 ): InventoryItemView {
   const category = categoryOf(product);
   const spot = product?.spotId === undefined ? undefined : spots?.get(product.spotId);
+  const name = product?.name ?? category.name.de;
+  // Own values (database, photo, manual) win; unprocessed fresh food gets an estimate, computed
+  // here and never stored (ADR-0064).
+  const estimate =
+    product?.nutrition === undefined
+      ? freshNutrition({ name, categoryId: category.id })
+      : undefined;
   return {
     id: item.id,
     productId: item.productId,
-    name: product?.name ?? category.name.de,
+    name,
     emoji: category.emoji,
     categoryId: category.id,
     location: item.location,
@@ -66,6 +74,9 @@ export function toView(
     ...(item.readyMade === undefined ? {} : { readyMade: item.readyMade }),
     purchasedAt: item.purchasedAt,
     ...factsOf(product),
+    ...(estimate === undefined
+      ? {}
+      : { nutrition: estimate.nutrition, nutritionFood: estimate.food }),
     ...(product === undefined ? {} : { productSource: product.source }),
     ...(product?.gtin === undefined ? {} : { gtin: product.gtin }),
     ...(retailer === undefined ? {} : { retailer }),
