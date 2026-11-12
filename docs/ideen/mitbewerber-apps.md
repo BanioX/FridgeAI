@@ -18,7 +18,7 @@ Alban (12.11.2026): «Kopieren ist doch erlaubt, mach aber nicht Feature-Copy, s
 | M4 | **Mehrere auf einmal ändern** (FoodShiner Batch) | Datum, «Angebrochen», Person für die Auswahl | S–M | **umgesetzt** (12.11.2026, «Ändern» im Auswahlmodus) |
 | M5 | **Etiketten mit QR** für Dosen und Fächer (Stökk, Grocy) | Reste-Dose scannen = abschliessen; Fach scannen = «Wo ist was?» | M | später (O10) |
 | M6 | **Wochenplan, der den Vorrat bucht** (FoodShiner, Paprika, Grocy) | Planen mit dem, was da ist, Lücken auf die Liste | L | später |
-| M7 | **Datum per Kamera lesen** (Kellr) | Kein Tippen des Datums | L | später, auf dem Gerät (OCR ist schon da) |
+| M7 | **Datum per Kamera lesen** (Kellr) | Kein Tippen des Datums | L | **umgesetzt** (12.11.2026, Knopf «Datum fotografieren» beim Erfassen, ADR-0062) |
 | M8 | **Tägliche Erinnerung «Heute retten»** (fast alle) | Handeln, bevor es verdirbt | M | braucht Push über einen Dienst: neuer Datenfluss, Entscheid Alban ([`benachrichtigungen.md`](./benachrichtigungen.md)) |
 | M9 | **Widget auf dem Home-Bildschirm** | Anstoss ohne App zu öffnen | L | nur nativ ([`app-stores.md`](./app-stores.md)) |
 | M10 | **Teilen im Haushalt** (FoodShiner, Fridgify mit Ende-zu-Ende-Verschlüsselung) | WG sieht denselben Kühlschrank | L | Meilenstein C; Fridgify zeigt, dass es verschlüsselt geht |

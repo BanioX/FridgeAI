@@ -35,6 +35,7 @@ import { Card } from '../../ui/Card';
 import { ChoiceChips } from '../../ui/ChoiceChips';
 import { DateField } from '../../ui/DateField';
 import { BarcodeScanner } from '../scan/BarcodeScanner';
+import { DatePhotoButton } from './DatePhotoButton';
 import {
   formatAmount,
   INPUT_UNITS,
@@ -124,6 +125,11 @@ export function AddItemPage() {
     date?: { expiresOn: LocalDate; kind: DateKind };
   } | null>(null);
   const [scanStatus, setScanStatus] = useState('');
+  /** The date read from a photo of the pack (ADR-0062), and what was said about it. */
+  const [photoDate, setPhotoDate] = useState<{ expiresOn: LocalDate; kind?: DateKind } | null>(
+    null,
+  );
+  const [photoStatus, setPhotoStatus] = useState('');
   const [fromOpenFoodFacts, setFromOpenFoodFacts] = useState(false);
   /** Open Food Facts calls it ready to eat (NOVA 4, dessert, meal): saved as Fertigprodukt. */
   const [readyHint, setReadyHint] = useState(false);
@@ -181,6 +187,10 @@ export function AddItemPage() {
     scanned?.date !== undefined && dateChoice?.value === scanned.date.expiresOn
       ? scanned.date
       : undefined;
+
+  // Like the code's date: it counts as read from the label only while the person keeps it.
+  const dateFromPhoto =
+    photoDate !== null && dateChoice?.value === photoDate.expiresOn ? photoDate : undefined;
 
   function onCode(raw: string) {
     const code = parseScannedCode(raw, today);
@@ -284,6 +294,12 @@ export function AddItemPage() {
         ...(dateFromCode === undefined
           ? {}
           : { expirySource: 'gs1_code', expiryKind: dateFromCode.kind }),
+        ...(dateFromCode !== undefined || dateFromPhoto === undefined
+          ? {}
+          : {
+              expirySource: 'label_ocr',
+              ...(dateFromPhoto.kind === undefined ? {} : { expiryKind: dateFromPhoto.kind }),
+            }),
         ...(scanned?.gtin === undefined ? {} : { gtin: scanned.gtin }),
         ...(price === undefined ? {} : { priceRappen: price }),
         // From the counter: open from the day it was bought, the opening rule sets the date.
@@ -402,6 +418,20 @@ export function AddItemPage() {
             typicalShelfLifeDays={shelfLifeAt(category, location)}
             estimated={dateChoice === null}
           />
+          <DatePhotoButton
+            today={today}
+            onRead={(found) => {
+              setPhotoDate({
+                expiresOn: found.date,
+                ...(found.kind === undefined ? {} : { kind: found.kind }),
+              });
+              setDateChoice({ value: found.date });
+            }}
+            onStatus={setPhotoStatus}
+          />
+          <p aria-live="polite" className="text-sm font-semibold text-basil-800 empty:hidden">
+            {photoStatus}
+          </p>
           <p className="text-sm text-today">{shown(errors.date)}</p>
         </div>
 

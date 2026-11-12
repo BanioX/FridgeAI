@@ -412,6 +412,14 @@ export const messages = {
     priceInvalid: (example: string) => `Kein gültiger Betrag, z. B. ${example}`,
     save: 'Speichern',
     failed: 'Speichern hat nicht geklappt. Bitte versuch es nochmals.',
+    /** «Datum fotografieren» (ADR-0062): read on the device, the picture is not kept. */
+    datePhoto: {
+      choose: 'Datum fotografieren',
+      reading: 'Datum wird gelesen …',
+      found: (date: string) => `Gelesen: ${date}. Stimmt das?`,
+      notFound: 'Kein Datum gefunden. Tipp es ein oder fotografiere näher.',
+      failed: 'Lesen hat nicht geklappt. Tipp das Datum ein.',
+    },
   },
   nameSearch: {
     used: 'Bereits verwendet',
