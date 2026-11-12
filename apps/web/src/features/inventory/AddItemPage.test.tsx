@@ -3,11 +3,13 @@ import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, useLocation } from 'react-router';
 import { addDays, formatSwissDate, toLocalDate } from '@fridgeai/core';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AppDataProvider } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
 import { testDb } from '../../data/test-helpers';
 import { AddItemPage } from './AddItemPage';
+
+vi.mock('../receipts/read-image', () => ({ readImageText: vi.fn() }));
 
 const t = messages.addItem;
 
@@ -109,5 +111,53 @@ describe('AddItemPage', () => {
     const [item] = await db.items.toArray();
     expect(item?.openedOn).toBe(today);
     expect(item?.expiresOn).toBe(addDays(today, 3));
+  });
+
+  describe('«Datum fotografieren» (ADR-0062)', () => {
+    const photo = () => new File(['x'], 'date.png', { type: 'image/png' });
+    const readsAs = async (text: string | Error) => {
+      const { readImageText } = await import('../receipts/read-image');
+      vi.mocked(readImageText).mockReset();
+      if (text instanceof Error) {
+        vi.mocked(readImageText).mockRejectedValue(text);
+      } else {
+        vi.mocked(readImageText).mockResolvedValue(text);
+      }
+    };
+
+    it('fills the date field from the photo, says so and saves it as read from the label', async () => {
+      const db = testDb();
+      await renderPage('/inventory/new', db);
+      const date = addDays(toLocalDate(new Date()), 400);
+      await readsAs(`L23114\nZu verbrauchen bis ${formatSwissDate(date)}`);
+      const input = screen.getByLabelText<HTMLInputElement>(t.datePhoto.choose);
+      expect(input.getAttribute('capture')).toBe('environment');
+      await userEvent.upload(input, photo());
+      expect(await screen.findByText(t.datePhoto.found(formatSwissDate(date)))).toBeDefined();
+      expect(screen.getByLabelText<HTMLInputElement>(t.expiry).value).toBe(formatSwissDate(date));
+      await userEvent.type(screen.getByLabelText(t.name), 'Butter');
+      await userEvent.click(screen.getByRole('button', { name: t.save }));
+      await screen.findByText(/^\/inventory\?location=fridge$/);
+      const [item] = await db.items.toArray();
+      expect(item?.expiresOn).toBe(date);
+      expect(item?.expiryKind).toBe('use_by');
+      expect(item?.expirySource).toBe('label_ocr');
+    });
+
+    it('leaves the field as it was when no date is found', async () => {
+      await renderPage();
+      const before = screen.getByLabelText<HTMLInputElement>(t.expiry).value;
+      await readsAs('Bio Vollmilch 1 Liter');
+      await userEvent.upload(screen.getByLabelText(t.datePhoto.choose), photo());
+      expect(await screen.findByText(t.datePhoto.notFound)).toBeDefined();
+      expect(screen.getByLabelText<HTMLInputElement>(t.expiry).value).toBe(before);
+    });
+
+    it('says so when reading fails', async () => {
+      await renderPage();
+      await readsAs(new Error('offline'));
+      await userEvent.upload(screen.getByLabelText(t.datePhoto.choose), photo());
+      expect(await screen.findByText(t.datePhoto.failed)).toBeDefined();
+    });
   });
 });

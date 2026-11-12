@@ -4,7 +4,7 @@ Jeder Entscheid mit Folgen steht hier als eigene Datei `NNNN-titel.md` (ADR-0001
 
 **Pflege:** Wer ein ADR anlegt oder dessen Status ändert, führt diese Tabelle im selben PR nach. Ein abgelöstes ADR bleibt als Verlauf stehen, seine Statuszeile nennt das ADR, das es ablöst.
 
-**Stand:** 12.11.2026, 61 Entscheide.
+**Stand:** 12.11.2026, 62 Entscheide.
 
 | Nr. | Titel | Status | Datum |
 | --- | --- | --- | --- |
@@ -69,3 +69,4 @@ Jeder Entscheid mit Folgen steht hier als eigene Datei `NNNN-titel.md` (ADR-0001
 | [0059](0059-min-stock.md) | Mindestbestand füllt Nachkaufen | angenommen | 2026-11-12 |
 | [0060](0060-one-place-per-action.md) | Eine Stelle pro Aktion im Auswahlmodus | angenommen | 2026-11-12 |
 | [0061](0061-recipes-for-selection.md) | Rezepte zur Auswahl auf «Verarbeiten» | angenommen | 2026-11-12 |
+| [0062](0062-date-from-photo.md) | Datum fotografieren | angenommen | 2026-11-12 |

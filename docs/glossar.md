@@ -6,6 +6,7 @@ Damit Mensch und Maschine dasselbe meinen: Wort in der App (de-CH), Name im Code
 
 | App (de-CH) | Code | Bedeutung | Andere Regionen |
 | --- | --- | --- | --- |
+| **Datum fotografieren** (12.11.2026) | `DatePhotoButton`, `parseExpiryFromText`, `expirySource: 'label_ocr'` | Knopf beim Erfassen: ein Foto des aufgedruckten Datums wird auf dem Gerät gelesen und füllt «Haltbar bis»; das Bild wird nicht gespeichert (ADR-0062) | – |
 | **Mindestbestand** («Immer da haben», 12.11.2026) | `minStock`, `products.setMinStock`, `source: 'min_stock'` | Wie viele aktive Packungen eines Produkts mindestens da sein sollen (1 bis 20); fällt der Vorrat durch «Verwertet» oder «Entsorgt» darunter, kommt das Produkt von selbst auf «Nachkaufen» (ADR-0059) | – |
 | **Einräumen** | `PutAwayPage`, `/inventory/put-away` | Seite nach einer vollständig übernommenen Quittung: die neuen Artikel nach Lagerort und Platz, damit alles an seinen Ort kommt; jede Zeile öffnet den Artikel, dort lässt sich ein Platz setzen | – |
 | **Platz** | `StorageSpot`, `spotId` | Ein benannter Ort innerhalb eines Lagerorts («Oberer Schrank links», «Gemüsefach»), auf Wunsch mit Foto; gehört zum Produkt, jede Packung erbt ihn (ADR-0056) | – |
