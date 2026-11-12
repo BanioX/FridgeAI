@@ -20,6 +20,8 @@ import {
   ProductSchema,
   ProductSourceSchema,
   OutcomeSchema,
+  SpotPhotoSchema,
+  StorageSpotSchema,
   ShoppingListItemSchema,
   ShareRecipientSchema,
   WasteReasonSchema,
@@ -250,6 +252,11 @@ export const InventoryItemViewSchema = z.object({
   gtin: GtinSchema.optional(),
   /** Where it was bought, from its receipt; absent when unknown («other») or not from a receipt. */
   retailer: RetailerSchema.optional(),
+  /**
+   * The usual spot of the product («Oberer Schrank links», ADR-0056). Set only when the spot lies
+   * in the location the item is in now; after a move to the freezer the pantry spot stays hidden.
+   */
+  spot: z.object({ id: IdSchema, name: z.string(), hasPhoto: z.boolean() }).nullable(),
 });
 export type InventoryItemView = z.infer<typeof InventoryItemViewSchema>;
 
@@ -331,6 +338,8 @@ export const HouseholdExportSchema = z.object({
   receiptLines: z.array(ReceiptLineSchema),
   /** «Meine Rezepte» (ADR-0048); exports from before them have none. */
   ownRecipes: z.array(OwnRecipeSchema).default([]),
+  /** Storage spots with photos (ADR-0056); exports from before them have none. */
+  spots: z.array(StorageSpotSchema).default([]),
   events: z.array(DomainEventSchema),
 });
 export type HouseholdExport = z.infer<typeof HouseholdExportSchema>;
@@ -350,6 +359,7 @@ const ImportableExportSchema = HouseholdExportSchema.superRefine((data, check) =
     'receipts',
     'receiptLines',
     'ownRecipes',
+    'spots',
     'events',
   ] as const;
   for (const table of tables) {
@@ -790,6 +800,80 @@ export const CONTRACT_V1 = {
         })
         .nullable(),
     }),
+  }),
+  'products.setSpot': command({
+    name: 'products.setSpot',
+    summary: {
+      de: 'Den Platz eines Produkts festhalten («Zucker liegt im oberen Schrank links») oder entfernen.',
+      en: 'Set the usual storage spot of a product, or clear it with null.',
+    },
+    scopes: ['inventory:write'],
+    input: z.object({ ...commandBase, productId: IdSchema, spotId: IdSchema.nullable() }),
+    output: z.object({ productId: IdSchema, spotId: IdSchema.nullable() }),
+  }),
+  'spots.list': query({
+    name: 'spots.list',
+    summary: {
+      de: 'Plätze mit Foto auflisten: wo was liegt, nach Lagerort und Name.',
+      en: 'List storage spots with photo, how many items lie there and which.',
+    },
+    scopes: ['inventory:read'],
+    input: z.object({ ...queryBase }),
+    output: z.object({
+      spots: z.array(
+        z.object({
+          id: IdSchema,
+          name: z.string(),
+          location: StorageLocationSchema,
+          /** Downscaled JPEG or WebP as data URL; stays on the device. */
+          photo: SpotPhotoSchema.optional(),
+          /** Active items whose product uses this spot, in the spot's own location. */
+          itemCount: z.int().min(0),
+          /** Their names, at most 10. */
+          itemNames: z.array(z.string()).max(10),
+        }),
+      ),
+    }),
+  }),
+  'spots.create': command({
+    name: 'spots.create',
+    summary: {
+      de: 'Einen Platz anlegen, mit Name, Lagerort und optional einem Foto.',
+      en: 'Create a storage spot with name, location and an optional photo.',
+    },
+    scopes: ['inventory:write'],
+    input: z.object({
+      ...commandBase,
+      name: z.string().trim().min(1).max(40),
+      location: StorageLocationSchema,
+      photo: SpotPhotoSchema.optional(),
+    }),
+    output: z.object({ spotId: IdSchema }),
+  }),
+  'spots.update': command({
+    name: 'spots.update',
+    summary: {
+      de: 'Einen Platz umbenennen oder sein Foto ersetzen (null entfernt es).',
+      en: 'Rename a storage spot or replace its photo (null removes it).',
+    },
+    scopes: ['inventory:write'],
+    input: z.object({
+      ...commandBase,
+      spotId: IdSchema,
+      name: z.string().trim().min(1).max(40).optional(),
+      photo: SpotPhotoSchema.nullable().optional(),
+    }),
+    output: z.object({ updated: z.boolean() }),
+  }),
+  'spots.delete': command({
+    name: 'spots.delete',
+    summary: {
+      de: 'Einen Platz löschen; die Produkte verlieren nur den Platz.',
+      en: 'Delete a storage spot; its products only lose the spot.',
+    },
+    scopes: ['inventory:write'],
+    input: z.object({ ...commandBase, spotId: IdSchema }),
+    output: z.object({ deleted: z.boolean(), productCount: z.int().min(0) }),
   }),
   'shopping.list': query({
     name: 'shopping.list',

@@ -29,6 +29,7 @@ test('no page scrolls sideways on a phone, even with a long «Schnell erfassen»
     '/more/reports',
     '/more/history',
     '/more/data',
+    '/more/spots',
     '/shopping',
   ];
   for (const route of routes) {

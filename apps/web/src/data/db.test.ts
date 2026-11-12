@@ -34,7 +34,8 @@ describe('FridgeDb migrations', () => {
     expect(await db.receipts.count()).toBe(0);
     expect(await db.receiptLines.count()).toBe(0);
     expect(await db.ownRecipes.count()).toBe(0);
-    expect(db.verno).toBe(6);
+    expect(await db.spots.count()).toBe(0);
+    expect(db.verno).toBe(7);
     db.close();
   });
 });

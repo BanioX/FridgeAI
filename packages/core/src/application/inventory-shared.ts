@@ -2,7 +2,7 @@ import { categoryById, fallbackCategory } from '../catalog/match';
 import type { Category } from '../catalog/category';
 import type { InventoryItemView } from '../contract/operations';
 import type { Id } from '../ids';
-import type { InventoryItem, Product } from '../model/inventory';
+import type { InventoryItem, Product, StorageSpot } from '../model/inventory';
 import type { Retailer } from '../model/primitives';
 import type { Storage } from '../ports/storage';
 import { CommandError } from './command';
@@ -34,8 +34,10 @@ export function toView(
   product: Product | undefined,
   retailer?: Retailer,
   madeFromNames?: readonly string[],
+  spots?: ReadonlyMap<Id, StorageSpot>,
 ): InventoryItemView {
   const category = categoryOf(product);
+  const spot = product?.spotId === undefined ? undefined : spots?.get(product.spotId);
   return {
     id: item.id,
     productId: item.productId,
@@ -66,6 +68,11 @@ export function toView(
     ...(product === undefined ? {} : { productSource: product.source }),
     ...(product?.gtin === undefined ? {} : { gtin: product.gtin }),
     ...(retailer === undefined ? {} : { retailer }),
+    // Only in the location the spot lies in: after a move the pantry spot stays hidden.
+    spot:
+      spot === undefined || spot.deletedAt !== undefined || spot.location !== item.location
+        ? null
+        : { id: spot.id, name: spot.name, hasPhoto: spot.photo !== undefined },
   };
 }
 

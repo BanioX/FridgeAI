@@ -58,8 +58,30 @@ export const ProductSchema = z.object({
     .array(z.string().regex(/^[a-z][a-z0-9-]{1,40}$/))
     .max(20)
     .optional(),
+  /** The usual storage spot («Zucker liegt im oberen Schrank links», ADR-0056). */
+  spotId: IdSchema.optional(),
 });
 export type Product = z.infer<typeof ProductSchema>;
+
+/** A photo kept on the device: downscaled JPEG or WebP as data URL (ADR-0056). */
+export const SPOT_PHOTO_MAX_CHARS = 450_000;
+export const SpotPhotoSchema = z
+  .string()
+  .max(SPOT_PHOTO_MAX_CHARS)
+  .regex(/^data:image\/(?:jpeg|webp);base64,[A-Za-z0-9+/=]+$/);
+
+/**
+ * A named place inside one storage location («Oberer Schrank links», «Gemüsefach»), optionally
+ * with a photo (ADR-0056). Products point to it; every new pack of a product shows its spot.
+ */
+export const StorageSpotSchema = z.object({
+  ...syncFields,
+  name: z.string().trim().min(1).max(40),
+  location: StorageLocationSchema,
+  photo: SpotPhotoSchema.optional(),
+  createdAt: IsoDateTimeSchema,
+});
+export type StorageSpot = z.infer<typeof StorageSpotSchema>;
 
 export const ItemStatusSchema = z.enum(['active', 'eaten', 'shared_out', 'wasted']);
 export type ItemStatus = z.infer<typeof ItemStatusSchema>;

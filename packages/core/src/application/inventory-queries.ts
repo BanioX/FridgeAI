@@ -22,10 +22,12 @@ export function createInventoryQueries(ctx: AppContext) {
   }
 
   async function activeViews(householdId: Id): Promise<InventoryItemView[]> {
-    const [items, products] = await Promise.all([
+    const [items, products, spotRows] = await Promise.all([
       storage.items.activeOf(householdId),
       householdProducts(householdId),
+      storage.spots.ofHousehold(householdId),
     ]);
+    const spots = new Map(spotRows.map((spot) => [spot.id, spot]));
     const live = items
       .filter((item) => item.deletedAt === undefined)
       .sort((a, b) => a.expiresOn.localeCompare(b.expiresOn));
@@ -46,7 +48,7 @@ export function createInventoryQueries(ctx: AppContext) {
             : (await Promise.all(item.madeFrom.map(nameOf))).filter(
                 (name): name is string => name !== undefined,
               );
-        return toView(item, products.get(item.productId), retailers.get(item.id), names);
+        return toView(item, products.get(item.productId), retailers.get(item.id), names, spots);
       }),
     );
   }

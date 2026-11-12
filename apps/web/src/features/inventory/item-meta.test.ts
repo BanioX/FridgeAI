@@ -18,4 +18,16 @@ describe('itemMeta', () => {
       '750 g · Tiefkühler',
     );
   });
+
+  it('names the spot instead of the location, but only when asked to', () => {
+    const withSpot = {
+      quantity: 1,
+      unit: 'pcs',
+      location: 'pantry',
+      spot: { id: 's', name: 'Oberer Schrank links', hasPhoto: false },
+    } as InventoryItemView;
+    expect(itemMeta(withSpot)).toBe('1 Stk. · Oberer Schrank links');
+    expect(itemMeta(withSpot, false)).toBe('1 Stk. · Vorrat');
+    expect(itemMeta({ ...withSpot, spot: null })).toBe('1 Stk. · Vorrat');
+  });
 });
