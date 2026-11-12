@@ -37,10 +37,18 @@ test('selects several items and moves them to another storage location', async (
   await expect(page.getByText('2 ausgewählt')).toBeVisible();
 
   // Eggs and juice keep in a pantry (dairy would be refused, see the unsuitable_location error).
-  // «Verschieben nach» offers the other three locations, not the current one; «Ändern» opens the
-  // bulk edit for the same selection.
-  const bar = page.getByRole('region', { name: 'Auswahl verschieben' });
-  await expect(bar.getByRole('button')).toHaveText(['Ändern', 'Tiefkühler', 'Vorrat', 'Notvorrat']);
+  // While something is chosen, the tabs turn into «Verschieben nach» in the same place: the current
+  // location says «hier», the other three are targets (one place for tap and drop).
+  const bar = page.getByRole('group', { name: 'Verschieben nach' });
+  await expect(bar.getByRole('button')).toHaveText([
+    /Kühlschrank.*hier/,
+    'Tiefkühler',
+    'Vorrat',
+    'Notvorrat',
+  ]);
+  await expect(bar.getByRole('button', { name: /Kühlschrank/ })).toBeDisabled();
+  await expect(page.getByRole('tab')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Ändern' })).toBeVisible();
 
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
   const result = await new AxeBuilder({ page }).analyze();
@@ -52,14 +60,14 @@ test('selects several items and moves them to another storage location', async (
   await expect(page.getByRole('button', { name: 'Auswählen' })).toBeVisible();
   await expect(page.getByRole('link', { name: /Salami/ })).toBeVisible();
   await expect(page.getByRole('link', { name: /Eier/ })).toHaveCount(0);
-  await expect(page.getByRole('region', { name: 'Auswahl verschieben' })).toHaveCount(0);
+  await expect(page.getByRole('group', { name: 'Verschieben nach' })).toHaveCount(0);
 
   await page.getByRole('tab', { name: /Vorrat/ }).click();
   await expect(page.getByRole('link', { name: /Eier/ })).toBeVisible();
   await expect(page.getByRole('link', { name: /Saft/ })).toBeVisible();
 });
 
-test('select all, and switching the tab drops the selection', async ({ page }) => {
+test('select all and none; with nothing chosen, the tabs switch again', async ({ page }) => {
   for (const name of ['Eier', 'Saft']) {
     await addToFridge(page, name);
   }
@@ -67,10 +75,15 @@ test('select all, and switching the tab drops the selection', async ({ page }) =
   await page.getByRole('button', { name: 'Auswählen' }).click();
   await page.getByRole('button', { name: 'Alle auswählen' }).click();
   await expect(page.getByText('2 ausgewählt')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Keine auswählen' })).toBeVisible();
+  await expect(page.getByRole('tab')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Keine auswählen' }).click();
+  await expect(page.getByText('ausgewählt')).toHaveCount(0);
 
   await page.getByRole('tab', { name: /Tiefkühler/ }).click();
-  await expect(page.getByText('ausgewählt')).toHaveCount(0);
+  await expect(page.getByRole('tab', { name: /Tiefkühler/ })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  );
   await expect(page.getByRole('button', { name: 'Fertig' })).toBeVisible();
 });
 
@@ -82,7 +95,7 @@ test('moves what fits and names what does not belong there', async ({ page }) =>
   await page.getByRole('button', { name: 'Auswählen' }).click();
   await page.getByRole('button', { name: 'Alle auswählen' }).click();
   await page
-    .getByRole('region', { name: 'Auswahl verschieben' })
+    .getByRole('group', { name: 'Verschieben nach' })
     .getByRole('button', { name: 'Vorrat', exact: true })
     .click();
   // Milk does not keep in the pantry: the eggs move, the milk stays and is named.
@@ -104,7 +117,9 @@ test('drags the selected items onto a storage-location tab', async ({ page }) =>
   await expect(page.getByText('2 ausgewählt')).toBeVisible();
 
   const row = page.getByText('Eier', { exact: true });
-  const vorrat = page.getByRole('tab', { name: /Vorrat/ });
+  const vorrat = page
+    .getByRole('group', { name: 'Verschieben nach' })
+    .getByRole('button', { name: 'Vorrat', exact: true });
   // L-24: wait until the rows stand still before the gesture.
   await expect
     .poll(async () => {
@@ -128,21 +143,22 @@ test('drags the selected items onto a storage-location tab', async ({ page }) =>
     await page.mouse.move(endX, endY, { steps: 12 });
   };
 
-  // Released outside the tabs: nothing changes, and the long press did not toggle the rows.
+  // Released outside the targets: nothing changes, and the long press did not toggle the rows.
   await drag(200, 700);
   await expect(page.getByText('2 Artikel', { exact: true })).toBeVisible();
   await page.mouse.up();
   await expect(page.getByText('2 Artikel', { exact: true })).toHaveCount(0);
   await expect(page.getByText('2 ausgewählt')).toBeVisible();
   await expect(page.getByRole('status')).toHaveCount(0);
-  await expect(page.getByRole('tab', { name: /Kühlschrank/ })).toContainText('2');
+  await expect(page.getByRole('checkbox', { name: 'Eier' })).toBeChecked();
 
   // Released on «Vorrat»: both items move.
   await drag(to.x + to.width / 2, to.y + to.height / 2);
   await expect(page.getByText('2 Artikel', { exact: true })).toBeVisible();
   await page.mouse.up();
   await expect(page.getByRole('status')).toHaveText('2 Artikel liegen jetzt im Vorrat.');
-  await vorrat.click();
+  // The move ends select mode: the tabs are back.
+  await page.getByRole('tab', { name: /Vorrat/ }).click();
   await expect(page.getByRole('link', { name: /Eier/ })).toBeVisible();
   await expect(page.getByRole('link', { name: /Saft/ })).toBeVisible();
 });
@@ -181,13 +197,20 @@ test('a long press in the normal list starts select mode and the drag', async ({
   await page.mouse.move(x, y);
   await page.mouse.down();
   await page.waitForTimeout(600);
-  const vorrat = page.getByRole('tab', { name: /Vorrat/ });
-  const tab = await vorrat.boundingBox();
-  expect(tab).not.toBeNull();
-  await page.mouse.move((tab?.x ?? 0) + (tab?.width ?? 0) / 2, (tab?.y ?? 0) + 20, { steps: 12 });
+  // The hold started select mode: the tabs turned into «Verschieben nach» in the same place.
+  const target = await page
+    .getByRole('group', { name: 'Verschieben nach' })
+    .getByRole('button', { name: 'Vorrat', exact: true })
+    .boundingBox();
+  expect(target).not.toBeNull();
+  await page.mouse.move(
+    (target?.x ?? 0) + (target?.width ?? 0) / 2,
+    (target?.y ?? 0) + (target?.height ?? 0) / 2,
+    { steps: 12 },
+  );
   await page.mouse.up();
   await expect(page.getByRole('status')).toHaveText('Eier liegt jetzt im Vorrat.');
-  await vorrat.click();
+  await page.getByRole('tab', { name: /Vorrat/ }).click();
   await expect(page.getByRole('link', { name: /Eier/ })).toBeVisible();
 });
 
@@ -196,7 +219,7 @@ test.describe('with a finger', () => {
 
   // A real touch drag, sent through the browser's input pipeline: without cancelling touchmove on
   // the held row (which select mode replaces), the browser would pan the list and cancel the drag.
-  test('a long press and a drag up onto a tab moves the item', async ({ page }) => {
+  test('a long press and a drag up onto «Vorrat» moves the item', async ({ page }) => {
     for (const name of ['Eier', 'Saft']) {
       await addToFridge(page, name);
     }
@@ -211,13 +234,9 @@ test.describe('with a finger', () => {
       })
       .toBe(true);
     const from = await row.boundingBox();
-    const tab = await page.getByRole('tab', { name: /Vorrat/ }).boundingBox();
     expect(from).not.toBeNull();
-    expect(tab).not.toBeNull();
     const x = (from?.x ?? 0) + 120;
     const y = (from?.y ?? 0) + (from?.height ?? 0) / 2;
-    const toX = (tab?.x ?? 0) + (tab?.width ?? 0) / 2;
-    const toY = (tab?.y ?? 0) + (tab?.height ?? 0) / 2;
 
     const cdp = await page.context().newCDPSession(page);
     const touch = (type: 'touchStart' | 'touchMove' | 'touchEnd', at: { x: number; y: number }) =>
@@ -227,6 +246,14 @@ test.describe('with a finger', () => {
       });
     await touch('touchStart', { x, y });
     await page.waitForTimeout(700);
+    // The finger is still down: select mode has turned the tabs into «Verschieben nach».
+    const tab = await page
+      .getByRole('group', { name: 'Verschieben nach' })
+      .getByRole('button', { name: 'Vorrat', exact: true })
+      .boundingBox();
+    expect(tab).not.toBeNull();
+    const toX = (tab?.x ?? 0) + (tab?.width ?? 0) / 2;
+    const toY = (tab?.y ?? 0) + (tab?.height ?? 0) / 2;
     for (let step = 1; step <= 12; step += 1) {
       await touch('touchMove', { x: x + ((toX - x) * step) / 12, y: y + ((toY - y) * step) / 12 });
     }
