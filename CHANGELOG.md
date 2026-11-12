@@ -2,6 +2,29 @@
 
 Alle Änderungen an Rettich (bis 7.11.2026 FridgeAI), neueste zuerst. Wird mit `pnpm release` erzeugt (ADR-0017).
 
+## [0.14.0] – 2026-11-12
+
+**Klimabilanz mit CO₂e, Wasser, Fläche und Kehricht, Abzeichen, Töpfe zum Abschliessen, «Wo ist was?» mit Fotos der Plätze, «Gehört» mit Initialen, vier Kacheln auf Start, sichtbare Sicherung und der richtige Wert für Eier und Flaschen.**
+
+### Neu
+
+- visible backups – «Letzte Sicherung» and a monthly hint on Start ([#250](https://github.com/BanioX/FridgeAI/pull/250))
+- «Noch da» on Nachkaufen names where it lies ([#249](https://github.com/BanioX/FridgeAI/pull/249))
+- four square location tiles on Start ([#248](https://github.com/BanioX/FridgeAI/pull/248))
+- «Gehört» – initials on food someone bought for themselves, Personen page (ADR-0058) ([#247](https://github.com/BanioX/FridgeAI/pull/247))
+- Klimabilanz – CO₂e, Wasser, Fläche and Kehricht of what was rescued (ADR-0057) ([#246](https://github.com/BanioX/FridgeAI/pull/246))
+- Wo ist was? – storage spots with photo, searchable (ADR-0056) ([#244](https://github.com/BanioX/FridgeAI/pull/244))
+- Töpfe – settle the selection with a tap or a drop (ADR-0055) ([#243](https://github.com/BanioX/FridgeAI/pull/243))
+- Abzeichen – 18 medals computed from the data, on Start and under Mehr (ADR-0054) ([#241](https://github.com/BanioX/FridgeAI/pull/241))
+
+### Behoben
+
+- price and weight per piece for categories with pack sizes ([#245](https://github.com/BanioX/FridgeAI/pull/245))
+
+### Dokumentation
+
+- Alltag und Ordnung, owner badge, climate balance, donations on the Parkplatz ([#242](https://github.com/BanioX/FridgeAI/pull/242))
+
 ## [0.13.0] – 2026-11-12
 
 **Meine Rezepte, Verarbeiten mit «Gekocht» und Resten, Badges am Artikel mit Einfrier-Hinweis, Zutat oder Fertigprodukt, «Vor dem Entsorgen», Tipps und Teilen bei «Nachkaufen», die Wirkung seit dem ersten Monat und die Zahl am App-Symbol.**
