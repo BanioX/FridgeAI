@@ -229,6 +229,82 @@ export function listRecipes(
     .map((ranked) => ({ ...toSuggestion(ranked), tags: [...ranked.recipe.tags] }));
 }
 
+/** A recipe for the chosen items (ADR-0061). */
+export interface ChosenRecipe {
+  id: string;
+  title: string;
+  /** Absent for an own recipe without a time. */
+  minutes?: number;
+  /** Names of the chosen items the recipe uses, in the order they were chosen. */
+  uses: string[];
+  /** Ingredients no usable food at home covers (as written in the recipe). */
+  missing: string[];
+}
+
+/**
+ * «Rezepte mit deiner Auswahl» (ADR-0061, O8): the recipes that use as many of exactly the chosen
+ * items as possible. Only recipes that use at least one chosen item count (via `matchesIngredient`,
+ * staples skipped, food past its use-by date never). Ranked by more distinct chosen items, then
+ * the urgency of what they rescue, then fewer missing ingredients, fewer minutes, then id.
+ * `missing` looks at all food at home, chosen or not.
+ */
+export function recipesForChosen(
+  recipes: readonly RankableRecipe[],
+  food: readonly (FoodAtHome & { itemId: string })[],
+  chosenIds: readonly string[],
+  today: LocalDate,
+  limit: number,
+): ChosenRecipe[] {
+  const usable = food.filter(
+    (entry) => expiryStatus(entry.expiresOn, today, entry.expiryKind).kind !== 'past_use_by',
+  );
+  const chosen = [...new Set(chosenIds)].flatMap((id) => {
+    const entry = usable.find((candidate) => candidate.itemId === id);
+    return entry === undefined ? [] : [entry];
+  });
+
+  return recipes
+    .flatMap((recipe) => {
+      const used = new Set<FoodAtHome & { itemId: string }>();
+      const missing: string[] = [];
+      for (const ingredient of recipe.ingredients) {
+        if (ingredient.staple) {
+          continue;
+        }
+        for (const entry of chosen) {
+          if (matchesIngredient(ingredient, entry)) {
+            used.add(entry);
+          }
+        }
+        if (!ingredient.optional && !usable.some((entry) => matchesIngredient(ingredient, entry))) {
+          missing.push(ingredient.text);
+        }
+      }
+      if (used.size === 0) {
+        return [];
+      }
+      const uses = chosen.filter((entry) => used.has(entry));
+      const score = uses.reduce((sum, entry) => sum + urgency(entry, today), 0);
+      return [{ recipe, uses, score, missing }];
+    })
+    .sort(
+      (a, b) =>
+        b.uses.length - a.uses.length ||
+        b.score - a.score ||
+        a.missing.length - b.missing.length ||
+        minutesOf(a.recipe) - minutesOf(b.recipe) ||
+        a.recipe.id.localeCompare(b.recipe.id),
+    )
+    .slice(0, Math.max(0, limit))
+    .map(({ recipe, uses, missing }) => ({
+      id: recipe.id,
+      title: recipe.title,
+      ...(recipe.minutes === undefined ? {} : { minutes: recipe.minutes }),
+      uses: uses.map((entry) => entry.name),
+      missing,
+    }));
+}
+
 export interface IngredientAtHome<TFood extends FoodAtHome = FoodAtHome> {
   text: string;
   staple: boolean;

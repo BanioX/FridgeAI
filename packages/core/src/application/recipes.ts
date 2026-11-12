@@ -12,6 +12,7 @@ import {
 import {
   ingredientsAtHome,
   listRecipes,
+  recipesForChosen,
   suggestRecipes,
   type RankableRecipe,
 } from '../recipes/recipe';
@@ -23,7 +24,7 @@ import { categoryOf } from './inventory-shared';
 export const localRecipes: RecipeProvider = { recipes: () => Promise.resolve(RECIPES) };
 
 /**
- * `recipes.suggest`, `recipes.list` and `recipes.get` (ADR-0048), ADR-0034 layer 2: rank the
+ * `recipes.suggest`, `recipes.list`, `recipes.withItems` (ADR-0061) and `recipes.get` (ADR-0048), ADR-0034 layer 2: rank the
  * recipes against the active inventory, rescuing what expires first. Read-only, via the ports.
  * The household's own recipes (point 7) are ranked together with the curated ones.
  */
@@ -100,6 +101,19 @@ export function createRecipeQueries(ctx: AppContext, provider: RecipeProvider = 
     };
   };
 
+  const withItems: UseCase<'recipes.withItems'> = async (raw) => {
+    const input = CONTRACT_V1['recipes.withItems'].input.parse(raw);
+    const [{ recipes, sourceOf }, food] = await Promise.all([
+      allRecipes(input.householdId),
+      foodAtHome(input.householdId),
+    ]);
+    return {
+      recipes: recipesForChosen(recipes, food, input.itemIds, clock.today(), input.limit).map(
+        (entry) => ({ ...entry, source: sourceOf(entry.id) }),
+      ),
+    };
+  };
+
   const get: UseCase<'recipes.get'> = async (raw) => {
     const input = CONTRACT_V1['recipes.get'].input.parse(raw);
     const { recipes, sourceOf } = await allRecipes(input.householdId);
@@ -135,7 +149,12 @@ export function createRecipeQueries(ctx: AppContext, provider: RecipeProvider = 
     };
   };
 
-  return { 'recipes.suggest': suggest, 'recipes.list': list, 'recipes.get': get };
+  return {
+    'recipes.suggest': suggest,
+    'recipes.list': list,
+    'recipes.withItems': withItems,
+    'recipes.get': get,
+  };
 }
 
 export type RecipeQueries = ReturnType<typeof createRecipeQueries>;

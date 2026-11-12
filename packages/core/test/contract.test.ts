@@ -43,6 +43,7 @@ describe('contract v1', () => {
       'shopping.remove',
       'recipes.suggest',
       'recipes.list',
+      'recipes.withItems',
       'recipes.get',
       'recipes.create',
       'recipes.update',
