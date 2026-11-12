@@ -13,6 +13,7 @@ import type { LocalDate } from '../model/primitives';
 import { rappen } from '../money';
 import { CommandError, createCommandKit, type AppContext, type UseCase } from './command';
 import { activeItem } from './inventory-shared';
+import { createMinStockEnsurer } from './min-stock';
 import { createOutcomeWriter } from './outcome-writer';
 
 /** Without a category of its own, a result lands in the category of its kind (ADR-0052). */
@@ -26,6 +27,7 @@ export function createProcessCommands(ctx: AppContext) {
   const { storage, clock, ids } = ctx;
   const { event, runCommand } = createCommandKit(ctx);
   const writeOutcome = createOutcomeWriter(ctx);
+  const ensureMinStock = createMinStockEnsurer(ctx);
 
   const process: UseCase<'inventory.process'> = async (raw) => {
     const input = CONTRACT_V1['inventory.process'].input.parse(raw);
@@ -53,6 +55,11 @@ export function createProcessCommands(ctx: AppContext) {
         outcomeIds.push(written.eventId);
         total += written.valueRappen;
         estimated = estimated || written.valueEstimated;
+      }
+
+      // The ingredients are gone: staples among them go back on «Nachkaufen» (ADR-0059).
+      for (const productId of new Set(items.map((item) => item.productId))) {
+        await ensureMinStock(input.householdId, productId);
       }
 
       let expiresOn: LocalDate | undefined;
