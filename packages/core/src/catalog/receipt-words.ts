@@ -33,7 +33,6 @@ export const RECEIPT_WORDS: Readonly<Record<string, CategoryId>> = {
   // Abbreviations and brands seen on Lidl and Aldi receipts (November 2026).
   joghu: 'dairy-yoghurt',
   zott: 'dairy-yoghurt',
-  schmelzkäse: 'dairy-cheese-hard',
   cervelas: 'meat-sausage',
   cordon: 'meat-fresh',
   margarine: 'dairy-butter',

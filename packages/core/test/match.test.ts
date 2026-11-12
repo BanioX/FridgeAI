@@ -33,6 +33,9 @@ describe('matchCategoryByName', () => {
     ['Saurer Rahm', 'dairy-cream'],
     ['Grana Padano', 'dairy-cheese-hard'],
     ['Bergkäse', 'dairy-cheese-hard'],
+    ['Schmelzkäse Scheiben', 'dairy-cheese-slices'],
+    ['Toastkäse', 'dairy-cheese-slices'],
+    ['Scheibletten Classic', 'dairy-cheese-slices'],
     ['Pouletbrust', 'meat-poultry'],
     ['Gefriergetrocknet Risotto', 'reserve-freeze-dried'],
   ])('maps %s to %s', (name, expected) => {
@@ -83,7 +86,7 @@ describe('precision on real receipt lines (Lidl, 8.11.2026)', () => {
     expect(id('Trauben hell kernlos')).toBe('produce-fruit');
     expect(id('Pimientos de Padron 200g')).toBe('produce-vegetables');
     expect(id('Landjäger')).toBe('meat-coldcuts');
-    expect(id('Schweizer Schmelzkäses.')).toBe('dairy-cheese-hard');
+    expect(id('Schweizer Schmelzkäses.')).toBe('dairy-cheese-slices');
     expect(id('Zott Monte 2K-Joghu.Butt')).toBe('dairy-yoghurt');
     expect(id('Push up Lollies mit Gumm')).toBe('frozen-icecream');
   });

@@ -21,3 +21,7 @@ Alban: «Bei Schmelzkäse hat eine Packung 10 Stück, also 10 Scheiben. Dafür a
 - Ein Artikel, der beim Verschieben geteilt wurde, beginnt mit dem geteilten Teil.
 - In der Liste steht weiter nur die Menge; ein Ring pro Zeile wäre zu unruhig (`docs/flaechen.md`).
 - «Wissen» erklärt den Ring unter «Rettich im Alltag».
+
+## Nachtrag (12.11.2026): Kategorie «Käsescheiben»
+
+Damit Schmelzkäse von Anfang an in Scheiben zählt, gibt es die Kategorie **Käsescheiben** (`dairy-cheese-slices`): Schmelzkäse, Toastkäse, Scheibletten, Sandwich- und Burgerkäse. Sie zählt in Stück (eine Scheibe), bietet beim Erfassen die Packungsgrössen «8er», «10er» und «12er» und teilt eine Scheibe nicht weiter. Preis und Gewicht gelten pro Scheibe (rund 30 Rappen, 20 g; L-27). Offen hält sie etwa 5 Tage. Für die Klimabilanz steht wie bei Hartkäse der Cheddar. Quittungszeilen mit «Schmelzkäse» finden die Kategorie über ihr Stichwort.
