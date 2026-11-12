@@ -41,7 +41,6 @@ import { Card } from '../../ui/Card';
 import { ChoiceChips } from '../../ui/ChoiceChips';
 import { ItemBadges } from '../../ui/ItemBadges';
 import { ShopBadge } from '../../ui/ShopBadge';
-import { PackRing } from '../../ui/PackRing';
 import { ScoreRing } from '../../ui/ScoreRing';
 import { StatusChip } from '../../ui/StatusChip';
 import { describeDate } from '../../ui/date-text';
@@ -55,6 +54,7 @@ import { formatPieces, formatQuantity } from '../../ui/quantity-text';
 import { portionLabel } from './portion-labels';
 import { ItemOwner } from '../people/ItemOwner';
 import { MinStockRow } from './MinStockRow';
+import { PackControl, type PackOutcome } from './PackControl';
 import { OtherPacks } from './OtherPacks';
 import { ProductFacts } from './ProductFacts';
 import { useInventoryItem } from './use-item';
@@ -107,6 +107,8 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
   const [status, setStatus] = useState('');
   /** The partial outcome just saved: it can be undone until the next action. */
   const [undoable, setUndoable] = useState<Id | null>(null);
+  /** What the last tap on the pack ring did, next to the ring (ADR-0063 Nachtrag). */
+  const [packNote, setPackNote] = useState<{ text: string; eventId: Id | null } | null>(null);
   /** Set after the one-tap freeze: the date it had in the fridge, for «Rückgängig». */
   const [frozenFrom, setFrozenFrom] = useState<LocalDate | null>(null);
   const [busy, setBusy] = useState(false);
@@ -169,6 +171,7 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
     setStatus('');
     setUndoable(null);
     setFrozenFrom(null);
+    setPackNote(null);
     try {
       const message = await action();
       if (message !== null) {
@@ -180,6 +183,63 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
       setBusy(false);
     }
   }
+
+  /** The item is used up: back to the list, which shows what happened with «Rückgängig». */
+  const leaveClosed = (
+    result: {
+      eventId: Id;
+      addedToList?: boolean | undefined;
+      rescued: boolean;
+      valueRappen: number;
+      valueEstimated: boolean;
+    },
+    how: Outcome,
+  ) => {
+    const closed: ClosedItem = {
+      kind: 'outcome',
+      eventId: result.eventId,
+      name: item.name,
+      outcome: how,
+      ...(result.addedToList === true ? { addedToList: true as const } : {}),
+      ...(result.rescued
+        ? {
+            rescuedRappen: result.valueRappen,
+            ...(result.valueEstimated ? { estimated: true as const } : {}),
+          }
+        : {}),
+    };
+    void navigate(`/inventory?location=${item.location}`, { state: { closed } });
+  };
+
+  /** A tap on the pack ring: one piece (or the rest of one) verwertet or entsorgt. */
+  const takeOne = (how: PackOutcome) =>
+    run(async () => {
+      const amount = Math.min(1, item.quantity);
+      const result = await inventory['inventory.recordOutcome']({
+        commandId: ids.next(),
+        householdId,
+        itemId: item.id,
+        outcome: how,
+        quantity: amount,
+      });
+      if (result.remainingQuantity === 0) {
+        leaveClosed(result, how);
+        return null;
+      }
+      setPackNote({ text: t.packTook(formatPieces(amount), how), eventId: result.eventId });
+      return result.addedToList === true ? messages.minStock.onList : null;
+    });
+
+  const undoPack = () =>
+    run(async () => {
+      const eventId = packNote?.eventId;
+      if (eventId === null || eventId === undefined) {
+        return null;
+      }
+      await inventory['inventory.undoOutcome']({ commandId: ids.next(), householdId, eventId });
+      setPackNote({ text: t.packUndone, eventId: null });
+      return null;
+    });
 
   const record = () =>
     run(async () => {
@@ -196,20 +256,7 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
         ...(rescuable && rescued === 'yes' ? { rescued: true } : {}),
       });
       if (result.remainingQuantity === 0) {
-        const closed: ClosedItem = {
-          kind: 'outcome',
-          eventId: result.eventId,
-          name: item.name,
-          outcome,
-          ...(result.addedToList === true ? { addedToList: true as const } : {}),
-          ...(result.rescued
-            ? {
-                rescuedRappen: result.valueRappen,
-                ...(result.valueEstimated ? { estimated: true as const } : {}),
-              }
-            : {}),
-        };
-        void navigate(`/inventory?location=${item.location}`, { state: { closed } });
+        leaveClosed(result, outcome);
         return null;
       }
       setPortion(null);
@@ -446,22 +493,21 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
           </div>
         </div>
         {pack === undefined ? null : (
-          <div className="mt-4 flex items-center gap-3 border-t border-line pt-4">
-            <PackRing
-              pack={pack}
-              label={t.packLabel(formatPieces(pack.left), formatPieces(pack.start))}
-            />
-            <div>
-              <p className="font-semibold">
-                {t.packLeft(formatPieces(pack.left), formatPieces(pack.start))}
-              </p>
-              <p className="text-sm text-ink-muted">
-                {pack.start > pack.left
-                  ? t.packTaken(formatPieces(pack.start - pack.left))
-                  : t.packFull}
-              </p>
-            </div>
-          </div>
+          <PackControl
+            pack={pack}
+            busy={busy}
+            note={
+              packNote === null
+                ? null
+                : { text: packNote.text, undoable: packNote.eventId !== null }
+            }
+            onTake={(how) => {
+              void takeOne(how);
+            }}
+            onUndo={() => {
+              void undoPack();
+            }}
+          />
         )}
       </Card>
 

@@ -239,3 +239,34 @@ test('shows the other packs of the same product and which one to eat first', asy
     page.getByText('Eine andere Packung läuft früher ab.', { exact: false }),
   ).toHaveCount(0);
 });
+
+test('takes slices with a tap on the pack ring, undoes and uses the menu (ADR-0063)', async ({
+  page,
+}) => {
+  await page.goto('/inventory/new');
+  await page.getByLabel('Was ist es?').fill('Eier');
+  if (await page.getByLabel('Menge').isHidden()) {
+    await page.getByText('Mehr Angaben').click();
+  }
+  await page.getByLabel('Menge').fill('10');
+  await page.getByLabel('Einheit').selectOption('pcs');
+  await page.getByRole('button', { name: 'Speichern', exact: true }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
+  await page.getByRole('link', { name: /Eier/ }).click();
+
+  await page.getByRole('button', { name: /^Packung: 10 von 10 übrig\. Tippen/ }).click();
+  await expect(page.getByText('9 von 10 übrig')).toBeVisible();
+  await page.getByRole('button', { name: /^Packung: 9 von 10 übrig\. Tippen/ }).click();
+  await expect(page.getByText('8 von 10 übrig')).toBeVisible();
+  await page.getByRole('button', { name: 'Rückgängig' }).first().click();
+  await expect(page.getByText('9 von 10 übrig')).toBeVisible();
+  await expect(page.getByText('Zurückgelegt.')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Mehr zur Packung' }).click();
+  const menu = page.getByRole('dialog', { name: 'Packung: 9 von 10 übrig' });
+  await expect(menu).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await menu.getByRole('button', { name: '1 Stück entsorgt' }).click();
+  await expect(page.getByText('8 von 10 übrig')).toBeVisible();
+  await expect(page.getByText('1 Stück entsorgt.')).toBeVisible();
+});
