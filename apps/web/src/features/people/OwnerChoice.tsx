@@ -13,7 +13,8 @@ export function OwnerChoice({
   hideLegend = false,
 }: {
   members: readonly MemberView[];
-  value: Owner;
+  /** `null`: nothing chosen yet (bulk edit leaves the owner alone until a chip is tapped). */
+  value: Owner | null;
   onChange: (owner: Owner) => void;
   hideLegend?: boolean;
 }) {

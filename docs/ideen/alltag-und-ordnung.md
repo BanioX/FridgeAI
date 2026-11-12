@@ -21,7 +21,7 @@ Kleine Hilfen mit System: weniger suchen, schneller abschliessen, weniger doppel
 | O4 | **Einräumen nach dem Einkauf**: nach der Quittung eine Liste nach Lagerort und Platz: «Kühlschrank: Milch, Joghurt · Gemüsefach: Rüebli · Oberer Schrank: Zucker». | Alles kommt an seinen Platz, auch wer selten einräumt; Rettich kennt danach jeden Ort | M |
 | O5 | **Fächer im Kühlschrank vorschlagen**: Türfach, oberes, mittleres, unteres Fach, Gemüsefach als fertige Plätze, mit dem Wissen, das schon in «Wissen» steht (Fleisch und Fisch unten über dem Gemüsefach, Getränke in die Tür). | Richtig gelagert hält länger; Kühlschrank zuerst | S–M |
 | O6 | **Doppelkauf-Hinweis**: Auf der Einkaufsliste steht bei einem Produkt, das noch da ist, «Zuhause: 2, Türfach». | Weniger doppelt kaufen, weniger entsorgen | S |
-| O7 | **Mehrere auf einmal ändern**: im Auswahlmodus Datum oder «Angebrochen» für alle setzen. | Nach dem Einkauf oder dem Öffnen einer Packung schneller | S |
+| O7 | **Mehrere auf einmal ändern** (umgesetzt, 12.11.2026): im Auswahlmodus «Ändern» setzt Datum, «Angebrochen» oder «Gehört» für alle. | Nach dem Einkauf oder dem Öffnen einer Packung schneller | S |
 | O8 | **Topf «Rezept»**: Auswahl hineinziehen, Rettich zeigt Rezepte, die genau diese Artikel brauchen. | Aus dem, was da ist, kochen; verbindet O1 mit den Rezepten (ADR-0048) | S–M |
 | O9 | **Check Fach für Fach**: Der Kühlschrank-Check geht die Plätze der Reihe nach durch, mit Foto. | Schneller, weil man vor dem Fach steht | M |
 
