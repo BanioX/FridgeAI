@@ -20,8 +20,8 @@ export function RecipeListPage() {
   const curated = list.filter((entry) => entry.source === 'curated');
   return (
     <div className="space-y-4 pb-8">
-      <BackLink to="/knowledge" label={messages.pages.knowledge} />
       <div>
+        <BackLink to="/knowledge" label={messages.pages.knowledge} />
         <h1 className="large-title">{t.allTitle}</h1>
         <p className="mt-1 text-ink-muted">{t.listIntro}</p>
       </div>
