@@ -2,7 +2,7 @@ import type { InventoryItemView } from '@fridgeai/core';
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
-import { bulkText, stillClosed, type BulkChanges } from './bulk-edit';
+import { applySpot, bulkText, stillClosed, type BulkChanges } from './bulk-edit';
 
 /** The toast stays this long, like the move toast. */
 const TOAST_MS = 5000;
@@ -10,7 +10,7 @@ const TOAST_MS = 5000;
 /**
  * Changes the chosen items one after the other with the existing commands (O7): the date with
  * `inventory.updateItem` (the date kind stays), «Angebrochen» with `inventory.open` (only for
- * items still closed), «Gehört» with `inventory.updateItem`. A failure does not stop the others
+ * items still closed), «Gehört» with `inventory.updateItem`, «Platz» with `products.setSpot` once per product. A failure does not stop the others
  * and is named. `edit` resolves to `true` only when everything worked, so the caller ends select
  * mode; otherwise what failed stays selected.
  */
@@ -69,6 +69,19 @@ export function useEditSelected(): {
               }),
             );
           }
+        }
+        if (changes.spot !== undefined) {
+          const { spot } = changes;
+          const result = await applySpot(items, (productId) =>
+            inventory['products.setSpot']({
+              commandId: ids.next(),
+              householdId,
+              productId,
+              spotId: spot,
+            }),
+          );
+          result.changed.forEach((item) => changed.add(item));
+          result.failed.forEach((item) => failed.add(item));
         }
         for (const item of closed) {
           await attempt(item, () =>

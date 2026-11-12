@@ -39,7 +39,7 @@ Prüfung aller Funktionen aus ADR-0048 bis ADR-0062 und der Funktionen ohne eige
 | Sicherung | ja | – | – | – | ja | – | nach Import nein (K3) | nein (K10) | – | – |
 | Einräumen | – | ja | ja | – | – | – | – | nein (K10) | – | – |
 | Check Fach für Fach | ja, wenn fällig | ja, unter «Mehr» jederzeit (K5) | – | teilweise | ja | – | ja | nein (K10) | – | ja |
-| Mehrere ändern | – | Platz fehlt (K11) | – | – | – | – | – | nein (K10) | – | – |
+| Mehrere ändern | – | ja (K11) | – | – | – | – | – | nein (K10) | – | – |
 
 Daten gehen keine verloren: Alle Tabellen stehen in der Sicherung und kommen beim Import zurück. Es fehlten nur Tests mit Hin und Zurück für einzelne Felder (K3).
 
@@ -57,7 +57,7 @@ Daten gehen keine verloren: Alle Tabellen stehen in der Sicherung und kommen bei
 | K8 | «Datum fotografieren» auch beim Ändern und beim Einräumen | erledigt |
 | K9 | «Wo ist was?» findet Fachnamen und Personen | offen |
 | K10 | «Kurz erklärt» für alle neuen Funktionen; Datenschutz-Hinweis nennt Datumsfotos | offen |
-| K11 | «Mehrere ändern» kann auch den Platz setzen | offen |
+| K11 | «Mehrere ändern» kann auch den Platz setzen | erledigt |
 | K12 | Suche in «Alle Rezepte» | offen |
 | K13 | «Steht jetzt auf Nachkaufen» auch nach Töpfen, Check und Verarbeiten | offen |
 | später | Bilanz und Klimabilanz pro Person; Abzeichen für Ordnung | wartet auf Konten und Sync |

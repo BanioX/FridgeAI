@@ -1,18 +1,30 @@
-import type { LocalDate, MemberView, Owner, StorageLocation } from '@fridgeai/core';
+import type {
+  InventoryItemView,
+  LocalDate,
+  MemberView,
+  Owner,
+  StorageLocation,
+} from '@fridgeai/core';
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { messages } from '../../app/messages.de-CH';
 import { Button } from '../../ui/Button';
+import { ChoiceChips } from '../../ui/ChoiceChips';
 import { DateField } from '../../ui/DateField';
 import { OwnerChoice } from '../people/OwnerChoice';
-import type { BulkChanges } from './bulk-edit';
+import { useSpots } from '../spots/use-spots';
+import { sharedLocation, type BulkChanges } from './bulk-edit';
+
+/** The chip value for «Kein fester Platz»; spot ids never look like this. */
+const NO_SPOT = 'none';
 
 /**
- * «N Artikel ändern» (O7): one sheet to set the date, mark as opened or choose the owner for all
+ * «N Artikel ändern» (O7): one sheet to set the date, the place, mark as opened or choose the owner for all
  * chosen items. «Übernehmen» applies the date and the owner (only what was chosen); «Alle als
  * angebrochen markieren» applies at once. The owner choice only shows with two or more people.
  */
 export function BulkEditSheet({
   count,
+  items,
   location,
   today,
   members,
@@ -21,6 +33,7 @@ export function BulkEditSheet({
   onClose,
 }: {
   count: number;
+  items: readonly InventoryItemView[];
   location: StorageLocation;
   today: LocalDate;
   members: readonly MemberView[];
@@ -31,6 +44,14 @@ export function BulkEditSheet({
   const t = messages.inventory.bulk;
   const [expiresOn, setExpiresOn] = useState<LocalDate | null>(null);
   const [owner, setOwner] = useState<Owner | null>(null);
+  const [spot, setSpot] = useState<string | null>(null);
+  const spots = useSpots();
+  // A spot belongs to one location, so the field only makes sense when all items lie in one.
+  const spotLocation = sharedLocation(items);
+  const spotsHere =
+    spotLocation === null || spots === undefined
+      ? null
+      : spots.filter((entry) => entry.location === spotLocation);
   const dialog = useRef<HTMLDivElement>(null);
 
   // Focus goes into the sheet and back to the button that opened it.
@@ -74,7 +95,7 @@ export function BulkEditSheet({
     }
   };
 
-  const canApply = expiresOn !== null || owner !== null;
+  const canApply = expiresOn !== null || owner !== null || spot !== null;
 
   return (
     <div className="fixed inset-0 z-40 flex items-end justify-center bg-onyx/40">
@@ -112,6 +133,20 @@ export function BulkEditSheet({
           <OwnerChoice members={members} value={owner} onChange={setOwner} />
         ) : null}
 
+        {spotsHere === null ? null : spotsHere.length === 0 ? (
+          <p className="text-sm text-ink-muted">{t.spotsHint}</p>
+        ) : (
+          <ChoiceChips
+            legend={t.spotLegend}
+            value={spot}
+            options={[
+              ...spotsHere.map((entry) => ({ value: entry.id, label: entry.name })),
+              { value: NO_SPOT, label: t.noSpot },
+            ]}
+            onChange={setSpot}
+          />
+        )}
+
         <Button
           fullWidth
           disabled={busy || !canApply}
@@ -119,6 +154,7 @@ export function BulkEditSheet({
             onApply({
               ...(expiresOn === null ? {} : { expiresOn }),
               ...(owner === null ? {} : { owner }),
+              ...(spot === null ? {} : { spot: spot === NO_SPOT ? null : spot }),
             });
           }}
         >

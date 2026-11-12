@@ -58,3 +58,28 @@ test('changes the date of several items and marks several as opened', async ({ p
   await expect(page.getByRole('link', { name: /Joghurt/ })).toContainText('Geöffnet');
   await expect(page.getByRole('link', { name: /Saft/ })).not.toContainText('Geöffnet');
 });
+
+test('puts several items on one spot at once', async ({ page }) => {
+  for (const name of ['Eier', 'Saft']) {
+    await addToFridge(page, name);
+  }
+  // The spot comes from the item page; «Ändern» only picks it.
+  await page.goto('/inventory?location=fridge');
+  await page.getByRole('link', { name: /Eier/ }).click();
+  await page.getByRole('button', { name: 'Platz festhalten' }).click();
+  const spotSheet = page.getByRole('dialog', { name: 'Wo liegt das?' });
+  await spotSheet.getByRole('button', { name: 'Neuer Platz' }).click();
+  await spotSheet.getByLabel('Name').fill('Türfach unten');
+  await spotSheet.getByRole('button', { name: 'Speichern' }).click();
+  await expect(spotSheet).toBeHidden();
+
+  await page.goto('/inventory?location=fridge');
+  await page.getByRole('button', { name: 'Auswählen' }).click();
+  await page.getByText('Saft', { exact: true }).click();
+  await page.getByRole('button', { name: 'Ändern' }).click();
+  const sheet = page.getByRole('dialog', { name: '1 Artikel ändern' });
+  await sheet.getByRole('radio', { name: 'Türfach unten' }).check({ force: true });
+  await sheet.getByRole('button', { name: 'Übernehmen' }).click();
+  await expect(page.getByRole('status')).toHaveText('Saft geändert.');
+  await expect(page.getByRole('link', { name: /Saft.*Türfach unten/ })).toBeVisible();
+});
