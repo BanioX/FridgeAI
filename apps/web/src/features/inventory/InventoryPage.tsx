@@ -25,9 +25,13 @@ import { InventoryItemRow } from './InventoryItemRow';
 import { locationOrder } from './item-meta';
 import { SelectableRow } from './SelectableRow';
 import { dropKey, sameTarget, type DropTarget, type SettleAction } from './drop-target';
+import { useMembers } from '../people/use-members';
+import { BulkEditSheet } from './BulkEditSheet';
 import { SelectionBar } from './SelectionBar';
 import { SettlePots } from './SettlePots';
 import { useDragToLocation } from './use-drag-to-location';
+import type { BulkChanges } from './bulk-edit';
+import { useEditSelected } from './use-edit-selected';
 import { useMoveSelected } from './use-move-selected';
 import { useSelection } from './use-selection';
 import { useSettleSelected } from './use-settle-selected';
@@ -225,6 +229,9 @@ export function InventoryPage() {
   const selection = useSelection(selected);
   const mover = useMoveSelected();
   const settler = useSettleSelected();
+  const editor = useEditSelected();
+  const members = useMembers();
+  const [editing, setEditing] = useState(false);
   const navigate = useNavigate();
 
   const items = useLiveQuery(
@@ -268,6 +275,13 @@ export function InventoryPage() {
       return;
     }
     if (await mover.move(chosen, to)) {
+      selection.stop();
+    }
+  };
+
+  const editChosen = async (changes: BulkChanges) => {
+    setEditing(false);
+    if (await editor.edit(chosen, changes)) {
       selection.stop();
     }
   };
@@ -488,14 +502,33 @@ export function InventoryPage() {
       {swipe.toast}
       {mover.toast}
       {settler.toast}
+      {editor.toast}
       {drag.parcel}
       {chosen.length > 0 ? (
         <SelectionBar
           count={chosen.length}
           from={selected}
-          busy={mover.busy}
+          busy={mover.busy || editor.busy}
           onMove={(to) => {
             void moveChosen(to);
+          }}
+          onEdit={() => {
+            setEditing(true);
+          }}
+        />
+      ) : null}
+      {editing && chosen.length > 0 ? (
+        <BulkEditSheet
+          count={chosen.length}
+          location={selected}
+          today={today}
+          members={members ?? []}
+          busy={editor.busy}
+          onApply={(changes) => {
+            void editChosen(changes);
+          }}
+          onClose={() => {
+            setEditing(false);
           }}
         />
       ) : null}

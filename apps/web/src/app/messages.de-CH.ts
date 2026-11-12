@@ -241,6 +241,8 @@ export const messages = {
       none: 'Keine auswählen',
       barLabel: 'Auswahl verschieben',
       count: (n: number) => `${String(n)} ausgewählt`,
+      /** The small button next to the count: opens the sheet that changes all chosen items. */
+      edit: 'Ändern',
       moveTo: 'Verschieben nach',
       /** «im Tiefkühler»: where the items lie afterwards. */
       in: {
@@ -259,6 +261,22 @@ export const messages = {
       dragHint: 'Halten und auf einen Lagerort oben ziehen, oder unten «Verschieben nach» wählen.',
       /** The parcel under the finger: «3 Artikel» (a single item shows its name instead). */
       parcel: (n: number) => `${String(n)} Artikel`,
+    },
+    /** «N Artikel ändern» (O7): date, opened and owner for all chosen items at once. */
+    bulk: {
+      title: (n: number) => `${String(n)} Artikel ändern`,
+      close: 'Schliessen',
+      expiresLabel: 'Haltbar bis',
+      apply: 'Übernehmen',
+      openedTitle: 'Angebrochen',
+      openAll: 'Alle als angebrochen markieren',
+      /** «3 Artikel geändert.»; a single item shows its name. */
+      changedOne: (name: string) => `${name} geändert.`,
+      changedMany: (n: number) => `${String(n)} Artikel geändert.`,
+      allOpened: 'Alle waren schon angebrochen.',
+      /** «Milch: das hat nicht geklappt. Der Artikel bleibt ausgewählt.» */
+      failedSome: (names: readonly string[]) =>
+        `${names.join(', ')}: das hat nicht geklappt. ${names.length === 1 ? 'Der Artikel bleibt' : 'Die Artikel bleiben'} ausgewählt.`,
     },
     /** The pots above the list in select mode (ADR-0055): settle the selection with a tap or a drop. */
     settle: {
