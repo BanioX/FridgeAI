@@ -197,6 +197,8 @@ export const messages = {
     wastedCount: (count: number) =>
       count === 0 ? 'nichts' : count === 1 ? '1 Artikel' : `${String(count)} Artikel`,
     loadDemo: 'Beispieldaten laden',
+    /** Under the demo button of the previews; the pilot app has neither. */
+    loadDemoHint: 'Nur in dieser Demo: füllt Rettich mit einem typischen Kühlschrank.',
   },
   check: {
     /** The row on Start when the weekly check is due. */

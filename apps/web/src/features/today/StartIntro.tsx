@@ -1,4 +1,4 @@
-import { Camera, FileText, Plus, ScanBarcode, type LucideIcon } from 'lucide-react';
+import { Camera, FileText, Plus, ScanBarcode, Sparkles, type LucideIcon } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { DEV_TOOLS } from '../../app/dev-tools';
@@ -42,6 +42,20 @@ export function StartIntro() {
           <h2 className="font-display text-2xl leading-tight font-semibold">{t.title}</h2>
           <p className="text-silver">{t.text}</p>
         </div>
+        {DEV_TOOLS ? (
+          // Only in the previews (Alban, 12.11.2026): whoever gets a demo link should see at once
+          // where to tap, so this is the one emerald button on the onyx card.
+          <div className="space-y-1.5">
+            <Link
+              to="/dev/seed"
+              className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-basil-300 px-5 font-semibold text-onyx transition-colors hover:bg-basil-200"
+            >
+              <Sparkles size={20} aria-hidden="true" />
+              {messages.today.loadDemo}
+            </Link>
+            <p className="text-sm text-silver">{messages.today.loadDemoHint}</p>
+          </div>
+        ) : null}
         <div className="space-y-2">
           <Link
             to="/add/receipt"
@@ -75,14 +89,6 @@ export function StartIntro() {
             </li>
           </ul>
         </div>
-        {DEV_TOOLS ? (
-          <Link
-            to="/dev/seed"
-            className="inline-flex min-h-11 items-center font-semibold text-silver underline-offset-4 hover:underline"
-          >
-            {messages.today.loadDemo}
-          </Link>
-        ) : null}
       </Card>
 
       <section aria-labelledby="how-title" className="space-y-3">
