@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { CATEGORIES } from '../src/catalog/categories';
+import { categoryById } from '../src/catalog/match';
 import { rappen } from '../src/money';
 import { estimateFromCategory, itemValue } from '../src/value';
 
@@ -15,6 +17,20 @@ describe('estimateFromCategory', () => {
     expect(estimateFromCategory(515, 'ml', milk)).toEqual({ valueRappen: 83, grams: 515 });
     expect(estimateFromCategory(500, 'g', paper)).toEqual({ valueRappen: 890, grams: 500 });
     expect(estimateFromCategory(1, 'pcs', {})).toEqual({ valueRappen: 0, grams: undefined });
+  });
+});
+
+describe('categories with pack sizes', () => {
+  // The quantity counts single pieces (10 eggs, 6 bottles), so price and weight are per piece.
+  // Before 12.11.2026 eggs held the price of a 10er box: 10 eggs showed CHF 52.00.
+  it('give price and weight per piece, not per pack', () => {
+    const eggs = categoryById('dairy-eggs');
+    expect(eggs).toBeDefined();
+    expect(estimateFromCategory(10, 'pcs', eggs ?? {})).toEqual({ valueRappen: 520, grams: 600 });
+    for (const category of CATEGORIES.filter((entry) => entry.portioning?.packs !== undefined)) {
+      expect(category.avgWeightGrams ?? 0, category.id).toBeLessThanOrEqual(2000);
+      expect(category.avgPriceRappen ?? 0, category.id).toBeLessThanOrEqual(1000);
+    }
   });
 });
 

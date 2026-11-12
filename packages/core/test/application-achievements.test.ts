@@ -146,8 +146,14 @@ describe('stats.achievements', () => {
   });
 
   it('takes the Notvorrat water from the members of the household', async () => {
-    // One piece of «Trinkwasser-Vorrat» is a typical pack of 9 litres (a six-pack).
-    await add({ name: 'Notwasser', location: 'reserve', categoryId: 'reserve-water' });
+    // A piece of «Trinkwasser-Vorrat» is a 1.5-litre bottle: six of them are 9 litres.
+    await add({
+      name: 'Notwasser',
+      location: 'reserve',
+      categoryId: 'reserve-water',
+      quantity: 6,
+      unit: 'pcs',
+    });
     expect((await state('survival')).progress.current).toBe(1);
     const members = [id(40), id(41)].map((memberId) => ({
       id: memberId,

@@ -244,8 +244,9 @@ export const CATEGORIES: readonly Category[] = [
     dateKind: 'best_before',
     location: 'fridge',
     shelf: [28, null, 14],
-    price: 520,
-    grams: 600,
+    // Per egg, like every category with packs: the quantity counts pieces (10 eggs ≈ CHF 5.20).
+    price: 52,
+    grams: 60,
     owner: 'shared',
     keywords: ['eier', 'freilandeier', 'bioeier', 'bio eier', 'eier 6', 'eier 10'],
     tips: [
@@ -1286,8 +1287,9 @@ export const CATEGORIES: readonly Category[] = [
     dateKind: 'best_before',
     location: 'pantry',
     shelf: [180, null, 270],
-    price: 800,
-    grams: 2400,
+    // Per bottle or can: the quantity counts pieces (a six-pack ≈ CHF 8.00, 2.4 kg).
+    price: 133,
+    grams: 400,
     owner: 'buyer',
     keywords: [
       'bier',
@@ -1512,8 +1514,9 @@ export const CATEGORIES: readonly Category[] = [
     dateKind: 'best_before',
     location: 'reserve',
     shelf: [null, null, 730],
-    price: 300,
-    grams: 9000,
+    // Per 1.5-litre bottle: the quantity counts bottles (a six-pack ≈ CHF 3.00, 9 litres).
+    price: 50,
+    grams: 1500,
     owner: 'shared',
     keywords: ['notwasser', 'wasservorrat', 'trinkwasser', 'wasserkanister', 'wasserkonserve'],
     tips: [
