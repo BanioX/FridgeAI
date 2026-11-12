@@ -1,22 +1,38 @@
-import { FileText, Plus } from 'lucide-react';
-import { Link } from 'react-router';
+import { Camera, FileText, Plus, ScanBarcode, type LucideIcon } from 'lucide-react';
+import { Link, useNavigate } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { DEV_TOOLS } from '../../app/dev-tools';
 import { messages } from '../../app/messages.de-CH';
 import { Card } from '../../ui/Card';
 import { GroupedList, GroupedListItem } from '../../ui/GroupedList';
 import { factFor } from '../knowledge/food-facts';
+import { handOverReceiptPhotos, ReceiptPhotoInput } from '../receipts/ReceiptPhotoInput';
 import { RettichGrowth } from './RettichGrowth';
 
 const t = messages.today.intro;
 
+/** The smaller ways in on the onyx card: picture on top, two short lines below. */
+const WAY =
+  'flex min-h-21 flex-col items-center justify-center gap-1.5 rounded-xl border border-white/20 px-1.5 py-2.5 text-center text-[0.8125rem] leading-tight font-semibold text-white transition-colors hover:bg-white/10';
+
+function WayLink({ to, icon: Icon, label }: { to: string; icon: LucideIcon; label: string }) {
+  return (
+    <Link to={to} className={WAY}>
+      <Icon size={22} aria-hidden="true" />
+      {label}
+    </Link>
+  );
+}
+
 /**
  * Start before the first item (Alban, 8.11.2026: «Wenn ich noch nichts drin hab sieht Start nach
- * nix aus»): the promise on the one onyx card with the two ways in, how Rettich works in three
- * steps, the Rettich that grows with every rescue, and a food fact of the day.
+ * nix aus»): the promise on the one onyx card with the ways in (receipt, photo, barcode, typing),
+ * how Rettich works in three steps, the Rettich that grows with every rescue, and a food fact of
+ * the day.
  */
 export function StartIntro() {
   const { today } = useAppData();
+  const navigate = useNavigate();
   return (
     <>
       <Card variant="premium" className="space-y-4">
@@ -25,21 +41,35 @@ export function StartIntro() {
           <h2 className="font-display text-2xl leading-tight font-semibold">{t.title}</h2>
           <p className="text-silver">{t.text}</p>
         </div>
-        <div className="flex flex-col gap-2 sm:flex-row">
+        <div className="space-y-2">
           <Link
             to="/add/receipt"
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-5 font-semibold text-onyx transition-colors hover:bg-oat"
+            className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-5 font-semibold text-onyx transition-colors hover:bg-oat"
           >
             <FileText size={20} aria-hidden="true" />
             {t.receipt}
           </Link>
-          <Link
-            to="/inventory/new"
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/20 px-5 font-semibold text-white transition-colors hover:bg-white/10"
-          >
-            <Plus size={20} aria-hidden="true" />
-            {t.item}
-          </Link>
+          {/* Alban, 12.11.2026: Barcode and a photo straight from Start, next to typing. */}
+          <ul aria-label={t.waysLabel} className="grid grid-cols-3 gap-2">
+            <li className="grid">
+              <ReceiptPhotoInput
+                className={WAY}
+                onPhotos={(files) => {
+                  handOverReceiptPhotos(files);
+                  void navigate('/add/receipt');
+                }}
+              >
+                <Camera size={22} aria-hidden="true" />
+                {t.photo}
+              </ReceiptPhotoInput>
+            </li>
+            <li className="grid">
+              <WayLink to="/inventory/new?scan=1" icon={ScanBarcode} label={t.barcode} />
+            </li>
+            <li className="grid">
+              <WayLink to="/inventory/new" icon={Plus} label={t.item} />
+            </li>
+          </ul>
         </div>
         {DEV_TOOLS ? (
           <Link
