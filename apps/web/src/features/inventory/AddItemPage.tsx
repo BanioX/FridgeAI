@@ -115,6 +115,8 @@ export function AddItemPage() {
   } | null>(null);
   const [scanStatus, setScanStatus] = useState('');
   const [fromOpenFoodFacts, setFromOpenFoodFacts] = useState(false);
+  /** Open Food Facts calls it ready to eat (NOVA 4, dessert, meal): saved as Fertigprodukt. */
+  const [readyHint, setReadyHint] = useState(false);
   // The name taken from the search: no suggestions for it until the person types again.
   const [pickedName, setPickedName] = useState<string | null>(null);
 
@@ -190,6 +192,7 @@ export function AddItemPage() {
         : messages.scanner.foundWithDate(label, formatSwissDate(date.expiresOn));
     setScanOpen(false);
     setFromOpenFoodFacts(false);
+    setReadyHint(false);
     nameInput.current?.focus();
     if (code.data.gtin === undefined) {
       setScanStatus(found);
@@ -220,6 +223,7 @@ export function AddItemPage() {
       `${found} ${messages.scanner.product(product.name, details === '' ? '' : ` (${details})`)}`,
     );
     setFromOpenFoodFacts(product.source === 'off' || product.factsFrom === 'off');
+    setReadyHint(product.readyMade === true);
   }
 
   /** A name-search hit fills the form; with a barcode it goes the same way as a scan (ADR-0024). */
@@ -229,6 +233,7 @@ export function AddItemPage() {
     setName(product.name);
     setCategoryChoice(product.categoryId);
     setFromOpenFoodFacts(false);
+    setReadyHint(false);
     if (product.gtin === undefined) {
       setScanStatus(picked);
       return;
@@ -272,6 +277,7 @@ export function AddItemPage() {
         ...(price === undefined ? {} : { priceRappen: price }),
         // From the counter: open from the day it was bought, the opening rule sets the date.
         ...(loose ? { openedOn: today } : {}),
+        ...(readyHint ? { readyMade: true } : {}),
       });
       void navigate(`/inventory?location=${location}`);
     } catch {

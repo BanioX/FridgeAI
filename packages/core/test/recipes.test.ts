@@ -213,33 +213,36 @@ describe('Zutat oder Fertigprodukt (ADR-0053)', () => {
     ...food(name, matchCategoryByName(name)?.id ?? 'pantry-other', '2026-11-20'),
     ...(readyMade === undefined ? {} : { readyMade }),
   });
-  const bircher = RECIPES.find((entry) => entry.id === 'birchermuesli');
-  const milkOrYoghurt = bircher?.ingredients[1];
+  const found = RECIPES.find((entry) => entry.id === 'birchermuesli');
+  const milkOrYoghurt = found?.ingredients[1];
+  if (found === undefined || milkOrYoghurt === undefined) {
+    throw new Error('Birchermüesli is missing from the collection');
+  }
+  const bircher = found;
 
   it('does not let a Skyr Cheesecake stand in for the Joghurt of a Birchermüesli', () => {
-    expect(bircher).toBeDefined();
     const cheesecake = named('Skyr Cheesecake');
     expect(cheesecake.categoryId).toBe('prepared-desserts');
-    const [, joghurt] = ingredientsAtHome(bircher!, [cheesecake], today);
+    const [, joghurt] = ingredientsAtHome(bircher, [cheesecake], today);
     expect(joghurt?.atHome).toEqual([]);
-    expect(suggestRecipes([bircher!], [cheesecake], today, 3)).toEqual([]);
-    const listed = listRecipes([bircher!], [cheesecake], today)[0];
+    expect(suggestRecipes([bircher], [cheesecake], today, 3)).toEqual([]);
+    const listed = listRecipes([bircher], [cheesecake], today)[0];
     expect(listed?.missing).toContain('2 dl Milch oder Joghurt');
   });
 
   it('lets an Emmi Skyr Nature count as Joghurt', () => {
     const skyr = named('Emmi Skyr Nature');
     expect(skyr.categoryId).toBe('dairy-yoghurt');
-    expect(matchesIngredient(milkOrYoghurt!, skyr)).toBe(true);
-    const [, joghurt] = ingredientsAtHome(bircher!, [skyr], today);
+    expect(matchesIngredient(milkOrYoghurt, skyr)).toBe(true);
+    const [, joghurt] = ingredientsAtHome(bircher, [skyr], today);
     expect(joghurt?.atHome).toEqual([skyr]);
-    expect(listRecipes([bircher!], [skyr], today)[0]?.missing).not.toContain(
+    expect(listRecipes([bircher], [skyr], today)[0]?.missing).not.toContain(
       '2 dl Milch oder Joghurt',
     );
   });
 
   it('follows the item over the category in both directions', () => {
-    expect(matchesIngredient(milkOrYoghurt!, named('Joghurt Nature', true))).toBe(false);
+    expect(matchesIngredient(milkOrYoghurt, named('Joghurt Nature', true))).toBe(false);
     const dessert = named('Tiramisu', false);
     const tiramisu = { text: 'Tiramisu', categories: ['prepared-desserts'] };
     expect(matchesIngredient(RecipeSchema.shape.ingredients.element.parse(tiramisu), dessert)).toBe(

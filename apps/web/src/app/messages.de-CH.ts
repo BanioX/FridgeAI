@@ -361,6 +361,15 @@ export const messages = {
     scoreLabel: (score: number, level: string) => `Haltbarkeit ${String(score)} von 10, ${level}`,
     keepsOpen: (days: number) =>
       days === 1 ? 'Offen etwa 1 Tag haltbar' : `Offen etwa ${String(days)} Tage haltbar`,
+    /** «Zutat oder Fertigprodukt» (ADR-0053): recipes only use what is cooked with. */
+    kind: {
+      legend: 'Art des Artikels',
+      cook: 'Zum Kochen',
+      ready: 'Fertigprodukt',
+      hint: 'Ein Fertigprodukt zählt in Rezepten nicht als Zutat.',
+      savedReady: (name: string) => `${name} gilt jetzt als Fertigprodukt.`,
+      savedCook: (name: string) => `${name} gilt jetzt als Zutat zum Kochen.`,
+    },
     back: 'Zurück zum Vorrat',
     /** «Verarbeiten» (ADR-0052): a calm line for made and leftover items. */
     madeFrom: (names: readonly string[]) => `Selbst gemacht aus: ${names.join(', ')}`,
