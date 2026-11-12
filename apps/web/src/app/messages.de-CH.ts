@@ -537,7 +537,8 @@ export const messages = {
     atHome: (amount: string, name: string, date: string) =>
       `Du hast noch ${amount} ${name} (bis ${date}).`,
     more: (count: number) => (count === 1 ? ' Und 1 weiteres.' : ` Und ${String(count)} weitere.`),
-    stillThere: (amount: string, date: string) => `Noch da: ${amount}, bis ${date}`,
+    stillThere: (amount: string, date: string, place?: string) =>
+      `Noch da: ${amount}, bis ${date}${place === undefined ? '' : ` · ${place}`}`,
     empty: 'Deine Liste ist leer. Was fehlt dir?',
     open: 'Zu kaufen',
     basket: (count: number) => `Im Korb (${String(count)})`,

@@ -330,6 +330,9 @@ export const AtHomeSchema = z.object({
   unit: UnitSchema,
   expiresOn: LocalDateSchema,
   count: z.int().min(1),
+  /** Where the soonest one lies: its storage location and, if remembered there, its spot (ADR-0056). */
+  location: StorageLocationSchema.optional(),
+  spot: z.string().optional(),
 });
 
 /**
