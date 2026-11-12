@@ -20,6 +20,8 @@ import { Card } from '../../ui/Card';
 import { ChoiceChips } from '../../ui/ChoiceChips';
 import { GroupedList, GroupedListItem } from '../../ui/GroupedList';
 import { formatQuantity } from '../../ui/quantity-text';
+import { OwnerMark } from '../people/OwnerMark';
+import { useMembers } from '../people/use-members';
 import { periodStart, type Period } from '../reports/period';
 
 type Entry = OperationOutput<'inventory.history'>['outcomes'][number];
@@ -45,11 +47,16 @@ const TONES = { eaten: 'text-basil-800', shared_out: 'text-basil-800', wasted: '
 
 /** «Verwertet · 150 g · CHF 3.00» and «vergessen · 07.11.2026». */
 function details(entry: Entry, money: Money): [string, string] {
-  const value = `${money.format(entry.valueRappen)}${entry.valueEstimated ? ` (${t.estimated})` : ''}`;
+  // A processed ingredient passed its value on to the result: no value claim (ADR-0052).
+  const value = !entry.countsInValue
+    ? entry.madeInto === undefined
+      ? ''
+      : t.madeInto(entry.madeInto.name)
+    : `${money.format(entry.valueRappen)}${entry.valueEstimated ? ` (${t.estimated})` : ''}`;
   const why =
     entry.wasteReason === undefined ? undefined : messages.wasteReasons[entry.wasteReason];
   return [
-    [formatQuantity(entry.quantity, entry.unit), value].join(' · '),
+    [formatQuantity(entry.quantity, entry.unit), value].filter(Boolean).join(' · '),
     [why, formatSwissDate(toLocalDate(entry.at))].filter(Boolean).join(' · '),
   ];
 }
@@ -88,6 +95,11 @@ export function HistoryPage() {
   );
 
   const shown = entries?.filter((entry) => matches(show, entry));
+  // The owner mark only makes sense with two or more people (ADR-0058).
+  const members = useMembers();
+  const showOwner = members !== undefined && members.length >= 2;
+  // Same rule as the Bilanz: processed ingredients do not count (ADR-0052).
+  const counted = shown?.filter((entry) => entry.countsInValue) ?? [];
 
   async function run(action: () => Promise<string>) {
     setBusy(true);
@@ -153,7 +165,10 @@ export function HistoryPage() {
       </p>
       {shown === undefined || shown.length === 0 || show === 'all' ? null : (
         <p className={`font-semibold ${show === 'wasted' ? 'text-today' : 'text-ink'}`}>
-          {t.total(money.format(sumRappen(shown.map((entry) => entry.valueRappen))), shown.length)}
+          {t.total(
+            money.format(sumRappen(counted.map((entry) => entry.valueRappen))),
+            shown.length,
+          )}
         </p>
       )}
       {shown === undefined ? null : shown.length === 0 ? (
@@ -166,6 +181,7 @@ export function HistoryPage() {
             <HistoryRow
               key={entry.eventId}
               entry={entry}
+              showOwner={showOwner}
               mode={mode?.eventId === entry.eventId ? mode : null}
               busy={busy}
               onMode={(next) => {
@@ -194,6 +210,7 @@ const reasonOptions = (Object.keys(messages.wasteReasons) as WasteReason[]).map(
 /** One entry: what happened, then «Ändern» and «Löschen», each opening below the row. */
 function HistoryRow({
   entry,
+  showOwner,
   mode,
   busy,
   onMode,
@@ -201,6 +218,7 @@ function HistoryRow({
   onChange,
 }: {
   entry: Entry;
+  showOwner: boolean;
   mode: Mode | null;
   busy: boolean;
   onMode: (mode: Mode | null) => void;
@@ -224,7 +242,10 @@ function HistoryRow({
     <GroupedListItem inset="text" className="py-2.5 pr-2 pl-4">
       <div className="flex items-center gap-1">
         <div className="min-w-0 flex-1">
-          <p className="font-semibold break-words">{entry.name}</p>
+          <p className="flex items-center gap-1.5 font-semibold break-words">
+            {entry.name}
+            {showOwner && entry.owner !== 'shared' ? <OwnerMark ownerId={entry.owner} /> : null}
+          </p>
           <p className="text-sm">
             <span className={`font-semibold ${TONES[entry.outcome]}`}>
               {messages.itemDetail.outcomes[entry.outcome]}

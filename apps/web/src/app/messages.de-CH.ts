@@ -1095,6 +1095,8 @@ export const messages = {
       `Total ${value} · ${count === 1 ? '1 Eintrag' : `${String(count)} Einträge`}`,
     empty: 'In diesem Zeitraum hast du nichts abgeschlossen.',
     estimated: 'geschätzt',
+    /** An ingredient processed into something: its value moved on to the result (ADR-0052). */
+    madeInto: (name: string) => `→ ${name}`,
     removeLabel: (name: string) => `Eintrag ${name} löschen`,
     changeLabel: (name: string) => `Eintrag ${name} ändern`,
     reason: 'Warum?',
