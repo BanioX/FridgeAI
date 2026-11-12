@@ -486,6 +486,7 @@ export function createInventoryCommands(ctx: AppContext) {
           from: item.location,
           to: input.to,
           expiresOn: result.expiresOn,
+          previousExpiresOn: item.expiresOn,
         }),
       );
       return { expiresOn: result.expiresOn };
