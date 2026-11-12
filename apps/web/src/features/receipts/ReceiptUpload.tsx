@@ -5,8 +5,8 @@ import {
   parseReceiptText,
   type ParsedReceipt,
 } from '@fridgeai/core';
-import { FileText } from 'lucide-react';
-import { useRef, useState } from 'react';
+import { Camera, FileText } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
@@ -15,6 +15,7 @@ import { Card } from '../../ui/Card';
 import { sha256Hex } from './hash';
 import { readImageText } from './read-image';
 import { readPdfText } from './read-pdf';
+import { handOverReceiptPhotos, ReceiptPhotoInput, takeReceiptPhotos } from './ReceiptPhotoInput';
 import { batchTotals, orderBySumCheck, seenInBatch } from './receipt-batch';
 import type { ReceiptMatching } from './ReceiptMatch';
 import { isFood, ReceiptReview, type Review } from './ReceiptReview';
@@ -272,6 +273,22 @@ export function ReceiptUpload() {
     }
   }
 
+  // A photo taken on Start is read as soon as the page opens (ReceiptPhotoInput). Reading starts
+  // after the first paint; if the page closes before that, the photo waits for the next visit.
+  useEffect(() => {
+    const photos = takeReceiptPhotos();
+    if (photos.length === 0) {
+      return;
+    }
+    const timer = setTimeout(() => void start(photos), 0);
+    return () => {
+      clearTimeout(timer);
+      handOverReceiptPhotos(photos);
+    };
+    // Only when the page opens; `start` changes on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   function change(key: string, patch: Partial<Section>) {
     setSections((previous) =>
       previous.map((section) => (section.key === key ? { ...section, ...patch } : section)),
@@ -310,6 +327,14 @@ export function ReceiptUpload() {
           }}
         />
       </label>
+      <ReceiptPhotoInput
+        disabled={busy}
+        onPhotos={(files) => void start(files)}
+        className="mt-2 flex min-h-12 items-center justify-center gap-2 rounded-xl border border-line bg-surface px-5 font-semibold text-basil-700 transition-colors hover:bg-basil-50"
+      >
+        <Camera size={20} aria-hidden="true" />
+        {t.takePhoto}
+      </ReceiptPhotoInput>
       <p role="status" className="mt-2 text-sm font-semibold text-basil-800">
         {status}
       </p>

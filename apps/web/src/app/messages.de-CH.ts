@@ -130,7 +130,10 @@ export const messages = {
       title: 'Wirf kein Geld in den Abfall.',
       text: 'Rettich weiss, was du zu Hause hast, was bald abläuft und was du rettest. Alles bleibt auf deinem Gerät.',
       receipt: 'Quittung hochladen',
+      photo: 'Quittung fotografieren',
+      barcode: 'Barcode scannen',
       item: 'Artikel erfassen',
+      waysLabel: 'Weitere Wege in den Vorrat',
       howTitle: 'So funktioniert Rettich',
       steps: [
         {
@@ -1514,6 +1517,8 @@ export const messages = {
     trademarks:
       'Coop, Migros und Lidl Plus sind Marken ihrer Inhaber. Rettich ist mit ihnen nicht verbunden.',
     choose: 'PDF oder Foto wählen',
+    /** Straight to the camera (Alban, 12.11.2026: «separat Foto aufnehmen»). */
+    takePhoto: 'Foto aufnehmen',
     /** Several files chosen at once (Alban, 8.11.2026): read first, then one page for all. */
     readingOf: (index: number, total: number) =>
       `Quittung ${String(index)} von ${String(total)} wird gelesen …`,
