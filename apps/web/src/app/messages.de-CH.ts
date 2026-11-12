@@ -753,6 +753,46 @@ export const messages = {
         text: 'Möglichst frisch einfrieren, gut verpackt und mit Datum. Im Kühlschrank auftauen. Rohes, das aufgetaut ist, nicht wieder einfrieren, gekocht geht es wieder.',
       },
     ],
+    /** «Rettich im Alltag»: what each newer feature is and where to find it. */
+    everydayTitle: 'Rettich im Alltag',
+    everyday: [
+      {
+        title: 'Verarbeiten und Reste',
+        text: 'Aus Zutaten wird ein Gericht: Tippe bei einem Artikel auf «Verarbeiten». Der Wert der Zutaten wandert ins Neue mit. Reste kannst du danach wieder in den Kühlschrank legen.',
+      },
+      {
+        title: 'Plätze und «Wo ist was?»',
+        text: 'Halte fest, wo etwas liegt, auf Wunsch mit einem Foto. Du findest die Plätze unter «Mehr» bei «Wo ist was?». Auf einem Artikel tippst du auf «Platz festhalten».',
+      },
+      {
+        title: 'Immer da haben',
+        text: 'Bei einem Artikel legst du einen Mindestbestand fest. Fällt der Vorrat darunter, kommt das Produkt auf «Nachkaufen».',
+      },
+      {
+        title: 'Gehört',
+        text: 'Markiere etwas mit den Initialen der Person, der es gehört. Ohne Markierung darf es jede Person im Haushalt verwerten. Die Personen findest du unter «Mehr».',
+      },
+      {
+        title: 'Abzeichen',
+        text: 'Abzeichen gibt es fürs Retten, Kochen und Planen, nie fürs Einkaufen. Rettich rechnet sie auf dem Gerät aus deinen Daten aus. Du findest sie unter «Mehr».',
+      },
+      {
+        title: 'Klimabilanz',
+        text: 'Sie zeigt, wie viel CO₂e, Wasser und Fläche in der Herstellung dessen steckte, was du gerettet hast. Die Werte stammen aus einer Studie und sind Schätzungen. Unter «Mehr» bei «Klimabilanz» steht, wie Rettich rechnet.',
+      },
+      {
+        title: 'Auswählen und Töpfe',
+        text: 'Tippe im Vorrat auf «Auswählen». Mit «Verschieben nach» legst du alles an einen anderen Ort, mit den Töpfen darunter schliesst du die Auswahl ab: verwertet, entsorgt, verarbeitet oder nachkaufen.',
+      },
+      {
+        title: 'Datum fotografieren',
+        text: 'Beim Erfassen kannst du das Datum auf der Packung fotografieren. Rettich liest es auf dem Gerät und speichert das Foto nicht.',
+      },
+      {
+        title: 'Sicherung',
+        text: 'Alles bleibt auf diesem Gerät. Darum lohnt sich ab und zu ein Export unter «Mehr» bei «Mitnehmen und löschen». So gehen deine Daten nicht verloren, wenn das Gerät ausfällt.',
+      },
+    ],
     guideTitle: 'Haltbarkeit A–Z',
     search: 'Lebensmittel suchen',
     searchPlaceholder: 'z. B. Joghurt, Pesto, Hackfleisch',
@@ -1096,7 +1136,7 @@ export const messages = {
       'Beim Scannen geht nur die Barcode-Nummer an Open Food Facts, damit Name, Nährwerte und Bild kommen.',
       'Suchst du nach einem Namen, gehen ab drei Buchstaben nur die getippten Wörter an Open Food Facts.',
       'Quittungszeilen sucht Rettich zuerst auf dem Gerät. Nur ohne sicheren Treffer geht der Produktname an Open Food Facts, ohne Preise, Laden und Datum.',
-      'Fotos von Quittungen und Codes werden nur gelesen, nie gespeichert.',
+      'Fotos von Quittungen, Codes und Datumsangaben werden nur auf dem Gerät gelesen, nie gespeichert.',
       'Fotos von Plätzen («Wo ist was?») bleiben auf diesem Gerät und gehören zu deinem Export.',
       'Die Namen der Personen im Haushalt bleiben ebenfalls auf diesem Gerät.',
       'Kein Konto, kein Tracking, keine Werbung.',
