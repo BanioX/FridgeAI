@@ -35,6 +35,7 @@ export * from './application';
 export * from './contract/events';
 export * from './contract/operations';
 export * from './scan/label';
+export * from './scan/label-reading';
 export * from './catalog/local-catalog';
 export * from './catalog/match';
 export * from './catalog/perishability';
