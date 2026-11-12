@@ -37,7 +37,7 @@ const milk = {
 describe('Open Food Facts', () => {
   it('asks only for the fields rettich uses', () => {
     expect(offProductUrl(gtin)).toBe(
-      'https://world.openfoodfacts.org/api/v2/product/7610000000004.json?fields=product_name,product_name_de,generic_name_de,brands,quantity,categories_tags,nutriments,nutriscore_grade,allergens_tags,image_front_small_url',
+      'https://world.openfoodfacts.org/api/v2/product/7610000000004.json?fields=product_name,product_name_de,generic_name_de,brands,quantity,categories_tags,nova_group,nutriments,nutriscore_grade,allergens_tags,image_front_small_url',
     );
   });
 
@@ -71,6 +71,19 @@ describe('Open Food Facts', () => {
       name: 'Basmati Rice',
       source: 'off',
     });
+  });
+
+  it('calls NOVA group 4 and dessert or meal categories ready to eat (Fertigprodukt)', () => {
+    const ready = (product: Record<string, unknown>) =>
+      parseOffProduct({ product: { product_name: 'X', ...product } }, gtin)?.readyMade;
+    expect(ready({ nova_group: 4 })).toBe(true);
+    expect(ready({ nova_group: '4' })).toBe(true);
+    expect(ready({ categories_tags: ['en:desserts', 'en:cheesecakes'] })).toBe(true);
+    expect(ready({ categories_tags: ['en:meals', 'en:pizzas'] })).toBe(true);
+    expect(ready({ nova_group: 1 })).toBeUndefined();
+    expect(ready({ nova_group: 3, categories_tags: ['en:dairies', 'en:meat'] })).toBeUndefined();
+    expect(ready({})).toBeUndefined();
+    expect(parseOffProduct(milk, gtin)?.readyMade).toBeUndefined();
   });
 
   it('returns null for unknown products and broken answers', () => {

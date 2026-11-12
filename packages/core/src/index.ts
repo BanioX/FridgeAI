@@ -13,6 +13,7 @@ export * from './catalog/category';
 export * from './dates';
 export * from './expiry';
 export * from './item-badges';
+export * from './ready-made';
 export * from './freeze-hint';
 export * from './rescue-tips';
 export * from './export/csv';

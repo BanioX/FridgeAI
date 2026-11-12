@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { normalizeFoodText } from '../catalog/match';
+import { categoryById, normalizeFoodText } from '../catalog/match';
+import { isReadyMade } from '../ready-made';
 import { expiryStatus, SOON_THRESHOLD_DAYS } from '../expiry';
 import {
   CategoryIdSchema,
@@ -51,6 +52,8 @@ export interface FoodAtHome {
   categoryId: CategoryId;
   expiresOn: LocalDate;
   expiryKind: DateKind;
+  /** Own call of the household: true = Fertigprodukt, false = Zum Kochen; absent = category. */
+  readyMade?: boolean | undefined;
 }
 
 /**
@@ -81,7 +84,18 @@ export interface RecipeSuggestion {
   missing: string[];
 }
 
-function matches(ingredient: RecipeIngredient, food: FoodAtHome): boolean {
+/**
+ * Whether a food at home counts as a recipe ingredient (ADR-0053). A Fertigprodukt (Skyr
+ * Cheesecake, Tiramisu, Pizza) is not a raw ingredient: it never counts as «Joghurt» for a
+ * Birchermüesli. Exception: an ingredient whose own category is a ready one («Oreo» of an Oreo
+ * Cheesecake, Süsses & Snacks) accepts ready food. Otherwise the ingredient's category or a word
+ * in the food's name decides.
+ */
+export function matchesIngredient(ingredient: RecipeIngredient, food: FoodAtHome): boolean {
+  const wantsReady = ingredient.categories.some((id) => categoryById(id)?.ready === true);
+  if (isReadyMade(food) && !wantsReady) {
+    return false;
+  }
   if (ingredient.categories.includes(food.categoryId)) {
     return true;
   }
@@ -143,7 +157,7 @@ function rank(
       if (ingredient.staple) {
         continue;
       }
-      const atHome = usable.filter(({ entry }) => matches(ingredient, entry));
+      const atHome = usable.filter(({ entry }) => matchesIngredient(ingredient, entry));
       for (const { entry, urgency: weight } of atHome) {
         if (weight > 0) {
           used.set(entry.name, Math.max(used.get(entry.name) ?? 0, weight));
@@ -239,6 +253,6 @@ export function ingredientsAtHome<TFood extends FoodAtHome>(
     text: ingredient.text,
     staple: ingredient.staple,
     optional: ingredient.optional,
-    atHome: ingredient.staple ? [] : usable.filter((entry) => matches(ingredient, entry)),
+    atHome: ingredient.staple ? [] : usable.filter((entry) => matchesIngredient(ingredient, entry)),
   }));
 }

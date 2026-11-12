@@ -34,6 +34,15 @@ describe('itemBadges', () => {
     expect(itemBadges({ ...loose, openedOn }, today)).toEqual([{ kind: 'opened', on: openedOn }]);
   });
 
+  it('shows Fertigprodukt from the category or from the item, and the item wins', () => {
+    const dessert = { ...base, categoryId: 'prepared-desserts' };
+    expect(itemBadges(dessert, today)).toEqual([{ kind: 'ready' }]);
+    expect(itemBadges({ ...base, readyMade: true }, today)).toEqual([{ kind: 'ready' }]);
+    expect(itemBadges({ ...dessert, readyMade: false }, today)).toEqual([]);
+    const opened = { ...dessert, openedOn: localDate('2026-11-10') };
+    expect(itemBadges(opened, today).map((badge) => badge.kind)).toEqual(['ready', 'opened']);
+  });
+
   it('keeps the order and ignores days in the future', () => {
     const all = itemBadges(
       {

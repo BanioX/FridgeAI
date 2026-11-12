@@ -60,6 +60,7 @@ export function toView(
     ...(item.openedOn === undefined ? {} : { openedOn: item.openedOn }),
     ...(item.frozenOn === undefined ? {} : { frozenOn: item.frozenOn }),
     ...(item.thawedOn === undefined ? {} : { thawedOn: item.thawedOn }),
+    ...(item.readyMade === undefined ? {} : { readyMade: item.readyMade }),
     purchasedAt: item.purchasedAt,
     ...factsOf(product),
     ...(product === undefined ? {} : { productSource: product.source }),

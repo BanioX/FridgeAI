@@ -1,5 +1,5 @@
 import type { ItemBadge } from '@fridgeai/core';
-import { Droplets, PackageOpen, Snowflake, Store, type LucideIcon } from 'lucide-react';
+import { Droplets, Package, PackageOpen, Snowflake, Store, type LucideIcon } from 'lucide-react';
 import { messages } from '../app/messages.de-CH';
 
 interface Look {
@@ -16,8 +16,8 @@ function shortDay(day: string): string {
 
 /**
  * Tones of the badges (docs/design.md): Eingefroren «Eis» filled, Aufgetaut ice on white with a
- * border, Geöffnet an outline in apricot (so it never looks like the filled «bald» chip), Von der
- * Theke «Oliv» filled.
+ * border, Geöffnet an outline in apricot (so it never looks like the filled «bald» chip), Fertigprodukt quiet
+ * silver (neutral, no warning), Von der Theke «Oliv» filled.
  */
 const looks: Record<ItemBadge['kind'], Look> = {
   frozen: {
@@ -29,6 +29,11 @@ const looks: Record<ItemBadge['kind'], Look> = {
     icon: Droplets,
     classes: 'border border-ice bg-surface text-ice',
     text: () => messages.badges.thawed,
+  },
+  ready: {
+    icon: Package,
+    classes: 'bg-surface-muted text-ink-muted',
+    text: () => messages.badges.ready,
   },
   opened: {
     icon: PackageOpen,

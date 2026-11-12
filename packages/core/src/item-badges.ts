@@ -1,14 +1,16 @@
 import { categoryById } from './catalog/match';
 import { toLocalDate } from './dates';
+import { isReadyMade } from './ready-made';
 import type { IsoDateTime, LocalDate, StorageLocation } from './model/primitives';
 
 /**
- * Calm state badges of an item (Alban, 11.11.2026). Kinds `made`, `leftover` and `ready` follow
- * with the features that set them; the union grows, nothing else changes.
+ * Calm state badges of an item (Alban, 11.11.2026). Kinds `made` and `leftover` follow with the
+ * features that set them; the union grows, nothing else changes.
  */
 export type ItemBadge =
   | { kind: 'frozen'; on: LocalDate }
   | { kind: 'thawed'; on: LocalDate }
+  | { kind: 'ready' }
   | { kind: 'opened'; on: LocalDate }
   | { kind: 'loose' };
 
@@ -21,16 +23,19 @@ export interface BadgeSource {
   purchasedAt: IsoDateTime;
   frozenOn?: LocalDate | undefined;
   thawedOn?: LocalDate | undefined;
+  readyMade?: boolean | undefined;
   openedOn?: LocalDate | undefined;
 }
 
 /**
- * The badges of an item in display order: Eingefroren or Aufgetaut, then Von der Theke or Geöffnet.
+ * The badges of an item in display order: Eingefroren or Aufgetaut, Fertigprodukt, then Von der
+ * Theke or Geöffnet.
  *
  * - Eingefroren reads the location, not only `frozenOn` (it can stay set after an undo).
  * - Aufgetaut: `thawedOn` set and the item is out of the freezer.
  * - Von der Theke is not stored on its own (ADR-0038): a pack of a category sold loose that was
  *   opened on the day it came home. It replaces Geöffnet, which it implies.
+ * - Fertigprodukt: the item says so, or its category is a ready one (ADR-0053).
  * - A day after `today` (clock skew, imported data) shows no badge.
  */
 export function itemBadges(item: BadgeSource, today: LocalDate): ItemBadge[] {
@@ -41,6 +46,9 @@ export function itemBadges(item: BadgeSource, today: LocalDate): ItemBadge[] {
   }
   if (item.location !== 'freezer' && thawedOn !== undefined && thawedOn <= today) {
     badges.push({ kind: 'thawed', on: thawedOn });
+  }
+  if (isReadyMade(item)) {
+    badges.push({ kind: 'ready' });
   }
   if (openedOn !== undefined && openedOn <= today) {
     const loose =

@@ -94,6 +94,11 @@ export const CategorySchema = z
      * keeps only as long as an open pack (ADR-0038).
      */
     soldLoose: z.boolean().optional(),
+    /**
+     * Always ready to eat («Fertigprodukt»): ready meals, desserts, sweets, ice cream. Such food
+     * is not a raw ingredient, so recipes do not count it (ADR-0053).
+     */
+    ready: z.boolean().optional(),
     /** Why it does not freeze well (shown before freezing food with no freezer shelf life). */
     freezeNote: z.object({ de: z.string().min(1).max(140) }).optional(),
     /** Typical price of one pack, used when a receipt price is missing (marked as estimate). */
@@ -126,4 +131,9 @@ export function portioningOf(category: Pick<Category, 'portioning'>): Portioning
 
 export function isFreezable(category: Category): boolean {
   return category.shelfLifeDays.freezer !== null;
+}
+
+/** Whether the category is a Fertigprodukt by nature (an item can still override it). */
+export function isReadyCategory(category: Pick<Category, 'ready'>): boolean {
+  return category.ready === true;
 }
