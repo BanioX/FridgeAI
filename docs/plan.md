@@ -1,6 +1,6 @@
 # Rettich – MVP-Plan
 
-> **Stand 8.11.2026:** Version 0.11.0 mit 26 Änderungen seit 0.10.0. Meilenstein A und B sind umgesetzt. Aus D und E sind Barcode, die Quittung als PDF, Screenshot und Foto, «Nachkaufen», die Auszüge, Export und Import vorgezogen. Die Rezepte waren entfernt (ADR-0040) und kehren am 11.11.2026 als Abschnitt unter «Wissen» zurück (ADR-0048). Neu dazu kamen «Wissen», die Haltbarkeit 1–10 und der mitgelieferte Produktkatalog (ADR-0038, ADR-0041, ADR-0045). Meilenstein C (Konto, Sync, Push) ist nicht begonnen. Der Pilot läuft. Stand der Dinge und nächste Schritte: [«Stand nach 200 PRs»](#stand-nach-200-prs).
+> **Stand 12.11.2026:** Version 0.14.0, dazu acht Änderungen auf `main`. Meilenstein A und B sind umgesetzt. Aus D und E sind Barcode, die Quittung als PDF, Screenshot und Foto, «Nachkaufen», die Auszüge, Export und Import vorgezogen. Seit 0.11.0 kam der Alltag dazu: Rezepte unter «Wissen» (ADR-0048), Verarbeiten und Reste mit Wert (ADR-0052), Abzeichen (ADR-0054), Töpfe im Auswahlmodus mit einer Stelle pro Aktion (ADR-0055, ADR-0060), Plätze mit Foto und «Wo ist was?» (ADR-0056), die Klimabilanz (ADR-0057), «Gehört» (ADR-0058), der Mindestbestand (ADR-0059), Einräumen nach dem Einkauf, Rezepte zur Auswahl (ADR-0061) und der Kühlschrank-Check Fach für Fach. Meilenstein C (Konto, Sync, Push) ist nicht begonnen. Der Pilot läuft. Stand der Dinge und nächste Schritte: [«Stand nach 200 PRs»](#stand-nach-200-prs).
 >
 > **Status: freigegeben durch Alban am 6. November 2026** («Du machst das, du bist die volle Pipeline. Ich sage, was wir machen, ausführen tust du.»).
 > Grundlagen: [`brief.md`](./brief.md) (Build-Brief), [`blue-ocean.md`](./blue-ocean.md) (Strategie), [`use-cases.md`](./use-cases.md) (Brainstorming), [`architecture.md`](./architecture.md) (Architektur und Skalierung). Offene Fragen: Abschnitt 9.
@@ -39,6 +39,7 @@ Grosses Review am 8.11.2026, Bericht: [`reviews/2026-11-08-200-prs.md`](./review
 - «Gerettet» nur auf Bestätigung, mit Belohnung und wachsendem Rettich (ADR-0039, ADR-0042, ADR-0043).
 - Der mitgelieferte Produktkatalog mit 7'169 Schweizer Produkten (ADR-0045), mehrere Quittungen auf einer Seite (#212), «Wo eingekauft?» und die Laden-Buchstaben.
 - Die Auszüge wie ein Kontoauszug (ADR-0030), «Verwertet» und «Entsorgt» statt «Weitergegeben» (ADR-0046), Wischen in beide Richtungen, Auswählen und die Namen wie bei einer Privatbank (ADR-0047).
+- Seit 11.11.2026 der Alltag: Abzeichen, Töpfe, Plätze mit Foto, Klimabilanz, «Gehört», Lagerort-Kacheln auf Start, Sicherung mit Erinnerung, Mindestbestand, mehrere Artikel auf einmal ändern, Einräumen, Rezepte zur Auswahl, Check Fach für Fach (ADR-0052 bis ADR-0061). Ideen dazu: [`ideen/alltag-und-ordnung.md`](./ideen/alltag-und-ordnung.md), [`ideen/mitbewerber-apps.md`](./ideen/mitbewerber-apps.md).
 
 **Die nächsten 10 Schritte** sind ein Vorschlag an Alban. Nichts davon kostet Geld oder schickt neue Daten vom Gerät, ausser wo es dasteht.
 
