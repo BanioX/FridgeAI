@@ -2,6 +2,7 @@ import {
   Award,
   FileChartColumn,
   HistoryIcon,
+  MapPin,
   ShieldCheck,
   ShoppingBasket,
   Smartphone,
@@ -69,6 +70,12 @@ export function MorePage() {
             icon: ShoppingBasket,
             title: messages.pages.shopping,
             detail: t.shoppingDetail,
+          },
+          {
+            to: '/more/spots',
+            icon: MapPin,
+            title: messages.pages.spots,
+            detail: t.spotsDetail,
           },
           { to: '/more/data', icon: ShieldCheck, title: messages.pages.data, detail: t.dataDetail },
         ]}

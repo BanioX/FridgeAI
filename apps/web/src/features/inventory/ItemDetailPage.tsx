@@ -21,6 +21,8 @@ import {
 import {
   ArrowLeft,
   ChefHat,
+  ChevronRight,
+  MapPin,
   PackageOpen,
   Pencil,
   Snowflake,
@@ -53,8 +55,12 @@ import { OtherPacks } from './OtherPacks';
 import { ProductFacts } from './ProductFacts';
 import { useInventoryItem } from './use-item';
 import { useProductImage } from './use-product-image';
+import { SpotSheet } from '../spots/SpotSheet';
+import { SpotThumb } from '../spots/SpotThumb';
+import { useSpots } from '../spots/use-spots';
 
 const t = messages.itemDetail;
+const spotText = messages.spots;
 /** «Weitergegeben» is gone from the choice (Alban, 8.11.2026); old entries count as «Verwertet». */
 const outcomeOptions = (['eaten', 'wasted'] as const).map((value) => ({
   value,
@@ -101,6 +107,8 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
   const [frozenFrom, setFrozenFrom] = useState<LocalDate | null>(null);
   const [busy, setBusy] = useState(false);
   const freezeHint = useFreezeHint();
+  const [choosingSpot, setChoosingSpot] = useState(false);
+  const spots = useSpots();
 
   if (item === undefined) {
     return <p className="sr-only">{messages.loading}</p>;
@@ -300,6 +308,17 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
   return (
     <div className="space-y-6 pb-8">
       {freezeHint.sheet}
+      {choosingSpot ? (
+        <SpotSheet
+          item={item}
+          onDone={(message) => {
+            setChoosingSpot(false);
+            if (message !== null) {
+              setStatus(message);
+            }
+          }}
+        />
+      ) : null}
       {back}
 
       <div className="flex items-center gap-4">
@@ -321,7 +340,7 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
               {[item.brand, item.packSize].filter((part) => part !== undefined).join(' · ')}
             </p>
           )}
-          <p className="text-ink-muted">{itemMeta(item)}</p>
+          <p className="text-ink-muted">{itemMeta(item, false)}</p>
           <div className="mt-1.5 empty:hidden">
             <ItemBadges badges={itemBadges(item, today)} />
           </div>
@@ -355,6 +374,35 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
           )}
         </div>
       </div>
+
+      <button
+        type="button"
+        onClick={() => {
+          setChoosingSpot(true);
+        }}
+        className="flex min-h-14 w-full items-center gap-3 rounded-2xl bg-surface p-3 text-left shadow-card hover:bg-surface-muted"
+      >
+        {item.spot === null ? (
+          <>
+            <span
+              aria-hidden="true"
+              className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-surface-muted text-basil-700"
+            >
+              <MapPin size={20} />
+            </span>
+            <span className="min-w-0 flex-1 font-semibold text-basil-700">{spotText.hold}</span>
+          </>
+        ) : (
+          <>
+            <SpotThumb photo={spots?.find((spot) => spot.id === item.spot?.id)?.photo} />
+            <span className="min-w-0 flex-1">
+              <span className="block text-sm text-ink-muted">{spotText.row}</span>
+              <span className="block truncate font-semibold">{item.spot.name}</span>
+            </span>
+          </>
+        )}
+        <ChevronRight size={18} aria-hidden="true" className="shrink-0 text-ink-muted/60" />
+      </button>
 
       <Card>
         <div className="flex items-start justify-between gap-3">

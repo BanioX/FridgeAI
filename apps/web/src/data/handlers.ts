@@ -1,4 +1,8 @@
-import { createInventoryUseCases, createReceiptMatchUseCases } from '@fridgeai/core';
+import {
+  createInventoryUseCases,
+  createReceiptMatchUseCases,
+  createSpotUseCases,
+} from '@fridgeai/core';
 import type { HandlerContext } from './command';
 import { createProductSearchHandler } from './product-search-handler';
 import { createReceiptHandlers } from './receipt-handlers';
@@ -16,6 +20,7 @@ export function createInventoryHandlers(ctx: HandlerContext) {
   const inventory = createInventoryUseCases(app);
   return {
     ...inventory,
+    ...createSpotUseCases(app),
     ...createProductSearchHandler(ctx),
     ...createReceiptHandlers(ctx, inventory['inventory.addItem']),
     ...createReceiptMatchUseCases(app),

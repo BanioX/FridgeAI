@@ -69,6 +69,7 @@ export function createHouseholdHandlers(ctx: HandlerContext) {
       await db.receipts.bulkAdd(data.receipts);
       await db.receiptLines.bulkAdd(data.receiptLines);
       await db.ownRecipes.bulkAdd(data.ownRecipes);
+      await db.spots.bulkAdd(data.spots);
       await db.events.bulkAdd([...data.events, imported]);
       await db.meta.bulkPut([
         { key: 'currentHouseholdId', value: data.household.id },
