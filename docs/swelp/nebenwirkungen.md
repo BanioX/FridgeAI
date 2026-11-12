@@ -31,3 +31,4 @@ Was der Code ausserhalb seiner selbst bewirkt: ans Netz senden, auf dem Gerät s
 | SE-22 | Vibration (`navigator.vibrate`) | kurzes Feedback nach einem Scan oder Wischen | wo das Gerät es kann |
 | SE-23 | Teilen (`navigator.share`) | PDF-Bericht teilen; Einkaufsliste als Text teilen («Liste teilen», sonst Zwischenablage) | nur nach einem Tipp |
 | SE-24 | Dauerhafter Speicher (`navigator.storage.persist`) | Browser soll die Daten nicht bei Platzmangel löschen | beim Start |
+| SE-25 | Kamera-App / Fotoauswahl (`capture`) für Plätze | Foto vom Schrank oder Fach («Wo ist was?») | nur nach einem Tipp. Das verkleinerte Foto bleibt auf dem Gerät und gehört zum Export, ADR-0056 |

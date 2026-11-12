@@ -6,6 +6,7 @@ Damit Mensch und Maschine dasselbe meinen: Wort in der App (de-CH), Name im Code
 
 | App (de-CH) | Code | Bedeutung | Andere Regionen |
 | --- | --- | --- | --- |
+| **Platz** | `StorageSpot`, `spotId` | Ein benannter Ort innerhalb eines Lagerorts («Oberer Schrank links», «Gemüsefach»), auf Wunsch mit Foto; gehört zum Produkt, jede Packung erbt ihn (ADR-0056) | – |
 | **Monatsabschluss**, **Jahresabschluss** | `closingMonth`, `closingYear`, `monthClosingDay` | Berichtszeitraum bis zum letzten Schweizer Bankwerktag des Monats oder Jahres; der nächste beginnt am Tag danach (ADR-0030) | – |
 | **Bankwerktag** | `isSwissBankDay`, `swissBankHolidays` | Montag bis Freitag ohne Bankfeiertage des Schweizer Zahlungsverkehrs (SIC); 24.12. und 31.12. zählen | DE/AT: TARGET2-Kalender, später je Land |
 | **Kurz-Auszug** (Quittung im PDF, früher «Kurz-Bericht») | `ReportKind`, `receiptSpec`, `receiptPdf` | Ein PDF im Look einer Quittung zu einem Thema: Bilanz, Läuft bald ab in N Tagen, Entsorgt, ein Ort. Der Gesamtauszug zeigt keine Quittung (ADR-0030, ADR-0047) | – |
