@@ -60,6 +60,7 @@ export function toView(
     ...(item.container === undefined ? {} : { container: item.container }),
     ...(item.packageSize === undefined ? {} : { packageSize: item.packageSize }),
     ...(item.openedOn === undefined ? {} : { openedOn: item.openedOn }),
+    ...(item.fromCounter === true ? { fromCounter: true } : {}),
     ...(item.frozenOn === undefined ? {} : { frozenOn: item.frozenOn }),
     ...(item.thawedOn === undefined ? {} : { thawedOn: item.thawedOn }),
     ...(item.readyMade === undefined ? {} : { readyMade: item.readyMade }),

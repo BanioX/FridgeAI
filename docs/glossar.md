@@ -31,7 +31,7 @@ Damit Mensch und Maschine dasselbe meinen: Wort in der App (de-CH), Name im Code
 | **Badge** (Eingefroren, Aufgetaut, Fertigprodukt, Geöffnet, Von der Theke) | `itemBadges`, `ItemBadges`, `thawedOn` | Kleine Text-Pille am Artikel, die seinen Zustand zeigt; Eingefroren liest den Lagerort, Aufgetaut `thawedOn` (ADR-0051) | – |
 | **Fertigprodukt** (Gegenstück: Zutat, «Zum Kochen»; nicht «Convenience») | `ready`, `readyMade`, `isReadyMade`, `matchesIngredient` | Essfertiges Lebensmittel (Fertiggericht, Dessert, Süsses, Glace, Tiefkühl-Pizza): zeigt das Badge «Fertigprodukt» und zählt in Rezepten nicht als Zutat, ausser das Rezept verlangt selbst Fertiges (Oreo Cheesecake); die Kategorie entscheidet, der Artikel kann es überschreiben (ADR-0053) | – |
 | **Einfrier-Hinweis** | `adviseFreezing`, `freezeNote`, `allowUnsuitable` | Hinweis mit Grund vor dem Einfrieren von Lebensmitteln ohne Tiefkühl-Haltbarkeit; «Trotzdem einfrieren» behält das Datum (ADR-0051) | – |
-| **Von der Theke** | `soldLoose`, `openedOn` | Offen gekauft (Käse, Aufschnitt, Dips): hält ab Kauf wie eine geöffnete Packung (ADR-0038) | – |
+| **Von der Theke** | `soldLoose`, `fromCounter`, `openedOn` | Offen gekauft (Käse, Aufschnitt, Dips): hält ab Kauf wie eine geöffnete Packung; beim Erfassen gespeichert, nicht erraten (ADR-0038) | – |
 | **Das entsorgst du oft** | `products.wasteHabits`, `wasteHabits` | Kategorie mit mindestens zwei Mal «Entsorgt» in 90 Tagen; beim Erfassen kommt ein Tipp (ADR-0038) | – |
 | **Wissen** (Tab) | `/knowledge`, `shelfGuide` | «Kurz erklärt» und «Haltbarkeit A–Z» aus dem Katalog (ADR-0041) | – |
 | **Lagerort** | `StorageLocation` | `fridge` Kühlschrank, `freezer` Tiefkühler, `pantry` Vorrat, `reserve` Notvorrat | de-DE «Gefrierschrank», «Vorratsschrank» |
