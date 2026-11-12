@@ -4,3 +4,4 @@ export * from './receipt-match';
 export * from './inventory';
 export * from './household';
 export * from './recipes';
+export * from './spots';

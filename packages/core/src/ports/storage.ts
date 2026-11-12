@@ -9,7 +9,13 @@ import type { Id } from '../ids';
 import type { Gtin } from '../model/primitives';
 import type { ProductInfo } from './index';
 import type { Household, Member, ReminderPrefs } from '../model/household';
-import type { InventoryItem, OutcomeEvent, Product, ShoppingListItem } from '../model/inventory';
+import type {
+  InventoryItem,
+  OutcomeEvent,
+  Product,
+  ShoppingListItem,
+  StorageSpot,
+} from '../model/inventory';
 import type { Receipt, ReceiptLine } from '../model/receipt';
 import type { OwnRecipe } from '../recipes/own-recipe';
 import type { IsoDateTime } from '../model/primitives';
@@ -77,6 +83,8 @@ export interface Storage extends DeviceCaches {
   receiptLines: RecordStore<ReceiptLine>;
   /** «Meine Rezepte» (ADR-0048). */
   ownRecipes: RecordStore<OwnRecipe>;
+  /** «Wo ist was?» (ADR-0056): named places with an optional photo. */
+  spots: RecordStore<StorageSpot>;
   events: EventLog;
   commands: CommandLog;
   /**

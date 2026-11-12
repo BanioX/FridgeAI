@@ -144,6 +144,10 @@ export const DomainEventSchema = z.discriminatedUnion('type', [
   envelope('recipe.created', z.object({ recipeId: IdSchema })),
   envelope('recipe.updated', z.object({ recipeId: IdSchema })),
   envelope('recipe.deleted', z.object({ recipeId: IdSchema })),
+  envelope('spot.created', z.object({ spotId: IdSchema, location: StorageLocationSchema })),
+  envelope('spot.updated', z.object({ spotId: IdSchema, fields: z.array(z.string()).min(1) })),
+  envelope('spot.deleted', z.object({ spotId: IdSchema, productCount: z.int().min(0) })),
+  envelope('product.spot_set', z.object({ productId: IdSchema, spotId: IdSchema.nullable() })),
   envelope(
     'household.imported',
     z.object({
