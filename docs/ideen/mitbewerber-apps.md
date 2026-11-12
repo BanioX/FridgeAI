@@ -15,7 +15,7 @@ Alban (12.11.2026): «Kopieren ist doch erlaubt, mach aber nicht Feature-Copy, s
 | M1 | **Sichtbare Sicherung** (gegen den Datenverlust in Bewertungen) | «Letzte Sicherung: …» unter «Deine Daten», einmal im Monat ein ruhiger Hinweis auf Start | S | **umgesetzt** (12.11.2026) |
 | M2 | **Doppelkauf mit Ort** (Grocy, Pantrist: Liste kennt den Vorrat) | «Noch da: 1 l · Türfach» auf «Nachkaufen» | S | **umgesetzt** (#249) |
 | M3 | **Mindestbestand** füllt «Nachkaufen» von selbst (Grocy, Pantrist) | Die Liste schreibt sich; «Grundvorrat» gibt es bei den Rezepten schon | M | bald |
-| M4 | **Mehrere auf einmal ändern** (FoodShiner Batch) | Datum, «Angebrochen», Person für die Auswahl | S–M | bald (O7) |
+| M4 | **Mehrere auf einmal ändern** (FoodShiner Batch) | Datum, «Angebrochen», Person für die Auswahl | S–M | **umgesetzt** (12.11.2026, «Ändern» im Auswahlmodus) |
 | M5 | **Etiketten mit QR** für Dosen und Fächer (Stökk, Grocy) | Reste-Dose scannen = abschliessen; Fach scannen = «Wo ist was?» | M | später (O10) |
 | M6 | **Wochenplan, der den Vorrat bucht** (FoodShiner, Paprika, Grocy) | Planen mit dem, was da ist, Lücken auf die Liste | L | später |
 | M7 | **Datum per Kamera lesen** (Kellr) | Kein Tippen des Datums | L | später, auf dem Gerät (OCR ist schon da) |

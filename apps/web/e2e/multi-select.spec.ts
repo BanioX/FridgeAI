@@ -37,9 +37,10 @@ test('selects several items and moves them to another storage location', async (
   await expect(page.getByText('2 ausgewählt')).toBeVisible();
 
   // Eggs and juice keep in a pantry (dairy would be refused, see the unsuitable_location error).
-  // «Verschieben nach» offers the other three locations, not the current one.
+  // «Verschieben nach» offers the other three locations, not the current one; «Ändern» opens the
+  // bulk edit for the same selection.
   const bar = page.getByRole('region', { name: 'Auswahl verschieben' });
-  await expect(bar.getByRole('button')).toHaveText(['Tiefkühler', 'Vorrat', 'Notvorrat']);
+  await expect(bar.getByRole('button')).toHaveText(['Ändern', 'Tiefkühler', 'Vorrat', 'Notvorrat']);
 
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
   const result = await new AxeBuilder({ page }).analyze();

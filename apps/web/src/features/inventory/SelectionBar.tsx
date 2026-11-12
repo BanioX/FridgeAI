@@ -12,11 +12,13 @@ export function SelectionBar({
   from,
   busy,
   onMove,
+  onEdit,
 }: {
   count: number;
   from: StorageLocation;
   busy: boolean;
   onMove: (to: StorageLocation) => void;
+  onEdit: () => void;
 }) {
   const t = messages.inventory.select;
   return (
@@ -25,10 +27,18 @@ export function SelectionBar({
         aria-label={t.barLabel}
         className="pointer-events-auto space-y-2 rounded-2xl bg-surface p-3 shadow-float"
       >
-        <div className="flex items-baseline justify-between gap-2">
+        <div className="flex items-center justify-between gap-2">
           <p className="font-semibold">{t.count(count)}</p>
-          <p className="text-sm text-ink-muted">{t.moveTo}</p>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={onEdit}
+            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full border border-line px-4 text-sm font-semibold text-basil-700 transition-colors hover:bg-basil-50 disabled:opacity-50"
+          >
+            {t.edit}
+          </button>
         </div>
+        <p className="text-sm text-ink-muted">{t.moveTo}</p>
         <div className="grid grid-cols-3 gap-2">
           {locationOrder
             .filter((location) => location !== from)
