@@ -2,6 +2,29 @@
 
 Alle Änderungen an Rettich (bis 7.11.2026 FridgeAI), neueste zuerst. Wird mit `pnpm release` erzeugt (ADR-0017).
 
+## [0.13.0] – 2026-11-12
+
+**Meine Rezepte, Verarbeiten mit «Gekocht» und Resten, Badges am Artikel mit Einfrier-Hinweis, Zutat oder Fertigprodukt, «Vor dem Entsorgen», Tipps und Teilen bei «Nachkaufen», die Wirkung seit dem ersten Monat und die Zahl am App-Symbol.**
+
+### Neu
+
+- Zutat oder Fertigprodukt – recipes skip ready products, badge and switch (ADR-0053) ([#239](https://github.com/BanioX/FridgeAI/pull/239))
+- Verarbeiten, Reste and «Gekocht» – the value moves along (ADR-0052) ([#238](https://github.com/BanioX/FridgeAI/pull/238))
+- item badges, thawed state and freeze hint (ADR-0051) ([#237](https://github.com/BanioX/FridgeAI/pull/237))
+- «Meine Rezepte», own recipes under Wissen (ADR-0048) ([#236](https://github.com/BanioX/FridgeAI/pull/236))
+- rescue before disposal with a still-good hint and one-tap freezing ([#234](https://github.com/BanioX/FridgeAI/pull/234))
+- quantity tip for often-discarded food and share the list as text ([#233](https://github.com/BanioX/FridgeAI/pull/233))
+- impact since the first month and the rescue count on the app icon (ADR-0050) ([#232](https://github.com/BanioX/FridgeAI/pull/232))
+
+### Behoben
+
+- name known receipts before the review, calmer heading ([#230](https://github.com/BanioX/FridgeAI/pull/230))
+
+### Dokumentation
+
+- Bring, YAZIO, Save Food and United Against Waste, demo outreach draft ([#235](https://github.com/BanioX/FridgeAI/pull/235))
+- achievement catalogue (Abzeichen) and round-2 ideas ([#231](https://github.com/BanioX/FridgeAI/pull/231))
+
 ## [0.12.0] – 2026-11-11
 
 **Rezepte unter «Wissen» mit «Da» und «Fehlt», jeden Tag ein «Wusstest du schon?», eine Einkaufsliste aus einem Satz, das öffentliche Repo ohne Suchmaschinen und das Markenbuch für Website und Social Media.**
