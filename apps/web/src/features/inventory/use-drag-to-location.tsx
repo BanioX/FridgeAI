@@ -1,6 +1,6 @@
 import type { Id, StorageLocation } from '@fridgeai/core';
 import { useEffect, useRef, useState, type MouseEvent, type PointerEvent } from 'react';
-import { dropLocationFrom } from './drop-target';
+import { dropTargetFrom, type DropTarget } from './drop-target';
 
 /** Press and hold this long before a row turns into a parcel: in select mode, and from the list. */
 const HOLD_SELECTING_MS = 350;
@@ -14,7 +14,7 @@ interface Drag {
   label: string;
   x: number;
   y: number;
-  over: StorageLocation | null;
+  over: DropTarget | null;
 }
 
 interface Hold {
@@ -24,9 +24,10 @@ interface Hold {
 }
 
 /**
- * Press and hold a row, then drag it onto a storage-location tab, like app icons on iOS (a shortcut
- * for «Verschieben nach», which stays the accessible way, WCAG 2.5.7). `begin` starts select mode,
- * selects the row if needed and names the parcel; `drop` gets the tab under the finger on release.
+ * Press and hold a row, then drag it onto a storage-location tab or a pot, like app icons on iOS (a
+ * shortcut for «Verschieben nach» and the pots, which stay the accessible way, WCAG 2.5.7). `begin`
+ * starts select mode, selects the row if needed and names the parcel; `drop` gets the target under
+ * the finger on release.
  * Releasing anywhere else cancels the drag but keeps select mode. The row may be replaced while it
  * is held (list row to select row), so the pointer is captured on `body` and followed on `window`.
  */
@@ -42,7 +43,7 @@ export function useDragToLocation({
   selecting: boolean;
   from: StorageLocation;
   begin: (id: Id) => string;
-  drop: (to: StorageLocation) => void;
+  drop: (to: DropTarget) => void;
 }) {
   const [drag, setDrag] = useState<Drag | null>(null);
   const hold = useRef<Hold | null>(null);
@@ -56,8 +57,9 @@ export function useDragToLocation({
   const dragging = drag !== null;
 
   const overAt = (x: number, y: number) => {
-    const location = dropLocationFrom(document.elementFromPoint(x, y));
-    return location === latest.current.from ? null : location;
+    const target = dropTargetFrom(document.elementFromPoint(x, y));
+    // The tab of the place the parcel comes from is no target.
+    return target?.kind === 'location' && target.location === latest.current.from ? null : target;
   };
 
   // A click right after a drag (the finger lifts over a row) must neither toggle nor navigate.

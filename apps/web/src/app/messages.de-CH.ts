@@ -241,6 +241,30 @@ export const messages = {
       /** The parcel under the finger: «3 Artikel» (a single item shows its name instead). */
       parcel: (n: number) => `${String(n)} Artikel`,
     },
+    /** The pots above the list in select mode (ADR-0055): settle the selection with a tap or a drop. */
+    settle: {
+      label: 'Auswahl abschliessen',
+      eaten: 'Verwertet',
+      wasted: 'Entsorgt',
+      process: 'Verarbeiten',
+      rebuy: 'Nachkaufen',
+      /** «Joghurt verwertet.» / «3 Artikel verwertet.» */
+      doneOne: (name: string, outcome: 'eaten' | 'wasted') =>
+        `${name} ${outcome === 'eaten' ? 'verwertet' : 'entsorgt'}.`,
+      doneMany: (n: number, outcome: 'eaten' | 'wasted') =>
+        `${String(n)} Artikel ${outcome === 'eaten' ? 'verwertet' : 'entsorgt'}.`,
+      /** What did not work and stays selected: «Milch: das hat nicht geklappt.» */
+      failedSome: (names: readonly string[]) =>
+        `${names.join(', ')}: das hat nicht geklappt. ${names.length === 1 ? 'Der Artikel bleibt' : 'Die Artikel bleiben'} ausgewählt.`,
+      /** «Milch steht bei «Nachkaufen».» */
+      rebuyOne: (name: string) => `${name} steht bei «Nachkaufen».`,
+      rebuyMany: (n: number) => `${String(n)} Artikel stehen bei «Nachkaufen».`,
+      rebuyAlreadyOne: (name: string) => `${name} stand schon bei «Nachkaufen».`,
+      rebuyAlreadyMany: (n: number) => `${String(n)} Artikel standen schon bei «Nachkaufen».`,
+      /** The sheet before «Verwertet» for food that was about to go off (ADR-0039, asked once). */
+      rescueConfirm: 'Als verwertet speichern',
+      cancel: 'Abbrechen',
+    },
   },
   /** K3 and K4 (docs/ideen/komfort-und-geld.md): small rescues before something is thrown away. */
   rescue: {
