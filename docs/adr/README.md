@@ -70,3 +70,4 @@ Jeder Entscheid mit Folgen steht hier als eigene Datei `NNNN-titel.md` (ADR-0001
 | [0060](0060-one-place-per-action.md) | Eine Stelle pro Aktion im Auswahlmodus | angenommen | 2026-11-12 |
 | [0061](0061-recipes-for-selection.md) | Rezepte zur Auswahl auf «Verarbeiten» | angenommen | 2026-11-12 |
 | [0062](0062-date-from-photo.md) | Datum fotografieren | angenommen | 2026-11-12 |
+| [0064](0064-fresh-nutrition.md) | Geschätzte Nährwerte für frische Lebensmittel (BLV) | angenommen | 2026-11-12 |
