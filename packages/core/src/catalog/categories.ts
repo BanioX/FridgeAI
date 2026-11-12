@@ -238,7 +238,7 @@ export const CATEGORIES: readonly Category[] = [
     id: 'dairy-cheese-slices',
     // Counted in slices, so the item page shows what is left of the pack (ADR-0063).
     // The first size is the one the add form proposes (ADR-0066).
-    portion: { unit: 'pcs', packs: [10, 8, 12], splits: [] },
+    portion: { unit: 'pcs', packs: [10, 8, 12], sharedPack: true, splits: [] },
     opened: 5,
     de: 'Käsescheiben',
     emoji: '🧀',

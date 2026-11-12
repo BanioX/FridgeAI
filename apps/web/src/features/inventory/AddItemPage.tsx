@@ -281,8 +281,7 @@ export function AddItemPage() {
     setSaving(true);
     try {
       const base = toBaseQuantity(amount, unit);
-      const perPack =
-        base.unit === 'pcs' ? piecesPerPackFor(base.quantity, portioning.packs) : undefined;
+      const perPack = base.unit === 'pcs' ? piecesPerPackFor(base.quantity, portioning) : undefined;
       await inventory['inventory.addItem']({
         commandId: ids.next(),
         householdId,

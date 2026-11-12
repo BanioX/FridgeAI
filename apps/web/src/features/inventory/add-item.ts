@@ -32,10 +32,10 @@ export const formatAmount = (amount: number): string =>
  * in a natural unit, rounded to a number people see on packs (1030 g milk → 1 l, 300 g → 300 g).
  */
 export function suggestedAmount(category: Category): { amount: number; unit: InputUnit } {
-  const { unit, packs } = portioningOf(category);
+  const { unit, packs, sharedPack } = portioningOf(category);
   if (unit === 'pcs') {
-    // Eggs and cheese slices come in packs: the first size of the category (ADR-0066).
-    return { amount: packs?.[0] ?? 1, unit: 'pcs' };
+    // Cheese slices are bought as a pack: its first size (ADR-0066). An egg or a yoghurt is one.
+    return { amount: sharedPack === true ? (packs?.[0] ?? 1) : 1, unit: 'pcs' };
   }
   const typical = category.avgWeightGrams ?? (unit === 'g' ? 500 : 1000);
   const step = typical < 1000 ? 50 : 100;

@@ -42,7 +42,7 @@ Prüfung aller Funktionen aus ADR-0048 bis ADR-0066 und der Funktionen ohne eige
 | Mehrere ändern | – | ja (K11) | – | – | – | – | – | ja | – | – |
 | Geschätzte Nährwerte (0064) | – | – | ja (Frischware ohne Etikett) | – | – | – (berechnet) | – (berechnet) | ja | – | – |
 | Packung: was übrig ist (0063) | – | – (Menge als Text) | ja | – | – | – | – (berechnet) | ja | – | – |
-| Packung und Inhalt (0065) | – | ja («1 Packung à 10 Stk.», Wisch = Packung) | ja (Ring = Stück) | – | – | – | ja (Feld am Artikel) | ja | – | – |
+| Packung und Inhalt (0066) | – | ja («1 × 10 Stk.», Wisch = Packung) | ja («1 Packung à 10 Stk.», Ring = Stück) | – | – | – | ja (Feld am Artikel) | ja | – | – |
 
 Daten gehen keine verloren: Alle Tabellen stehen in der Sicherung und kommen beim Import zurück; Tests mit Hin und Zurück prüfen das seit K3 für jedes Feld.
 

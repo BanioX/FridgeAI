@@ -7,7 +7,7 @@ import {
   fallbackCategory,
   isReadyMade,
   itemBadges,
-  packLeft,
+  currentPack,
   portionChoices,
   portioningOf,
   shouldAskStillGood,
@@ -158,7 +158,7 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
   const canMove = item.location === 'freezer' || category.isFood;
   // Haltbarkeit 1 to 10 (ADR-0038): an open pack scores by its days after opening.
   const score = shelfScore(category, { opened: item.openedOn !== undefined });
-  const pack = packLeft(item);
+  const pack = currentPack(item);
   const level = perishabilityOf(score);
   // «Gerettet» only when it really was on the brink, never for thrown away food (ADR-0039).
   const rescuable = outcome !== 'wasted' && canBeRescued(item, today);
@@ -395,7 +395,7 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
               {[item.brand, item.packSize].filter((part) => part !== undefined).join(' · ')}
             </p>
           )}
-          <p className="text-ink-muted">{itemMeta(item, false)}</p>
+          <p className="text-ink-muted">{itemMeta(item, false, 'full')}</p>
           <div className="mt-1.5 empty:hidden">
             <ItemBadges badges={itemBadges(item, today)} />
           </div>
@@ -494,7 +494,8 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
         </div>
         {pack === undefined ? null : (
           <PackControl
-            pack={pack}
+            pack={pack.pack}
+            behind={pack.behind}
             busy={busy}
             note={
               packNote === null

@@ -66,10 +66,19 @@ export const PortioningSchema = z
     unit: UnitSchema,
     container: ContainerSchema.optional(),
     packs: z.array(z.int().min(2).max(100)).min(1).max(4).optional(),
+    /**
+     * The pieces are parts of one product in one wrapper: slices of cheese. Such food is bought
+     * and counted as a pack (ADR-0066). Without it every piece stands for itself: an egg, or a
+     * yoghurt, which comes in fours but is one sealed cup.
+     */
+    sharedPack: z.boolean().optional(),
     splits: z.array(z.int().min(2).max(12)).max(3),
   })
   .refine((portioning) => portioning.packs === undefined || portioning.unit === 'pcs', {
     message: 'Pack sizes count pieces',
+  })
+  .refine((portioning) => portioning.sharedPack !== true || portioning.packs !== undefined, {
+    message: 'A shared pack needs its sizes',
   });
 export type Portioning = z.infer<typeof PortioningSchema>;
 

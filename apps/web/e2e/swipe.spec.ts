@@ -107,9 +107,9 @@ test('a swipe on cheese slices takes a pack, not one slice (ADR-0066)', async ({
   await page.getByRole('button', { name: 'Speichern', exact: true }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
   const row = page.getByRole('link', { name: /Schmelzkäse/ });
-  await expect(row).toContainText('2 Packungen à 10 Stk.');
+  await expect(row).toContainText('2 × 10 Stk.');
 
   await swipe(page, -200, /Schmelzkäse/);
   await expect(page.getByText('Schmelzkäse: 1 Packung verwertet')).toBeVisible();
-  await expect(row).toContainText('1 Packung à 10 Stk.');
+  await expect(row).toContainText('1 × 10 Stk.');
 });
