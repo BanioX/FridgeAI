@@ -548,6 +548,7 @@ export function InventoryPage() {
       {editing && chosen.length > 0 ? (
         <BulkEditSheet
           count={chosen.length}
+          items={chosen}
           location={selected}
           today={today}
           members={members ?? []}
