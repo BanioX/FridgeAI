@@ -18,7 +18,7 @@ Kleine Hilfen mit System: weniger suchen, schneller abschliessen, weniger doppel
 
 | Nr. | Idee | Nutzen | Aufwand |
 | --- | --- | --- | --- |
-| O4 | **Einräumen nach dem Einkauf**: nach der Quittung eine Liste nach Lagerort und Platz: «Kühlschrank: Milch, Joghurt · Gemüsefach: Rüebli · Oberer Schrank: Zucker». | Alles kommt an seinen Platz, auch wer selten einräumt; Rettich kennt danach jeden Ort | M |
+| O4 | **Einräumen nach dem Einkauf**: nach der Quittung eine Liste nach Lagerort und Platz: «Kühlschrank: Milch, Joghurt · Gemüsefach: Rüebli · Oberer Schrank: Zucker». | Alles kommt an seinen Platz, auch wer selten einräumt; Rettich kennt danach jeden Ort | M · **umgesetzt (12.11.2026)** |
 | O5 | **Fächer im Kühlschrank vorschlagen**: Türfach, oberes, mittleres, unteres Fach, Gemüsefach als fertige Plätze, mit dem Wissen, das schon in «Wissen» steht (Fleisch und Fisch unten über dem Gemüsefach, Getränke in die Tür). | Richtig gelagert hält länger; Kühlschrank zuerst | S–M · **umgesetzt** (12.11.2026: ein Tipp legt das Fach als Platz an, das passende zuerst) |
 | O6 | **Doppelkauf-Hinweis**: Auf der Einkaufsliste steht bei einem Produkt, das noch da ist, «Zuhause: 2, Türfach». | Weniger doppelt kaufen, weniger entsorgen | S |
 | O7 | **Mehrere auf einmal ändern** (umgesetzt, 12.11.2026): im Auswahlmodus «Ändern» setzt Datum, «Angebrochen» oder «Gehört» für alle. | Nach dem Einkauf oder dem Öffnen einer Packung schneller | S |

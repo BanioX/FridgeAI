@@ -106,7 +106,7 @@ test('matches a receipt with Open Food Facts by itself; Ja takes a hit, Nein off
   );
 
   await review.getByRole('button', { name: '2 Artikel übernehmen' }).click();
-  await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Einräumen' })).toBeVisible();
   await expect(page.getByText('Joghurt Mocca', { exact: true })).toBeVisible();
   await expect(page.getByText('Guacamole', { exact: true })).toBeVisible();
 });
