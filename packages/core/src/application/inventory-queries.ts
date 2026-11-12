@@ -25,12 +25,20 @@ export function createInventoryQueries(ctx: AppContext) {
   }
 
   async function activeViews(householdId: Id): Promise<InventoryItemView[]> {
-    const [items, products, spotRows] = await Promise.all([
+    const [items, products, spotRows, outcomes] = await Promise.all([
       storage.items.activeOf(householdId),
       householdProducts(householdId),
       storage.spots.ofHousehold(householdId),
+      storage.outcomes.ofHousehold(householdId),
     ]);
     const spots = new Map(spotRows.map((spot) => [spot.id, spot]));
+    // What already went from each item, for «7 von 10 übrig» (undone entries do not count).
+    const taken = new Map<Id, number>();
+    for (const outcome of outcomes) {
+      if (outcome.deletedAt === undefined) {
+        taken.set(outcome.itemId, (taken.get(outcome.itemId) ?? 0) + outcome.quantity);
+      }
+    }
     const live = items
       .filter((item) => item.deletedAt === undefined)
       .sort((a, b) => a.expiresOn.localeCompare(b.expiresOn));
@@ -51,7 +59,15 @@ export function createInventoryQueries(ctx: AppContext) {
             : (await Promise.all(item.madeFrom.map(nameOf))).filter(
                 (name): name is string => name !== undefined,
               );
-        return toView(item, products.get(item.productId), retailers.get(item.id), names, spots);
+        const view = toView(
+          item,
+          products.get(item.productId),
+          retailers.get(item.id),
+          names,
+          spots,
+        );
+        const went = taken.get(item.id);
+        return went === undefined ? view : { ...view, takenQuantity: went };
       }),
     );
   }

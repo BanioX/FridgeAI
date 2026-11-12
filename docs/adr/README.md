@@ -4,7 +4,7 @@ Jeder Entscheid mit Folgen steht hier als eigene Datei `NNNN-titel.md` (ADR-0001
 
 **Pflege:** Wer ein ADR anlegt oder dessen Status ändert, führt diese Tabelle im selben PR nach. Ein abgelöstes ADR bleibt als Verlauf stehen, seine Statuszeile nennt das ADR, das es ablöst.
 
-**Stand:** 12.11.2026, 62 Entscheide.
+**Stand:** 12.11.2026, 64 Entscheide.
 
 | Nr. | Titel | Status | Datum |
 | --- | --- | --- | --- |
@@ -70,4 +70,5 @@ Jeder Entscheid mit Folgen steht hier als eigene Datei `NNNN-titel.md` (ADR-0001
 | [0060](0060-one-place-per-action.md) | Eine Stelle pro Aktion im Auswahlmodus | angenommen | 2026-11-12 |
 | [0061](0061-recipes-for-selection.md) | Rezepte zur Auswahl auf «Verarbeiten» | angenommen | 2026-11-12 |
 | [0062](0062-date-from-photo.md) | Datum fotografieren | angenommen | 2026-11-12 |
+| [0063](0063-pack-left.md) | Packung: was übrig ist | angenommen | 2026-11-12 |
 | [0064](0064-fresh-nutrition.md) | Geschätzte Nährwerte für frische Lebensmittel (BLV) | angenommen | 2026-11-12 |
