@@ -68,6 +68,20 @@ test('taps «Verwertet» for two items and takes it back with «Rückgängig»',
   await expect(page.getByRole('link', { name: /Saft/ })).toBeVisible();
 });
 
+test('«Verarbeiten» from select mode offers recipes for the chosen item', async ({ page }) => {
+  await addToFridge(page, 'Vollmilch');
+  await page.goto('/inventory?location=fridge');
+  await page.getByRole('button', { name: 'Auswählen' }).click();
+  await page.getByText('Vollmilch', { exact: true }).click();
+  await page
+    .getByRole('region', { name: 'Auswahl abschliessen' })
+    .getByRole('button', { name: 'Verarbeiten' })
+    .click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Verarbeiten' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Rezepte mit deiner Auswahl' })).toBeVisible();
+  await expect(page.getByText('Mit: Vollmilch').first()).toBeVisible();
+});
+
 test('drags the selection onto «Entsorgt»', async ({ page }) => {
   for (const name of ['Eier', 'Saft']) {
     await addToFridge(page, name);

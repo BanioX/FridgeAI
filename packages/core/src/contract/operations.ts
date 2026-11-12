@@ -1033,6 +1033,31 @@ export const CONTRACT_V1 = {
       ),
     }),
   }),
+  'recipes.withItems': query({
+    name: 'recipes.withItems',
+    summary: {
+      de: 'Rezepte, die möglichst viele der gewählten Artikel brauchen; mit dem, was fehlt.',
+      en: 'Recipes that use as many of the chosen items as possible; with what is missing.',
+    },
+    scopes: ['recipes:read'],
+    input: z.object({
+      ...queryBase,
+      itemIds: z.array(IdSchema).min(1).max(50),
+      limit: z.int().min(1).max(10).default(3),
+    }),
+    output: z.object({
+      recipes: z.array(
+        z.object({
+          id: z.string(),
+          title: z.string(),
+          source: RecipeSourceSchema,
+          minutes: z.int().positive().optional(),
+          uses: z.array(z.string()),
+          missing: z.array(z.string()),
+        }),
+      ),
+    }),
+  }),
   'recipes.get': query({
     name: 'recipes.get',
     summary: {

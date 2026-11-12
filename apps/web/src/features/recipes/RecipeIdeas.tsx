@@ -1,5 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { ChefHat, ChevronRight, Plus } from 'lucide-react';
+import type { ReactNode } from 'react';
 import { Link } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
@@ -8,7 +9,7 @@ import { GROUPED_ROW_LINK, GroupedList, GroupedListItem } from '../../ui/Grouped
 const t = messages.recipes;
 
 /** One recipe in a grouped list: picture, title, one line, chevron; the whole row opens it. */
-export function RecipeRow({ id, title, detail }: { id: string; title: string; detail: string }) {
+export function RecipeRow({ id, title, detail }: { id: string; title: string; detail: ReactNode }) {
   return (
     <GroupedListItem>
       <Link to={`/knowledge/recipes/${id}`} className={GROUPED_ROW_LINK}>
@@ -21,7 +22,7 @@ export function RecipeRow({ id, title, detail }: { id: string; title: string; de
           </span>
           <div className="min-w-0 flex-1">
             <p className="font-semibold">{title}</p>
-            <p className="text-sm text-ink-muted">{detail}</p>
+            <div className="text-sm text-ink-muted">{detail}</div>
           </div>
           <ChevronRight size={18} aria-hidden="true" className="shrink-0 text-ink-muted/60" />
         </div>

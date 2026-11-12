@@ -608,6 +608,10 @@ export const messages = {
   /** «Verarbeiten», «Selbst gemacht», «Reste» and «Gekocht» (ADR-0052). */
   process: {
     title: 'Verarbeiten',
+    /** ADR-0061: recipes for the items chosen in select mode. */
+    recipesTitle: 'Rezepte mit deiner Auswahl',
+    recipeUses: (names: string) => `Mit: ${names}`,
+    recipeMissing: (names: string) => `Fehlt: ${names}`,
     intro: 'Wähl aus, was du verwendest, und sag, was daraus wird.',
     ingredients: 'Zutaten',
     search: 'Im Vorrat suchen',
