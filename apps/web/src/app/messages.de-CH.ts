@@ -475,7 +475,7 @@ export const messages = {
     },
     back: 'Zurück zum Vorrat',
     /** «Verarbeiten» (ADR-0052): a calm line for made and leftover items. */
-    madeFrom: (names: readonly string[]) => `Selbst gemacht aus: ${names.join(', ')}`,
+    madeFrom: (names: readonly string[]) => `Aus: ${names.join(', ')}`,
     madeFromNone: 'Selbst gemacht',
     leftover: 'Reste',
     leftoverFrom: (names: readonly string[]) => `Reste aus: ${names.join(', ')}`,
