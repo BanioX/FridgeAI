@@ -60,9 +60,14 @@ export function TodayPage() {
 
   const fridgeValues = all
     .filter((item) => item.location === 'fridge')
-    .map(({ quantity, unit, priceRappen, categoryId }) =>
+    .map(({ quantity, unit, priceRappen, priceEstimated, categoryId }) =>
       itemValue(
-        { quantity, unit, ...(priceRappen === undefined ? {} : { priceRappen }) },
+        {
+          quantity,
+          unit,
+          ...(priceRappen === undefined ? {} : { priceRappen }),
+          ...(priceEstimated === undefined ? {} : { priceEstimated }),
+        },
         categoryById(categoryId) ?? fallbackCategory(),
       ),
     );

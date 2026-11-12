@@ -6,6 +6,16 @@ const bought = IsoDateTimeSchema.parse('2026-11-09T10:00:00.000Z');
 const base: BadgeSource = { location: 'fridge', categoryId: 'dairy-milk', purchasedAt: bought };
 
 describe('itemBadges', () => {
+  it('shows Selbst gemacht and Reste from the origin, first in order', () => {
+    expect(itemBadges({ ...base, origin: 'made' }, today)).toEqual([{ kind: 'made' }]);
+    expect(itemBadges({ ...base, origin: 'leftover' }, today)).toEqual([{ kind: 'leftover' }]);
+    const openedOn = localDate('2026-11-10');
+    expect(itemBadges({ ...base, origin: 'made', openedOn }, today)).toEqual([
+      { kind: 'made' },
+      { kind: 'opened', on: openedOn },
+    ]);
+  });
+
   it('has none for a plain item', () => {
     expect(itemBadges(base, today)).toEqual([]);
   });
