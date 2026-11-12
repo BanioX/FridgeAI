@@ -6,7 +6,9 @@ import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
 import { BackLink } from '../../ui/BackLink';
 import { GROUPED_ROW_LINK, GroupedList, GroupedListItem } from '../../ui/GroupedList';
-import { findInStock } from './spots-search';
+import { OwnerMark } from '../people/OwnerMark';
+import { useMembers } from '../people/use-members';
+import { searchStock } from './spots-search';
 import { SpotThumb } from './SpotThumb';
 import { useSpots } from './use-spots';
 
@@ -28,7 +30,9 @@ export function SpotsPage() {
     [householdId],
   );
   const spotPhoto = new Map((spots ?? []).map((spot) => [spot.id, spot.photo]));
-  const hits = findInStock(items ?? [], query);
+  const members = useMembers();
+  const found = searchStock(items ?? [], spots ?? [], members ?? [], query);
+  const hitCount = found.spots.length + found.items.length;
 
   const change = (value: string) => {
     setParams(value === '' ? {} : { q: value }, { replace: true });
@@ -68,13 +72,34 @@ export function SpotsPage() {
       {query.trim() === '' ? null : (
         <section aria-labelledby="spot-hits" className="space-y-2">
           <h2 id="spot-hits" className="sr-only">
-            {t.searchResults(hits.length)}
+            {t.searchResults(hitCount)}
           </h2>
-          {hits.length === 0 ? (
+          {hitCount === 0 ? (
             <p className="text-ink-muted">{t.searchNone(query.trim())}</p>
           ) : (
             <GroupedList>
-              {hits.map((item) => (
+              {found.spots.map((spot) => (
+                <GroupedListItem key={spot.id}>
+                  <Link
+                    to={`/more/spots/${spot.id}`}
+                    className={`${GROUPED_ROW_LINK} flex min-h-15 items-center gap-3 py-2.5 pr-3 pl-4`}
+                  >
+                    <SpotThumb photo={spot.photo} />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate font-semibold">{spot.name}</span>
+                      <span className="block text-sm text-ink-muted">
+                        {messages.locations[spot.location]} · {t.count(spot.itemCount)}
+                      </span>
+                    </span>
+                    <ChevronRight
+                      size={18}
+                      aria-hidden="true"
+                      className="shrink-0 text-ink-muted/60"
+                    />
+                  </Link>
+                </GroupedListItem>
+              ))}
+              {found.items.map((item) => (
                 <GroupedListItem key={item.id}>
                   <Link
                     to={`/inventory/${item.id}`}
@@ -97,6 +122,7 @@ export function SpotsPage() {
                         {item.spot === null ? t.noSpotYet : item.spot.name}
                       </span>
                     </span>
+                    {item.owner === 'shared' ? null : <OwnerMark ownerId={item.owner} />}
                     <ChevronRight
                       size={18}
                       aria-hidden="true"

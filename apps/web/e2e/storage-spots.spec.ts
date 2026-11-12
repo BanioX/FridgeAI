@@ -51,6 +51,12 @@ test('keeps where the sugar lies: spot with photo, in the row, searchable, with 
     page.getByRole('link', { name: /Kristallzucker.*Oberer Schrank links/ }),
   ).toBeVisible();
 
+  // The spot name finds the item that lies there, too.
+  await page.getByLabel('Was suchst du?').fill('Oberer Schrank');
+  await expect(
+    page.getByRole('link', { name: /Kristallzucker.*Oberer Schrank links/ }),
+  ).toBeVisible();
+
   // The address works as a shortcut target.
   await page.goto('/more/spots?q=zucker');
   await expect(page.getByLabel('Was suchst du?')).toHaveValue('zucker');
