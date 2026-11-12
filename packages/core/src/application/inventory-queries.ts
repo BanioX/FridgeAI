@@ -3,7 +3,10 @@ import { CONTRACT_V1 } from '../contract/operations';
 import { daysBetween, toLocalDate } from '../dates';
 import { expiryStatus, RESERVE_SOON_THRESHOLD_DAYS, soonThresholdFor } from '../expiry';
 import type { Id } from '../ids';
+import { DEFAULT_CURRENCY } from '../currency';
+import { summarizeFootprint, type FootprintOutcome } from '../impact/footprint';
 import { compareWasteSinceFirstMonth, summarizeImpact } from '../metrics';
+import { householdCurrency } from '../model/household';
 import type { InventoryItem, Product } from '../model/inventory';
 import type { InventoryItemView } from '../contract/operations';
 import type { AppContext, UseCase } from './command';
@@ -206,6 +209,33 @@ export function createInventoryQueries(ctx: AppContext) {
     return { comparison: compareWasteSinceFirstMonth(outcomes, clock.today()) };
   };
 
+  /**
+   * `stats.footprint` (ADR-0057): the footprint of what was rescued and wasted, from the per-kg
+   * figures of the catalog's categories. Counted like the Bilanz.
+   */
+  const footprintStats: UseCase<'stats.footprint'> = async (raw) => {
+    const input = CONTRACT_V1['stats.footprint'].input.parse(raw);
+    const [outcomes, items, products, household] = await Promise.all([
+      storage.outcomes.ofHousehold(input.householdId),
+      storage.items.ofHousehold(input.householdId),
+      householdProducts(input.householdId),
+      storage.households.get(input.householdId),
+    ]);
+    const itemById = new Map(items.map((item) => [item.id, item]));
+    const withCategory = outcomes.map((outcome): FootprintOutcome => {
+      const item = itemById.get(outcome.itemId);
+      const product = item === undefined ? undefined : products.get(item.productId);
+      return {
+        ...outcome,
+        categoryId: product?.categoryId ?? fallbackCategory().id,
+        unit: item?.unit,
+        packageSize: item?.packageSize,
+      };
+    });
+    const currency = household === undefined ? DEFAULT_CURRENCY : householdCurrency(household);
+    return summarizeFootprint(withCategory, input.from, input.to, currency);
+  };
+
   return {
     'inventory.list': list,
     'inventory.listExpiring': listExpiring,
@@ -214,5 +244,6 @@ export function createInventoryQueries(ctx: AppContext) {
     'products.image': productImage,
     'stats.waste': wasteStats,
     'stats.impact': impactStats,
+    'stats.footprint': footprintStats,
   };
 }

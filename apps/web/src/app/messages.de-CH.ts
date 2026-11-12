@@ -29,6 +29,7 @@ export const messages = {
     addItem: 'Artikel erfassen',
     check: 'Kühlschrank-Check',
     achievements: 'Abzeichen',
+    climate: 'Klimabilanz',
   },
   placeholder: 'Kommt bald.',
   loading: 'Rettich wird geladen …',
@@ -818,6 +819,7 @@ export const messages = {
     shoppingDetail: 'Was du wieder brauchst',
     dataDetail: 'Exportieren, löschen, was mit deinen Daten passiert',
     achievementsDetail: 'Was du gerettet, gekocht und geplant hast',
+    climateDetail: 'CO₂e, Wasser und Fläche von dem, was du gerettet hast',
     spotsDetail: 'Plätze mit Foto, damit alle alles finden',
   },
   /** «Wo ist was?» (ADR-0056): named storage spots with an optional photo. */
@@ -871,6 +873,62 @@ export const messages = {
       unreadable: 'Das Foto lässt sich nicht lesen. Versuch ein anderes.',
       too_big: 'Das Foto ist zu gross. Versuch ein anderes.',
     },
+  },
+  /** «Klimabilanz» (ADR-0057): what went into making the food that was rescued. Calm, no claims. */
+  climate: {
+    title: 'Klimabilanz',
+    intro: 'So viel CO₂e steckte in der Herstellung von dem, was du gerettet hast.',
+    cardMonth: 'Diesen Monat gerettet',
+    cardSoFar: 'Bisher gerettet',
+    cardLink: 'Klimabilanz ansehen',
+    periodLegend: 'Zeitraum',
+    periodMonth: 'Dieser Monat',
+    periodAll: 'Seit Beginn',
+    empty:
+      'In diesem Zeitraum hast du noch nichts gerettet. Sobald du Lebensmittel kurz vor Ablauf rettest, rechnet Rettich hier aus, was in ihrer Herstellung steckte.',
+    metrics: {
+      food: 'Lebensmittel',
+      co2e: 'CO₂e',
+      water: 'Wasser',
+      land: 'Fläche',
+    },
+    tilesTitle: 'Gerettet',
+    rescuedWord: 'gerettet',
+    wastedWord: 'entsorgt',
+    estimatedShare: (percent: number) =>
+      `${String(percent)} % davon beruhen auf Schätzungen: ein ähnliches Produkt oder ein typisches Gewicht.`,
+    chartTitle: 'Gerettet und entsorgt',
+    chartLabel: (rows: string) => `Gerettet und entsorgt im Vergleich: ${rows}`,
+    chartRow: (metric: string, rescued: string, wasted: string) =>
+      `${metric}: ${rescued} gerettet, ${wasted} entsorgt`,
+    chartNone: 'nichts',
+    topTitle: 'Das meiste CO₂e steckte in',
+    topEntry: (name: string, co2e: string) => `${name}: ${co2e}`,
+    kehrichtTitle: 'Kehricht',
+    kehricht: (bags: string, fee: string) =>
+      `Das Gerettete entspricht etwa ${bags} Säcken à 35 Liter Kehricht, das sind etwa ${fee} Gebühren.`,
+    kehrichtNote:
+      'Eine Schätzung: Die Gebühr ist je nach Gemeinde verschieden, und Lebensmittelabfälle können auch ins Grüngut statt in den Kehricht.',
+    methodTitle: 'So rechnet Rettich',
+    method: [
+      'Jedes Lebensmittel in Rettich gehört zu einer Kategorie, zum Beispiel Milch, Brot oder Äpfel. Für jede Kategorie nimmt Rettich ein passendes Produkt aus einer Studie und rechnet mit dessen Werten pro Kilogramm.',
+      'Das Gewicht kommt aus deinen Angaben. Fehlt es, nimmt Rettich ein typisches Gewicht der Kategorie.',
+      'Gezählt wird, was du als gerettet bestätigt hast, und getrennt davon, was du entsorgt hast. Rückgängig Gemachtes zählt nicht, und Zutaten, die du zu etwas Neuem verarbeitet hast, zählen nicht doppelt.',
+      'Die Werte beschreiben die Herstellung der Lebensmittel: Treibhausgase in CO₂-Äquivalenten (CO₂e), entnommenes Süsswasser und Landfläche. Sie sagen nicht, wie gross dein ganzer Fussabdruck ist.',
+      'Es sind Schätzungen. Wo kein Produkt der Studie passt, steht ein ähnliches dafür.',
+      'Energie fehlt: Die Quelle enthält keine Energiewerte, darum zeigt Rettich dazu nichts.',
+      'Kehricht: Der Preisüberwacher rechnet Abfallgebühren auf einen Sack à 35 Liter mit 4,89 kg Abfall um. Als Beispiel dient eine Gebühr von CHF 1.60 pro Sack (Horgen und Maur, 2024). Bei dir kann sie anders sein.',
+    ],
+    sourcesTitle: 'Quellen',
+    sources: {
+      clark:
+        'Clark et al. (2022), «Estimating the environmental impacts of 57,000 food products», PNAS',
+      owid: 'Our World in Data: Umweltwirkung von Lebensmitteln',
+      preisueberwacher: 'Preisüberwacher: Erläuterungen zum Preisvergleich Abfall',
+      horgen: 'Gemeinde Horgen: Abfallgebühren',
+      maur: 'Gemeinde Maur: Abfallgebühren',
+    },
+    attribution: 'Daten: Clark et al. (2022), PNAS, via Our World in Data, CC BY 4.0',
   },
   household: {
     data: 'Mitnehmen und löschen',

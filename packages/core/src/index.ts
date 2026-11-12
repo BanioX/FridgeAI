@@ -55,3 +55,6 @@ export * from './receipt/off-match';
 export * from './prices/price-memory';
 export * from './reports/closing';
 export * from './reports/report';
+export * from './impact/footprints';
+export * from './impact/category-footprint';
+export * from './impact/footprint';

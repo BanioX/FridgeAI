@@ -2,6 +2,7 @@ import {
   Award,
   FileChartColumn,
   HistoryIcon,
+  Leaf,
   MapPin,
   ShieldCheck,
   ShoppingBasket,
@@ -58,6 +59,12 @@ export function MorePage() {
             icon: HistoryIcon,
             title: messages.pages.history,
             detail: t.historyDetail,
+          },
+          {
+            to: '/more/climate',
+            icon: Leaf,
+            title: messages.pages.climate,
+            detail: t.climateDetail,
           },
           {
             to: '/more/achievements',
