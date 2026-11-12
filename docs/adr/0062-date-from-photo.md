@@ -19,3 +19,11 @@ Das Ablaufdatum einzutippen ist die grösste Hürde beim Erfassen (`docs/ideen/m
 
 - Gebogene oder geprägte Daten (Dosenboden, Flaschenhals) liest die Erkennung schlecht; Eintippen bleibt der Rückweg, und bei Misserfolg sagt die App das ehrlich.
 - Das Modell wird beim ersten Lesen geladen; ohne Netz und ohne bisherigen Abruf meldet die App, dass das Lesen nicht geklappt hat.
+
+## Nachtrag (12.11.2026): auch beim Ändern und beim Einräumen
+
+Der Knopf steht nun überall, wo man das Datum setzt (`docs/flaechen.md`, K8).
+
+- **Ändern:** Unter «Haltbar bis» der Artikelseite steht derselbe Knopf mit denselben Texten. Gespeichert wird `label_ocr` (und die Datumsart), solange das Datum so bleibt, wie es gelesen wurde; wer es danach überschreibt, speichert `manual`.
+- **Einräumen:** Jede Zeile, deren Datum nur geschätzt ist, hat daneben eine kleine Kamera-Aktion («Datum fotografieren für Milch»). Sie liest das Datum und speichert es sofort; die Zeile zeigt es, und die eine Statuszeile der Seite bestätigt es. Die Aktion ist ein eigenes Bedienelement neben dem Link zum Artikel.
+- **Schnittstelle (additiv):** `inventory.updateItem` nimmt ein optionales `expirySource`, begrenzt auf das, was eine Person auslösen kann: `manual` (Standard) und `label_ocr`. Es wirkt nur, wenn sich das Datum ändert.

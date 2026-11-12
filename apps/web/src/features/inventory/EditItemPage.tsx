@@ -20,6 +20,7 @@ import { Button } from '../../ui/Button';
 import { ChoiceChips } from '../../ui/ChoiceChips';
 import { DateField } from '../../ui/DateField';
 import { formatAmount, parseAmount } from './add-item';
+import { DatePhotoButton } from './DatePhotoButton';
 import { cameFromDetail } from './edit-state';
 import { locationOrder } from './item-meta';
 import { useInventoryItem } from './use-item';
@@ -67,6 +68,8 @@ function EditItemForm({ item }: { item: InventoryItemView }) {
   const [place, setPlace] = useState<StorageLocation>(item.location);
   const [expiresOn, setExpiresOn] = useState<LocalDate | null>(item.expiresOn);
   const [kind, setKind] = useState<DateKind>(item.expiryKind);
+  // The date read from a photo of the label (ADR-0062); it counts only while it is still the date.
+  const [photoDate, setPhotoDate] = useState<LocalDate | null>(null);
   // Compared as text: ⅓ shows as «0.333», and saving it untouched must not change the quantity.
   const initialQuantity = formatAmount(item.quantity);
   const initialPrice =
@@ -101,6 +104,9 @@ function EditItemForm({ item }: { item: InventoryItemView }) {
       ...(categoryId === item.categoryId ? {} : { categoryId }),
       ...(place === item.location ? {} : { location: place }),
       ...(expiresOn === item.expiresOn ? {} : { expiresOn }),
+      ...(expiresOn !== item.expiresOn && expiresOn === photoDate
+        ? { expirySource: 'label_ocr' as const }
+        : {}),
       ...(kind === item.expiryKind ? {} : { expiryKind: kind }),
       ...(quantityText.trim() === initialQuantity ? {} : { quantity }),
       ...(priceText.trim() === initialPrice ? {} : { priceRappen: price }),
@@ -218,6 +224,17 @@ function EditItemForm({ item }: { item: InventoryItemView }) {
             location={place}
             typicalShelfLifeDays={shelfLifeAt(category, place)}
             estimated={item.expirySource === 'category_estimate' && expiresOn === item.expiresOn}
+          />
+          <DatePhotoButton
+            today={today}
+            onRead={(found) => {
+              setPhotoDate(found.date);
+              setExpiresOn(found.date);
+              if (found.kind !== undefined) {
+                setKind(found.kind);
+              }
+            }}
+            onStatus={setStatus}
           />
           <p className="text-sm text-today">{shown(errors.date)}</p>
         </div>
