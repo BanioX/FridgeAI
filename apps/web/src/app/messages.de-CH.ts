@@ -192,6 +192,18 @@ export const messages = {
     rebought: (name: string) => `${name} steht bei «Nachkaufen».`,
     rebuyAlready: (name: string) => `${name} steht schon bei «Nachkaufen».`,
     rebuyFailed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
+    /** After «Verarbeiten» (ADR-0052): where the new item lies and how many ingredients went in. */
+    processed: (name: string | null, place: string, count: number) =>
+      [
+        name === null ? 'Gekocht.' : `${name} ist ${place}.`,
+        count === 0 ? '' : `${count === 1 ? '1 Zutat' : `${String(count)} Zutaten`} verwertet.`,
+      ]
+        .filter(Boolean)
+        .join(' '),
+    processedUndone: (count: number) =>
+      count === 0
+        ? 'Rückgängig gemacht.'
+        : `Rückgängig gemacht. ${count === 1 ? 'Die Zutat ist' : `${String(count)} Zutaten sind`} wieder im Vorrat.`,
     undone: (name: string) => `${name} ist wieder im Vorrat.`,
     undoFailed: 'Rückgängig hat nicht geklappt. Bitte versuch es nochmals.',
     /** Select mode like iOS «Auswählen» (Alban, 8.11.2026): pick several items and move them. */
@@ -349,6 +361,12 @@ export const messages = {
     keepsOpen: (days: number) =>
       days === 1 ? 'Offen etwa 1 Tag haltbar' : `Offen etwa ${String(days)} Tage haltbar`,
     back: 'Zurück zum Vorrat',
+    /** «Verarbeiten» (ADR-0052): a calm line for made and leftover items. */
+    madeFrom: (names: readonly string[]) => `Selbst gemacht aus: ${names.join(', ')}`,
+    madeFromNone: 'Selbst gemacht',
+    leftover: 'Reste',
+    leftoverFrom: (names: readonly string[]) => `Reste aus: ${names.join(', ')}`,
+    process: 'Verarbeiten',
     gone: 'Dieser Artikel ist nicht mehr im Vorrat.',
     bestBefore: 'Mindestens haltbar bis',
     useBy: 'Zu verbrauchen bis',
@@ -492,6 +510,34 @@ export const messages = {
     shareFailed: 'Das Teilen hat nicht geklappt.',
   },
   /** «Wissen» (ADR-0041): what keeps how long, and how it stays good longer. */
+  /** «Verarbeiten», «Selbst gemacht», «Reste» and «Gekocht» (ADR-0052). */
+  process: {
+    title: 'Verarbeiten',
+    intro: 'Wähl aus, was du verwendest, und sag, was daraus wird.',
+    ingredients: 'Zutaten',
+    search: 'Im Vorrat suchen',
+    nothingAtHome: 'Im Vorrat liegt nichts.',
+    noMatch: 'Dazu gibt es nichts im Vorrat.',
+    chosen: (count: number) =>
+      count === 0 ? 'Noch nichts gewählt' : count === 1 ? '1 gewählt' : `${String(count)} gewählt`,
+    howMuch: (name: string) => `Wie viel ${name}?`,
+    comesOut: 'Was kommt heraus?',
+    made: 'Selbst gemacht',
+    leftover: 'Reste',
+    none: 'Nichts übrig',
+    leftoversQuestion: 'Reste in den Kühlschrank?',
+    yes: 'Ja',
+    no: 'Nein',
+    name: 'Name',
+    namePlaceholder: 'zum Beispiel Schokoladenkuchen',
+    leftoverName: (title: string) => `Reste: ${title}`,
+    save: 'Speichern',
+    needName: 'Gib einen Namen an.',
+    needIngredients: 'Wähl mindestens eine Zutat.',
+    failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
+    /** On the recipe page: books what was used and asks about leftovers. */
+    cooked: 'Gekocht',
+  },
   recipes: {
     title: 'Rezepte',
     todayTitle: 'Heute kochen',
@@ -884,6 +930,8 @@ export const messages = {
   addHub: {
     receipt: 'Alle Einkäufe auf einmal: PDF, Screenshot oder Foto der Quittung',
     barcode: 'Packung vor die Kamera halten',
+    leftoversTitle: 'Reste erfassen',
+    leftovers: 'Ein Name genügt, 3 Tage haltbar',
     manualTitle: 'Von Hand',
     manual: 'Name eintippen, den Rest schlägt Rettich vor',
     startTitle: 'Zum Start: einmal Bestand aufnehmen',

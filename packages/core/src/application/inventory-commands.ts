@@ -7,8 +7,7 @@ import {
 } from '../catalog/match';
 import type { Category } from '../catalog/category';
 import { CONTRACT_V1, type OperationOutput } from '../contract/operations';
-import { estimateExpiry, expiryAfterMove, expiryAfterOpening, soonThresholdFor } from '../expiry';
-import { canBeRescued, isAtRisk } from '../metrics';
+import { estimateExpiry, expiryAfterMove, expiryAfterOpening } from '../expiry';
 import {
   InventoryItemSchema,
   OutcomeEventSchema,
@@ -20,9 +19,9 @@ import type { Id } from '../ids';
 import type { IsoDateTime } from '../model/primitives';
 import { rappen } from '../money';
 import { toLocalDate } from '../dates';
-import { estimateFromCategory } from '../value';
 import { CommandError, createCommandKit, type AppContext, type UseCase } from './command';
 import { activeItem, categoryOf, EPSILON, factsOf } from './inventory-shared';
+import { createOutcomeWriter } from './outcome-writer';
 
 /**
  * The inventory commands of contract v1 (ADR-0005), ADR-0034 layer 2: validate, check
@@ -30,7 +29,7 @@ import { activeItem, categoryOf, EPSILON, factsOf } from './inventory-shared';
  * storage ports, so the same code runs on the device and later on a server.
  */
 export function createInventoryCommands(ctx: AppContext) {
-  const { storage, clock, ids, actor } = ctx;
+  const { storage, clock, ids } = ctx;
   const { event, runCommand } = createCommandKit(ctx);
 
   const addItem: UseCase<'inventory.addItem'> = async (raw) => {
@@ -252,6 +251,7 @@ export function createInventoryCommands(ctx: AppContext) {
         } else {
           next.priceRappen = input.priceRappen;
         }
+        delete next.priceEstimated;
         changed.push('priceRappen');
       }
       if (changed.length === 0) {
@@ -299,97 +299,13 @@ export function createInventoryCommands(ctx: AppContext) {
     });
   };
 
+  const writeOutcome = createOutcomeWriter(ctx);
+
   const recordOutcome: UseCase<'inventory.recordOutcome'> = async (raw) => {
     const input = CONTRACT_V1['inventory.recordOutcome'].input.parse(raw);
     return runCommand('inventory.recordOutcome', input.commandId, async () => {
       const item = await activeItem(storage, input.householdId, input.itemId);
-      const quantity = input.quantity ?? item.quantity;
-      if (quantity > item.quantity + EPSILON) {
-        throw new CommandError('invalid_quantity', 'More than the item still has');
-      }
-      const product = await storage.products.get(item.productId);
-      const category = categoryOf(product);
-      const share = quantity / item.quantity;
-      // priceRappen always holds the value of what is left, so partial use stays exact.
-      const estimate = estimateFromCategory(quantity, item.unit, category);
-      const valueRappen =
-        item.priceRappen === undefined
-          ? estimate.valueRappen
-          : rappen(Math.round(item.priceRappen * share));
-      const grams = estimate.grams;
-
-      // Only a confirmed rescue of food that was really on the brink counts (ADR-0039).
-      const rescued =
-        input.rescued === true && input.outcome !== 'wasted' && canBeRescued(item, clock.today());
-
-      const now = clock.now();
-      const outcome = OutcomeEventSchema.parse({
-        id: ids.next(),
-        householdId: input.householdId,
-        updatedAt: now,
-        itemId: item.id,
-        outcome: input.outcome,
-        ...(input.wasteReason === undefined ? {} : { wasteReason: input.wasteReason }),
-        ...(input.sharedWith === undefined ? {} : { sharedWith: input.sharedWith }),
-        quantity,
-        valueRappen,
-        valueEstimated: item.priceRappen === undefined,
-        ...(grams === undefined ? {} : { grams }),
-        atRisk: isAtRisk(
-          item.expiresOn,
-          item.expiryKind,
-          clock.today(),
-          soonThresholdFor(item.location),
-        ),
-        ...(rescued ? { rescued: true } : {}),
-        owner: item.owner,
-        at: now,
-        by: actor,
-      });
-      await storage.outcomes.add(outcome);
-
-      const remaining = Math.round((item.quantity - quantity) * 1e6) / 1e6;
-      const closed = remaining <= EPSILON;
-      await storage.items.put(
-        InventoryItemSchema.parse(
-          closed
-            ? { ...item, status: input.outcome, statusChangedAt: now, updatedAt: now }
-            : {
-                ...item,
-                quantity: remaining,
-                ...(item.priceRappen === undefined
-                  ? {}
-                  : { priceRappen: rappen(item.priceRappen - valueRappen) }),
-                updatedAt: now,
-              },
-        ),
-      );
-      await storage.events.append(
-        event(input.householdId, 'item.consumed', {
-          itemId: item.id,
-          outcome: input.outcome,
-          quantity,
-          valueRappen,
-          ...(input.wasteReason === undefined ? {} : { wasteReason: input.wasteReason }),
-          ...(input.sharedWith === undefined ? {} : { sharedWith: input.sharedWith }),
-        }),
-      );
-      if (closed) {
-        await storage.events.append(
-          event(input.householdId, 'item.used_up', {
-            itemId: item.id,
-            productId: item.productId,
-            ...(product?.gtin === undefined ? {} : { gtin: product.gtin }),
-          }),
-        );
-      }
-      return {
-        eventId: outcome.id,
-        remainingQuantity: closed ? 0 : remaining,
-        rescued,
-        valueRappen,
-        valueEstimated: item.priceRappen === undefined,
-      };
+      return writeOutcome(item, input);
     });
   };
 
@@ -433,7 +349,7 @@ export function createInventoryCommands(ctx: AppContext) {
         : Math.round((item.quantity + outcome.quantity) * 1e6) / 1e6;
       // Only a real receipt price goes back; an estimate was never stored on the item.
       const priceRappen =
-        item.priceRappen === undefined || outcome.valueEstimated
+        item.priceRappen === undefined || (outcome.valueEstimated && item.priceEstimated !== true)
           ? item.priceRappen
           : rappen((reopened ? 0 : item.priceRappen) + outcome.valueRappen);
 

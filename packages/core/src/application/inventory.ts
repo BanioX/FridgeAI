@@ -1,5 +1,6 @@
 import type { AppContext } from './command';
 import { createInventoryCommands } from './inventory-commands';
+import { createProcessCommands } from './inventory-process';
 import { createInsightQueries } from './insights';
 import { createInventoryQueries } from './inventory-queries';
 
@@ -12,6 +13,7 @@ export function createInventoryUseCases(ctx: AppContext) {
   return {
     ...createInventoryQueries(ctx),
     ...createInventoryCommands(ctx),
+    ...createProcessCommands(ctx),
     ...createInsightQueries(ctx),
   };
 }

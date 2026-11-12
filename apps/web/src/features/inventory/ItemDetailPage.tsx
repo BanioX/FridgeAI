@@ -17,7 +17,16 @@ import {
   type Outcome,
   type WasteReason,
 } from '@fridgeai/core';
-import { ArrowLeft, PackageOpen, Pencil, Snowflake, Sun, Trash2, Undo2 } from 'lucide-react';
+import {
+  ArrowLeft,
+  ChefHat,
+  PackageOpen,
+  Pencil,
+  Snowflake,
+  Sun,
+  Trash2,
+  Undo2,
+} from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { useAppData } from '../../app/AppData';
@@ -293,6 +302,17 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
           <div className="mt-1.5 empty:hidden">
             <ItemBadges badges={itemBadges(item, today)} />
           </div>
+          {item.origin === undefined ? null : (
+            <p className="text-sm text-ink-muted">
+              {item.origin === 'made'
+                ? item.madeFrom === undefined
+                  ? t.madeFromNone
+                  : t.madeFrom(item.madeFrom)
+                : item.madeFrom === undefined
+                  ? t.leftover
+                  : t.leftoverFrom(item.madeFrom)}
+            </p>
+          )}
           {item.retailer === undefined ? null : (
             <p className="mt-0.5 flex items-center gap-2 text-ink-muted">
               <ShopBadge retailer={item.retailer} size={20} />
@@ -477,6 +497,13 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
         >
           <Pencil size={20} aria-hidden="true" />
           {messages.editItem.open}
+        </Link>
+        <Link
+          to={`/add/process?item=${item.id}`}
+          className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-line bg-surface px-5 font-semibold text-ink transition-colors hover:bg-surface-muted"
+        >
+          <ChefHat size={20} aria-hidden="true" />
+          {t.process}
         </Link>
         {item.openedOn === undefined ? (
           <Button

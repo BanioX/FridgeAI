@@ -49,6 +49,12 @@ function ClosedNotice() {
   // After a confirmed rescue: what it was worth and this month's total (ADR-0042).
   const rescuedRappen =
     closed !== null && closed.kind === 'outcome' ? closed.rescuedRappen : undefined;
+  const closedKey = (entry: NonNullable<typeof closed>): Id | undefined =>
+    entry.kind === 'deleted'
+      ? entry.itemId
+      : entry.kind === 'processed'
+        ? (entry.resultItemId ?? entry.outcomeIds[0])
+        : entry.eventId;
   const month = useLiveQuery(
     () =>
       rescuedRappen === undefined
@@ -61,12 +67,11 @@ function ClosedNotice() {
   // Tied to the closed entry it answers: the next closed item starts without it.
   const [rebuyNote, setRebuyNote] = useState<{ id: Id; text: string; done: boolean } | null>(null);
   const t = messages.inventory;
-  const closedId =
-    closed === null ? null : closed.kind === 'deleted' ? closed.itemId : closed.eventId;
+  const closedId = closed === null ? null : (closedKey(closed) ?? null);
   const note = rebuyNote !== null && rebuyNote.id === closedId ? rebuyNote : null;
 
   const rebuy = async () => {
-    if (closed === null || closed.kind === 'deleted' || busy) {
+    if (closed === null || closed.kind === 'deleted' || closed.kind === 'processed' || busy) {
       return;
     }
     setBusy(true);
@@ -94,6 +99,22 @@ function ClosedNotice() {
     }
     setBusy(true);
     try {
+      if (closed.kind === 'processed') {
+        // The ingredients come back, then the new item goes (ADR-0052).
+        for (const eventId of closed.outcomeIds) {
+          await inventory['inventory.undoOutcome']({ commandId: ids.next(), householdId, eventId });
+        }
+        if (closed.resultItemId !== undefined) {
+          await inventory['inventory.deleteItem']({
+            commandId: ids.next(),
+            householdId,
+            itemId: closed.resultItemId,
+          });
+        }
+        setMessage(t.processedUndone(closed.outcomeIds.length));
+        void navigate(`${location.pathname}${location.search}`, { replace: true, state: null });
+        return;
+      }
       if (closed.kind === 'deleted') {
         await inventory['inventory.restoreItem']({
           commandId: ids.next(),
@@ -123,13 +144,19 @@ function ClosedNotice() {
         ? note.text
         : closed.kind === 'deleted'
           ? t.deleted(closed.name)
-          : closed.rescuedRappen !== undefined
-            ? t.rescued(
-                closed.name,
-                money.format(rappen(closed.rescuedRappen)),
-                closed.estimated === true,
+          : closed.kind === 'processed'
+            ? t.processed(
+                closed.name === '' ? null : closed.name,
+                t.select.in[closed.location],
+                closed.outcomeIds.length,
               )
-            : t.closed[closed.outcome](closed.name);
+            : closed.rescuedRappen !== undefined
+              ? t.rescued(
+                  closed.name,
+                  money.format(rappen(closed.rescuedRappen)),
+                  closed.estimated === true,
+                )
+              : t.closed[closed.outcome](closed.name);
   if (text === '') {
     return null;
   }
@@ -153,7 +180,9 @@ function ClosedNotice() {
       </div>
       {closed === null ? null : (
         <div className="flex flex-wrap gap-1">
-          {closed.kind === 'deleted' || note?.done === true ? null : (
+          {closed.kind === 'deleted' ||
+          closed.kind === 'processed' ||
+          note?.done === true ? null : (
             <Button
               variant="ghost"
               icon={ShoppingBasket}

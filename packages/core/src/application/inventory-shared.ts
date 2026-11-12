@@ -33,6 +33,7 @@ export function toView(
   item: InventoryItem,
   product: Product | undefined,
   retailer?: Retailer,
+  madeFromNames?: readonly string[],
 ): InventoryItemView {
   const category = categoryOf(product);
   return {
@@ -49,6 +50,11 @@ export function toView(
     expirySource: item.expirySource,
     owner: item.owner,
     ...(item.priceRappen === undefined ? {} : { priceRappen: item.priceRappen }),
+    ...(item.priceEstimated === true ? { priceEstimated: true } : {}),
+    ...(item.origin === undefined ? {} : { origin: item.origin }),
+    ...(madeFromNames === undefined || madeFromNames.length === 0
+      ? {}
+      : { madeFrom: [...madeFromNames] }),
     ...(item.container === undefined ? {} : { container: item.container }),
     ...(item.packageSize === undefined ? {} : { packageSize: item.packageSize }),
     ...(item.openedOn === undefined ? {} : { openedOn: item.openedOn }),

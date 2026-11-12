@@ -28,11 +28,11 @@ export function estimateFromCategory(
 
 /** Current value of an item: its remaining receipt price if known, else the category estimate. */
 export function itemValue(
-  item: { quantity: number; unit: Unit; priceRappen?: Rappen },
+  item: { quantity: number; unit: Unit; priceRappen?: Rappen; priceEstimated?: boolean },
   category: Pick<Category, 'avgPriceRappen' | 'avgWeightGrams'>,
 ): { valueRappen: Rappen; estimated: boolean } {
   if (item.priceRappen !== undefined) {
-    return { valueRappen: item.priceRappen, estimated: false };
+    return { valueRappen: item.priceRappen, estimated: item.priceEstimated === true };
   }
   return {
     valueRappen: estimateFromCategory(item.quantity, item.unit, category).valueRappen,

@@ -151,6 +151,7 @@ export function createInsightQueries({ storage, clock }: AppContext) {
           quantity: item.quantity,
           unit: item.unit,
           ...(item.priceRappen === undefined ? {} : { priceRappen: item.priceRappen }),
+          ...(item.priceEstimated === true ? { priceEstimated: true } : {}),
         },
         category,
       );

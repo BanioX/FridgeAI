@@ -128,6 +128,10 @@ export function matchCategoryByName(name: string): Category | null {
     return null;
   }
   const words = normalized.split(' ');
+  // «Reste: Lasagne», «Reste Risotto»: leftovers, whatever they are made of (ADR-0052).
+  if (words[0] === 'reste' || words[0] === 'resten') {
+    return byId.get('prepared-leftovers') ?? null;
+  }
   // «Pouletbrüstli, Curry-Mohn», «Rührkuchen, Zitrone»: the product comes before the comma.
   const head = normalizeFoodText(name.split(',')[0] ?? '');
   const headHit = head === normalized ? null : bestMatch(head.split(' '), head, false);
