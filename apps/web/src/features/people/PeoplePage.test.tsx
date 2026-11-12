@@ -53,7 +53,9 @@ describe('PeoplePage', () => {
     await renderPage();
     await addPerson('Mia');
     expect(list().getAllByRole('listitem')).toHaveLength(2);
-    expect(list().getByRole('button', { name: t.edit('Mia') }).textContent).toContain('Mia');
+    expect(
+      list().getByRole('button', { name: new RegExp(`^Mia\\s?${t.editSuffix}$`) }).textContent,
+    ).toContain('Mia');
   });
 
   it('asks for a name and refuses a name that exists', async () => {
@@ -69,19 +71,25 @@ describe('PeoplePage', () => {
   it('renames a person by tapping them', async () => {
     await renderPage();
     await addPerson('Mia');
-    await userEvent.click(list().getByRole('button', { name: t.edit('Mia') }));
+    await userEvent.click(
+      list().getByRole('button', { name: new RegExp(`^Mia\\s?${t.editSuffix}$`) }),
+    );
     const field = screen.getByLabelText(t.rename);
     await userEvent.clear(field);
     await userEvent.type(field, 'Mia Muster');
     await userEvent.click(screen.getByRole('button', { name: t.save }));
     expect(await screen.findByText(t.renamed('Mia Muster'))).toBeDefined();
-    expect(list().getByRole('button', { name: t.edit('Mia Muster') })).toBeDefined();
+    expect(
+      list().getByRole('button', { name: new RegExp(`^Mia Muster\\s?${t.editSuffix}$`) }),
+    ).toBeDefined();
   });
 
   it('removes a person only after a confirm step that says what happens to their things', async () => {
     await renderPage();
     await addPerson('Mia');
-    await userEvent.click(list().getByRole('button', { name: t.edit('Mia') }));
+    await userEvent.click(
+      list().getByRole('button', { name: new RegExp(`^Mia\\s?${t.editSuffix}$`) }),
+    );
     await userEvent.click(screen.getByRole('button', { name: t.remove }));
     expect(screen.getByText(t.removeQuestion('Mia'))).toBeDefined();
     expect(list().getAllByRole('listitem')).toHaveLength(2);

@@ -21,7 +21,7 @@ Alban (12.11.2026): «Namens- oder Initialen-Badge, falls jemand sich selbst ein
 
 ## Folgen
 
-- **Schnittstelle v1:** 47 Operationen (neu `household.members`, `household.addMember`, `household.renameMember`, `household.removeMember`; `inventory.updateItem` kennt `owner`), 28 Ereignisarten (neu `member.added`, `member.renamed`, `member.removed`). Eine ungültige Besitzerin (Fremde, ausgetretene Person) lehnt `inventory.updateItem` mit `invalid_owner` ab.
+- **Schnittstelle v1:** vier neue Operationen (`household.members`, `household.addMember`, `household.renameMember`, `household.removeMember`; `inventory.updateItem` kennt `owner`), drei neue Ereignisarten (`member.added`, `member.renamed`, `member.removed`). Eine ungültige Besitzerin (Fremde, ausgetretene Person) lehnt `inventory.updateItem` mit `invalid_owner` ab.
 - **Datenrechte (ADR-0020):** Namen liegen schon in der Tabelle der Personen auf dem Gerät und gehören zu Export und Löschen. Kein neuer Datenfluss, kein neuer Speicher-Schlüssel.
 - **Aufwand:** Zeilen mit Markierung fragen die Personen einzeln ab (kleine Tabelle); Zeilen ohne Markierung kosten nichts.
 - **Offen:** Erinnerungs-Einstellungen für zusätzliche Personen (sie gehören erst mit Sync zu eigenen Geräten); Filter «Nur meine Sachen»; Hinweis beim Verwerten fremder Sachen (bewusst weggelassen, siehe Punkt 2).

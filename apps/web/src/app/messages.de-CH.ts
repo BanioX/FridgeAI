@@ -956,7 +956,8 @@ export const messages = {
     nameTaken: 'Diesen Namen gibt es schon im Haushalt.',
     save: 'Speichern',
     cancel: 'Abbrechen',
-    edit: (name: string) => `${name} umbenennen`,
+    /** Read after the visible name of a person row: «Mia umbenennen». */
+    editSuffix: 'umbenennen',
     rename: 'Name ändern',
     remove: 'Person entfernen',
     removeQuestion: (name: string) =>

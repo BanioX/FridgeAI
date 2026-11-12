@@ -202,20 +202,22 @@ export function PeoplePage() {
                   ) : (
                     <button
                       type="button"
-                      aria-label={t.edit(
-                        member.isSelf ? `${member.displayName} ${t.you}` : member.displayName,
-                      )}
                       onClick={() => {
                         open(member);
                       }}
-                      className={`${GROUPED_ROW_LINK} flex min-h-14 w-full items-center gap-3 py-2 pr-3 pl-4 text-left`}
+                      className={`${GROUPED_ROW_LINK} relative flex min-h-14 w-full items-center gap-3 py-2 pr-3 pl-4 text-left`}
                     >
                       <OwnerBadge initials={member.initials} index={index} />
                       <span className="min-w-0 flex-1 truncate font-semibold">
                         {member.displayName}
                         {member.isSelf ? (
-                          <span className="ml-1.5 font-normal text-ink-muted">{t.you}</span>
+                          <>
+                            {/* A real space, so the name reads «Ich (du) umbenennen». */}{' '}
+                            <span className="font-normal text-ink-muted">{t.you}</span>
+                          </>
                         ) : null}
+                        {/* The name comes from the visible text plus this (WCAG 2.5.3, L-03). */}
+                        <span className="sr-only">{` ${t.editSuffix}`}</span>
                       </span>
                     </button>
                   )}
