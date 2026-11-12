@@ -54,6 +54,8 @@ export function PutAwayPage() {
 
       {sections.map(({ location, groups }) => {
         const { icon: Icon, classes } = locationStyle[location];
+        // Without any saved spot here, a lone «Ohne festen Platz» heading would only be noise.
+        const showSpots = groups.some((group) => group.spot !== null);
         return (
           <section key={location} aria-labelledby={`put-away-${location}`} className="space-y-3">
             <h2 id={`put-away-${location}`} className="flex items-center gap-2 text-lg font-bold">
@@ -67,10 +69,12 @@ export function PutAwayPage() {
             </h2>
             {groups.map((group) => (
               <div key={group.spot?.id ?? 'loose'} className="space-y-1">
-                <h3 className="flex items-center gap-1.5 px-1 text-sm font-semibold text-ink-muted">
-                  <MapPin size={16} aria-hidden="true" />
-                  {group.spot?.name ?? t.noSpot}
-                </h3>
+                {showSpots ? (
+                  <h3 className="flex items-center gap-1.5 px-1 text-sm font-semibold text-ink-muted">
+                    <MapPin size={16} aria-hidden="true" />
+                    {group.spot?.name ?? t.noSpot}
+                  </h3>
+                ) : null}
                 <GroupedList>
                   {group.items.map((item) => (
                     <GroupedListItem key={item.id} inset="text">

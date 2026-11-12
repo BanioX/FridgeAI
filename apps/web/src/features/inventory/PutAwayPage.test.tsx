@@ -92,7 +92,8 @@ describe('PutAwayPage', () => {
     const headings = screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent);
     expect(headings).toEqual([messages.locations.fridge, messages.locations.pantry]);
     expect(screen.getByRole('heading', { level: 3, name: 'Gemüsefach' })).toBeDefined();
-    expect(screen.getAllByRole('heading', { level: 3, name: t.noSpot })).toHaveLength(2);
+    // Only the fridge has a saved spot, so only there the rest stands under «Ohne festen Platz».
+    expect(screen.getAllByRole('heading', { level: 3, name: t.noSpot })).toHaveLength(1);
     expect(screen.queryByText('Alt')).toBeNull();
     expect(screen.getByRole('link', { name: /Milch/ }).getAttribute('href')).toMatch(
       /^\/inventory\/.+/,

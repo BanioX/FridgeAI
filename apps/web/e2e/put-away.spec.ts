@@ -35,7 +35,8 @@ test('puts away after a receipt: per location and spot, then on to the Vorrat', 
   await expect(page.getByText('Was wohin gehört: 2 Artikel aus deiner Quittung.')).toBeVisible();
   const fridge = page.getByRole('region', { name: 'Kühlschrank' });
   await expect(fridge.getByText('Coop Pouletbrust 2St. ca. 330g')).toBeVisible();
-  await expect(fridge.getByRole('heading', { level: 3, name: 'Ohne festen Platz' })).toBeVisible();
+  // No place is saved yet: no «Ohne festen Platz» heading over a lone group.
+  await expect(fridge.getByRole('heading', { level: 3 })).toHaveCount(0);
   await expect(page.getByRole('region', { name: 'Vorrat' }).getByText('Semmeli 80G')).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
