@@ -1,5 +1,6 @@
 import { BookOpen, CircleEllipsis, House, Plus, Refrigerator, type LucideIcon } from 'lucide-react';
 import { Link, Outlet, useLocation } from 'react-router';
+import { AchievementToast } from '../features/achievements/AchievementToast';
 import { useAppBadge } from './app-badge';
 import { messages } from './messages.de-CH';
 
@@ -51,6 +52,8 @@ export function AppShell() {
       <main className="mx-auto max-w-xl px-4 pt-5 pb-32">
         <Outlet />
       </main>
+
+      <AchievementToast />
 
       <nav
         aria-label={messages.navLabel}

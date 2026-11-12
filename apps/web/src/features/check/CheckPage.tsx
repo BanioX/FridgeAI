@@ -55,11 +55,25 @@ export function CheckPage() {
   }, [householdId, inventory, today]);
 
   const finished = queue !== null && queue.length > 0 && steps.length === queue.length;
+  // A finished check is reported once (event `check.completed`, for «Treu»); stepping back and
+  // finishing again reports again.
+  const reported = useRef(false);
+  const itemCount = queue?.length ?? 0;
   useEffect(() => {
-    if (finished) {
-      writeLastCheck(today);
+    if (!finished) {
+      reported.current = false;
+      return;
     }
-  }, [finished, today]);
+    writeLastCheck(today);
+    if (!reported.current) {
+      reported.current = true;
+      void inventory['inventory.completeCheck']({
+        commandId: ids.next(),
+        householdId,
+        itemCount,
+      }).catch(() => undefined);
+    }
+  }, [finished, today, inventory, ids, householdId, itemCount]);
   // After each answer the next card's name gets the focus, so screen readers read it out.
   useEffect(() => {
     if (moved.current) {

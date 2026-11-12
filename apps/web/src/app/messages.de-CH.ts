@@ -1,3 +1,10 @@
+/** What a «noch …» text may need besides the missing number. */
+export interface MissingExtra {
+  amount: string;
+  current: number;
+  next: number;
+}
+
 export const messages = {
   appName: 'Rettich',
   navLabel: 'Hauptnavigation',
@@ -20,6 +27,7 @@ export const messages = {
     data: 'Deine Daten',
     addItem: 'Artikel erfassen',
     check: 'Kühlschrank-Check',
+    achievements: 'Abzeichen',
   },
   placeholder: 'Kommt bald.',
   loading: 'Rettich wird geladen …',
@@ -691,6 +699,90 @@ export const messages = {
       'Aus Gemüseschalen und Strünken wird eine Bouillon: auskochen, absieben, fertig.',
     ],
   },
+  /** «Abzeichen» (docs/abzeichen.md, ADR-0054): names as in the catalogue, said calmly. */
+  achievements: {
+    intro:
+      'Abzeichen gibt es fürs Retten, Kochen und Planen, nie fürs Einkaufen. Rettich rechnet sie aus deinen Daten auf dem Gerät aus.',
+    startTitle: 'Abzeichen',
+    startAll: 'Alle Abzeichen',
+    families: {
+      rescue: 'Retten',
+      balance: 'Bilanz',
+      cooking: 'Kochen und Verarbeiten',
+      stock: 'Vorrat',
+    },
+    names: {
+      'first-rescue': 'Erste Rettung',
+      'rescue-service': 'Rettungsdienst',
+      savings: 'Sparbuch',
+      'last-day': 'Auf den letzten Tag',
+      'all-senses': 'Mit allen Sinnen',
+      frugal: 'Sparsam',
+      'nothing-wasted': 'Nichts entsorgt',
+      progress: 'Fortschritt',
+      'year-end': 'Jahresabschluss',
+      'at-the-stove': 'Am Herd',
+      bakery: 'Backstube',
+      'leftover-kitchen': 'Resteküche',
+      'own-cookbook': 'Eigenes Kochbuch',
+      foresight: 'Vorausschauend',
+      overview: 'Alles im Blick',
+      loyal: 'Treu',
+      survival: 'Überlebenskunst',
+      bookkeeping: 'Buchhaltung',
+    },
+    about: {
+      'first-rescue': 'Das erste Mal etwas gerettet.',
+      'rescue-service': 'Bestätigte Rettungen insgesamt.',
+      savings: 'Wert, den du gerettet hast.',
+      'last-day': 'Am Ablauftag verwertet.',
+      'all-senses': 'Nach dem Mindesthaltbarkeitsdatum geprüft und verwertet.',
+      frugal: 'Ein abgeschlossener Monat mit weniger als 5 % entsorgt, nach Wert.',
+      'nothing-wasted': 'Ein abgeschlossener Monat ganz ohne Entsorgtes.',
+      progress: 'Ein Monat mit weniger Entsorgtem als in deinem ersten Monat.',
+      'year-end': 'Ein Jahr mit Rettich, ab dem ersten Abschluss.',
+      'at-the-stove': 'Rezepte gekocht.',
+      bakery: 'Etwas gebacken.',
+      'leftover-kitchen': 'Reste verwertet.',
+      'own-cookbook': 'Eigene Rezepte gespeichert.',
+      foresight: 'Vor dem Datum eingefroren.',
+      overview: '30 Tage lang kein Artikel im Kühlschrank über sein Datum.',
+      loyal: 'Kühlschrank-Check Woche für Woche.',
+      survival: 'Notvorrat nach der Empfehlung des Bundes: Trinkwasser und Haltbares.',
+      bookkeeping: 'Quittungen übernommen.',
+    },
+    /** What is still missing, as «noch 3 Rettungen»; `missing` is always at least 1. */
+    missing: {
+      'first-rescue': () => 'noch keine Rettung',
+      'rescue-service': (n: number) => (n === 1 ? 'noch 1 Rettung' : `noch ${String(n)} Rettungen`),
+      savings: (_n: number, extra: MissingExtra) => `noch ${extra.amount}`,
+      'last-day': (n: number) => (n === 1 ? 'noch 1 Mal' : `noch ${String(n)} Mal`),
+      'all-senses': (n: number) => (n === 1 ? 'noch 1 Mal' : `noch ${String(n)} Mal`),
+      frugal: (n: number) => (n === 1 ? 'noch 1 Monat' : `noch ${String(n)} Monate`),
+      'nothing-wasted': (n: number) => (n === 1 ? 'noch 1 Monat' : `noch ${String(n)} Monate`),
+      progress: (_n: number, extra: MissingExtra) =>
+        `bisher ${String(extra.current)} % weniger, nächste Stufe bei ${String(extra.next)} %`,
+      'year-end': (n: number) => (n === 1 ? 'noch 1 Tag' : `noch ${String(n)} Tage`),
+      'at-the-stove': (n: number) => (n === 1 ? 'noch 1 Rezept' : `noch ${String(n)} Rezepte`),
+      bakery: (n: number) => (n === 1 ? 'noch 1 Mal backen' : `noch ${String(n)} Mal backen`),
+      'leftover-kitchen': (n: number) => (n === 1 ? 'noch 1 Rest' : `noch ${String(n)} Reste`),
+      'own-cookbook': (n: number) => (n === 1 ? 'noch 1 Rezept' : `noch ${String(n)} Rezepte`),
+      foresight: (n: number) => (n === 1 ? 'noch 1 Mal' : `noch ${String(n)} Mal`),
+      overview: (n: number) => (n === 1 ? 'noch 1 Tag' : `noch ${String(n)} Tage`),
+      loyal: (n: number) => (n === 1 ? 'noch 1 Woche' : `noch ${String(n)} Wochen`),
+      survival: (n: number) => `noch ${String(n)} von 2 Teilen im Notvorrat`,
+      bookkeeping: (n: number) => (n === 1 ? 'noch 1 Quittung' : `noch ${String(n)} Quittungen`),
+    },
+    stages: ['', 'Stufe I', 'Stufe II', 'Stufe III'],
+    /** «Resteküche, Stufe II, freigeschaltet am 4.12.2026» */
+    reachedLabel: (name: string, stage: string, date: string) =>
+      stage === ''
+        ? `${name}, freigeschaltet am ${date}`
+        : `${name}, ${stage}, freigeschaltet am ${date}`,
+    openLabel: (name: string, missing: string) => `${name}, noch offen: ${missing}`,
+    toast: (name: string) => `Neues Abzeichen: ${name}.`,
+    empty: 'Noch kein Abzeichen. Das erste kommt mit deiner ersten Rettung.',
+  },
   more: {
     install: 'Rettich als App',
     installIos:
@@ -700,6 +792,7 @@ export const messages = {
     historyDetail: 'Verwertet und entsorgt: ansehen, ändern, löschen',
     shoppingDetail: 'Was du wieder brauchst',
     dataDetail: 'Exportieren, löschen, was mit deinen Daten passiert',
+    achievementsDetail: 'Was du gerettet, gekocht und geplant hast',
   },
   household: {
     data: 'Mitnehmen und löschen',
