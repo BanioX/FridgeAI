@@ -28,6 +28,7 @@ Brainstorming, laufend gepflegt (CLAUDE.md: «Ideen unterwegs»). Hier steht, wa
 | [`masterplan-bewertung.md`](./masterplan-bewertung.md) | Albans Masterplan: übernommen, später, Entscheide, Regeln |
 | [`mitbewerber-apps.md`](./mitbewerber-apps.md) | Von anderen Apps lernen: Erfassen als grösste Hürde, Bezahlschranken, Datenverlust; sichtbare Sicherung, Mindestbestand, Etiketten, Wochenplan |
 | [`alltag-und-ordnung.md`](./alltag-und-ordnung.md) | Töpfe zum Abschliessen, Plätze mit Foto («Wo ist was?»), Einräumen nach dem Einkauf, Fächer im Kühlschrank, Doppelkauf-Hinweis |
+| [`gastro.md`](./gastro.md) | Gastro-Version als eigenes Produkt (P29): Dönerladen bis Kantine, selbe Logik, eigene Marke in Rotwein-Tönen, Namensvorschläge, was abzuklären ist |
 | [`swelper.md`](./swelper.md) | **SWELPER**, die Schaltzentrale als eigener Rahmen ausserhalb von Rettich: Trichter, Dispatcher, Stecker, Kontexte; führt SWELP über Agenten aus; wie Alban beim Entwickeln Aufgaben zieht und ablegt; Budget-Empfehlung, geprüfte Fakten, Stufenplan |
 
 **Produkt-Prioritäten** (Alban, 6.11.2026):
