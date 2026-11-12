@@ -235,6 +235,36 @@ export const CATEGORIES: readonly Category[] = [
     ],
   }),
   def({
+    id: 'dairy-cheese-slices',
+    // Counted in slices, so the item page shows what is left of the pack (ADR-0063).
+    portion: { unit: 'pcs', packs: [8, 10, 12], splits: [] },
+    opened: 5,
+    de: 'Käsescheiben',
+    emoji: '🧀',
+    group: 'dairy',
+    dateKind: 'best_before',
+    location: 'fridge',
+    shelf: [60, 90, null],
+    // Per slice, like every category with packs (L-27): 10 slices of about 20 g ≈ CHF 3.00.
+    price: 30,
+    grams: 20,
+    owner: 'shared',
+    keywords: [
+      'schmelzkäse',
+      'käsescheiben',
+      'scheibenkäse',
+      'scheibletten',
+      'toastkäse',
+      'sandwichkäse',
+      'burgerkäse',
+      'käse in scheiben',
+    ],
+    tips: [
+      'Offene Käsescheiben gut verschliessen, dann trocknen die Ränder nicht aus.',
+      'Übrige Scheiben passen auf Toast, in Croque-Monsieur oder auf den Burger.',
+    ],
+  }),
+  def({
     id: 'dairy-eggs',
     freeze: 'Eier platzen in der Schale. Aufgeschlagen und verquirlt lassen sie sich einfrieren.',
     portion: { unit: 'pcs', container: 'box', packs: [6, 10], splits: [] },

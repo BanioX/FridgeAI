@@ -32,6 +32,8 @@ export const CATEGORY_FOOTPRINT: Readonly<Record<string, CategoryFootprint>> = {
   'dairy-cheese-hard': group('Cheddar cheese'),
   // Quark, Frischkäse, Mozzarella: Mozzarella is the only fresh cheese that matches.
   'dairy-cheese-soft': group('Mozzarella cheese'),
+  // Schmelzkäse, Toastkäse: processed hard cheese, so the same stand-in as the hard cheeses.
+  'dairy-cheese-slices': group('Cheddar cheese'),
   'dairy-eggs': exact('Eggs'),
   'meat-poultry': exact('Chicken breast'),
   // Beef mince 95 kg CO2e per kg is far above usual values; used as published.
@@ -114,6 +116,7 @@ export function footprintPerKg(
  */
 export const PIECE_GRAMS: Readonly<Record<string, number>> = {
   'dairy-eggs': 60,
+  'dairy-cheese-slices': 20,
   'dairy-yoghurt': 180,
   'dairy-cheese-soft': 250,
   'meat-sausage': 100,
