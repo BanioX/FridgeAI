@@ -474,6 +474,18 @@ export const messages = {
     packLabel: (left: string, start: string) => `Packung: ${left} von ${start} übrig`,
     packTaken: (taken: string) => `${taken} schon verwertet oder entsorgt`,
     packFull: 'Ganze Packung',
+    /** Tap the ring: one piece verwertet; hold it or ⋯ for the menu (ADR-0063 Nachtrag). */
+    packTap: (left: string, start: string) =>
+      `Packung: ${left} von ${start} übrig. Tippen: 1 Stück verwertet.`,
+    packHint: 'Tippen: 1 Stück verwertet · Halten: mehr',
+    packMore: 'Mehr zur Packung',
+    packEaten: '1 Stück verwertet',
+    packWasted: '1 Stück entsorgt',
+    packUndo: 'Letzte rückgängig',
+    packCancel: 'Abbrechen',
+    packTook: (amount: string, outcome: 'eaten' | 'wasted') =>
+      `${amount} Stück ${outcome === 'eaten' ? 'verwertet' : 'entsorgt'}.`,
+    packUndone: 'Zurückgelegt.',
     keepsOpen: (days: number) =>
       days === 1 ? 'Offen etwa 1 Tag haltbar' : `Offen etwa ${String(days)} Tage haltbar`,
     /** «Zutat oder Fertigprodukt» (ADR-0053): recipes only use what is cooked with. */
@@ -811,7 +823,7 @@ export const messages = {
       },
       {
         title: 'Was von der Packung übrig ist',
-        text: 'Bei Stückware wie Eiern oder Käsescheiben zeigt die Artikelseite einen Ring mit einem Teil pro Stück, zum Beispiel «7 von 10 übrig». Rettich rechnet das aus dem, was du schon verwertet oder entsorgt hast.',
+        text: 'Bei Stückware wie Eiern oder Käsescheiben zeigt die Artikelseite einen Ring mit einem Teil pro Stück, zum Beispiel «7 von 10 übrig». Tippst du auf den Ring, ist ein Stück verwertet; hältst du ihn gedrückt, kannst du ein Stück entsorgen oder das letzte zurücklegen.',
       },
     ],
     guideTitle: 'Haltbarkeit A–Z',
