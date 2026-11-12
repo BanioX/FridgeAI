@@ -337,6 +337,19 @@ export const messages = {
     kept: (names: readonly string[]) =>
       `${names.join(', ')} ${names.length === 1 ? 'bleibt' : 'bleiben'}, wo ${names.length === 1 ? 'es' : 'sie'} ${names.length === 1 ? 'ist' : 'sind'}.`,
   },
+  /** «Immer da haben» (ADR-0059): the minimum stock that fills «Nachkaufen». */
+  minStock: {
+    legend: 'Immer da haben',
+    off: 'Aus',
+    more: 'mehr',
+    amountLabel: 'Mindestbestand in Packungen, 1 bis 20',
+    help: 'Fällt der Vorrat darunter, kommt es auf «Nachkaufen».',
+    failed: 'Das hat nicht geklappt. Versuch es noch einmal.',
+    /** Said after an outcome that put the product on the list. */
+    onList: 'Steht jetzt auf «Nachkaufen».',
+    /** Small note on a shopping row the minimum created. */
+    note: 'Mindestbestand',
+  },
   swipe: {
     tip: 'Tipp: Wisch nach links, wenn du etwas verwertet hast, nach rechts, wenn du es entsorgt hast.',
     /** Visually hidden, read after the row name (WCAG 2.5.1: the item page has the buttons). */

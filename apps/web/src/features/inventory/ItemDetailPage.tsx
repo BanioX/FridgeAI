@@ -52,6 +52,7 @@ import { itemMeta } from './item-meta';
 import { formatQuantity } from '../../ui/quantity-text';
 import { portionLabel } from './portion-labels';
 import { ItemOwner } from '../people/ItemOwner';
+import { MinStockRow } from './MinStockRow';
 import { OtherPacks } from './OtherPacks';
 import { ProductFacts } from './ProductFacts';
 import { useInventoryItem } from './use-item';
@@ -197,6 +198,7 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
           eventId: result.eventId,
           name: item.name,
           outcome,
+          ...(result.addedToList === true ? { addedToList: true as const } : {}),
           ...(result.rescued
             ? {
                 rescuedRappen: result.valueRappen,
@@ -210,7 +212,8 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
       setPortion(null);
       setOtherText('');
       setUndoable(result.eventId);
-      return t.left(formatQuantity(result.remainingQuantity, item.unit));
+      const left = t.left(formatQuantity(result.remainingQuantity, item.unit));
+      return result.addedToList === true ? `${left} ${messages.minStock.onList}` : left;
     });
 
   const undo = (eventId: Id) =>
@@ -590,6 +593,7 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
           }}
         />
         <p className="text-sm text-ink-muted">{t.kind.hint}</p>
+        <MinStockRow productId={item.productId} minStock={item.minStock} />
         {item.openedOn === undefined ? (
           <Button
             variant="secondary"

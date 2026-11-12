@@ -21,6 +21,7 @@ import { rappen } from '../money';
 import { toLocalDate } from '../dates';
 import { CommandError, createCommandKit, type AppContext, type UseCase } from './command';
 import { activeItem, categoryOf, EPSILON, factsOf } from './inventory-shared';
+import { createMinStockEnsurer } from './min-stock';
 import { createOutcomeWriter } from './outcome-writer';
 
 /**
@@ -326,12 +327,15 @@ export function createInventoryCommands(ctx: AppContext) {
   };
 
   const writeOutcome = createOutcomeWriter(ctx);
+  const ensureMinStock = createMinStockEnsurer(ctx);
 
   const recordOutcome: UseCase<'inventory.recordOutcome'> = async (raw) => {
     const input = CONTRACT_V1['inventory.recordOutcome'].input.parse(raw);
     return runCommand('inventory.recordOutcome', input.commandId, async () => {
       const item = await activeItem(storage, input.householdId, input.itemId);
-      return writeOutcome(item, input);
+      const written = await writeOutcome(item, input);
+      const addedToList = await ensureMinStock(input.householdId, item.productId);
+      return { ...written, ...(addedToList ? { addedToList: true } : {}) };
     });
   };
 
@@ -579,6 +583,33 @@ export function createInventoryCommands(ctx: AppContext) {
     });
   };
 
+  /** «Immer da haben» (ADR-0059): the minimum of active packs, or `null` for none. */
+  const setMinStock: UseCase<'products.setMinStock'> = async (raw) => {
+    const input = CONTRACT_V1['products.setMinStock'].input.parse(raw);
+    return runCommand('products.setMinStock', input.commandId, async () => {
+      const product = await storage.products.get(input.productId);
+      if (product?.householdId !== input.householdId || product.deletedAt !== undefined) {
+        throw new CommandError('not_found', `Product ${input.productId} not found`);
+      }
+      const rest = { ...product };
+      delete rest.minStock;
+      await storage.products.put(
+        ProductSchema.parse({
+          ...rest,
+          ...(input.minStock === null ? {} : { minStock: input.minStock }),
+          updatedAt: clock.now(),
+        }),
+      );
+      await storage.events.append(
+        event(input.householdId, 'product.min_stock_set', {
+          productId: product.id,
+          minStock: input.minStock,
+        }),
+      );
+      return { productId: product.id, minStock: input.minStock };
+    });
+  };
+
   /**
    * Items the recognition could not place went to «Sonstiges» in the pantry with an estimated
    * date. When a better recognition knows them now (ADR-0045 follow-up, Alban 8.11.2026: «Mache
@@ -628,5 +659,6 @@ export function createInventoryCommands(ctx: AppContext) {
     'inventory.move': move,
     'inventory.open': open,
     'products.setNutrition': setNutrition,
+    'products.setMinStock': setMinStock,
   };
 }

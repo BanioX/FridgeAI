@@ -174,6 +174,9 @@ function ClosedNotice() {
         <p role="status" className="font-semibold">
           {text}
         </p>
+        {closed?.kind === 'outcome' && closed.addedToList === true && note === null ? (
+          <p className="text-sm">{messages.minStock.onList}</p>
+        ) : null}
         {closed?.kind === 'outcome' && closed.rescuedRappen !== undefined && note === null ? (
           <>
             {month === undefined ? null : (
@@ -189,6 +192,8 @@ function ClosedNotice() {
         <div className="flex flex-wrap gap-1">
           {closed.kind === 'deleted' ||
           closed.kind === 'processed' ||
+          // Already on «Nachkaufen» through the minimum stock (ADR-0059): no second offer.
+          closed.addedToList === true ||
           note?.done === true ? null : (
             <Button
               variant="ghost"

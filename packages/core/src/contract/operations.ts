@@ -269,6 +269,8 @@ export const InventoryItemViewSchema = z.object({
    * in the location the item is in now; after a move to the freezer the pantry spot stays hidden.
    */
   spot: z.object({ id: IdSchema, name: z.string(), hasPhoto: z.boolean() }).nullable(),
+  /** «Immer da haben» of the product: the minimum of active packs (ADR-0059). */
+  minStock: z.int().min(1).max(20).optional(),
 });
 export type InventoryItemView = z.infer<typeof InventoryItemViewSchema>;
 
@@ -592,6 +594,8 @@ export const CONTRACT_V1 = {
       valueRappen: RappenSchema.min(0),
       /** No price from a receipt: the value is the category estimate («etwa CHF 1.20»). */
       valueEstimated: z.boolean(),
+      /** The minimum stock put the product on «Nachkaufen» because of this outcome (ADR-0059). */
+      addedToList: z.boolean().optional(),
     }),
   }),
   'inventory.undoOutcome': command({
@@ -844,6 +848,20 @@ export const CONTRACT_V1 = {
     input: z.object({ ...commandBase, productId: IdSchema, spotId: IdSchema.nullable() }),
     output: z.object({ productId: IdSchema, spotId: IdSchema.nullable() }),
   }),
+  'products.setMinStock': command({
+    name: 'products.setMinStock',
+    summary: {
+      de: 'Mindestbestand eines Produkts setzen («Milch: immer mindestens 1») oder mit null entfernen.',
+      en: 'Set the minimum stock of a product (active packs), or clear it with null.',
+    },
+    scopes: ['inventory:write'],
+    input: z.object({
+      ...commandBase,
+      productId: IdSchema,
+      minStock: z.int().min(1).max(20).nullable(),
+    }),
+    output: z.object({ productId: IdSchema, minStock: z.int().min(1).max(20).nullable() }),
+  }),
   'spots.list': query({
     name: 'spots.list',
     summary: {
@@ -925,6 +943,8 @@ export const CONTRACT_V1 = {
           emoji: z.string().optional(),
           /** E-02: what of the same kind is still at home, so nothing is bought twice. */
           atHome: AtHomeSchema.optional(),
+          /** Put there by the minimum stock, not by a person (ADR-0059). */
+          source: z.enum(['min_stock']).optional(),
         }),
       ),
     }),

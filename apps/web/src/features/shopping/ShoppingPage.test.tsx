@@ -103,4 +103,42 @@ describe('ShoppingPage', () => {
     await userEvent.click(screen.getByRole('button', { name: t.share }));
     expect(await screen.findByText(t.shareFailed)).toBeDefined();
   });
+  it('marks rows the minimum stock created with «Mindestbestand», and only those', async () => {
+    const db = testDb();
+    const profile = await ensureLocalHousehold(db, browserClock, browserIds, {
+      household: messages.defaults.householdName,
+      member: messages.defaults.memberName,
+    });
+    const handlers = createInventoryHandlers({
+      db,
+      clock: browserClock,
+      ids: browserIds,
+      actor: profile.member.id,
+    });
+    const householdId = profile.household.id;
+    const { itemId } = await handlers['inventory.addItem']({
+      commandId: browserIds.next(),
+      householdId,
+      name: 'Vollmilch',
+      location: 'fridge',
+    });
+    const [product] = await db.products.toArray();
+    await handlers['products.setMinStock']({
+      commandId: browserIds.next(),
+      householdId,
+      productId: product?.id ?? '',
+      minStock: 1,
+    });
+    await handlers['inventory.recordOutcome']({
+      commandId: browserIds.next(),
+      householdId,
+      itemId,
+      outcome: 'eaten',
+    });
+    renderPage(db);
+    expect(await screen.findByText(messages.minStock.note)).toBeDefined();
+    await addToList('Brot');
+    await screen.findByText('Brot');
+    expect(screen.getAllByText(messages.minStock.note)).toHaveLength(1);
+  });
 });

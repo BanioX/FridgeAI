@@ -25,6 +25,15 @@ export const SWIPE_HINT_ID = 'swipe-outcome-hint';
 /** What a swipe records: to the left «Verwertet», to the right «Entsorgt». */
 type SwipeOutcome = 'eaten' | 'wasted';
 
+/** The calm second line of the toast: «Ist das noch gut?» and/or «Steht jetzt auf «Nachkaufen».» */
+function hintOf(stillGood: boolean, onList: boolean): { hint?: string } {
+  const lines = [
+    ...(stillGood ? [messages.rescue.stillGood] : []),
+    ...(onList ? [messages.minStock.onList] : []),
+  ];
+  return lines.length === 0 ? {} : { hint: lines.join(' ') };
+}
+
 function readSeen(): boolean {
   try {
     return window.localStorage.getItem(SEEN_KEY) === '1';
@@ -113,9 +122,10 @@ export function useSwipeOutcome(): {
             key: Date.now(),
             text,
             // K3: a best-before date is no reason to throw it away; the toast says so, calmly.
-            ...(outcome === 'wasted' && shouldAskStillGood(item)
-              ? { hint: messages.rescue.stillGood }
-              : {}),
+            ...hintOf(
+              outcome === 'wasted' && shouldAskStillGood(item),
+              result.addedToList === true,
+            ),
             undo: { kind: 'outcome', eventId: result.eventId },
           });
         } catch {

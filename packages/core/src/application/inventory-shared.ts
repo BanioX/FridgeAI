@@ -68,6 +68,7 @@ export function toView(
     ...(product === undefined ? {} : { productSource: product.source }),
     ...(product?.gtin === undefined ? {} : { gtin: product.gtin }),
     ...(retailer === undefined ? {} : { retailer }),
+    ...(product?.minStock === undefined ? {} : { minStock: product.minStock }),
     // Only in the location the spot lies in: after a move the pantry spot stays hidden.
     spot:
       spot === undefined || spot.deletedAt !== undefined || spot.location !== item.location

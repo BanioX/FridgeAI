@@ -32,6 +32,7 @@ describe('contract v1', () => {
       'products.wasteHabits',
       'products.image',
       'products.setSpot',
+      'products.setMinStock',
       'spots.list',
       'spots.create',
       'spots.update',
