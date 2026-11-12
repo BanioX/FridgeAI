@@ -2,6 +2,27 @@
 
 Alle Änderungen an Rettich (bis 7.11.2026 FridgeAI), neueste zuerst. Wird mit `pnpm release` erzeugt (ADR-0017).
 
+## [0.15.0] – 2026-11-12
+
+### Neu
+
+- read the expiry date from a photo on the device (ADR-0062) ([#261](https://github.com/BanioX/FridgeAI/pull/261))
+- fridge check goes shelf by shelf ([#259](https://github.com/BanioX/FridgeAI/pull/259))
+- recipes for the chosen items on «Verarbeiten» (ADR-0061) ([#258](https://github.com/BanioX/FridgeAI/pull/258))
+- put away after a receipt, grouped by place ([#257](https://github.com/BanioX/FridgeAI/pull/257))
+- Mindestbestand – staples go onto «Nachkaufen» by themselves (ADR-0059) ([#254](https://github.com/BanioX/FridgeAI/pull/254))
+- change several items at once in select mode ([#253](https://github.com/BanioX/FridgeAI/pull/253))
+- fridge compartments as one-tap spots, the suiting one first ([#251](https://github.com/BanioX/FridgeAI/pull/251))
+
+### Behoben
+
+- one place per action in select mode; drag works on iPhone ([#255](https://github.com/BanioX/FridgeAI/pull/255))
+
+### Dokumentation
+
+- plan status as of 12.11.2026 ([#260](https://github.com/BanioX/FridgeAI/pull/260))
+- park a gastro version as its own product (P29) ([#256](https://github.com/BanioX/FridgeAI/pull/256))
+
 ## [0.14.0] – 2026-11-12
 
 **Klimabilanz mit CO₂e, Wasser, Fläche und Kehricht, Abzeichen, Töpfe zum Abschliessen, «Wo ist was?» mit Fotos der Plätze, «Gehört» mit Initialen, vier Kacheln auf Start, sichtbare Sicherung und der richtige Wert für Eier und Flaschen.**
