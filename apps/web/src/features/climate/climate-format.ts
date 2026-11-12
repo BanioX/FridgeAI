@@ -39,3 +39,10 @@ export const land = (m2: number): Quantity => ({ value: formatNumber(m2, 1), uni
 
 /** «2,4 kg» as one text. */
 export const text = ({ value, unit }: Quantity): string => `${value} ${unit}`;
+
+/** The PDF fonts have no subscript two: «CO₂e» is drawn as «CO2e». */
+export const pdfSafe = (value: string): string => value.replaceAll('₂', '2');
+
+/** Share of the rescued weight that rests on an estimate, as whole percent; null when none. */
+export const estimatedPercent = (share: number): number | null =>
+  share === 0 ? null : Math.max(1, Math.round(100 * share));

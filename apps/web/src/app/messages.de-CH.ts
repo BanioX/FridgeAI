@@ -1228,6 +1228,20 @@ export const messages = {
         placeTotal: 'TOTAL WERT',
         placeEmpty: 'Hier ist gerade nichts.',
         continued: '… Fortsetzung',
+        climate: 'KLIMABILANZ',
+        climateRescued: 'Was du gerettet hast',
+        climateEstimated: (percent: number) => `${String(percent)} % geschätzt`,
+        kehricht: 'KEHRICHT',
+        kehrichtValue: (fee: string) => `etwa ${fee}`,
+        kehrichtBags: (bags: string) => `etwa ${bags} Säcke à 35 l`,
+        climateSource: 'Daten: Clark et al. (2022), CC BY 4.0',
+      },
+      /** «Klimabilanz» in the detailed report (ADR-0057): figures of the food, not a claim. */
+      climate: {
+        title: 'Klimabilanz',
+        wastedLine: (food: string, co2e: string, water: string) =>
+          `Zum Vergleich entsorgt: ${food} Lebensmittel · ${co2e} · ${water} Wasser`,
+        none: 'In diesem Zeitraum wurde nichts gerettet.',
       },
       created: (date: string) => `Erstellt am ${date}`,
       /** The onyx card of the detailed report (Alban, 8.11.2026: «gibt Premium-Look»). */

@@ -3,6 +3,7 @@ import {
   IsoDateTimeSchema,
   localDate,
   rappen,
+  type FootprintSummary,
   type Report,
   type ReportItem,
   type ReportOutcome,
@@ -128,4 +129,32 @@ export function sampleReport(): Report {
     outcomes,
     purchases,
   });
+}
+
+/** An invented Klimabilanz to go with `sampleReport()` (ADR-0057); no real data. */
+export function sampleFootprint(): FootprintSummary {
+  return {
+    rescued: {
+      count: 14,
+      grams: 6400,
+      co2eGrams: 21800,
+      waterLitres: 2650,
+      landM2: 24.3,
+      estimatedShare: 0.35,
+    },
+    wasted: {
+      count: 4,
+      grams: 1250,
+      co2eGrams: 3100,
+      waterLitres: 480,
+      landM2: 3.2,
+      estimatedShare: 0.2,
+    },
+    topCategories: [
+      { categoryId: 'meat-poultry', grams: 1200, co2eGrams: 9200 },
+      { categoryId: 'dairy-cheese-hard', grams: 750, co2eGrams: 6100 },
+      { categoryId: 'dairy-milk', grams: 3000, co2eGrams: 4800 },
+    ],
+    kehricht: { bags: 1.3, feeRappen: rappen(208) },
+  };
 }
