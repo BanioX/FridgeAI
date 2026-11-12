@@ -66,4 +66,26 @@ describe('ProductFacts', () => {
     expect(screen.queryByLabelText('Foto oder Screenshot wählen')).toBeNull();
     expect(screen.getByText('250 kcal')).toBeDefined();
   });
+
+  it('labels values of the BLV database as estimated, with the food and the source', () => {
+    render(
+      <ProductFacts
+        item={{
+          ...base,
+          name: 'Thunfischsteak',
+          nutrition: { basis: '100g', energyKcal: 114, protein: 25.8, source: 'blv' },
+          nutritionFood: 'Thunfisch, roh',
+        }}
+      />,
+    );
+    expect(screen.getByRole('table', { name: 'Nährwerte pro 100 g · geschätzt' })).toBeDefined();
+    expect(screen.getByText('114 kcal')).toBeDefined();
+    expect(
+      screen.getByText(/Durchschnitt für Thunfisch, roh\. Unverarbeitet, darum ohne Etikett\./),
+    ).toBeDefined();
+    expect(screen.getByText(/Quelle: Schweizer Nährwertdatenbank V 7\.1, BLV/)).toBeDefined();
+    // A label photo still wins over the estimate.
+    expect(screen.getByLabelText('Foto oder Screenshot wählen')).toBeDefined();
+    expect(screen.queryByRole('link')).toBeNull();
+  });
 });
