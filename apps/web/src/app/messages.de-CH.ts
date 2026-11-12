@@ -239,11 +239,12 @@ export const messages = {
       done: 'Fertig',
       all: 'Alle auswählen',
       none: 'Keine auswählen',
-      barLabel: 'Auswahl verschieben',
       count: (n: number) => `${String(n)} ausgewählt`,
       /** The small button next to the count: opens the sheet that changes all chosen items. */
       edit: 'Ändern',
       moveTo: 'Verschieben nach',
+      /** The location the chosen items lie in now: not a target. */
+      here: 'hier',
       /** «im Tiefkühler»: where the items lie afterwards. */
       in: {
         fridge: 'im Kühlschrank',
@@ -258,7 +259,7 @@ export const messages = {
         `${names.join(', ')} ${names.length === 1 ? 'gehört' : 'gehören'} nicht ${place.replace(/^im /, 'in den ')}, ${names.length === 1 ? 'bleibt' : 'bleiben'} hier.`,
       failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
       /** Visually hidden, read after the row name (WCAG 2.5.7: the buttons below do the same). */
-      dragHint: 'Halten und auf einen Lagerort oben ziehen, oder unten «Verschieben nach» wählen.',
+      dragHint: 'Halten und auf einen Lagerort oder einen Topf oben ziehen, oder oben antippen.',
       /** The parcel under the finger: «3 Artikel» (a single item shows its name instead). */
       parcel: (n: number) => `${String(n)} Artikel`,
     },
