@@ -875,6 +875,16 @@ export const messages = {
     current: 'Aktueller Platz',
     nameLabel: 'Name',
     namePlaceholder: 'z. B. Oberer Schrank links',
+    /** Ready-made fridge compartments, one tap each (O5); the one that suits the item first. */
+    shelvesTitle: 'Fächer im Kühlschrank',
+    suits: 'passt hierhin',
+    shelves: {
+      door: 'Türfach',
+      top: 'Oberes Fach',
+      middle: 'Mittleres Fach',
+      bottom: 'Unteres Fach',
+      drawer: 'Gemüsefach',
+    },
     takePhoto: 'Foto aufnehmen',
     photoPreview: 'Vorschau des Fotos',
     save: 'Speichern',

@@ -83,3 +83,19 @@ test('the page «Wo ist was?» is lean on an empty device and passes axe', async
   const result = await new AxeBuilder({ page }).analyze();
   expect(result.violations).toEqual([]);
 });
+
+test('in the fridge, the compartment that suits the food is one tap away', async ({ page }) => {
+  await page.goto('/inventory/new');
+  await page.getByLabel('Was ist es?').fill('Hackfleisch');
+  await page.getByRole('button', { name: 'Speichern', exact: true }).click();
+  await page.getByRole('link', { name: /Hackfleisch/ }).click();
+  await page.getByRole('button', { name: 'Platz festhalten' }).click();
+  const sheet = page.getByRole('dialog', { name: 'Wo liegt das?' });
+  const shelves = sheet.getByRole('region', { name: 'Fächer im Kühlschrank' });
+  // Meat keeps best at the bottom above the vegetable drawer, so that one comes first.
+  await expect(shelves.getByRole('button').first()).toHaveText('Unteres Fach · passt hierhin');
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await shelves.getByRole('button', { name: /Unteres Fach/ }).click();
+  await expect(sheet).toBeHidden();
+  await expect(page.getByText('Unteres Fach', { exact: true })).toBeVisible();
+});
