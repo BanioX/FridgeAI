@@ -80,6 +80,7 @@ test('«Verarbeiten» from select mode offers recipes for the chosen item', asyn
   await expect(page.getByRole('heading', { level: 1, name: 'Verarbeiten' })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Rezepte mit deiner Auswahl' })).toBeVisible();
   await expect(page.getByText('Mit: Vollmilch').first()).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 
 test('drags the selection onto «Entsorgt»', async ({ page }) => {
