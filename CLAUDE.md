@@ -73,5 +73,6 @@ Stack und Versionsentscheide: [`docs/adr/0002-tech-stack-and-tooling.md`](docs/a
 - [ ] Offline-Verhalten und Kamera-Fallbacks bedacht
 - [ ] Keine personenbezogenen Daten in Logs, Fixtures, Commits
 - [ ] UI-Texte de-CH, a11y-Basics (Labels, Kontrast, Fokus)
+- [ ] Neue Funktion auf allen Flächen nachgezogen oder bewusst weggelassen ([`docs/flaechen.md`](docs/flaechen.md): Start, Liste, Artikel, Journal, Bilanz, PDF, Export, Wissen, Suche, Abzeichen)
 - [ ] Doku/ADR aktualisiert
 - [ ] Von Opus reviewt
