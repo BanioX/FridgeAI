@@ -17,7 +17,7 @@ async function addToFridge(page: Page, name: string) {
 }
 
 test('changes the date of several items and marks several as opened', async ({ page }) => {
-  for (const name of ['Eier', 'Saft', 'Salami']) {
+  for (const name of ['Eier', 'Saft', 'Joghurt']) {
     await addToFridge(page, name);
   }
   await page.goto('/inventory?location=fridge');
@@ -47,7 +47,7 @@ test('changes the date of several items and marks several as opened', async ({ p
   // Mark two as opened.
   await page.getByRole('button', { name: 'Auswählen' }).click();
   await page.getByText('Eier', { exact: true }).click();
-  await page.getByText('Salami', { exact: true }).click();
+  await page.getByText('Joghurt', { exact: true }).click();
   await page.getByRole('button', { name: 'Ändern' }).click();
   await page
     .getByRole('dialog')
@@ -55,6 +55,6 @@ test('changes the date of several items and marks several as opened', async ({ p
     .click();
   await expect(page.getByRole('status')).toHaveText('2 Artikel geändert.');
   await expect(page.getByRole('link', { name: /Eier/ })).toContainText('Geöffnet');
-  await expect(page.getByRole('link', { name: /Salami/ })).toContainText('Geöffnet');
+  await expect(page.getByRole('link', { name: /Joghurt/ })).toContainText('Geöffnet');
   await expect(page.getByRole('link', { name: /Saft/ })).not.toContainText('Geöffnet');
 });
