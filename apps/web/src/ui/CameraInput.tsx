@@ -1,28 +1,10 @@
 import type { ReactNode } from 'react';
 
 /**
- * A receipt photo taken on Start travels to «Quittung hochladen» (Alban, 12.11.2026): the camera
- * opens on the tap on Start, and the receipt page reads the photo when it opens. It stays in memory
- * for that one step only; nothing is stored.
- */
-let handedOver: readonly File[] = [];
-
-export function handOverReceiptPhotos(files: readonly File[]): void {
-  handedOver = files;
-}
-
-/** The photos taken on Start, once: a second call returns none. */
-export function takeReceiptPhotos(): readonly File[] {
-  const files = handedOver;
-  handedOver = [];
-  return files;
-}
-
-/**
  * «Foto aufnehmen»: opens the back camera straight away. The camera only starts on this tap; a
  * device without camera offers its file picker instead, so the way still leads somewhere.
  */
-export function ReceiptPhotoInput({
+export function CameraInput({
   className,
   disabled = false,
   onPhotos,

@@ -2,7 +2,7 @@ import { matchCategoryByName, normalizeFoodText } from '../catalog/match';
 import { parseExpiryFromText, type ExpiryFromText } from '../expiry-from-text';
 import type { CategoryId, LocalDate } from '../model/primitives';
 import type { ProductSearchHit } from '../ports';
-import { parsePackSize } from '../receipt/off-match';
+import { HOUSE_BRANDS, parsePackSize } from '../receipt/off-match';
 
 /** What the text on a pack says, read on the device (ADR-0068). Everything is a suggestion. */
 export interface LabelReading {
@@ -123,10 +123,19 @@ export function readLabel(text: string, today: LocalDate): LabelReading {
   };
 }
 
+const wordsOf = (text: string) => [
+  ...new Set(
+    normalizeFoodText(text)
+      .split(' ')
+      .filter((word) => word.length >= 3 && !/\d/.test(word)),
+  ),
+];
+
 /**
- * Catalogue hits that fit the label: most of the product's own words are printed on it. A label
- * carries far more words than a product name, so the share of the product's words counts, not the
- * share of the label's. At most `limit`, best first; the person picks one or none.
+ * Catalogue hits that fit the label: most of the product's own words are printed on it, and at
+ * least one word that names the product, not only the brand or «Bio». A label carries far more
+ * words than a product name, so the share of the product's words counts, not the share of the
+ * label's. At most `limit`, best first; the person picks one or none.
  */
 export function rankLabelHits(
   query: string,
@@ -136,17 +145,17 @@ export function rankLabelHits(
   const printed = new Set(query.split(' ').filter((word) => word !== ''));
   return hits
     .map((hit) => {
-      const own = [
-        ...new Set(
-          normalizeFoodText(`${hit.name} ${hit.brand ?? ''}`)
-            .split(' ')
-            .filter((word) => word.length >= 3 && !/\d/.test(word)),
-        ),
-      ];
+      const own = wordsOf(`${hit.name} ${hit.brand ?? ''}`);
+      const naming = wordsOf(hit.name).filter((word) => !HOUSE_BRANDS.has(word));
       const shared = own.filter((word) => printed.has(word)).length;
-      return { hit, shared, share: own.length === 0 ? 0 : shared / own.length };
+      return {
+        hit,
+        shared,
+        share: own.length === 0 ? 0 : shared / own.length,
+        named: naming.some((word) => printed.has(word)),
+      };
     })
-    .filter((entry) => entry.shared >= 2 && entry.share >= 0.5)
+    .filter((entry) => entry.named && entry.shared >= 2 && entry.share >= 0.5)
     .sort((a, b) => b.share - a.share || b.shared - a.shared)
     .slice(0, limit)
     .map((entry) => entry.hit);

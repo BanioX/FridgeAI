@@ -15,7 +15,8 @@ import { Card } from '../../ui/Card';
 import { sha256Hex } from './hash';
 import { readImageText } from './read-image';
 import { readPdfText } from './read-pdf';
-import { handOverReceiptPhotos, ReceiptPhotoInput, takeReceiptPhotos } from './ReceiptPhotoInput';
+import { CameraInput } from '../../ui/CameraInput';
+import { handOverReceiptPhotos, takeReceiptPhotos } from './receipt-handover';
 import { batchTotals, orderBySumCheck, seenInBatch } from './receipt-batch';
 import type { ReceiptMatching } from './ReceiptMatch';
 import { isFood, ReceiptReview, type Review } from './ReceiptReview';
@@ -68,14 +69,17 @@ export function ReceiptUpload() {
   const matchings = useRef(new Map<string, ReceiptMatching>());
 
   /** One file: its review, or the reason it cannot be shown. */
-  async function read(file: File): Promise<{ review: Review } | { text: string }> {
+  async function read(file: File, known?: string): Promise<{ review: Review } | { text: string }> {
     if (file.size > MAX_BYTES) {
       return { text: t.tooLarge };
     }
     const source = isPdf(file) ? 'pdf' : 'photo';
     try {
+      // A photo read before («Foto aufnehmen») brings its text along: no second reading.
       const text =
-        source === 'pdf' ? await readPdfText(await file.arrayBuffer()) : await readImageText(file);
+        source === 'pdf'
+          ? await readPdfText(await file.arrayBuffer())
+          : (known ?? (await readImageText(file)));
       const receipt = parseReceiptText(text);
       if (text.trim() === '' || !receipt.lines.some((line) => line.kind === 'item')) {
         return { text: text.trim() === '' && source === 'pdf' ? t.noText : t.noLines };
@@ -126,7 +130,7 @@ export function ReceiptUpload() {
   }
 
   /** Reads all files first, one after the other; then one page shows them all. */
-  async function start(files: readonly File[]) {
+  async function start(files: readonly File[], readBefore?: ReadonlyMap<File, string>) {
     if (files.length === 0) {
       return;
     }
@@ -144,7 +148,7 @@ export function ReceiptUpload() {
             ? t.reading
             : t.readingPhoto,
       );
-      const result = await read(file);
+      const result = await read(file, readBefore?.get(file));
       if (!('review' in result)) {
         skipped.push({ fileName: file.name, text: result.text });
       } else if (
@@ -273,14 +277,24 @@ export function ReceiptUpload() {
     }
   }
 
-  // A photo taken on Start is read as soon as the page opens (ReceiptPhotoInput). Reading starts
+  // A photo taken elsewhere is read as soon as the page opens (receipt-handover.ts). Reading starts
   // after the first paint; if the page closes before that, the photo waits for the next visit.
   useEffect(() => {
     const photos = takeReceiptPhotos();
     if (photos.length === 0) {
       return;
     }
-    const timer = setTimeout(() => void start(photos), 0);
+    const readBefore = new Map(
+      photos.flatMap((photo) => (photo.text === undefined ? [] : [[photo.file, photo.text]])),
+    );
+    const timer = setTimeout(
+      () =>
+        void start(
+          photos.map((photo) => photo.file),
+          readBefore,
+        ),
+      0,
+    );
     return () => {
       clearTimeout(timer);
       handOverReceiptPhotos(photos);
@@ -327,14 +341,14 @@ export function ReceiptUpload() {
           }}
         />
       </label>
-      <ReceiptPhotoInput
+      <CameraInput
         disabled={busy}
         onPhotos={(files) => void start(files)}
         className="mt-2 flex min-h-12 items-center justify-center gap-2 rounded-xl border border-line bg-surface px-5 font-semibold text-basil-700 transition-colors hover:bg-basil-50"
       >
         <Camera size={20} aria-hidden="true" />
         {t.takePhoto}
-      </ReceiptPhotoInput>
+      </CameraInput>
       <p role="status" className="mt-2 text-sm font-semibold text-basil-800">
         {status}
       </p>

@@ -19,10 +19,14 @@ export function fallbackCategory(): Category {
   return category;
 }
 
-/** Lower case, umlauts as ae/oe/ue, accents removed, everything else becomes a space. */
+/**
+ * Lower case, umlauts as ae/oe/ue, accents removed, everything else becomes a space. OCR often
+ * reads «Bio» as «Bıo» with a dotless i; it counts as an i.
+ */
 export function normalizeFoodText(text: string): string {
   return text
     .toLowerCase()
+    .replace(/ı/g, 'i')
     .replace(/ä/g, 'ae')
     .replace(/ö/g, 'oe')
     .replace(/ü/g, 'ue')

@@ -48,6 +48,10 @@ describe('readLabel', () => {
     expect(reading.categoryId).toBe('pantry-sweets');
   });
 
+  it('reads the dotless i that OCR puts into «Bio»', () => {
+    expect(readLabel('Naturaplan\nBıo Vollmilch', today).query).toBe('naturaplan bio vollmilch');
+  });
+
   it('says nothing it cannot read', () => {
     expect(readLabel('', today)).toEqual({ query: '' });
     expect(readLabel('~~ 12 ::', today)).toEqual({ query: '' });
@@ -70,6 +74,10 @@ describe('rankLabelHits', () => {
       hit('Vollmilch pasteurisiert'),
     ]);
     expect(ranked.map((entry) => entry.name)).toEqual(['Bio Vollmilch', 'Vollmilch pasteurisiert']);
+  });
+
+  it('needs a word that names the product, not only the brand and «Bio»', () => {
+    expect(rankLabelHits(query, [hit('Bio Akazienhonig', 'Naturaplan')])).toEqual([]);
   });
 
   it('needs two shared words: one common word is not enough', () => {
