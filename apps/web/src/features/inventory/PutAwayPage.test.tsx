@@ -1,7 +1,9 @@
 import 'fake-indexeddb/auto';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { addDays, formatSwissDate, toLocalDate } from '@fridgeai/core';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AppDataProvider } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
 import { seedDb } from '../../app/test-seed';
@@ -9,6 +11,8 @@ import { browserClock, browserIds } from '../../data/adapters';
 import { createInventoryHandlers } from '../../data/handlers';
 import { testDb } from '../../data/test-helpers';
 import { PutAwayPage } from './PutAwayPage';
+
+vi.mock('../receipts/read-image', () => ({ readImageText: vi.fn() }));
 
 const t = messages.inventory.putAway;
 
@@ -107,6 +111,28 @@ describe('PutAwayPage', () => {
     await renderPage([{ name: 'Milch', location: 'fridge' }], (idOf) => [idOf('Milch')]);
     expect(await screen.findByText(t.subline(1))).toBeDefined();
     expect(t.subline(1)).toContain('1 Artikel aus');
+  });
+
+  it('reads a date from the pack and saves it for that article only', async () => {
+    await renderPage(
+      [
+        { name: 'Milch', location: 'fridge' },
+        { name: 'Käse', location: 'fridge', inDays: 30 },
+      ],
+      (idOf) => [idOf('Milch'), idOf('Käse')],
+    );
+    // Only an estimated date asks for a photo; the cheese date is known already.
+    expect(screen.queryByLabelText(messages.addItem.datePhoto.chooseFor('Käse'))).toBeNull();
+    const date = addDays(toLocalDate(new Date()), 400);
+    const { readImageText } = await import('../receipts/read-image');
+    vi.mocked(readImageText).mockResolvedValue(`Zu verbrauchen bis ${formatSwissDate(date)}`);
+    const input = await screen.findByLabelText(messages.addItem.datePhoto.chooseFor('Milch'));
+    // The camera is its own control next to the link, never inside it.
+    expect(input.closest('a')).toBeNull();
+    await userEvent.upload(input, new File(['x'], 'date.png', { type: 'image/png' }));
+    expect(await screen.findByText(t.dateSaved('Milch', formatSwissDate(date)))).toBeDefined();
+    expect(screen.getAllByRole('status')).toHaveLength(1);
+    expect(screen.getByText(t.expires(formatSwissDate(date), false))).toBeDefined();
   });
 
   it('goes back to the Vorrat when no listed article exists any more', async () => {

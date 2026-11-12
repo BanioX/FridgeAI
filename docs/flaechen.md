@@ -34,7 +34,7 @@ Prüfung aller Funktionen aus ADR-0048 bis ADR-0062 und der Funktionen ohne eige
 | «Gehört» (0058) | ja | ja | ja | nein (K2) | – | nein (K6) | ja | nein (K10) | nein (K9) | – |
 | Mindestbestand (0059) | – | ja | ja | – | – | – | ja | nein (K10) | – | – |
 | Rezepte zur Auswahl (0061) | – | ja | ja | – | – | – | – | nein (K10) | – | – |
-| Datum fotografieren (0062) | – | – | beim Ändern nein (K8) | – | – | – | ja | nein (K10) | – | – |
+| Datum fotografieren (0062) | – | – | ja (Ändern, Einräumen) | – | – | – | ja | nein (K10) | – | – |
 | Lagerort-Kacheln | ja | ja | – | – | – | Notvorrat-Quittung nein (K7) | – | – | – | – |
 | Sicherung | ja | – | – | – | ja | – | nach Import nein (K3) | nein (K10) | – | – |
 | Einräumen | – | ja | ja | – | – | – | – | nein (K10) | – | – |
@@ -54,7 +54,7 @@ Daten gehen keine verloren: Alle Tabellen stehen in der Sicherung und kommen bei
 | K5 | Kühlschrank-Check auch ohne Fälligkeit starten (Vorrat, Mehr); Person auf der Check-Karte | offen |
 | K6 | PDF: Plätze, Person und Verarbeitetes im Auszug | offen |
 | K7 | PDF: Abzeichen im Zeitraum; Quittung für den Notvorrat | offen |
-| K8 | «Datum fotografieren» auch beim Ändern und beim Einräumen | offen |
+| K8 | «Datum fotografieren» auch beim Ändern und beim Einräumen | erledigt |
 | K9 | «Wo ist was?» findet Fachnamen und Personen | offen |
 | K10 | «Kurz erklärt» für alle neuen Funktionen; Datenschutz-Hinweis nennt Datumsfotos | offen |
 | K11 | «Mehrere ändern» kann auch den Platz setzen | offen |

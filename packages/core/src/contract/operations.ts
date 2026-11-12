@@ -480,9 +480,11 @@ export const CONTRACT_V1 = {
         categoryId: CategoryIdSchema.optional(),
         /** Where it really is; unlike `inventory.move`, the date stays (it was a mistake). */
         location: StorageLocationSchema.optional(),
-        /** A date set by hand counts as `manual`, whatever the source was before. */
+        /** A date set by hand counts as `manual` (or the `expirySource` given), whatever it was before. */
         expiresOn: LocalDateSchema.optional(),
         expiryKind: DateKindSchema.optional(),
+        /** Only what a person can cause: typed in (default) or read from a photo of the label. */
+        expirySource: z.enum(['manual', 'label_ocr']).optional(),
         /** What is left now, in the item's unit. */
         quantity: QuantitySchema.optional(),
         /** Value of what is left; null removes a wrong price (then estimates apply). */

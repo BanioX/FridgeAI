@@ -17,13 +17,15 @@ interface DatePhotoButtonProps {
   onRead: (result: ExpiryFromText) => void;
   /** What the person should hear; empty clears it. */
   onStatus: (text: string) => void;
+  /** Set in a list row: a small camera icon for this item instead of the labelled button. */
+  itemName?: string;
 }
 
 /**
  * «Datum fotografieren» (ADR-0062): a photo of the printed date is read on the device, the picture
  * is neither stored nor sent anywhere. The camera opens only after the tap; the gallery works too.
  */
-export function DatePhotoButton({ today, onRead, onStatus }: DatePhotoButtonProps) {
+export function DatePhotoButton({ today, onRead, onStatus, itemName }: DatePhotoButtonProps) {
   const [busy, setBusy] = useState(false);
 
   async function read(file: File) {
@@ -39,8 +41,9 @@ export function DatePhotoButton({ today, onRead, onStatus }: DatePhotoButtonProp
       if (found === null) {
         onStatus(t.notFound);
       } else {
-        onRead(found);
         onStatus(t.found(formatSwissDate(found.date)));
+        // After the status, so a caller that saves the date can say so instead.
+        onRead(found);
       }
     } catch {
       onStatus(t.failed);
@@ -49,11 +52,17 @@ export function DatePhotoButton({ today, onRead, onStatus }: DatePhotoButtonProp
     }
   }
 
+  const compact = itemName !== undefined;
   return (
-    <label className="relative inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border border-line bg-surface px-4 text-sm font-semibold text-ink transition-colors hover:bg-surface-muted has-disabled:cursor-not-allowed has-disabled:opacity-50 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-basil-600">
+    <label
+      className={`relative inline-flex min-h-11 cursor-pointer items-center justify-center rounded-xl text-ink transition-colors hover:bg-surface-muted has-disabled:cursor-not-allowed has-disabled:opacity-50 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-basil-600 ${
+        compact ? 'min-w-11' : 'gap-2 border border-line bg-surface px-4 text-sm font-semibold'
+      }`}
+    >
       <Camera size={20} aria-hidden="true" />
-      {t.choose}
+      {compact ? null : t.choose}
       <input
+        aria-label={compact ? t.chooseFor(itemName) : undefined}
         type="file"
         accept="image/*"
         capture="environment"
