@@ -1,6 +1,7 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { ChevronRight, MapPin } from 'lucide-react';
-import { useEffect } from 'react';
+import { formatSwissDate, type ExpiryFromText, type InventoryItemView } from '@fridgeai/core';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
@@ -8,6 +9,7 @@ import { Button } from '../../ui/Button';
 import { GROUPED_ROW_LINK, GroupedList, GroupedListItem } from '../../ui/GroupedList';
 import { locationStyle } from '../../ui/LocationTile';
 import { formatQuantity } from '../../ui/quantity-text';
+import { DatePhotoButton } from './DatePhotoButton';
 import { putAwaySections } from './put-away';
 
 const t = messages.inventory.putAway;
@@ -17,7 +19,10 @@ const t = messages.inventory.putAway;
  * lands in its place. Each row opens the item, where a spot can be set.
  */
 export function PutAwayPage() {
-  const { householdId, inventory } = useAppData();
+  const { householdId, ids: idSource, inventory, today } = useAppData();
+  // The date of these was read from the pack just now; their camera stays for a second try.
+  const [readIds, setReadIds] = useState<ReadonlySet<string>>(new Set());
+  const [status, setStatus] = useState('');
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const ids = params.getAll('item');
@@ -28,6 +33,23 @@ export function PutAwayPage() {
   );
   const sections = items === undefined ? undefined : putAwaySections(items, ids);
   const empty = sections?.length === 0;
+
+  async function saveDate(item: InventoryItemView, found: ExpiryFromText) {
+    try {
+      await inventory['inventory.updateItem']({
+        commandId: idSource.next(),
+        householdId,
+        itemId: item.id,
+        expiresOn: found.date,
+        expirySource: 'label_ocr',
+        ...(found.kind === undefined ? {} : { expiryKind: found.kind }),
+      });
+      setReadIds((before) => new Set(before).add(item.id));
+      setStatus(t.dateSaved(item.name, formatSwissDate(found.date)));
+    } catch {
+      setStatus(messages.editItem.failed);
+    }
+  }
 
   useEffect(() => {
     // Nothing left to put away (deleted, closed, or a bare link): back to the stock.
@@ -78,21 +100,42 @@ export function PutAwayPage() {
                 <GroupedList>
                   {group.items.map((item) => (
                     <GroupedListItem key={item.id} inset="text">
-                      <Link to={`/inventory/${item.id}`} className={GROUPED_ROW_LINK}>
-                        <span className="flex min-h-12 items-center gap-3 py-2 pr-3 pl-4">
-                          <span className="min-w-0 flex-1">
-                            <span className="block truncate font-semibold">{item.name}</span>
-                            <span className="block text-sm text-ink-muted">
-                              {formatQuantity(item.quantity, item.unit)}
+                      <div className="flex items-center pr-2">
+                        <Link
+                          to={`/inventory/${item.id}`}
+                          className={`${GROUPED_ROW_LINK} min-w-0 flex-1`}
+                        >
+                          <span className="flex min-h-12 items-center gap-3 py-2 pr-1 pl-4">
+                            <span className="min-w-0 flex-1">
+                              <span className="block truncate font-semibold">{item.name}</span>
+                              <span className="block text-sm text-ink-muted">
+                                {formatQuantity(item.quantity, item.unit)}
+                              </span>
+                              <span className="block text-sm text-ink-muted">
+                                {t.expires(
+                                  formatSwissDate(item.expiresOn),
+                                  item.expirySource === 'category_estimate',
+                                )}
+                              </span>
                             </span>
+                            <ChevronRight
+                              size={18}
+                              aria-hidden="true"
+                              className="shrink-0 text-ink-muted"
+                            />
                           </span>
-                          <ChevronRight
-                            size={18}
-                            aria-hidden="true"
-                            className="shrink-0 text-ink-muted"
+                        </Link>
+                        {item.expirySource === 'category_estimate' || readIds.has(item.id) ? (
+                          <DatePhotoButton
+                            itemName={item.name}
+                            today={today}
+                            onRead={(found) => {
+                              void saveDate(item, found);
+                            }}
+                            onStatus={setStatus}
                           />
-                        </span>
-                      </Link>
+                        ) : null}
+                      </div>
                     </GroupedListItem>
                   ))}
                 </GroupedList>
@@ -101,6 +144,10 @@ export function PutAwayPage() {
           </section>
         );
       })}
+
+      <p role="status" className="text-sm font-semibold text-basil-800 empty:hidden">
+        {status}
+      </p>
 
       <Button
         fullWidth

@@ -206,6 +206,9 @@ export const messages = {
       subline: (count: number) =>
         `Was wohin gehört: ${count === 1 ? '1 Artikel' : `${String(count)} Artikel`} aus deiner Quittung.`,
       noSpot: 'Ohne festen Platz',
+      expires: (date: string, estimated: boolean) =>
+        `Haltbar bis ${date}${estimated ? ' (geschätzt)' : ''}`,
+      dateSaved: (name: string, date: string) => `${name}: Haltbar bis ${date} gespeichert.`,
       done: 'Fertig',
     },
     empty: 'Hier liegt noch nichts.',
@@ -417,6 +420,7 @@ export const messages = {
     /** «Datum fotografieren» (ADR-0062): read on the device, the picture is not kept. */
     datePhoto: {
       choose: 'Datum fotografieren',
+      chooseFor: (name: string) => `Datum fotografieren für ${name}`,
       reading: 'Datum wird gelesen …',
       found: (date: string) => `Gelesen: ${date}. Stimmt das?`,
       notFound: 'Kein Datum gefunden. Tipp es ein oder fotografiere näher.',

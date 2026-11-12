@@ -222,7 +222,7 @@ export function createInventoryCommands(ctx: AppContext) {
       }
       if (input.expiresOn !== undefined && input.expiresOn !== item.expiresOn) {
         next.expiresOn = input.expiresOn;
-        next.expirySource = 'manual';
+        next.expirySource = input.expirySource ?? 'manual';
         changed.push('expiresOn');
       } else if (
         input.expiresOn === undefined &&

@@ -88,6 +88,28 @@ describe('inventory.addItem', () => {
   });
 });
 
+describe('inventory.updateItem: where the date came from (ADR-0062)', () => {
+  const update = (itemId: Id, fields: Record<string, unknown>) =>
+    inventory['inventory.updateItem']({ commandId: next(), householdId, itemId, ...fields });
+
+  it('stores «label_ocr» with a date read from a photo, and «manual» without a source', async () => {
+    const { itemId } = await add();
+    expect((await storage.items.get(itemId))?.expirySource).toBe('category_estimate');
+    const read = await update(itemId, { expiresOn: '2027-12-14', expirySource: 'label_ocr' });
+    expect(read.changed).toEqual(['expiresOn']);
+    expect((await storage.items.get(itemId))?.expirySource).toBe('label_ocr');
+    await update(itemId, { expiresOn: '2027-12-15' });
+    expect((await storage.items.get(itemId))?.expirySource).toBe('manual');
+  });
+
+  it('accepts only sources a person can cause', async () => {
+    const { itemId } = await add();
+    await expect(
+      update(itemId, { expiresOn: '2027-12-14', expirySource: 'partner' }),
+    ).rejects.toThrow();
+  });
+});
+
 describe('outcomes', () => {
   it('counts «gerettet» only when confirmed and the food was on the brink (ADR-0039)', async () => {
     const eat = (itemId: Id, rescued: boolean) =>
