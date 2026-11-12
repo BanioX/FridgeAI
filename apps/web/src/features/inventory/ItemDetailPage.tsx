@@ -5,6 +5,7 @@ import {
   shelfScore,
   expiryStatus,
   fallbackCategory,
+  isReadyMade,
   itemBadges,
   portionChoices,
   portioningOf,
@@ -59,6 +60,10 @@ const outcomeOptions = (['eaten', 'wasted'] as const).map((value) => ({
   value,
   label: t.outcomes[value],
 }));
+const kindOptions = [
+  { value: 'cook' as const, label: t.kind.cook },
+  { value: 'ready' as const, label: t.kind.ready },
+];
 const rescueOptions = [
   { value: 'yes' as const, label: messages.itemDetail.rescueYes },
   { value: 'no' as const, label: messages.itemDetail.rescueNo },
@@ -259,6 +264,24 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
         expiresOn: previous,
       });
       return messages.rescue.unfrozen(item.name);
+    });
+
+  // «Zum Kochen» or «Fertigprodukt» (ADR-0053): matching the category goes back to it, so the
+  // item follows later catalog changes; anything else is the household's own call.
+  const ready = isReadyMade(item);
+  const chooseKind = (value: 'cook' | 'ready') =>
+    run(async () => {
+      const wantsReady = value === 'ready';
+      if (wantsReady === ready) {
+        return null;
+      }
+      await inventory['inventory.updateItem']({
+        commandId: ids.next(),
+        householdId,
+        itemId: item.id,
+        readyMade: wantsReady === (category.ready === true) ? null : wantsReady,
+      });
+      return wantsReady ? t.kind.savedReady(item.name) : t.kind.savedCook(item.name);
     });
 
   // Entered by mistake or for a test: gone at once, «Rückgängig» waits in the list.
@@ -505,6 +528,16 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
           <ChefHat size={20} aria-hidden="true" />
           {t.process}
         </Link>
+        <ChoiceChips
+          legend={t.kind.legend}
+          segmented
+          options={kindOptions}
+          value={ready ? 'ready' : 'cook'}
+          onChange={(value) => {
+            void chooseKind(value);
+          }}
+        />
+        <p className="text-sm text-ink-muted">{t.kind.hint}</p>
         {item.openedOn === undefined ? (
           <Button
             variant="secondary"

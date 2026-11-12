@@ -60,3 +60,4 @@ Jeder Entscheid mit Folgen steht hier als eigene Datei `NNNN-titel.md` (ADR-0001
 | [0050](0050-impact-since-first-month.md) | Wirkung sichtbar: «Seit deinem ersten Monat» und Zahl am App-Symbol | angenommen | 2026-11-11 |
 | [0051](0051-item-badges-and-freeze-hint.md) | Badges am Artikel, «Aufgetaut» und der Einfrier-Hinweis | angenommen | 2026-11-11 |
 | [0052](0052-processing-value-moves-along.md) | Verarbeiten: der Wert wandert mit | angenommen | 2026-11-11 |
+| [0053](0053-ingredient-or-ready-made.md) | Zutat oder Fertigprodukt: Rolle je Kategorie, Badge, Rezept-Regel | angenommen | 2026-11-11 |

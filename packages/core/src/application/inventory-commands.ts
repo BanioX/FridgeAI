@@ -114,6 +114,7 @@ export function createInventoryCommands(ctx: AppContext) {
           ? {}
           : { afterOpeningDays: input.afterOpeningDays }),
         ...(input.openedOn === undefined ? {} : { openedOn: input.openedOn, sealedExpiresOn }),
+        ...(input.readyMade === undefined ? {} : { readyMade: input.readyMade }),
         ...(input.priceRappen === undefined ? {} : { priceRappen: input.priceRappen }),
         owner: input.owner,
         status: 'active',
@@ -253,6 +254,14 @@ export function createInventoryCommands(ctx: AppContext) {
         }
         delete next.priceEstimated;
         changed.push('priceRappen');
+      }
+      if (input.readyMade !== undefined && (input.readyMade ?? undefined) !== item.readyMade) {
+        if (input.readyMade === null) {
+          delete next.readyMade;
+        } else {
+          next.readyMade = input.readyMade;
+        }
+        changed.push('readyMade');
       }
       if (changed.length === 0) {
         return { changed };

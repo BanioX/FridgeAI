@@ -105,6 +105,7 @@ Systemschrift nach Apples Human Interface Guidelines (ADR-0021): SF Pro auf Appl
   | --- | --- | --- |
   | Eingefroren 3.11. | Eis | Text `#2A6B8C` auf `#E6F3F8` (`ice`/`ice-bg`), Snowflake |
   | Aufgetaut | Eis hell | Text `ice` auf Weiss, 1 px Rand `ice`, Droplets |
+  | Fertigprodukt | Silber, neutral | Text `#5B6168` (`ink-muted`) auf `#E9EBED` (`surface-muted`), Package; ruhig, denn es ist keine Warnung. Steht nach Eingefroren/Aufgetaut und vor Geöffnet |
   | Geöffnet | Aprikose | Text `#8A4B0F`, 1 px Rand `#E39A3B` (`apricot`), Weiss, PackageOpen; nur Rand, damit es nicht wie der gefüllte Status-Chip «bald» wirkt |
   | Von der Theke | Oliv | Text `#4F5D27` auf `#ECEEE0` (`olive`/`olive-bg`), Store |
 - **Einfrier-Hinweis:** ein Blatt von unten (Radius 24 px) mit dem Grund je Kategorie und zwei Knöpfen: «Lieber nicht» (Hauptknopf) und «Trotzdem einfrieren».

@@ -6,6 +6,7 @@ import { ItemBadges } from './ItemBadges';
 const all: ItemBadge[] = [
   { kind: 'frozen', on: localDate('2026-11-03') },
   { kind: 'thawed', on: localDate('2026-11-10') },
+  { kind: 'ready' },
   { kind: 'opened', on: localDate('2026-11-09') },
   { kind: 'loose' },
 ];
@@ -18,6 +19,7 @@ describe('ItemBadges', () => {
     expect(screen.getAllByRole('listitem').map((li) => li.textContent)).toEqual([
       'Eingefroren 3.11.',
       'Aufgetaut',
+      'Fertigprodukt',
       'Geöffnet',
       'Von der Theke',
     ]);
@@ -35,9 +37,10 @@ describe('ItemBadges', () => {
 
   it('gives the tones their classes: ice filled, ice outline, apricot outline, olive', () => {
     render(<ItemBadges badges={all} />);
-    const [frozen, thawed, opened, loose] = screen.getAllByRole('listitem');
+    const [frozen, thawed, ready, opened, loose] = screen.getAllByRole('listitem');
     expect(frozen?.className).toContain('bg-ice-bg');
     expect(thawed?.className).toContain('border-ice');
+    expect(ready?.className).toContain('bg-surface-muted');
     expect(opened?.className).toContain('border-apricot');
     expect(loose?.className).toContain('bg-olive-bg');
   });

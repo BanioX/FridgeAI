@@ -63,6 +63,8 @@ export interface ProductInfo {
   packSize?: string;
   /** Free-text category hints from the source (e.g. Open Food Facts tags), mapped in core. */
   categoryHints?: string[];
+  /** NOVA group 4 or a dessert or meal category: ready to eat (Fertigprodukt, ADR-0053). */
+  readyMade?: boolean;
   nutrition?: Nutrition;
   nutriScore?: 'a' | 'b' | 'c' | 'd' | 'e';
   allergens?: string[];
