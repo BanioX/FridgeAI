@@ -40,6 +40,7 @@ Prüfung aller Funktionen aus ADR-0048 bis ADR-0062 und der Funktionen ohne eige
 | Einräumen | – | ja | ja | – | – | – | – | ja | – | – |
 | Check Fach für Fach | ja, wenn fällig | ja, unter «Mehr» jederzeit (K5) | – | teilweise | ja | – | ja | ja | – | ja |
 | Mehrere ändern | – | ja (K11) | – | – | – | – | – | ja | – | – |
+| Geschätzte Nährwerte (0064) | – | – | ja (Frischware ohne Etikett) | – | – | – (berechnet) | – (berechnet) | ja | – | – |
 
 Daten gehen keine verloren: Alle Tabellen stehen in der Sicherung und kommen beim Import zurück. Es fehlten nur Tests mit Hin und Zurück für einzelne Felder (K3).
 

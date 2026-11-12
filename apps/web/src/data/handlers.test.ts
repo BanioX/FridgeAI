@@ -806,6 +806,51 @@ describe('products.lookup', () => {
     });
   });
 
+  it('estimates nutrition for unprocessed fresh food, computed and never stored (ADR-0064)', async () => {
+    const { itemId } = await add({ name: 'Thunfischsteak' });
+    const { items } = await handlers['inventory.list']({ householdId });
+    expect(items.find((item) => item.id === itemId)).toMatchObject({
+      nutritionFood: 'Thunfisch, roh',
+      nutrition: { basis: '100g', source: 'blv', protein: 25.8 },
+    });
+    expect((await productOf(itemId))?.nutrition).toBeUndefined();
+    const processed = await add({ name: 'Rauchlachs' });
+    const again = await handlers['inventory.list']({ householdId });
+    expect(again.items.find((item) => item.id === processed.itemId)?.nutrition).toBeUndefined();
+  });
+
+  it('keeps the values of the database over the estimate', async () => {
+    const nutrition = {
+      basis: '100g' as const,
+      energyKcal: 90,
+      protein: 21,
+      source: 'off' as const,
+    };
+    const withCatalog = createInventoryHandlers({
+      db,
+      clock: fixedClock('2026-11-06T09:00:00.000Z', '2026-11-06'),
+      ids,
+      actor: ids.next(),
+      catalog: cachedCatalog(
+        db,
+        inMemoryCatalog([{ gtin, name: 'Thunfischsteak', nutrition, source: 'off' }]),
+        fixedClock('2026-11-06T09:00:00.000Z', '2026-11-06'),
+      ),
+    });
+    await withCatalog['products.lookup']({ householdId, gtin });
+    const { itemId } = await withCatalog['inventory.addItem']({
+      commandId: ids.next(),
+      householdId,
+      name: 'Thunfischsteak',
+      gtin,
+      location: 'fridge',
+    });
+    const { items } = await withCatalog['inventory.list']({ householdId });
+    const view = items.find((item) => item.id === itemId);
+    expect(view?.nutrition).toEqual(nutrition);
+    expect(view?.nutritionFood).toBeUndefined();
+  });
+
   it('answers with the stored pack picture, and the item names its barcode', async () => {
     expect(await handlers['products.image']({ householdId, gtin })).toEqual({ image: null });
     await db.productImages.put({

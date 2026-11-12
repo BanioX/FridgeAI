@@ -266,6 +266,11 @@ export const InventoryItemViewSchema = z.object({
   brand: z.string().optional(),
   packSize: z.string().optional(),
   nutrition: NutritionSchema.optional(),
+  /**
+   * Set with `nutrition.source: 'blv'`: the food of the Swiss Food Composition Database the
+   * estimate for unprocessed fresh food stands for, e.g. «Thunfisch, roh». Computed, not stored.
+   */
+  nutritionFood: z.string().optional(),
   nutriScore: z.enum(['a', 'b', 'c', 'd', 'e']).optional(),
   allergens: z.array(z.string()).optional(),
   /** Where the product facts come from, for the attribution. */
