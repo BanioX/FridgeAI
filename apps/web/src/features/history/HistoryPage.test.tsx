@@ -87,6 +87,7 @@ describe('HistoryPage: processed ingredients', () => {
     const banana = rows.find((row) => within(row).queryByText('Bananen') !== null);
     expect(banana?.textContent).toContain(t.madeInto('Bananenkuchen'));
     expect(banana?.textContent).not.toContain('CHF');
+    expect(banana?.textContent).toContain(t.processed);
 
     // The cake counts once (CHF 4.50); the ingredients not at all: same as the Bilanz.
     const today = browserClock.today();

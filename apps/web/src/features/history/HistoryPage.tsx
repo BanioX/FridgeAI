@@ -248,7 +248,9 @@ function HistoryRow({
           </p>
           <p className="text-sm">
             <span className={`font-semibold ${TONES[entry.outcome]}`}>
-              {messages.itemDetail.outcomes[entry.outcome]}
+              {entry.madeInto === undefined
+                ? messages.itemDetail.outcomes[entry.outcome]
+                : t.processed}
             </span>
             <span className="text-ink-muted"> · {amount}</span>
           </p>

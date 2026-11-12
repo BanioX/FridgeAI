@@ -1096,7 +1096,9 @@ export const messages = {
     empty: 'In diesem Zeitraum hast du nichts abgeschlossen.',
     estimated: 'geschätzt',
     /** An ingredient processed into something: its value moved on to the result (ADR-0052). */
-    madeInto: (name: string) => `→ ${name}`,
+    // A no-break space keeps the arrow with the name when the line wraps.
+    madeInto: (name: string) => `→\u00a0${name}`,
+    processed: 'Verarbeitet',
     removeLabel: (name: string) => `Eintrag ${name} löschen`,
     changeLabel: (name: string) => `Eintrag ${name} ändern`,
     reason: 'Warum?',
