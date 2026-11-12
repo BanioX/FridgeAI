@@ -39,7 +39,10 @@ export type CommandErrorCode =
   | 'unsuitable_location'
   | 'already_open'
   | 'already_undone'
-  | 'unknown_category';
+  | 'unknown_category'
+  | 'invalid_owner'
+  | 'duplicate_name'
+  | 'cannot_remove';
 
 export class CommandError extends Error {
   readonly code: CommandErrorCode;

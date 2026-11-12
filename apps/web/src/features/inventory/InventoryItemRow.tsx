@@ -3,6 +3,7 @@ import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
 import { ItemBadges } from '../../ui/ItemBadges';
 import { ItemRow } from '../../ui/ItemRow';
+import { OwnerMark } from '../people/OwnerMark';
 import type { Tone } from '../../ui/tones';
 import { itemMeta } from './item-meta';
 import { useProductImage } from './use-product-image';
@@ -30,6 +31,7 @@ export function InventoryItemRow({
       meta={itemMeta(item)}
       status={status}
       badges={badges.length === 0 ? undefined : <ItemBadges badges={badges} max={2} />}
+      owner={item.owner === 'shared' ? undefined : <OwnerMark ownerId={item.owner} />}
       chevron={chevron}
       sliced={sliced}
       shop={

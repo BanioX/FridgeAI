@@ -18,6 +18,7 @@ export * from './freeze-hint';
 export * from './rescue-tips';
 export * from './export/csv';
 export * from './format';
+export * from './initials';
 export * from './ids';
 export * from './model';
 export * from './money';
