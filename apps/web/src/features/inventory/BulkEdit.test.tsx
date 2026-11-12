@@ -8,8 +8,10 @@ import { AppDataProvider } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
 import { seedDb } from '../../app/test-seed';
 import { browserClock, browserIds } from '../../data/adapters';
+import { createInventoryHandlers } from '../../data/handlers';
 import { testDb } from '../../data/test-helpers';
 import { bulkText } from './bulk-edit';
+import { BulkEditSheet } from './BulkEditSheet';
 import { InventoryPage } from './InventoryPage';
 
 const today = toLocalDate(new Date());
@@ -136,6 +138,104 @@ describe('bulk edit in select mode', () => {
     await userEvent.keyboard('{Escape}');
     expect(screen.queryByRole('dialog')).toBeNull();
     expect(screen.getByText('1 ausgewählt')).toBeDefined();
+  });
+});
+
+async function inventoryHandlers(db: ReturnType<typeof testDb>) {
+  const [household] = await db.households.toArray();
+  const [member] = await db.members.toArray();
+  if (household === undefined || member === undefined) {
+    throw new Error('No household');
+  }
+  const handlers = createInventoryHandlers({
+    db,
+    clock: browserClock,
+    ids: browserIds,
+    actor: member.id,
+  });
+  return { handlers, householdId: household.id };
+}
+
+async function addSpots(
+  db: ReturnType<typeof testDb>,
+  spots: readonly (readonly [string, 'fridge' | 'pantry'])[],
+) {
+  const { handlers, householdId } = await inventoryHandlers(db);
+  for (const [name, location] of spots) {
+    await handlers['spots.create']({
+      commandId: browserIds.next(),
+      householdId,
+      name,
+      location,
+    });
+  }
+}
+
+describe('bulk edit «Platz» (ADR-0056)', () => {
+  afterEach(cleanup);
+
+  it('sets the spot of the chosen items and «Kein fester Platz» clears it', async () => {
+    const db = await seeded();
+    await addSpots(db, [
+      ['Türfach', 'fridge'],
+      ['Oberer Schrank links', 'pantry'],
+    ]);
+    renderPage(db);
+    let sheet = await openSheet(['Joghurt', 'Butter']);
+    // Only the spots of this location, plus the way back.
+    expect(await within(sheet).findByRole('radio', { name: 'Türfach' })).toBeDefined();
+    expect(within(sheet).queryByRole('radio', { name: 'Oberer Schrank links' })).toBeNull();
+    await userEvent.click(within(sheet).getByRole('radio', { name: 'Türfach' }));
+    await userEvent.click(within(sheet).getByRole('button', { name: 'Übernehmen' }));
+    expect(await screen.findByText('2 Artikel geändert.')).toBeDefined();
+    const spots = await db.spots.toArray();
+    const door = spots.find((spot) => spot.name === 'Türfach');
+    const withSpot = (await db.products.toArray()).filter((p) => p.spotId === door?.id);
+    expect(withSpot.map((p) => p.name).sort()).toEqual(['Butter', 'Joghurt']);
+
+    sheet = await openSheet(['Joghurt']);
+    await userEvent.click(await within(sheet).findByRole('radio', { name: 'Kein fester Platz' }));
+    await userEvent.click(within(sheet).getByRole('button', { name: 'Übernehmen' }));
+    expect(await screen.findByText('Joghurt geändert.')).toBeDefined();
+    const products = await db.products.toArray();
+    expect(products.find((p) => p.name === 'Joghurt')?.spotId).toBeUndefined();
+    expect(products.find((p) => p.name === 'Butter')?.spotId).toBe(door?.id);
+  });
+
+  it('shows a hint instead of the field when the location has no spots yet', async () => {
+    renderPage(await seeded());
+    const sheet = await openSheet(['Joghurt']);
+    expect(await within(sheet).findByText(messages.inventory.bulk.spotsHint)).toBeDefined();
+    expect(within(sheet).queryByText('Platz')).toBeNull();
+  });
+
+  it('hides the field when the chosen items lie in different locations', async () => {
+    const db = testDb();
+    const householdId = await seedDb(db, [
+      { name: 'Joghurt', location: 'fridge', inDays: 2 },
+      { name: 'Reis', location: 'pantry', inDays: 200 },
+    ]);
+    await addSpots(db, [['Türfach', 'fridge']]);
+    const { handlers } = await inventoryHandlers(db);
+    const { items } = await handlers['inventory.list']({ householdId });
+    render(
+      <AppDataProvider db={db}>
+        <BulkEditSheet
+          count={items.length}
+          items={items}
+          location="fridge"
+          today={today}
+          members={[]}
+          busy={false}
+          onApply={() => undefined}
+          onClose={() => undefined}
+        />
+      </AppDataProvider>,
+    );
+    await screen.findByRole('dialog');
+    expect(screen.queryByText('Platz')).toBeNull();
+    expect(screen.queryByText(messages.inventory.bulk.spotsHint)).toBeNull();
+    expect(screen.queryByRole('radio', { name: 'Türfach' })).toBeNull();
   });
 });
 

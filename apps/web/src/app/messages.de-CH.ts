@@ -281,6 +281,9 @@ export const messages = {
       close: 'Schliessen',
       expiresLabel: 'Haltbar bis',
       apply: 'Übernehmen',
+      spotLegend: 'Platz',
+      noSpot: 'Kein fester Platz',
+      spotsHint: 'Plätze legst du auf der Artikelseite oder unter «Wo ist was?» an.',
       openedTitle: 'Angebrochen',
       openAll: 'Alle als angebrochen markieren',
       /** «3 Artikel geändert.»; a single item shows its name. */
