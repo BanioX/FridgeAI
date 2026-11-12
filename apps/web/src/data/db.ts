@@ -12,6 +12,7 @@ import type {
   ReceiptLine,
   ReminderPrefs,
   ShoppingListItem,
+  StorageSpot,
 } from '@fridgeai/core';
 import Dexie, { type EntityTable } from 'dexie';
 
@@ -67,6 +68,7 @@ export class FridgeDb extends Dexie {
   receipts!: EntityTable<Receipt, 'id'>;
   receiptLines!: EntityTable<ReceiptLine, 'id'>;
   ownRecipes!: EntityTable<OwnRecipe, 'id'>;
+  spots!: EntityTable<StorageSpot, 'id'>;
 
   constructor(name = 'fridgeai') {
     super(name);
@@ -92,5 +94,7 @@ export class FridgeDb extends Dexie {
     });
     // «Meine Rezepte» (ADR-0048): a new table only, so existing data stays as it is.
     this.version(6).stores({ ownRecipes: 'id, householdId' });
+    // «Wo ist was?» (ADR-0056): storage spots with a photo; a new table only.
+    this.version(7).stores({ spots: 'id, householdId' });
   }
 }
