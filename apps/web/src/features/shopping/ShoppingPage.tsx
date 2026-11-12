@@ -180,6 +180,11 @@ export function ShoppingPage() {
               {t.stillThere(
                 formatQuantity(entry.atHome.quantity, entry.atHome.unit),
                 describeDate(entry.atHome.expiresOn),
+                // Where it lies: the remembered spot, else the storage location (ADR-0056).
+                entry.atHome.spot ??
+                  (entry.atHome.location === undefined
+                    ? undefined
+                    : messages.locations[entry.atHome.location]),
               )}
             </span>
           )}

@@ -44,7 +44,7 @@ beforeEach(() => {
 const add = (name: string, commandId = next()) =>
   shopping['shopping.addItem']({ commandId, householdId, name });
 
-async function putMilkAtHome() {
+async function putMilkAtHome(spotId?: Id) {
   const product = ProductSchema.parse({
     id: next(),
     householdId,
@@ -53,6 +53,7 @@ async function putMilkAtHome() {
     categoryId: 'dairy-milk',
     defaultLocation: 'fridge',
     source: 'manual',
+    ...(spotId === undefined ? {} : { spotId }),
   });
   await storage.products.add(product);
   await storage.items.add(
@@ -99,6 +100,27 @@ describe('shopping use cases on memory storage', () => {
     const result = await add('Milch');
     expect(result.alreadyAtHome).toBe(true);
     expect(result.atHome).toMatchObject({ name: 'Vollmilch', count: 1, expiresOn: '2026-11-09' });
+    // Where it lies: the location, and no spot while none is remembered.
+    expect(result.atHome?.location).toBe('fridge');
+    expect(result.atHome?.spot).toBeUndefined();
+  });
+
+  it('names the spot of the food at home, but only in its own location (ADR-0056)', async () => {
+    const door = {
+      id: next(),
+      householdId,
+      updatedAt: now,
+      createdAt: now,
+      name: 'Türfach',
+      location: 'fridge' as const,
+    };
+    await storage.spots.add(door);
+    await putMilkAtHome(door.id);
+    expect((await add('Milch')).atHome).toMatchObject({ location: 'fridge', spot: 'Türfach' });
+
+    // A spot of another location is not where this pack lies.
+    await storage.spots.put({ ...door, location: 'pantry' });
+    expect((await add('Vollmilch')).atHome?.spot).toBeUndefined();
   });
 
   it('checks, unchecks and removes entries', async () => {

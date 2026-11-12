@@ -17,11 +17,15 @@ export function createShoppingUseCases(ctx: AppContext) {
 
   /** Loads the active inventory once and answers «what of this is at home?» per name. */
   async function homeLookup(householdId: Id) {
-    const [items, products] = await Promise.all([
+    const [items, products, spots] = await Promise.all([
       storage.items.activeOf(householdId),
       storage.products.ofHousehold(householdId),
+      storage.spots.ofHousehold(householdId),
     ]);
     const productById = new Map(products.map((product) => [product.id, product]));
+    const spotById = new Map(
+      spots.filter((spot) => spot.deletedAt === undefined).map((spot) => [spot.id, spot]),
+    );
     const active = items
       .filter((item) => item.deletedAt === undefined)
       .sort((a, b) => a.expiresOn.localeCompare(b.expiresOn));
@@ -39,12 +43,17 @@ export function createShoppingUseCases(ctx: AppContext) {
       if (soonest === undefined) {
         return undefined;
       }
+      const product = productById.get(soonest.productId);
+      const spot = product?.spotId === undefined ? undefined : spotById.get(product.spotId);
       return {
-        name: productById.get(soonest.productId)?.name ?? name,
+        name: product?.name ?? name,
         quantity: soonest.quantity,
         unit: soonest.unit,
         expiresOn: soonest.expiresOn,
         count: same.length,
+        location: soonest.location,
+        // The spot only where it belongs: a pantry spot says nothing about a frozen pack (ADR-0056).
+        ...(spot?.location === soonest.location ? { spot: spot.name } : {}),
       };
     };
   }
