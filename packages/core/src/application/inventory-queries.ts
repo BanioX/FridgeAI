@@ -5,7 +5,7 @@ import { expiryStatus, RESERVE_SOON_THRESHOLD_DAYS, soonThresholdFor } from '../
 import type { Id } from '../ids';
 import { DEFAULT_CURRENCY } from '../currency';
 import { summarizeFootprint, type FootprintOutcome } from '../impact/footprint';
-import { compareWasteSinceFirstMonth, summarizeImpact } from '../metrics';
+import { compareWasteSinceFirstMonth, countsInValue, summarizeImpact } from '../metrics';
 import { householdCurrency } from '../model/household';
 import type { InventoryItem, Product } from '../model/inventory';
 import type { InventoryItemView } from '../contract/operations';
@@ -148,7 +148,10 @@ export function createInventoryQueries(ctx: AppContext) {
       .sort((a, b) => b.at.localeCompare(a.at))
       .slice(0, HISTORY_LIMIT);
     const items = new Map<Id, InventoryItem>();
-    for (const itemId of new Set(outcomes.map((outcome) => outcome.itemId))) {
+    const resultIds = outcomes.flatMap((outcome) =>
+      outcome.madeInto === undefined ? [] : [outcome.madeInto],
+    );
+    for (const itemId of new Set([...outcomes.map((outcome) => outcome.itemId), ...resultIds])) {
       const item = await storage.items.get(itemId);
       if (item !== undefined) {
         items.set(item.id, item);
@@ -161,10 +164,14 @@ export function createInventoryQueries(ctx: AppContext) {
         products.set(product.id, product);
       }
     }
+    const nameOf = (item: InventoryItem | undefined) =>
+      item === undefined ? undefined : products.get(item.productId)?.name;
     return {
       outcomes: outcomes.flatMap((outcome) => {
         const item = items.get(outcome.itemId);
-        const name = item === undefined ? undefined : products.get(item.productId)?.name;
+        const name = nameOf(item);
+        const resultName =
+          outcome.madeInto === undefined ? undefined : nameOf(items.get(outcome.madeInto));
         return item === undefined || name === undefined
           ? []
           : [
@@ -179,6 +186,11 @@ export function createInventoryQueries(ctx: AppContext) {
                 valueEstimated: outcome.valueEstimated,
                 ...(outcome.wasteReason === undefined ? {} : { wasteReason: outcome.wasteReason }),
                 ...(outcome.sharedWith === undefined ? {} : { sharedWith: outcome.sharedWith }),
+                owner: outcome.owner,
+                ...(outcome.madeInto === undefined || resultName === undefined
+                  ? {}
+                  : { madeInto: { itemId: outcome.madeInto, name: resultName } }),
+                countsInValue: countsInValue(outcome),
                 at: outcome.at,
               },
             ];

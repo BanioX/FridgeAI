@@ -32,3 +32,7 @@ Alban (11.11.2026): «Mehl zu Brot verarbeitet … einen Kuchen backen und Eier 
 - **Datenrechte (ADR-0020):** Die neuen Felder (`origin`, `madeFrom`, `priceEstimated` am Artikel, `madeInto` am Ausgang) sind optional. Alte Exportdateien bleiben gültig; Export, Import und Löschen nehmen die Felder ohne weiteren Code mit (Tests).
 - **Kein neuer Datenfluss:** alles auf dem Gerät.
 - **Verworfen:** Zutaten als «entsorgt» zu buchen, wenn der Kuchen entsorgt wird (würde alte Einträge nachträglich ändern), und ein eigener Ausgang «verarbeitet» (bräche alle Stellen, die nur `eaten`, `shared_out` und `wasted` kennen).
+
+## Nachtrag: das Journal folgt der Zählregel
+
+Das Journal (`inventory.history`) zählte verarbeitete Zutaten mit vollem Wert als «Verwertet», sein Total wich von der Bilanz ab. Jetzt trägt jeder Eintrag `countsInValue` (aus `countsInValue` in `metrics.ts`, die Regel steht weiter an einer Stelle) und bei verarbeiteten Zutaten `madeInto` (`itemId`, Name des Ergebnisses). Die Zeile zeigt «→ Bananenkuchen» statt eines Werts, das Total zählt nur Einträge mit `countsInValue` und stimmt damit mit der Bilanz überein. Ausgabe-Erweiterung, keine neue Operation.

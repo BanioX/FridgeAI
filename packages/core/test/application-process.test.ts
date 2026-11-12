@@ -330,3 +330,35 @@ describe('data rights', () => {
     expect(CONTRACT_V1['household.export'].output.safeParse(old).success).toBe(true);
   });
 });
+
+describe('inventory.history after «Verarbeiten»', () => {
+  it('names the result of an ingredient and leaves it out of the value, like the Bilanz', async () => {
+    const { done } = await bakeCake();
+    const cakeId = defined(done.resultItemId);
+    const history = () => inventory['inventory.history']({ householdId, from, to });
+    const before = (await history()).outcomes;
+    expect(before).toHaveLength(3);
+    for (const entry of before) {
+      expect(entry).toMatchObject({
+        countsInValue: false,
+        madeInto: { itemId: cakeId, name: 'Schokoladenkuchen' },
+        owner: 'shared',
+      });
+    }
+    // Eating the cake counts its value once: history and Bilanz agree.
+    await inventory['inventory.recordOutcome']({
+      commandId: next(),
+      householdId,
+      itemId: cakeId,
+      outcome: 'eaten',
+    });
+    const entries = (await history()).outcomes;
+    const counted = entries.filter((entry) => entry.countsInValue);
+    expect(counted).toHaveLength(1);
+    expect(counted[0]).toMatchObject({ name: 'Schokoladenkuchen', valueRappen: done.valueRappen });
+    expect(counted[0]?.madeInto).toBeUndefined();
+    expect(counted.reduce((sum, entry) => sum + entry.valueRappen, 0)).toBe(
+      (await stats()).usedRappen,
+    );
+  });
+});

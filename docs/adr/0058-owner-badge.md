@@ -26,3 +26,7 @@ Alban (12.11.2026): «Namens- oder Initialen-Badge, falls jemand sich selbst ein
 - **Aufwand:** Zeilen mit Markierung fragen die Personen einzeln ab (kleine Tabelle); Zeilen ohne Markierung kosten nichts.
 - **Offen:** Erinnerungs-Einstellungen für zusätzliche Personen (sie gehören erst mit Sync zu eigenen Geräten); Filter «Nur meine Sachen»; Hinweis beim Verwerten fremder Sachen (bewusst weggelassen, siehe Punkt 2).
 - **Verworfen:** Sperre oder Bestätigung beim Verwerten (widerspräche Albans «du kannst es auch essen»); Pflichtfeld «Gehört» (mehr Tippen im Alltag).
+
+## Nachtrag: Besitz im Journal
+
+Die Einträge des Journals (`inventory.history`) tragen den Besitzer-Schnappschuss des Abschlusses (`owner`). Die Zeile zeigt die Initialen wie im Vorrat, nur ab zwei Personen im Haushalt; bei «Allen» bleibt sie ohne Markierung.
