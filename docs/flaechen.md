@@ -29,9 +29,9 @@ Prüfung aller Funktionen aus ADR-0048 bis ADR-0062 und der Funktionen ohne eige
 | Verarbeiten, Reste (0052) | «etwa» fehlt (K4) | Badge fehlt (K4) | ja | zählt doppelt (K2) | ja | nein (K6) | ja | nein (K10) | ja | ja |
 | Abzeichen (0054) | ja | – | – | – | ja | nein (K7) | ja | nein (K10) | – | – |
 | Töpfe (0055) | – | ja | – | ja | – | – | – | nein (K10) | – | – |
-| Plätze, «Wo ist was?» (0056) | ja | ja | ja | – | ja | nein (K6) | ja | nein (K10) | Fachnamen nein (K9) | – |
+| Plätze, «Wo ist was?» (0056) | ja | ja | ja | – | ja | nein (K6) | ja | nein (K10) | ja (Fachnamen) | – |
 | Klimabilanz (0057) | ja | – | – | – | ja | nein (K1) | ja | teilweise (K10) | – | – |
-| «Gehört» (0058) | ja | ja | ja | nein (K2) | – | nein (K6) | ja | nein (K10) | nein (K9) | – |
+| «Gehört» (0058) | ja | ja | ja | nein (K2) | – | nein (K6) | ja | nein (K10) | ja (nach Person) | – |
 | Mindestbestand (0059) | – | ja | ja | – | – | – | ja | nein (K10) | – | – |
 | Rezepte zur Auswahl (0061) | – | ja | ja | – | – | – | – | nein (K10) | – | – |
 | Datum fotografieren (0062) | – | – | ja (Ändern, Einräumen) | – | – | – | ja | nein (K10) | – | – |
@@ -55,7 +55,7 @@ Daten gehen keine verloren: Alle Tabellen stehen in der Sicherung und kommen bei
 | K6 | PDF: Plätze, Person und Verarbeitetes im Auszug | offen |
 | K7 | PDF: Abzeichen im Zeitraum; Quittung für den Notvorrat | offen |
 | K8 | «Datum fotografieren» auch beim Ändern und beim Einräumen | erledigt |
-| K9 | «Wo ist was?» findet Fachnamen und Personen | offen |
+| K9 | «Wo ist was?» findet Fachnamen und Personen | erledigt |
 | K10 | «Kurz erklärt» für alle neuen Funktionen; Datenschutz-Hinweis nennt Datumsfotos | offen |
 | K11 | «Mehrere ändern» kann auch den Platz setzen | offen |
 | K12 | Suche in «Alle Rezepte» | offen |

@@ -19,3 +19,48 @@ export function findInStock(
   }
   return items.filter((item) => fold(item.name).includes(needle));
 }
+
+export interface StockSearch<S extends { id: string; name: string }> {
+  /** Spots whose name matches; the stock lying there is among `items`. */
+  spots: S[];
+  /** Items by name, by the spot they lie in, or by the person they belong to (no repeats). */
+  items: InventoryItemView[];
+}
+
+/**
+ * «Wo ist was?» beyond the item name: a query that matches a spot name also finds that spot and
+ * everything lying there; a query that matches a person's name or initials finds what belongs to
+ * them, but only with two or more people (alone, «Gehört» does not exist, ADR-0058).
+ */
+export function searchStock<S extends { id: string; name: string }>(
+  items: readonly InventoryItemView[],
+  spots: readonly S[],
+  members: readonly { id: string; displayName: string; initials: string }[],
+  query: string,
+): StockSearch<S> {
+  const needle = fold(query);
+  if (needle === '') {
+    return { spots: [], items: [] };
+  }
+  const spotHits = spots.filter((spot) => fold(spot.name).includes(needle));
+  const spotIds = new Set(spotHits.map((spot) => spot.id));
+  const ownerIds = new Set<string>(
+    members.length < 2
+      ? []
+      : members
+          .filter(
+            (member) =>
+              fold(member.displayName).includes(needle) || fold(member.initials).includes(needle),
+          )
+          .map((member) => member.id),
+  );
+  return {
+    spots: spotHits,
+    items: items.filter(
+      (item) =>
+        fold(item.name).includes(needle) ||
+        (item.spot !== null && spotIds.has(item.spot.id)) ||
+        ownerIds.has(item.owner),
+    ),
+  };
+}

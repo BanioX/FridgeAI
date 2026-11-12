@@ -1,5 +1,6 @@
 import 'fake-indexeddb/auto';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { MemberSchema } from '@fridgeai/core';
 import { MemoryRouter, Route, Routes, useLocation, useNavigationType } from 'react-router';
 import { afterEach, describe, expect, it } from 'vitest';
 import { AppDataProvider } from '../../app/AppData';
@@ -16,12 +17,26 @@ function Probe() {
   return <output data-testid="probe">{`${type} ${location.pathname}${location.search}`}</output>;
 }
 
-async function renderSpots(url: string) {
+async function renderSpots(url: string, withMia = false) {
   const db = testDb();
+  const miaId = browserIds.next();
   const householdId = await seedDb(db, [
-    { name: 'Kristallzucker', location: 'pantry' },
+    { name: 'Kristallzucker', location: 'pantry', ...(withMia ? { owner: miaId } : {}) },
     { name: 'Tee', location: 'pantry' },
   ]);
+  if (withMia) {
+    const now = browserClock.now();
+    await db.members.add(
+      MemberSchema.parse({
+        id: miaId,
+        householdId,
+        displayName: 'Mia',
+        role: 'member',
+        joinedAt: now,
+        updatedAt: now,
+      }),
+    );
+  }
   const actor = (await db.members.toArray())[0]?.id ?? householdId;
   const handlers = createInventoryHandlers({ db, clock: browserClock, ids: browserIds, actor });
   const { spotId } = await handlers['spots.create']({
@@ -87,6 +102,29 @@ describe('SpotsPage search in the address (?q=)', () => {
 
   it('says so when nothing matches', async () => {
     await renderSpots('/more/spots?q=schokolade');
-    expect(await screen.findByText('Zu «schokolade» ist nichts im Vorrat.')).toBeDefined();
+    expect(
+      await screen.findByText(
+        'Zu «schokolade» gibt es keinen Treffer bei Artikeln, Plätzen und Personen.',
+      ),
+    ).toBeDefined();
+  });
+
+  it('finds a spot by its name and shows it with what lies there', async () => {
+    await renderSpots('/more/spots?q=schrank');
+    // The spot as a result and again in the list of spots below.
+    expect(await screen.findAllByRole('link', { name: /^Oberer Schrank links/ })).toHaveLength(2);
+    await waitFor(() => {
+      expect(screen.getAllByRole('link', { name: /Kristallzucker/ })).toHaveLength(1);
+    });
+  });
+
+  it('marks the owner on a result row and finds a person by name with two people', async () => {
+    await renderSpots('/more/spots?q=mia', true);
+    const row = await screen.findByRole('link', { name: /Kristallzucker/ });
+    await waitFor(() => {
+      expect(row.textContent).toContain('M');
+      expect(screen.getByRole('img', { name: 'Gehört Mia' })).toBeDefined();
+    });
+    expect(screen.queryByRole('link', { name: /^Tee/ })).toBeNull();
   });
 });
