@@ -1,8 +1,18 @@
 import { buildReport, localDate, type Report } from '@fridgeai/core';
 import { writeFileSync } from 'node:fs';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { write } from './pdf-kit';
+import type * as kit from './pdf-kit';
 import { reportPdf } from './report-pdf';
-import { sampleReport } from './report-sample';
+import { sampleFootprint, sampleReport } from './report-sample';
+
+vi.mock('./pdf-kit', async (importActual) => {
+  const actual = await importActual<typeof kit>();
+  return { ...actual, write: vi.fn(actual.write) };
+});
+
+/** Every text the report wrote so far. */
+const written = () => vi.mocked(write).mock.calls.map(([, value]) => value);
 
 /** `REPORT_PDF_OUT=/path/bericht.pdf pnpm vitest run report-pdf` writes the sample PDF to look at it. */
 async function render(report: Report): Promise<Uint8Array> {
@@ -15,6 +25,10 @@ async function render(report: Report): Promise<Uint8Array> {
 }
 
 describe('reportPdf', () => {
+  beforeEach(() => {
+    vi.mocked(write).mockClear();
+  });
+
   it('draws a full report as a PDF', async () => {
     const bytes = await render(sampleReport());
     expect(new TextDecoder().decode(bytes.slice(0, 5))).toBe('%PDF-');
@@ -23,6 +37,41 @@ describe('reportPdf', () => {
     if (out !== undefined && out !== '') {
       writeFileSync(out, bytes);
     }
+  });
+
+  it('adds the Klimabilanz section with the CC BY 4.0 source when a footprint is given', async () => {
+    const blob = await reportPdf(sampleReport(), {
+      household: 'WG Musterstrasse',
+      period: 'Juni bis November 2026',
+      createdOn: localDate('2026-11-07'),
+      footprint: sampleFootprint(),
+    });
+    expect(blob.size).toBeGreaterThan(5_000);
+    const texts = written();
+    expect(texts).toContain('Klimabilanz');
+    expect(texts).toContain('21,8');
+    expect(texts.some((value) => value.includes('CC BY 4.0'))).toBe(true);
+    expect(texts.some((value) => value.includes('Kehricht'))).toBe(true);
+  });
+
+  it('leaves the Klimabilanz out without a footprint or with nothing rescued', async () => {
+    await render(sampleReport());
+    const zero = sampleFootprint();
+    await reportPdf(sampleReport(), {
+      household: 'WG',
+      period: 'x',
+      createdOn: localDate('2026-11-07'),
+      footprint: { ...zero, rescued: { ...zero.rescued, count: 0 } },
+    });
+    const texts = written();
+    expect(texts).not.toContain('Klimabilanz');
+    expect(texts.some((value) => value.includes('CC BY 4.0'))).toBe(false);
+  });
+
+  it('prints the household name given in the masthead', async () => {
+    await render(sampleReport());
+    const texts = written();
+    expect(texts).toContain('WG Musterstrasse · Juni bis November 2026');
   });
 
   it('draws the shop letter of items from a receipt', async () => {

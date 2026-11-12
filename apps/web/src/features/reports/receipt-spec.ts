@@ -3,6 +3,7 @@ import {
   expiryStatus,
   formatSwissDate,
   rappen,
+  type FootprintSummary,
   type Report,
   type ReportItem,
   type StorageLocation,
@@ -12,6 +13,17 @@ import type { Money } from '../../app/money-format';
 import { expiryBadge } from '../../ui/expiry-badge';
 import { ringShare } from '../../ui/ring-share';
 import { formatQuantity } from '../../ui/quantity-text';
+import {
+  co2e,
+  estimatedPercent,
+  food,
+  formatNumber,
+  land,
+  pdfSafe,
+  text,
+  water,
+  type Quantity,
+} from '../climate/climate-format';
 
 /** The short reports, each a receipt (Alban, 8.11.2026); «full» is the detailed report. */
 export type QuickKind = 'impact' | 'expiring' | 'wasted' | 'fridge' | 'freezer' | 'pantry';
@@ -58,6 +70,8 @@ export interface ReceiptSpec {
   empty?: string;
   /** Two rings above the posts: «Verwertet» and «Entsorgt» (ADR-0046), share 0–1. */
   rings?: { used: ReceiptRing; wasted: ReceiptRing };
+  /** A small source line above the thank-you (the CC BY 4.0 attribution of the Klimabilanz). */
+  source?: string;
 }
 
 export interface ReceiptRing {
@@ -69,6 +83,42 @@ export interface ReceiptRing {
 const t = messages.reports.pdf.receipt;
 const kg = (grams: number) => `${(grams / 1000).toFixed(1)} kg`;
 
+/** The «Klimabilanz» block of the Bilanz receipt (ADR-0057); nothing when nothing was rescued. */
+function climatePosts(footprint: FootprintSummary | undefined, money: Money): ReceiptPost[] {
+  if (footprint === undefined || footprint.rescued.count === 0) {
+    return [];
+  }
+  const { rescued, kehricht } = footprint;
+  const metric = (label: string, quantity: Quantity): ReceiptPost => ({
+    label: pdfSafe(label.toUpperCase()),
+    value: pdfSafe(text(quantity)),
+    tint: 'saved',
+  });
+  const percent = estimatedPercent(rescued.estimatedShare);
+  const m = messages.climate.metrics;
+  return [
+    {
+      label: t.climate,
+      value: '',
+      bold: true,
+      ...(percent === null ? {} : { note: t.climateEstimated(percent) }),
+    },
+    metric(m.food, food(rescued.grams)),
+    metric(m.co2e, co2e(rescued.co2eGrams)),
+    metric(m.water, water(rescued.waterLitres)),
+    metric(m.land, land(rescued.landM2)),
+    ...(kehricht === null
+      ? []
+      : [
+          {
+            label: t.kehricht,
+            value: t.kehrichtValue(money.format(kehricht.feeRappen)),
+            note: t.kehrichtBags(formatNumber(kehricht.bags, 1)),
+          },
+        ]),
+  ];
+}
+
 /**
  * The posts of a short report. Pure: the same report gives the same receipt, so it is tested
  * without drawing. `days` is how far «Läuft bald ab» looks ahead.
@@ -76,7 +126,7 @@ const kg = (grams: number) => `${(grams / 1000).toFixed(1)} kg`;
 export function receiptSpec(
   report: Report,
   kind: QuickKind,
-  options: { money: Money; days: number },
+  options: { money: Money; days: number; footprint?: FootprintSummary },
 ): ReceiptSpec {
   const amount = (value: number) => options.money.format(rappen(value));
   const itemValue = (item: ReportItem) =>
@@ -98,6 +148,7 @@ export function receiptSpec(
       const share = impact.savedShare;
       const used = { rappen: impact.usedRappen, count: impact.usedCount };
       const wasted = { rappen: impact.wastedRappen, count: impact.wastedCount };
+      const climate = climatePosts(options.footprint, options.money);
       return {
         title: t.title,
         ...(used.count + wasted.count === 0
@@ -145,7 +196,9 @@ export function receiptSpec(
               note: messages.reports.pdf.receipts(report.shopping.receiptCount),
             },
           ],
+          ...(climate.length === 0 ? [] : [climate]),
         ],
+        ...(climate.length === 0 ? {} : { source: t.climateSource }),
         totals: [
           {
             label: t.rate,

@@ -1,9 +1,11 @@
 import {
   categoryById,
   expiryStatus,
+  FOOTPRINT_ATTRIBUTION,
   fallbackCategory,
   formatSwissDate,
   rappen,
+  type FootprintSummary,
   type LocalDate,
   type Report,
   type ReportItem,
@@ -40,6 +42,16 @@ import {
   type PdfPictures,
   type Rgb,
 } from './pdf-kit';
+import {
+  co2e,
+  estimatedPercent,
+  food,
+  formatNumber,
+  land,
+  pdfSafe,
+  text,
+  water,
+} from '../climate/climate-format';
 import { reportInsights } from './report-insights';
 
 const t = messages.reports.pdf;
@@ -63,6 +75,8 @@ interface Context {
   report: Report;
   amount: Amount;
   pictures: PdfPictures;
+  /** The Klimabilanz of the period (ADR-0057); the report works without it. */
+  footprint?: FootprintSummary;
 }
 
 /**
@@ -80,6 +94,7 @@ export async function reportPdf(
     createdOn: LocalDate;
     money?: Money;
     pictures?: PdfPictures;
+    footprint?: FootprintSummary;
   },
 ): Promise<Blob> {
   const money = options.money ?? CHF_MONEY;
@@ -95,6 +110,7 @@ export async function reportPdf(
     report,
     amount: (value, format) => money.format(rappen(value), format),
     pictures: options.pictures ?? {},
+    ...(options.footprint === undefined ? {} : { footprint: options.footprint }),
   };
 
   ground(doc);
@@ -102,11 +118,12 @@ export async function reportPdf(
   y = hero(ctx, y + 6);
   y = keyFigures(ctx, y + 5);
   y = insights(ctx, report, money, y + 6);
+  y = climate(ctx, y + 12);
   y = months(ctx, room(doc, y + 12, 96));
   y = urgent(ctx, y + 12);
   y = waste(ctx, y + 12);
   y = places(ctx, y + 12);
-  inventory(ctx, y + 12);
+  footnotes(ctx, inventory(ctx, y + 12));
 
   footers(doc);
   return doc.output('blob');
@@ -292,6 +309,142 @@ function months({ doc, report, amount }: Context, y: number): number {
     (value) => amount(value, { currency: false }).replace(/[.,]00$/, ''),
   );
   return start + height;
+}
+
+/** The Klimabilanz is shown when something was rescued in the period. */
+const hasClimate = (footprint: FootprintSummary | undefined): footprint is FootprintSummary =>
+  footprint !== undefined && footprint.rescued.count > 0;
+
+/**
+ * «Klimabilanz» (ADR-0057): four tiles for what the rescued food weighed and what went into it,
+ * the entsorgt totals as a comparison line, the three biggest CO2e categories and the Kehricht
+ * estimate. Figures of the food, never a claim; estimates are marked as on the climate page.
+ */
+function climate(ctx: Context, y: number): number {
+  const { doc, footprint, amount, pictures } = ctx;
+  if (!hasClimate(footprint)) {
+    return y;
+  }
+  const c = messages.climate;
+  const { rescued, wasted, kehricht } = footprint;
+  const tiles = [
+    [c.metrics.food, food(rescued.grams)],
+    [c.metrics.co2e, co2e(rescued.co2eGrams)],
+    [c.metrics.water, water(rescued.waterLitres)],
+    [c.metrics.land, land(rescued.landM2)],
+  ] as const;
+  const top: BarRow[] = footprint.topCategories.slice(0, 3).map((entry) => ({
+    label: categoryById(entry.categoryId)?.name.de ?? entry.categoryId,
+    value: entry.co2eGrams,
+    display: pdfSafe(text(co2e(entry.co2eGrams))),
+    color: C.smaragd,
+    icon: emojiOf(entry.categoryId),
+  }));
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  const sentence =
+    kehricht === null
+      ? []
+      : (doc.splitTextToSize(
+          c.kehricht(formatNumber(kehricht.bags, 1), amount(kehricht.feeRappen)),
+          HALF - 12,
+        ) as string[]);
+  doc.setFontSize(8);
+  const note =
+    kehricht === null ? [] : (doc.splitTextToSize(c.kehrichtNote, HALF - 12) as string[]);
+  const below =
+    top.length === 0 && kehricht === null
+      ? 0
+      : Math.max(top.length * 9 + 15, 16 + sentence.length * 4.6 + note.length * 3.6 + 4);
+  const percent = estimatedPercent(rescued.estimatedShare);
+  const lines = (wasted.count > 0 ? 1 : 0) + (percent === null ? 0 : 1);
+  const total = 5 + 6 + 24 + 3 + lines * 4.5 + (below === 0 ? 0 : below + 5);
+  const start = section(doc, t.climate.title, room(doc, y, total));
+  write(doc, pdfSafe(c.intro), PAGE.margin, start + 1.5, { size: 9.5, color: C.muted }, CONTENT);
+  const width = (CONTENT - GUTTER * (tiles.length - 1)) / tiles.length;
+  const tilesTop = start + 6;
+  tiles.forEach(([label, quantity], index) => {
+    const x = PAGE.margin + index * (width + GUTTER);
+    card(doc, { x, y: tilesTop, width, height: 24 });
+    write(
+      doc,
+      pdfSafe(label),
+      x + 5,
+      tilesTop + 7.5,
+      { size: 9, color: C.muted, bold: true },
+      width - 10,
+    );
+    write(
+      doc,
+      quantity.value,
+      x + 5,
+      tilesTop + 16,
+      { size: 17, color: C.smaragd, bold: true },
+      width - 10,
+    );
+    write(
+      doc,
+      pdfSafe(`${quantity.unit} ${c.rescuedWord}`),
+      x + 5,
+      tilesTop + 21,
+      { size: 8, color: C.muted },
+      width - 10,
+    );
+  });
+  let at = tilesTop + 24;
+  if (wasted.count > 0) {
+    const line = t.climate.wastedLine(
+      text(food(wasted.grams)),
+      text(co2e(wasted.co2eGrams)),
+      text(water(wasted.waterLitres)),
+    );
+    write(doc, pdfSafe(line), PAGE.margin, at + 5.5, { size: 9, color: C.muted }, CONTENT);
+    at += 4.5;
+  }
+  if (percent !== null) {
+    write(
+      doc,
+      c.estimatedShare(percent),
+      PAGE.margin,
+      at + 5.5,
+      { size: 8, color: C.muted },
+      CONTENT,
+    );
+    at += 4.5;
+  }
+  at += 3;
+  if (below === 0) {
+    return at;
+  }
+  at += 5;
+  const left = { x: PAGE.margin, y: at, width: kehricht === null ? CONTENT : HALF, height: below };
+  card(doc, left);
+  write(doc, pdfSafe(c.topTitle), left.x + 6, at + 9, { size: 10.5, color: C.ink, bold: true });
+  if (top.length > 0) {
+    bars(doc, pictures, { x: left.x + 6, y: at + 13, width: left.width - 12 }, top, {
+      labelWidth: kehricht === null ? 70 : 28,
+      valueWidth: 22,
+    });
+  }
+  if (kehricht !== null) {
+    const right = { x: PAGE.margin + HALF + GUTTER, y: at, width: HALF, height: below };
+    card(doc, right, C.smaragdTint);
+    write(doc, c.kehrichtTitle, right.x + 6, at + 9, {
+      size: 10.5,
+      color: C.smaragdDeep,
+      bold: true,
+    });
+    sentence.forEach((row, index) => {
+      write(doc, row, right.x + 6, at + 15.5 + index * 4.6, { size: 10, color: C.ink });
+    });
+    note.forEach((row, index) => {
+      write(doc, row, right.x + 6, at + 17 + sentence.length * 4.6 + index * 3.6, {
+        size: 8,
+        color: C.muted,
+      });
+    });
+  }
+  return at + below;
 }
 
 interface ListRow {
@@ -538,26 +691,32 @@ function places(ctx: Context, y: number): number {
 }
 
 /** «Alles im Vorrat» as the app's list, on its own page when it would leave orphaned rows. */
-function inventory(ctx: Context, y: number): void {
+function inventory(ctx: Context, y: number): number {
   const { doc, report, amount } = ctx;
   const items = report.fridge.items;
   const fitsHere = y + 5 + items.length * ROW <= FOOTER - 6;
   const start = section(doc, t.inventory, fitsHere ? y : newPage(doc));
   if (items.length === 0) {
     write(doc, t.none, PAGE.margin, start + 6, { size: 10, color: C.muted });
-    return;
+    return start + 6;
   }
-  const end = list(
+  return list(
     ctx,
     items.map((item) =>
       itemRow(report, item, `${amount(item.valueRappen)}${item.valueEstimated ? ' *' : ''}`),
     ),
     start,
   );
-  if (report.fridge.valueEstimated || report.impact.estimated) {
-    write(doc, t.estimated, PAGE.margin, Math.min(end + 6, FOOTER - 3), {
-      size: 8,
-      color: C.muted,
-    });
-  }
+}
+
+/** The small print on the last page: estimated values and the CC BY 4.0 source (ADR-0057). */
+function footnotes({ doc, report, footprint }: Context, end: number): void {
+  const lines = [
+    ...(report.fridge.valueEstimated || report.impact.estimated ? [t.estimated] : []),
+    ...(hasClimate(footprint) ? [pdfSafe(FOOTPRINT_ATTRIBUTION)] : []),
+  ];
+  const first = Math.min(end + 6, FOOTER - 3 - 4 * (lines.length - 1));
+  lines.forEach((line, index) => {
+    write(doc, line, PAGE.margin, first + index * 4, { size: 8, color: C.muted });
+  });
 }

@@ -79,7 +79,7 @@ export async function receiptPdf(
       },
     });
   }
-  const tail = [totals(spec.totals), foot(options)];
+  const tail = [totals(spec.totals), foot(options, spec.source)];
   const continued: Block = {
     height: 14,
     draw: (d, y) => {
@@ -212,9 +212,12 @@ function totals(posts: readonly ReceiptPost[]): Block {
   };
 }
 
-function foot(options: { household: string; detail: string; createdOn: LocalDate }): Block {
+function foot(
+  options: { household: string; detail: string; createdOn: LocalDate },
+  source?: string,
+): Block {
   return {
-    height: 44,
+    height: source === undefined ? 44 : 50,
     draw: (doc, y) => {
       barcode(
         doc,
@@ -222,6 +225,9 @@ function foot(options: { household: string; detail: string; createdOn: LocalDate
         `${options.household}|${options.detail}|${options.createdOn}`,
       );
       write(doc, t.receipt.thanks, CENTER, y + 28, { ...mono(9, C.ink), align: 'center' });
+      if (source !== undefined) {
+        write(doc, source, CENTER, y + 35, { ...mono(7, C.muted), align: 'center' }, RIGHT - LEFT);
+      }
     },
   };
 }

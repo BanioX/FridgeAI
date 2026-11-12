@@ -2,7 +2,7 @@ import { buildReport, localDate, rappen } from '@fridgeai/core';
 import { describe, expect, it } from 'vitest';
 import { CHF_MONEY } from '../../app/money-format';
 import { receiptSpec, usesPeriod, type QuickKind, type ReportKind } from './receipt-spec';
-import { sampleReport } from './report-sample';
+import { sampleFootprint, sampleReport } from './report-sample';
 
 const chf = (value: number) => CHF_MONEY.format(rappen(value));
 const spec = (kind: QuickKind, days = 3) =>
@@ -17,6 +17,43 @@ describe('receiptSpec', () => {
     expect(receipt.sections[0]?.map((post) => post.label)).toEqual(['GERETTET', 'ENTSORGT']);
     expect(receipt.totals.at(-1)).toMatchObject({ label: 'TOTAL GERETTET', big: true });
     expect(receipt.empty).toBeUndefined();
+  });
+
+  describe('Klimabilanz on the Bilanz receipt', () => {
+    const withFootprint = (footprint = sampleFootprint()) =>
+      receiptSpec(sampleReport(), 'impact', { money: CHF_MONEY, days: 3, footprint });
+    const posts = (receipt: ReturnType<typeof withFootprint>) =>
+      receipt.sections.flat().map((post) => `${post.label} ${post.value}`);
+
+    it('adds rescued food, CO2e, water, land and the Kehricht estimate', () => {
+      const receipt = withFootprint();
+      expect(posts(receipt)).toEqual(
+        expect.arrayContaining([
+          'KLIMABILANZ ',
+          'LEBENSMITTEL 6,4 kg',
+          'CO2E 21,8 kg CO2e',
+          'WASSER 2’650 l',
+          'FLÄCHE 24,3 m²',
+          'KEHRICHT etwa CHF 2.08',
+        ]),
+      );
+      expect(receipt.sections.flat().find((post) => post.label === 'KEHRICHT')?.note).toBe(
+        'etwa 1,3 Säcke à 35 l',
+      );
+      expect(receipt.sections.flat()[4]?.note).toBe('35 % geschätzt');
+      expect(receipt.source).toContain('CC BY 4.0');
+    });
+
+    it('is absent without a footprint, with nothing rescued, and has no Kehricht outside CHF', () => {
+      const none = spec('impact');
+      expect(posts(none).join()).not.toContain('KLIMABILANZ');
+      expect(none.source).toBeUndefined();
+      const zero = sampleFootprint();
+      const empty = withFootprint({ ...zero, rescued: { ...zero.rescued, count: 0 } });
+      expect(posts(empty).join()).not.toContain('KLIMABILANZ');
+      expect(empty.source).toBeUndefined();
+      expect(posts(withFootprint({ ...zero, kehricht: null })).join()).not.toContain('KEHRICHT');
+    });
   });
 
   it('lists what expires within the chosen days, the overdue included', () => {
