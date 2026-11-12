@@ -32,7 +32,7 @@ const LOOKS = {
   },
   segments: {
     group: 'grid auto-cols-fr grid-flow-col gap-0.5 rounded-xl bg-surface-muted p-0.5',
-    option: `flex min-h-11 min-w-0 items-center justify-center rounded-[0.625rem] px-1 text-center text-[0.8125rem] leading-tight hyphens-auto ${FOCUS}`,
+    option: `flex min-h-11 min-w-0 items-center justify-center rounded-[0.625rem] px-1 text-center text-[0.8125rem] leading-tight hyphens-calm ${FOCUS}`,
     chosen: CHOSEN,
     idle: 'text-ink hover:bg-surface',
   },

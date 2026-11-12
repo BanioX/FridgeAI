@@ -24,6 +24,9 @@ interface ItemRowProps {
   owner?: ReactNode;
 }
 
+/** From this many characters on the expiry chip stands under the name, not beside it. */
+const LONG_CHIP = 19;
+
 /**
  * One inventory item as a row of a grouped list: pack picture or food emoji, name, meta line and
  * the expiry chip, whose text carries the status (colour only supports it).
@@ -55,6 +58,8 @@ export function ItemRow({
         className="size-10 shrink-0 rounded-lg bg-surface-muted object-contain"
       />
     );
+  // «Nicht mehr verwenden» beside the name left «Rauchl…» at 390 px: a chip this long goes below.
+  const stacked = status.label.length >= LONG_CHIP;
   return (
     <div className="flex min-h-15 items-center gap-3 py-2.5 pr-3 pl-4">
       {/* The two halves lie on top of the picture while it is sliced (see `slice-a` in index.css). */}
@@ -81,8 +86,14 @@ export function ItemRow({
       </span>
       {/* Below 360 px (small phones, large text) the chip goes under the name, so the name stays
           readable instead of «Rauc…». */}
-      <div className="flex min-w-0 flex-1 items-center gap-3 max-[359px]:flex-col max-[359px]:items-start max-[359px]:gap-1">
-        <div className="min-w-0 flex-1 max-[359px]:w-full">
+      <div
+        className={
+          stacked
+            ? 'flex min-w-0 flex-1 flex-col items-start gap-1'
+            : 'flex min-w-0 flex-1 items-center gap-3 max-[359px]:flex-col max-[359px]:items-start max-[359px]:gap-1'
+        }
+      >
+        <div className={stacked ? 'w-full min-w-0' : 'min-w-0 flex-1 max-[359px]:w-full'}>
           <p className="flex items-center gap-1.5 font-semibold">
             <span className="truncate">{name}</span>
             {owner}

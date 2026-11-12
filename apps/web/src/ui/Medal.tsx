@@ -45,7 +45,7 @@ export function Medal({ icon: Icon, look, fraction = 0, name, label, missing, ab
     <div
       role="img"
       aria-label={label}
-      className="flex w-full min-w-0 flex-col items-center text-center break-words hyphens-auto"
+      className="flex w-full min-w-0 flex-col items-center text-center break-words hyphens-calm"
     >
       <div aria-hidden="true" className="relative size-14 shrink-0">
         <svg width={SIZE} height={SIZE} viewBox={`0 0 ${String(SIZE)} ${String(SIZE)}`}>

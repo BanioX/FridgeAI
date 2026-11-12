@@ -23,6 +23,18 @@ describe('design-system primitives', () => {
     expect(screen.getByText('heute').className).toContain('text-today');
   });
 
+  it('puts a long chip under the name, so the name is not cut off', () => {
+    const row = (label: string) =>
+      render(
+        <ItemRow emoji="🐟" name="Rauchlachs" meta="1 Stk." status={{ tone: 'danger', label }} />,
+      );
+    const short = row('in 3 Tagen');
+    expect(short.getByText('in 3 Tagen').parentElement?.className).toContain('items-center');
+    short.unmount();
+    const long = row('Nicht mehr verwenden');
+    expect(long.getByText('Nicht mehr verwenden').parentElement?.className).toContain('flex-col');
+  });
+
   it('gives every tone a chip style', () => {
     const tones: Tone[] = ['fresh', 'soon', 'today', 'danger', 'ice', 'wheat', 'olive', 'neutral'];
     for (const tone of tones) {

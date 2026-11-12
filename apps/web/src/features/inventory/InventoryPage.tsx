@@ -391,7 +391,7 @@ export function InventoryPage() {
                 onKeyDown={(event) => {
                   onKeyDown(event, index);
                 }}
-                className={`flex min-h-12 min-w-0 flex-col items-center justify-center rounded-[0.625rem] px-1 text-center text-[0.8125rem] leading-tight hyphens-auto transition-colors ${
+                className={`flex min-h-12 min-w-0 flex-col items-center justify-center rounded-[0.625rem] px-1 text-center text-[0.8125rem] leading-tight hyphens-calm transition-colors ${
                   active
                     ? 'bg-basil-700 font-semibold text-white shadow-card'
                     : 'font-medium text-ink hover:bg-surface'
