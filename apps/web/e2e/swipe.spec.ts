@@ -23,7 +23,7 @@ async function addGlace(page: Page) {
 }
 
 /** A negative distance swipes to the left («Verwertet»), a positive one to the right («Entsorgt»). */
-async function swipe(page: Page, distance: number, name: RegExp = /Glace/) {
+async function swipe(page: Page, distance: number, name = /Glace/) {
   const row = page.getByRole('link', { name });
   // After a swipe the row springs back for 300 ms: measure it only once it stands still.
   let last: number | undefined;
