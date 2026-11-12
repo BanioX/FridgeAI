@@ -7,7 +7,7 @@ import {
   type InventoryItemView,
   type LocalDate,
 } from '@fridgeai/core';
-import { Undo2 } from 'lucide-react';
+import { MapPin, Undo2 } from 'lucide-react';
 import { useEffect, useRef, useState, type RefObject } from 'react';
 import { Link } from 'react-router';
 import { useAppData } from '../../app/AppData';
@@ -18,6 +18,9 @@ import { StatusChip } from '../../ui/StatusChip';
 import { expiryBadge } from '../../ui/expiry-badge';
 import { itemMeta } from '../inventory/item-meta';
 import { useProductImage } from '../inventory/use-product-image';
+import { SpotThumb } from '../spots/SpotThumb';
+import { useSpots } from '../spots/use-spots';
+import { groupBySpot, spotCue } from './check-order';
 import { checkQueue, tally, writeLastCheck, type CheckAnswer } from './check-state';
 
 const t = messages.check;
@@ -37,6 +40,7 @@ export function CheckPage() {
   // A snapshot: answering changes the inventory, the check still walks through it exactly once.
   const [queue, setQueue] = useState<InventoryItemView[] | null>(null);
   const [steps, setSteps] = useState<Step[]>([]);
+  const spots = useSpots();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const heading = useRef<HTMLHeadingElement>(null);
@@ -46,7 +50,7 @@ export function CheckPage() {
     let active = true;
     void inventory['inventory.list']({ householdId }).then(({ items }) => {
       if (active) {
-        setQueue(checkQueue(items, today));
+        setQueue(groupBySpot(checkQueue(items, today), Object.values(messages.spots.shelves)));
       }
     });
     return () => {
@@ -137,6 +141,11 @@ export function CheckPage() {
     return <p className="sr-only">{messages.loading}</p>;
   }
   const current = queue[steps.length];
+  const cue = spotCue(queue, steps.length);
+  const cuePhoto =
+    cue === undefined || cue === null
+      ? undefined
+      : spots?.find((spot) => spot.id === cue.id)?.photo;
 
   return (
     <div className="space-y-6">
@@ -169,6 +178,8 @@ export function CheckPage() {
           today={today}
           busy={busy}
           heading={heading}
+          cue={cue}
+          cuePhoto={cuePhoto}
           onAnswer={(choice) => void answer(current, choice)}
         />
       )}
@@ -195,6 +206,8 @@ function CheckCard({
   today,
   busy,
   heading,
+  cue,
+  cuePhoto,
   onAnswer,
 }: {
   item: InventoryItemView;
@@ -203,6 +216,9 @@ function CheckCard({
   today: LocalDate;
   busy: boolean;
   heading: RefObject<HTMLHeadingElement | null>;
+  /** The spot to announce above the card: undefined for none, null for «Ohne festen Platz». */
+  cue: InventoryItemView['spot'] | undefined;
+  cuePhoto: string | undefined;
   onAnswer: (choice: CheckAnswer) => void;
 }) {
   const image = useProductImage(item.gtin);
@@ -230,6 +246,16 @@ function CheckCard({
           />
         </div>
       </div>
+      {cue === undefined ? null : (
+        <p className="flex items-center gap-2 font-semibold">
+          {cue === null ? (
+            <MapPin aria-hidden="true" size={20} className="shrink-0 text-ink-muted" />
+          ) : (
+            <SpotThumb photo={cuePhoto} size={cuePhoto === undefined ? 24 : 40} />
+          )}
+          {cue === null ? t.noSpot : cue.name}
+        </p>
+      )}
       <Card className="flex items-center gap-4">
         {image === undefined ? (
           <span aria-hidden="true" className="grid size-16 shrink-0 place-items-center text-5xl">
