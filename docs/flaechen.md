@@ -26,20 +26,20 @@ Prüfung aller Funktionen aus ADR-0048 bis ADR-0062 und der Funktionen ohne eige
 | Funktion | Start | Liste | Artikel | Journal | Bilanz | PDF | Export | Wissen | Suche | Abzeichen |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Rezepte, eigene Rezepte (0048) | – | – | über «Verarbeiten» | – | ja | – | ja | ja | nein (K12) | ja |
-| Verarbeiten, Reste (0052) | «etwa» fehlt (K4) | Badge fehlt (K4) | ja | zählt doppelt (K2) | ja | nein (K6) | ja | nein (K10) | ja | ja |
-| Abzeichen (0054) | ja | – | – | – | ja | nein (K7) | ja | nein (K10) | – | – |
-| Töpfe (0055) | – | ja | – | ja | – | – | – | nein (K10) | – | – |
-| Plätze, «Wo ist was?» (0056) | ja | ja | ja | – | ja | nein (K6) | ja | nein (K10) | ja (Fachnamen) | – |
-| Klimabilanz (0057) | ja | – | – | – | ja | nein (K1) | ja | teilweise (K10) | – | – |
-| «Gehört» (0058) | ja | ja | ja | nein (K2) | – | nein (K6) | ja | nein (K10) | ja (nach Person) | – |
-| Mindestbestand (0059) | – | ja | ja | – | – | – | ja | nein (K10) | – | – |
-| Rezepte zur Auswahl (0061) | – | ja | ja | – | – | – | – | nein (K10) | – | – |
-| Datum fotografieren (0062) | – | – | ja (Ändern, Einräumen) | – | – | – | ja | nein (K10) | – | – |
+| Verarbeiten, Reste (0052) | «etwa» fehlt (K4) | Badge fehlt (K4) | ja | zählt doppelt (K2) | ja | nein (K6) | ja | ja | ja | ja |
+| Abzeichen (0054) | ja | – | – | – | ja | nein (K7) | ja | ja | – | – |
+| Töpfe (0055) | – | ja | – | ja | – | – | – | ja | – | – |
+| Plätze, «Wo ist was?» (0056) | ja | ja | ja | – | ja | nein (K6) | ja | ja | ja (Fachnamen) | – |
+| Klimabilanz (0057) | ja | – | – | – | ja | nein (K1) | ja | ja | – | – |
+| «Gehört» (0058) | ja | ja | ja | nein (K2) | – | nein (K6) | ja | ja | ja (nach Person) | – |
+| Mindestbestand (0059) | – | ja | ja | – | – | – | ja | ja | – | – |
+| Rezepte zur Auswahl (0061) | – | ja | ja | – | – | – | – | ja | – | – |
+| Datum fotografieren (0062) | – | – | ja (Ändern, Einräumen) | – | – | – | ja | ja | – | – |
 | Lagerort-Kacheln | ja | ja | – | – | – | Notvorrat-Quittung nein (K7) | – | – | – | – |
-| Sicherung | ja | – | – | – | ja | – | nach Import nein (K3) | nein (K10) | – | – |
-| Einräumen | – | ja | ja | – | – | – | – | nein (K10) | – | – |
-| Check Fach für Fach | ja, wenn fällig | ja, unter «Mehr» jederzeit (K5) | – | teilweise | ja | – | ja | nein (K10) | – | ja |
-| Mehrere ändern | – | ja (K11) | – | – | – | – | – | nein (K10) | – | – |
+| Sicherung | ja | – | – | – | ja | – | nach Import nein (K3) | ja | – | – |
+| Einräumen | – | ja | ja | – | – | – | – | ja | – | – |
+| Check Fach für Fach | ja, wenn fällig | ja, unter «Mehr» jederzeit (K5) | – | teilweise | ja | – | ja | ja | – | ja |
+| Mehrere ändern | – | ja (K11) | – | – | – | – | – | ja | – | – |
 
 Daten gehen keine verloren: Alle Tabellen stehen in der Sicherung und kommen beim Import zurück. Es fehlten nur Tests mit Hin und Zurück für einzelne Felder (K3).
 
@@ -56,7 +56,7 @@ Daten gehen keine verloren: Alle Tabellen stehen in der Sicherung und kommen bei
 | K7 | PDF: Abzeichen im Zeitraum; Quittung für den Notvorrat | offen |
 | K8 | «Datum fotografieren» auch beim Ändern und beim Einräumen | erledigt |
 | K9 | «Wo ist was?» findet Fachnamen und Personen | erledigt |
-| K10 | «Kurz erklärt» für alle neuen Funktionen; Datenschutz-Hinweis nennt Datumsfotos | offen |
+| K10 | «Kurz erklärt» für alle neuen Funktionen; Datenschutz-Hinweis nennt Datumsfotos | erledigt |
 | K11 | «Mehrere ändern» kann auch den Platz setzen | erledigt |
 | K12 | Suche in «Alle Rezepte» | offen |
 | K13 | «Steht jetzt auf Nachkaufen» auch nach Töpfen, Check und Verarbeiten | offen |
