@@ -47,7 +47,7 @@ export const ProductSchema = z.object({
   categoryId: CategoryIdSchema,
   defaultLocation: StorageLocationSchema,
   source: ProductSourceSchema,
-  /** Retailer article numbers, for future rebuy partners (plan, section 2). */
+  /** Retailer article numbers. */
   externalRefs: z.partialRecord(RetailerSchema, z.string().min(1).max(64)).optional(),
   /** Pack size as printed, e.g. «1 l», «500 g». */
   packSize: z.string().trim().max(30).optional(),

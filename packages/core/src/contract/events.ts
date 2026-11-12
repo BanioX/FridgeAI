@@ -13,9 +13,8 @@ import {
 } from '../model/primitives';
 
 /**
- * Domain events v1 (ADR-0005). Every change produces one. In the MVP they drive push
- * notifications and dashboards; later they become webhooks for partners (e.g. `item.used_up` →
- * rebuy offer). Event types and payloads are versioned: breaking changes need a new version.
+ * Domain events v1 (ADR-0005). Every change produces one. They drive the dashboards.
+ * Event types and payloads are versioned: breaking changes need a new version.
  */
 const envelope = <TType extends string, TPayload extends z.ZodType>(
   type: TType,

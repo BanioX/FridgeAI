@@ -8,6 +8,11 @@ on:
     branches: [main]
     paths: [package.json]
   workflow_dispatch:
+    inputs:
+      sync_notes:
+        description: Write the notes of every release again from CHANGELOG.md
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -45,3 +50,19 @@ jobs:
           if [[ "$version" == 0.* ]]; then prerelease="--prerelease"; fi
           gh release create "$tag" --target "$GITHUB_SHA" $prerelease \
             --title "Rettich ${tag}" --notes-file notes.md
+
+      # After CHANGELOG.md was corrected: every release shows its section as it stands now.
+      - name: Write the notes of every release again from CHANGELOG.md
+        if: github.event_name == 'workflow_dispatch' && inputs.sync_notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release list --limit 200 --json tagName --jq '.[].tagName' | while read -r tag; do
+            awk -v head="## [${tag#v}]" 'index($0, "## [") == 1 { take = index($0, head) == 1 } take' \
+              CHANGELOG.md > notes.md
+            if [ -s notes.md ]; then
+              gh release edit "$tag" --notes-file notes.md
+            else
+              echo "No section for ${tag} in CHANGELOG.md, left as it is."
+            fi
+          done

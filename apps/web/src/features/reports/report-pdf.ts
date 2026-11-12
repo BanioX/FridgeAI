@@ -648,7 +648,7 @@ function waste(ctx: Context, y: number): number {
   write(doc, t.byCategory, left.x + 6, start + 9, { size: 10.5, color: C.ink, bold: true });
   write(doc, t.reasons, right.x + 6, start + 9, { size: 10.5, color: C.ink, bold: true });
   if (byCategory.length === 0) {
-    write(doc, t.noWaste, left.x + 6, start + 18, { size: 10, color: C.muted });
+    write(doc, t.nothingWasted, left.x + 6, start + 18, { size: 10, color: C.muted });
   } else {
     bars(doc, pictures, { x: left.x + 6, y: start + 13, width: HALF - 12 }, byCategory, {
       labelWidth: 33,

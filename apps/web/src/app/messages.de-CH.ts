@@ -1118,7 +1118,7 @@ export const messages = {
   people: {
     intro: 'Wer im Haushalt etwas für sich kauft, markiert es. Ohne Markierung gehört es allen.',
     deviceNote:
-      'Rettich läuft vorerst auf einem Gerät, zum Beispiel einem gemeinsamen Tablet in der Küche. Eigene Geräte pro Person kommen mit dem Abgleich (Meilenstein C).',
+      'Rettich läuft vorerst auf einem Gerät, zum Beispiel einem gemeinsamen Tablet in der Küche. Eigene Geräte pro Person kommen mit dem Abgleich.',
     listLabel: 'Personen im Haushalt',
     you: '(du)',
     add: 'Person hinzufügen',
@@ -1358,7 +1358,7 @@ export const messages = {
       estimated: '* geschätzt aus dem Durchschnittspreis der Kategorie',
       footer: 'Erstellt auf deinem Gerät mit Rettich · Wirf kein Geld in den Abfall.',
       page: (page: number, pages: number) => `Seite ${String(page)} von ${String(pages)}`,
-      noWaste: 'Nichts entsorgt.',
+      nothingWasted: 'Nichts entsorgt.',
       noUrgent: 'Nichts läuft in den nächsten drei Tagen ab.',
       none: 'Keine Daten in diesem Zeitraum.',
     },

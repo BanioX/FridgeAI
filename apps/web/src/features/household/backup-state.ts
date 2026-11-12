@@ -2,8 +2,7 @@ import { daysBetween, localDate, toLocalDate, type LocalDate } from '@fridgeai/c
 
 /**
  * Visible backups: Rettich keeps everything on this device (local-first), so a lost or reset phone
- * loses it all. Rettich says plainly when the last
- * export was and reminds calmly once a month.
+ * loses it all. Rettich says plainly when the last export was and reminds calmly once a month.
  */
 
 /** A month without an export is long enough to remind, short enough to lose little. */
