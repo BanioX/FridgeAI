@@ -38,7 +38,7 @@ describe('TodayPage', () => {
     expect(screen.queryByText('Lagerorte')).toBeNull();
   });
 
-  it('shows value and the urgent items with chips, without location tiles', async () => {
+  it('shows value, one compact row of location tiles and the urgent items with chips', async () => {
     const db = testDb();
     await seedDb(db, [
       { name: 'Hackfleisch', location: 'fridge', inDays: 1, expiryKind: 'use_by' },
@@ -58,11 +58,16 @@ describe('TodayPage', () => {
     expect(screen.getByText(/^CHF\s/)).toBeDefined();
     expect(screen.getByText(messages.today.estimated)).toBeDefined();
 
-    // Expiring items link to their detail page; the storage locations live in the Vorrat tabs.
+    // Expiring items link to their detail page.
     const expiringLink = within(list).getAllByRole('link')[0];
     expect(expiringLink?.getAttribute('href')).toMatch(/^\/inventory\/[0-9a-f-]{36}$/);
-    expect(screen.queryByText('Lagerorte')).toBeNull();
-    expect(screen.queryByText(/\d+ Artikel$/)).toBeNull();
+    // One row of four tiles (Alban, 12.11.2026, after #141 had taken the big ones out): the count
+    // per location, the urgent ones as a red number, a tap opens the tab.
+    const tiles = screen.getByRole('region', { name: messages.today.locationTiles.title });
+    expect(
+      within(tiles).getByRole('link', { name: 'Kühlschrank: 2 Artikel, 1 bald fällig' }),
+    ).toBeDefined();
+    expect(within(tiles).getByRole('link', { name: 'Notvorrat: 1 Artikel' })).toBeDefined();
     expect(screen.queryByText(messages.today.intro.title)).toBeNull();
   });
 
