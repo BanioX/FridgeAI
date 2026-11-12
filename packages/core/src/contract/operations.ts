@@ -652,6 +652,12 @@ export const CONTRACT_V1 = {
           valueEstimated: z.boolean(),
           wasteReason: WasteReasonSchema.optional(),
           sharedWith: ShareRecipientSchema.optional(),
+          /** Owner of the item when it was closed (ADR-0058). */
+          owner: OwnerSchema,
+          /** The result this ingredient was processed into (ADR-0052); its value moved on. */
+          madeInto: z.object({ itemId: IdSchema, name: z.string() }).optional(),
+          /** Whether the value counts in sums, like the Bilanz (`countsInValue`). */
+          countsInValue: z.boolean(),
           at: IsoDateTimeSchema,
         }),
       ),
