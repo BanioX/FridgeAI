@@ -1351,6 +1351,11 @@ export const messages = {
           ? '1 Artikel ist abgelaufen oder läuft in 3 Tagen ab.'
           : `${String(count)} Artikel sind abgelaufen oder laufen in 3 Tagen ab.`,
       shop: (shop: string, value: string) => `Am meisten ausgegeben bei ${shop}: ${value}.`,
+      /** «Verarbeiten» (ADR-0052): the value moved on to the result; no claim of saving. */
+      processed: (count: number, value: string) =>
+        count === 1
+          ? `1 Zutat verarbeitet, ${value} wanderte weiter.`
+          : `${String(count)} Zutaten verarbeitet, ${value} wanderten weiter.`,
       nothing: 'Noch wenig Daten. Mit jeder Quittung und jedem Abschluss wird der Auszug genauer.',
     },
   },

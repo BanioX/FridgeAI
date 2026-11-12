@@ -1,7 +1,7 @@
 import { daysBetween, toLocalDate } from '../dates';
 import { countsInValue, isRescue, summarizeImpact, type ImpactSummary } from '../metrics';
 import { rappen, sumRappen, type Rappen } from '../money';
-import type { OutcomeEvent, WasteReason } from '../model/inventory';
+import type { ItemOrigin, OutcomeEvent, WasteReason } from '../model/inventory';
 import type { DateKind, LocalDate, Retailer, StorageLocation, Unit } from '../model/primitives';
 
 /** An item in the inventory, with its value (receipt price or category estimate). */
@@ -18,6 +18,12 @@ export interface ReportItem {
   valueEstimated: boolean;
   /** Where it was bought (from its receipt); only known shops. */
   retailer?: Retailer | undefined;
+  /** The spot («Türfach», ADR-0056); only when it lies in the item's location. */
+  spot?: string | undefined;
+  /** The owner's initials (ADR-0058); only for a non-shared owner in a household of two or more. */
+  ownerInitials?: string | undefined;
+  /** «Selbst gemacht» or «Reste» (ADR-0052); bought items have none. */
+  origin?: ItemOrigin | undefined;
 }
 
 /** A closed item (eaten, shared, thrown away) with the category of its product. */
@@ -32,6 +38,7 @@ export type ReportOutcome = Pick<
   | 'deletedAt'
   | 'atRisk'
   | 'rescued'
+  | 'madeInto'
 > & {
   categoryId: string;
   /** The product's name, for lists of what was thrown away. */
@@ -61,6 +68,11 @@ export interface Report {
     /** Of the saved: what was given away (to neighbours, friends, a fridge) instead of eaten. */
     sharedRappen: Rappen;
     sharedCount: number;
+    /**
+     * «Verarbeiten» (ADR-0052): ingredients processed in the period and the value that moved on to
+     * the result (counted there, not here).
+     */
+    processed: { count: number; valueRappen: Rappen };
     /** Everything thrown away in the period, newest first (for the «Entsorgt» receipt). */
     wastedItems: {
       name: string;
@@ -148,6 +160,12 @@ export function buildReport(input: {
       wastedRappen: sum((o) => o.outcome === 'wasted'),
     };
   });
+  const processed = input.outcomes.filter((outcome) => {
+    const day = toLocalDate(outcome.at);
+    return (
+      outcome.madeInto !== undefined && outcome.deletedAt === undefined && day >= from && day <= to
+    );
+  });
   const wasted = active.filter((outcome) => outcome.outcome === 'wasted');
   const shared = active.filter((outcome) => outcome.outcome === 'shared_out' && isRescue(outcome));
   const byCategory = new Map<string, { count: number; valueRappen: number }>();
@@ -196,6 +214,10 @@ export function buildReport(input: {
       ...summarizeImpact(input.outcomes, from, to),
       sharedRappen: sumRappen(shared.map((outcome) => outcome.valueRappen)),
       sharedCount: shared.length,
+      processed: {
+        count: processed.length,
+        valueRappen: sumRappen(processed.map((outcome) => outcome.valueRappen)),
+      },
       wastedItems: [...wasted]
         .sort((a, b) => b.at.localeCompare(a.at))
         .map((outcome) => ({

@@ -30,6 +30,7 @@ import {
   measure,
   PAGE,
   PDF_COLOR as C,
+  ownerMark,
   placeBadge,
   SHOP_MARK,
   shopMark,
@@ -456,6 +457,10 @@ interface ListRow {
   place?: StorageLocation;
   /** The shop it was bought at, as a small letter tile left of the place badge. */
   shop?: Retailer;
+  /** The spot («Türfach»), muted after the name (ADR-0056). */
+  spot?: string;
+  /** The owner's initials as a small mark (ADR-0058); only with two or more people. */
+  owner?: string;
   value?: string;
 }
 
@@ -523,18 +528,34 @@ function list({ doc, pictures }: Context, rows: readonly ListRow[], y: number): 
           textEnd = markLeft - 2;
         }
       }
+      // The owner's mark sits next to the shop letter, under the same 30 mm rule.
+      if (row.owner !== undefined) {
+        const width = measure(doc, row.owner, { size: 6.5, color: C.muted, bold: true });
+        const markWidth = Math.max(SHOP_MARK, width + 2);
+        const markLeft = textEnd - markWidth + 2;
+        if (markLeft - 2 - textX >= 30) {
+          ownerMark(doc, row.owner, markLeft, middle);
+          textEnd = markLeft - 2;
+        }
+      }
       const textWidth = textEnd - textX;
+      const nameStyle = { size: 11, color: C.ink, bold: true, baseline: 'middle' as const };
+      write(doc, row.name, textX, middle - 2.4, nameStyle, textWidth);
+      // «· Türfach» after the name; when it does not fit, the secondary line carries it.
+      let detail = row.detail;
+      if (row.spot !== undefined) {
+        const spotStyle = { size: 9, color: C.muted, baseline: 'middle' as const };
+        const after = textX + measure(doc, row.name, nameStyle) + 1.5;
+        const spotText = `· ${row.spot}`;
+        if (after + measure(doc, spotText, spotStyle) <= textEnd) {
+          write(doc, spotText, after, middle - 2.4, spotStyle, textEnd - after);
+        } else {
+          detail = `${row.spot} · ${detail}`;
+        }
+      }
       write(
         doc,
-        row.name,
-        textX,
-        middle - 2.4,
-        { size: 11, color: C.ink, bold: true, baseline: 'middle' },
-        textWidth,
-      );
-      write(
-        doc,
-        row.detail,
+        detail,
         textX,
         middle + 2.8,
         { size: 9, color: C.muted, baseline: 'middle' },
@@ -562,14 +583,18 @@ function itemRow(report: Report, item: ReportItem, value?: string): ListRow {
     report.today,
     item.location,
   );
+  const origin = item.origin === undefined ? undefined : messages.badges[item.origin];
   return {
     icon: emojiOf(item.categoryId),
     name: item.name,
-    detail:
-      item.retailer === undefined
-        ? formatQuantity(item.quantity, item.unit)
-        : `${formatQuantity(item.quantity, item.unit)} · ${messages.receiptUpload.retailers[item.retailer]}`,
+    detail: [
+      formatQuantity(item.quantity, item.unit),
+      ...(item.retailer === undefined ? [] : [messages.receiptUpload.retailers[item.retailer]]),
+      ...(origin === undefined ? [] : [origin]),
+    ].join(' · '),
     chip: badge,
+    ...(item.spot === undefined ? {} : { spot: item.spot }),
+    ...(item.ownerInitials === undefined ? {} : { owner: item.ownerInitials }),
     place: item.location,
     ...(item.retailer === undefined ? {} : { shop: item.retailer }),
     ...(value === undefined ? {} : { value }),

@@ -1,14 +1,14 @@
-import { buildReport, localDate, type Report } from '@fridgeai/core';
+import { buildReport, localDate, rappen, type Report } from '@fridgeai/core';
 import { writeFileSync } from 'node:fs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { write } from './pdf-kit';
+import { ownerMark, write } from './pdf-kit';
 import type * as kit from './pdf-kit';
 import { reportPdf } from './report-pdf';
 import { sampleFootprint, sampleReport } from './report-sample';
 
 vi.mock('./pdf-kit', async (importActual) => {
   const actual = await importActual<typeof kit>();
-  return { ...actual, write: vi.fn(actual.write) };
+  return { ...actual, write: vi.fn(actual.write), ownerMark: vi.fn(actual.ownerMark) };
 });
 
 /** Every text the report wrote so far. */
@@ -27,6 +27,7 @@ async function render(report: Report): Promise<Uint8Array> {
 describe('reportPdf', () => {
   beforeEach(() => {
     vi.mocked(write).mockClear();
+    vi.mocked(ownerMark).mockClear();
   });
 
   it('draws a full report as a PDF', async () => {
@@ -89,6 +90,26 @@ describe('reportPdf', () => {
     const [with_, plain] = [await render(report), await render(without)];
     expect(new TextDecoder().decode(with_.slice(0, 5))).toBe('%PDF-');
     expect(with_.length).toBeGreaterThan(plain.length);
+  });
+
+  it('says in «Was auffällt» how many ingredients were processed, only when there are some', async () => {
+    await render(sampleReport());
+    expect(written()).toContain('3 Zutaten verarbeitet, CHF 5.60 wanderten weiter.');
+    vi.mocked(write).mockClear();
+    const report = sampleReport();
+    await render({
+      ...report,
+      impact: { ...report.impact, processed: { count: 0, valueRappen: rappen(0) } },
+    });
+    expect(written().some((value) => value.includes('verarbeitet'))).toBe(false);
+  });
+
+  it('writes the spot after the name, the owner mark and the origin tag', async () => {
+    await render(sampleReport());
+    expect(written()).toContain('· Türfach');
+    expect(vi.mocked(ownerMark).mock.calls.map(([, initials]) => initials)).toContain('MK');
+    expect(written().some((value) => value.includes('Selbst gemacht'))).toBe(true);
+    expect(written().some((value) => value.includes('Reste'))).toBe(true);
   });
 
   it('draws an empty report without failing', async () => {

@@ -2,6 +2,7 @@ import { categoryById, fallbackCategory, normalizeFoodText } from '../catalog/ma
 import { CONTRACT_V1, type FrequentProduct } from '../contract/operations';
 import { toLocalDate } from '../dates';
 import { frequentProducts } from '../frequent-products';
+import { initialsOf } from '../initials';
 import type { Id } from '../ids';
 import type { InventoryItem } from '../model/inventory';
 import { rappen } from '../money';
@@ -129,12 +130,30 @@ export function createInsightQueries({ storage, clock }: AppContext) {
    */
   const report: UseCase<'reports.build'> = async (raw) => {
     const { householdId, from, to } = CONTRACT_V1['reports.build'].input.parse(raw);
-    const [allItems, products, outcomes, receipts] = await Promise.all([
+    const [allItems, products, outcomes, receipts, spotRows, memberRows] = await Promise.all([
       storage.items.ofHousehold(householdId),
       storage.products.ofHousehold(householdId),
       storage.outcomes.ofHousehold(householdId),
       storage.receipts.ofHousehold(householdId),
+      storage.spots.ofHousehold(householdId),
+      storage.members.ofHousehold(householdId),
     ]);
+    const spotById = new Map(spotRows.map((spot) => [spot.id, spot]));
+    // Owner initials only make sense with two or more people (ADR-0058); decided here, once.
+    const members = memberRows.filter(
+      (member) => member.leftAt === undefined && member.deletedAt === undefined,
+    );
+    const initialsById = new Map(
+      members.length < 2
+        ? []
+        : members.map((member) => [
+            member.id,
+            initialsOf(
+              member.displayName,
+              members.filter((other) => other.id !== member.id).map((other) => other.displayName),
+            ),
+          ]),
+    );
     const productById = new Map(products.map((product) => [product.id, product]));
     const categoryOf = (productId: Id) =>
       categoryById(productById.get(productId)?.categoryId ?? '') ?? fallbackCategory();
@@ -155,6 +174,13 @@ export function createInsightQueries({ storage, clock }: AppContext) {
         },
         category,
       );
+      const spotId = productById.get(item.productId)?.spotId;
+      const spot = spotId === undefined ? undefined : spotById.get(spotId);
+      const spotName =
+        spot === undefined || spot.deletedAt !== undefined || spot.location !== item.location
+          ? undefined
+          : spot.name;
+      const initials = item.owner === 'shared' ? undefined : initialsById.get(item.owner);
       return {
         name: productById.get(item.productId)?.name ?? category.name.de,
         categoryId: category.id,
@@ -166,6 +192,9 @@ export function createInsightQueries({ storage, clock }: AppContext) {
         valueRappen: value.valueRappen,
         valueEstimated: value.estimated,
         ...(retailers.has(item.id) ? { retailer: retailers.get(item.id) } : {}),
+        ...(spotName === undefined ? {} : { spot: spotName }),
+        ...(initials === undefined ? {} : { ownerInitials: initials }),
+        ...(item.origin === undefined ? {} : { origin: item.origin }),
       };
     });
     const closed: ReportOutcome[] = outcomes.map((outcome) => {
