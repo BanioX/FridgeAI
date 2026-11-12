@@ -5,7 +5,7 @@ import { RappenSchema } from '../money';
 import { DomainEventSchema } from './events';
 import { OwnRecipeSchema } from '../recipes/own-recipe';
 import { RecipeTagSchema } from '../recipes/recipe';
-import { HouseholdSchema, MemberSchema, type Scope } from '../model/household';
+import { HouseholdSchema, MemberSchema, RoleSchema, type Scope } from '../model/household';
 import {
   ReceiptLineKindSchema,
   ReceiptLineSchema,
@@ -387,6 +387,20 @@ const ImportableExportSchema = HouseholdExportSchema.superRefine((data, check) =
   }
 });
 
+/** An active person of the household, as the UI shows them (ADR-0058). */
+export const MemberViewSchema = z.object({
+  id: IdSchema,
+  displayName: z.string().min(1).max(40),
+  /** One or two letters for the badge; distinct among the active members (`initialsOf`). */
+  initials: z.string().min(1).max(3),
+  role: RoleSchema,
+  /** The person acting on this device. */
+  isSelf: z.boolean(),
+});
+export type MemberView = z.infer<typeof MemberViewSchema>;
+
+const MemberNameSchema = z.string().trim().min(1).max(40);
+
 export const CONTRACT_V1 = {
   'inventory.list': query({
     name: 'inventory.list',
@@ -448,8 +462,8 @@ export const CONTRACT_V1 = {
   'inventory.updateItem': command({
     name: 'inventory.updateItem',
     summary: {
-      de: 'Name, Kategorie, Lagerort, Datum, Datumsart, Menge oder Preis eines Artikels korrigieren.',
-      en: 'Correct the name, category, place, date, date kind, quantity or price of an item.',
+      de: 'Name, Kategorie, Lagerort, Datum, Datumsart, Menge, Preis oder «Gehört» eines Artikels korrigieren.',
+      en: 'Correct the name, category, place, date, date kind, quantity, price or owner of an item.',
     },
     scopes: ['inventory:write'],
     input: z
@@ -470,6 +484,8 @@ export const CONTRACT_V1 = {
         priceRappen: RappenSchema.min(0).nullable().optional(),
         /** «Zum Kochen» (false) or «Fertigprodukt» (true); null goes back to the category. */
         readyMade: z.boolean().nullable().optional(),
+        /** «Gehört»: `shared` (everyone) or an active member (ADR-0058). */
+        owner: OwnerSchema.optional(),
       })
       .refine(
         (input) =>
@@ -482,6 +498,7 @@ export const CONTRACT_V1 = {
             input.quantity,
             input.priceRappen,
             input.readyMade,
+            input.owner,
           ].some((value) => value !== undefined),
         { message: 'Nothing to change' },
       ),
@@ -496,6 +513,7 @@ export const CONTRACT_V1 = {
           'quantity',
           'priceRappen',
           'readyMade',
+          'owner',
         ]),
       ),
     }),
@@ -1250,6 +1268,43 @@ export const CONTRACT_V1 = {
         .max(50),
     }),
     output: z.object({ known: z.array(z.string()) }),
+  }),
+  'household.members': query({
+    name: 'household.members',
+    summary: {
+      de: 'Die Personen im Haushalt, mit Initialen fürs «Gehört»-Zeichen.',
+      en: 'The active people of the household, with initials for the owner badge.',
+    },
+    scopes: ['household:read'],
+    input: z.object({ ...queryBase }),
+    output: z.object({ members: z.array(MemberViewSchema) }),
+  }),
+  'household.addMember': command({
+    name: 'household.addMember',
+    summary: {
+      de: 'Eine Person zum Haushalt hinzufügen (nur ein Name, kein Konto).',
+      en: 'Add a person to the household (a name only, no account).',
+    },
+    scopes: ['household:write'],
+    input: z.object({ ...commandBase, displayName: MemberNameSchema }),
+    output: z.object({ memberId: IdSchema }),
+  }),
+  'household.renameMember': command({
+    name: 'household.renameMember',
+    summary: { de: 'Eine Person umbenennen.', en: 'Rename a person of the household.' },
+    scopes: ['household:write'],
+    input: z.object({ ...commandBase, memberId: IdSchema, displayName: MemberNameSchema }),
+    output: z.object({ memberId: IdSchema }),
+  }),
+  'household.removeMember': command({
+    name: 'household.removeMember',
+    summary: {
+      de: 'Eine Person entfernen; ihre Sachen gehören danach allen.',
+      en: 'Remove a person; what they owned becomes shared.',
+    },
+    scopes: ['household:write'],
+    input: z.object({ ...commandBase, memberId: IdSchema }),
+    output: z.object({ memberId: IdSchema, itemsShared: z.int().min(0) }),
   }),
   'household.export': query({
     name: 'household.export',

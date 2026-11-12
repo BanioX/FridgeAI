@@ -263,6 +263,23 @@ export function createInventoryCommands(ctx: AppContext) {
         }
         changed.push('readyMade');
       }
+      if (input.owner !== undefined && input.owner !== item.owner) {
+        if (input.owner !== 'shared') {
+          const member = await storage.members.get(input.owner);
+          if (
+            member?.householdId !== input.householdId ||
+            member.leftAt !== undefined ||
+            member.deletedAt !== undefined
+          ) {
+            throw new CommandError(
+              'invalid_owner',
+              `Owner ${input.owner} is not «shared» or an active member of the household`,
+            );
+          }
+        }
+        next.owner = input.owner;
+        changed.push('owner');
+      }
       if (changed.length === 0) {
         return { changed };
       }
