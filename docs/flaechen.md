@@ -21,38 +21,38 @@ Eine neue Funktion ist erst fertig, wenn sie auf **jeder Fläche** steht, auf de
 
 ## Stand 12.11.2026
 
-Prüfung aller Funktionen aus ADR-0048 bis ADR-0062 und der Funktionen ohne eigenes ADR. «ja» heisst vorhanden, «nein» heisst Lücke, «–» heisst gehört dort nicht hin. In Klammern: der Auftrag, der die Lücke schliesst.
+Prüfung aller Funktionen aus ADR-0048 bis ADR-0064 und der Funktionen ohne eigenes ADR. «ja» heisst vorhanden, «nein» heisst Lücke, «–» heisst gehört dort nicht hin. In Klammern: der Auftrag, der die Lücke schliesst.
 
 | Funktion | Start | Liste | Artikel | Journal | Bilanz | PDF | Export | Wissen | Suche | Abzeichen |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Rezepte, eigene Rezepte (0048) | – | – | über «Verarbeiten» | – | ja | – | ja | ja | nein (K12) | ja |
-| Verarbeiten, Reste (0052) | «etwa» fehlt (K4) | Badge fehlt (K4) | ja | zählt doppelt (K2) | ja | ja | ja | ja | ja | ja |
+| Verarbeiten, Reste (0052) | ja, «etwa» (K4) | ja, Badge (K4) | ja | ja, zählt einmal (K2) | ja | ja | ja | ja | ja | ja |
 | Abzeichen (0054) | ja | – | – | – | ja | nein (K7) | ja | ja | – | – |
 | Töpfe (0055) | – | ja | – | ja | – | – | – | ja | – | – |
 | Plätze, «Wo ist was?» (0056) | ja | ja | ja | – | ja | ja | ja | ja | ja (Fachnamen) | – |
-| Klimabilanz (0057) | ja | – | – | – | ja | nein (K1) | ja | ja | – | – |
-| «Gehört» (0058) | ja | ja | ja | nein (K2) | – | ja | ja | ja | ja (nach Person) | – |
+| Klimabilanz (0057) | ja | – | – | – | ja | ja (K1) | ja | ja | – | – |
+| «Gehört» (0058) | ja | ja | ja | ja (K2) | – | ja | ja | ja | ja (nach Person) | – |
 | Mindestbestand (0059) | – | ja | ja | – | – | – | ja | ja | – | – |
 | Rezepte zur Auswahl (0061) | – | ja | ja | – | – | – | – | ja | – | – |
 | Datum fotografieren (0062) | – | – | ja (Ändern, Einräumen) | – | – | – | ja | ja | – | – |
 | Lagerort-Kacheln | ja | ja | – | – | – | Notvorrat-Quittung nein (K7) | – | – | – | – |
-| Sicherung | ja | – | – | – | ja | – | nach Import nein (K3) | ja | – | – |
+| Sicherung | ja | – | – | – | ja | – | ja, auch nach Import (K3) | ja | – | – |
 | Einräumen | – | ja | ja | – | – | – | – | ja | – | – |
 | Check Fach für Fach | ja, wenn fällig | ja, unter «Mehr» jederzeit (K5) | – | teilweise | ja | – | ja | ja | – | ja |
 | Mehrere ändern | – | ja (K11) | – | – | – | – | – | ja | – | – |
 | Geschätzte Nährwerte (0064) | – | – | ja (Frischware ohne Etikett) | – | – | – (berechnet) | – (berechnet) | ja | – | – |
 | Packung: was übrig ist (0063) | – | – (Menge als Text) | ja | – | – | – | – (berechnet) | ja | – | – |
 
-Daten gehen keine verloren: Alle Tabellen stehen in der Sicherung und kommen beim Import zurück. Es fehlten nur Tests mit Hin und Zurück für einzelne Felder (K3).
+Daten gehen keine verloren: Alle Tabellen stehen in der Sicherung und kommen beim Import zurück; Tests mit Hin und Zurück prüfen das seit K3 für jedes Feld.
 
 ## Aufträge
 
 | Auftrag | Inhalt | Status |
 | --- | --- | --- |
-| K1 | Klimabilanz in der Quittung «Bilanz» und im Gesamtauszug, mit Quelle; echter Haushaltsname im PDF | in Arbeit |
-| K2 | Journal zählt wie die Bilanz (Verarbeitetes nicht doppelt, «→ Kuchen»), Person an der Zeile | in Arbeit |
-| K3 | Tests mit Hin und Zurück für Person, Verarbeiten, Mindestbestand; «Letzte Sicherung» nach Import und Löschen | in Arbeit |
-| K4 | Badges «Selbst gemacht» und «Reste»; «etwa» auf Start | in Arbeit |
+| K1 | Klimabilanz in der Quittung «Bilanz» und im Gesamtauszug, mit Quelle; echter Haushaltsname im PDF | erledigt |
+| K2 | Journal zählt wie die Bilanz (Verarbeitetes nicht doppelt, «→ Kuchen»), Person an der Zeile | erledigt |
+| K3 | Tests mit Hin und Zurück für Person, Verarbeiten, Mindestbestand; «Letzte Sicherung» nach Import und Löschen | erledigt |
+| K4 | Badges «Selbst gemacht» und «Reste»; «etwa» auf Start | erledigt |
 | K5 | Kühlschrank-Check auch ohne Fälligkeit starten (Vorrat, Mehr); Person auf der Check-Karte | erledigt |
 | K6 | PDF: Plätze, Person und Verarbeitetes im Auszug | erledigt |
 | K7 | PDF: Abzeichen im Zeitraum; Quittung für den Notvorrat | offen |
