@@ -245,6 +245,8 @@ export const InventoryItemViewSchema = z.object({
   packageSize: PackageSizeSchema.optional(),
   /** Set once the pack is open; the expiry date then follows the opening rule. */
   openedOn: LocalDateSchema.optional(),
+  /** Bought loose at the counter («Von der Theke»), so open from the day it came home. */
+  fromCounter: z.boolean().optional(),
   /** Day it went into the freezer / came out of it, for the badges «Eingefroren» and «Aufgetaut». */
   frozenOn: LocalDateSchema.optional(),
   thawedOn: LocalDateSchema.optional(),
@@ -459,6 +461,11 @@ export const CONTRACT_V1 = {
       afterOpeningDays: AfterOpeningDaysSchema.optional(),
       /** For packs that are already open when added (the opening rule applies from that day). */
       openedOn: LocalDateSchema.optional(),
+      /**
+       * Bought loose at the counter («Von der Theke», ADR-0038): open from today unless `openedOn`
+       * says otherwise, and shown as such instead of «Geöffnet».
+       */
+      fromCounter: z.boolean().optional(),
       /** From the barcode lookup (NOVA 4, desserts, meals): a Fertigprodukt whatever the category. */
       readyMade: z.boolean().optional(),
     }),

@@ -57,6 +57,10 @@ Alban: «Wenn ich eine Packung Mozzarella kaufe, ist diese verschweisst. Wenn ic
 - **Beim Erfassen:** Steht so ein Artikel im Kühlschrank, fragt Rettich «Wie gekauft? Verpackt / Von der Theke». Mit «Von der Theke» ist der Artikel ab dem Kauftag geöffnet (`openedOn`). Das Datum folgt der bestehenden Regel nach dem Öffnen: Mozzarella hält dann etwa 3 Tage statt 10.
 - Frisches Fleisch und frischer Fisch brauchen den Schalter nicht, sie haben schon das kurze Verbrauchsdatum.
 
+**Nachtrag (12.11.2026): «Von der Theke» wird gespeichert.** Alban: «Bei geöffnet kommt dann der Badge von der Theke, was ja falsch ist.» Bisher wurde «Von der Theke» erraten: Kategorie mit `soldLoose`, am Kauftag geöffnet. Wer eine verschweisste Mozzarella am Kauftag öffnet, sah deshalb «Von der Theke» statt «Geöffnet».
+- **Neu:** Der Artikel trägt `fromCounter: true`, gesetzt beim Erfassen mit «Von der Theke» (`inventory.addItem`, Feld `fromCounter`; ohne `openedOn` gilt er ab heute als geöffnet). Das Badge liest nur noch dieses Feld.
+- **Ältere Theken-Artikel** ohne das Feld zeigen «Geöffnet». Das ist die sichere Richtung, und sie sind nach wenigen Tagen verbraucht, darum keine Datenmigration.
+
 ## Nachtrag (8.11.2026): Das wirfst du oft weg
 
 Alban: «Oder man kauft eine Riesenpackung, aber benutzt sie selten. Da vielleicht smarte Hinweise: Dieses Produkt gibt es auch in kleineren Grössen.»

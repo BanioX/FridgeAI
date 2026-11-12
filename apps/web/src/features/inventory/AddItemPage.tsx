@@ -302,8 +302,8 @@ export function AddItemPage() {
             }),
         ...(scanned?.gtin === undefined ? {} : { gtin: scanned.gtin }),
         ...(price === undefined ? {} : { priceRappen: price }),
-        // From the counter: open from the day it was bought, the opening rule sets the date.
-        ...(loose ? { openedOn: today } : {}),
+        // From the counter: open from today, the opening rule sets the date (ADR-0038).
+        ...(loose ? { fromCounter: true } : {}),
         ...(readyHint ? { readyMade: true } : {}),
         ...(askOwner && ownerChoice !== 'shared' ? { owner: ownerChoice } : {}),
       });

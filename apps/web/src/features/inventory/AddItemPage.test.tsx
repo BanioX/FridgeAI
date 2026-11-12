@@ -110,6 +110,7 @@ describe('AddItemPage', () => {
     await screen.findByText(/^\/inventory\?location=fridge$/);
     const [item] = await db.items.toArray();
     expect(item?.openedOn).toBe(today);
+    expect(item?.fromCounter).toBe(true);
     expect(item?.expiresOn).toBe(addDays(today, 3));
   });
 

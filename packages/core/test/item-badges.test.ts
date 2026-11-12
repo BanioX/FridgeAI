@@ -1,9 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { adviseFreezing, IsoDateTimeSchema, itemBadges, localDate, type BadgeSource } from '../src';
+import { adviseFreezing, itemBadges, localDate, type BadgeSource } from '../src';
 
 const today = localDate('2026-11-11');
-const bought = IsoDateTimeSchema.parse('2026-11-09T10:00:00.000Z');
-const base: BadgeSource = { location: 'fridge', categoryId: 'dairy-milk', purchasedAt: bought };
+const base: BadgeSource = { location: 'fridge', categoryId: 'dairy-milk' };
 
 describe('itemBadges', () => {
   it('shows Selbst gemacht and Reste from the origin, first in order', () => {
@@ -35,13 +34,21 @@ describe('itemBadges', () => {
     expect(itemBadges({ ...base, location: 'freezer', thawedOn }, today)).toEqual([]);
   });
 
-  it('shows Geöffnet, and Von der Theke instead when opened on the day it came home', () => {
+  it('shows Geöffnet, and Von der Theke instead for an item bought at the counter', () => {
     const openedOn = localDate('2026-11-10');
     expect(itemBadges({ ...base, openedOn }, today)).toEqual([{ kind: 'opened', on: openedOn }]);
-    const loose = { ...base, categoryId: 'dairy-cheese-soft', openedOn: localDate('2026-11-09') };
-    expect(itemBadges(loose, today)).toEqual([{ kind: 'loose' }]);
-    // the same category, opened later: an ordinary open pack
-    expect(itemBadges({ ...loose, openedOn }, today)).toEqual([{ kind: 'opened', on: openedOn }]);
+    const counter = { ...base, categoryId: 'dairy-cheese-soft', openedOn, fromCounter: true };
+    expect(itemBadges(counter, today)).toEqual([{ kind: 'loose' }]);
+  });
+
+  it('shows Geöffnet for a pack opened at home on the day it came home (Alban, 12.11.2026)', () => {
+    // A sealed mozzarella, bought and opened the same day: no counter, whatever the category.
+    const openedOn = localDate('2026-11-09');
+    const sealed = { ...base, categoryId: 'dairy-cheese-soft', openedOn };
+    expect(itemBadges(sealed, today)).toEqual([{ kind: 'opened', on: openedOn }]);
+    expect(itemBadges({ ...sealed, fromCounter: false }, today)).toEqual([
+      { kind: 'opened', on: openedOn },
+    ]);
   });
 
   it('shows Fertigprodukt from the category or from the item, and the item wins', () => {
