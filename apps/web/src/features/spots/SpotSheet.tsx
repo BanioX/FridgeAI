@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
 import { Button } from '../../ui/Button';
+import { shelfSuggestions } from './fridge-shelves';
 import { PhotoPicker } from './PhotoPicker';
 import { SpotThumb } from './SpotThumb';
 import { useSpots } from './use-spots';
@@ -43,6 +44,15 @@ export function SpotSheet({
   }, [onDone]);
 
   const here = (spots ?? []).filter((spot) => spot.location === item.location);
+  // In the fridge: the usual compartments as one-tap spots, the one that suits this food first.
+  const shelves =
+    item.location === 'fridge' && spots !== undefined
+      ? shelfSuggestions(
+          item.categoryId,
+          t.shelves,
+          here.map((spot) => spot.name),
+        )
+      : [];
 
   async function run(action: () => Promise<string>) {
     if (busy) {
@@ -80,15 +90,14 @@ export function SpotSheet({
       return t.cleared(item.name);
     });
 
-  const create = () =>
+  const create = (spotName = name.trim(), withPhoto = photo) =>
     run(async () => {
-      const spotName = name.trim();
       const { spotId } = await inventory['spots.create']({
         commandId: ids.next(),
         householdId,
         name: spotName,
         location: item.location,
-        ...(photo === null ? {} : { photo }),
+        ...(withPhoto === null ? {} : { photo: withPhoto }),
       });
       await inventory['products.setSpot']({
         commandId: ids.next(),
@@ -207,6 +216,37 @@ export function SpotSheet({
                 );
               })}
             </ul>
+            {shelves.length === 0 ? null : (
+              <section aria-labelledby="shelves-title" className="space-y-2 pt-1">
+                <h3 id="shelves-title" className="text-sm font-semibold text-ink-muted">
+                  {t.shelvesTitle}
+                </h3>
+                <ul className="flex flex-wrap gap-2">
+                  {shelves.map(({ shelf, name: shelfName, suits }) => (
+                    <li key={shelf}>
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => {
+                          void create(shelfName, null);
+                        }}
+                        className={`inline-flex min-h-11 items-center rounded-full px-4 text-sm font-semibold transition-colors disabled:opacity-50 ${
+                          suits
+                            ? 'bg-basil-700 text-white hover:bg-basil-800'
+                            : 'bg-surface-muted text-ink hover:bg-line'
+                        }`}
+                      >
+                        {/* One inline run of text: a flex item would drop the space before «·». */}
+                        <span>
+                          {shelfName}
+                          {suits ? <span className="font-normal">{` · ${t.suits}`}</span> : null}
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
             <Button
               variant="secondary"
               icon={Plus}
