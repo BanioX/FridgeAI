@@ -60,6 +60,8 @@ export const ProductSchema = z.object({
     .optional(),
   /** The usual storage spot («Zucker liegt im oberen Schrank links», ADR-0056). */
   spotId: IdSchema.optional(),
+  /** «Immer da haben» (ADR-0059): fewer active packs than this put the product on «Nachkaufen». */
+  minStock: z.int().min(1).max(20).optional(),
 });
 export type Product = z.infer<typeof ProductSchema>;
 
@@ -245,5 +247,7 @@ export const ShoppingListItemSchema = z.object({
   checked: z.boolean(),
   checkedAt: IsoDateTimeSchema.optional(),
   addedBy: IdSchema,
+  /** Set when the minimum stock put it there, not a person (ADR-0059). */
+  source: z.literal('min_stock').optional(),
 });
 export type ShoppingListItem = z.infer<typeof ShoppingListItemSchema>;

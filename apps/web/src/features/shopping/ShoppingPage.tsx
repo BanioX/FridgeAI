@@ -175,6 +175,9 @@ export function ShoppingPage() {
               </span>
             )}
           </span>
+          {entry.source === 'min_stock' && !entry.checked ? (
+            <span className="block text-sm text-ink-muted">{messages.minStock.note}</span>
+          ) : null}
           {entry.atHome === undefined ? null : (
             <span className="block text-sm text-ink-muted">
               {t.stillThere(

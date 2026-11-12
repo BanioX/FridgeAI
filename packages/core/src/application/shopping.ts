@@ -94,6 +94,7 @@ export function createShoppingUseCases(ctx: AppContext) {
           ...(row.unit === undefined ? {} : { unit: row.unit }),
           ...(category === undefined ? {} : { categoryId: category.id, emoji: category.emoji }),
           ...(home === undefined ? {} : { atHome: home }),
+          ...(row.source === undefined ? {} : { source: row.source }),
         };
       }),
     };

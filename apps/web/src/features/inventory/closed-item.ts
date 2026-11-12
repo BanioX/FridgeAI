@@ -21,6 +21,8 @@ export type ClosedItem =
       rescuedRappen?: number;
       /** The value is a category estimate, not a price from the receipt. */
       estimated?: true;
+      /** The minimum stock put it on «Nachkaufen» (ADR-0059). */
+      addedToList?: true;
     }
   | { kind: 'deleted'; itemId: Id; name: string }
   /**
@@ -89,6 +91,7 @@ export function closedItemFrom(state: unknown): ClosedItem | null {
               ...(fields.estimated === true ? { estimated: true as const } : {}),
             }
           : {}),
+        ...(fields.addedToList === true ? { addedToList: true as const } : {}),
       }
     : null;
 }
