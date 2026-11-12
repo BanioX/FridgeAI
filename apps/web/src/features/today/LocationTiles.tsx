@@ -45,7 +45,7 @@ export function LocationTiles({ counts }: { counts: readonly LocationCount[] }) 
                   >
                     {items}
                   </span>
-                  <span className="mt-1 block text-[0.6875rem] leading-tight font-semibold tracking-tight break-words hyphens-auto">
+                  <span className="mt-1 block text-[0.6875rem] leading-tight font-semibold tracking-tight break-words hyphens-calm">
                     {label}
                   </span>
                 </span>

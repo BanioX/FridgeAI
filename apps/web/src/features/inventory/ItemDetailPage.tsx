@@ -389,7 +389,7 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
         )}
         <div className="min-w-0 flex-1">
           {/* A long single word («Schokoladenmousse») must break, not widen the page (like L-23). */}
-          <h1 className="large-title break-words hyphens-auto">{item.name}</h1>
+          <h1 className="large-title break-words hyphens-calm">{item.name}</h1>
           {item.brand === undefined && item.packSize === undefined ? null : (
             <p className="text-sm text-ink-muted">
               {[item.brand, item.packSize].filter((part) => part !== undefined).join(' · ')}
@@ -515,8 +515,9 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
       <ItemOwner item={item} />
 
       {shouldSuggestFreezing(item, today) ? (
-        <Card variant="tip" className="flex items-center justify-between gap-3">
-          <p className="min-w-0 font-semibold">{t.freezeTip}</p>
+        // Text above the button: side by side the sentence broke into four short lines at 390 px.
+        <Card variant="tip" className="flex flex-col items-start gap-3">
+          <p className="font-semibold">{t.freezeTip}</p>
           <Button
             icon={Snowflake}
             disabled={busy}
@@ -602,7 +603,14 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
         </Button>
       </section>
 
-      <div className="flex min-h-12 flex-wrap items-center gap-x-3 gap-y-1">
+      {/* Always in the page for screen readers, but it takes room only when it says something. */}
+      <div
+        className={
+          status === '' && frozenFrom === null && undoable === null
+            ? 'sr-only'
+            : 'flex min-h-12 flex-wrap items-center gap-x-3 gap-y-1'
+        }
+      >
         <p role="status" className="font-semibold text-basil-800">
           {status}
         </p>

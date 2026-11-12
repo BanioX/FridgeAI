@@ -40,8 +40,10 @@ export function SpotsPage() {
 
   return (
     <div className="space-y-6 pb-8">
-      <BackLink to="/more" label={t.backToMore} />
-      <h1 className="large-title">{messages.pages.spots}</h1>
+      <div>
+        <BackLink to="/more" label={t.backToMore} />
+        <h1 className="large-title">{messages.pages.spots}</h1>
+      </div>
       <p className="text-ink-muted">{t.intro}</p>
 
       <div className="space-y-1.5">

@@ -45,7 +45,7 @@ export function MoveTargets({
               onMove(location);
             }}
             {...(here ? {} : { 'data-drop-target': dropKey(target) })}
-            className={`flex min-h-12 min-w-0 flex-col items-center justify-center gap-0.5 rounded-[0.625rem] px-1 text-center text-[0.8125rem] leading-tight font-semibold hyphens-auto transition-[opacity,transform] ${
+            className={`flex min-h-12 min-w-0 flex-col items-center justify-center gap-0.5 rounded-[0.625rem] px-1 text-center text-[0.8125rem] leading-tight font-semibold hyphens-calm transition-[opacity,transform] ${
               here ? 'text-ink-muted' : classes
             } ${busy && !here ? 'opacity-50' : ''} ${
               lifted
