@@ -48,6 +48,7 @@ describe('contract v1', () => {
       'recipes.delete',
       'stats.waste',
       'stats.impact',
+      'stats.footprint',
       'stats.achievements',
       'prices.memory',
       'reports.build',

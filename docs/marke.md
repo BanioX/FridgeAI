@@ -223,6 +223,9 @@ Diese Fakten sind geprüft und stehen auch in der App («Wusstest du schon?»). 
 | Weltweit landen rund 19 % der Lebensmittel, die im Laden und zu Hause ankommen, im Abfall. | UNEP 2024 |
 | Rund 60 % der Lebensmittel, die weltweit im Abfall landen, kommen aus Haushalten. | UNEP 2024 |
 | Haushalte entsorgen weltweit jeden Tag mindestens eine Milliarde Mahlzeiten. | UNEP 2024 |
+| Die Klimawirkung, das entnommene Süsswasser und die Landfläche je Kilogramm Lebensmittel sind für 57'000 Produkte geschätzt (Rettich nutzt davon 51 Produktarten, ohne Energiewerte, die es dort nicht gibt). | Clark et al. 2022, PNAS, via Our World in Data, CC BY 4.0: Nennung Pflicht («Daten: Clark et al. (2022), PNAS, via Our World in Data, CC BY 4.0») |
+| Für den Preisvergleich der Abfallgebühren rechnet der Preisüberwacher mit einem 35-Liter-Sack zu 4,89 kg. | Preisüberwacher, Erläuterungen zum Preisvergleich Abfall |
+| In Horgen und Maur kostete 2024 eine Rolle mit zehn 35-Liter-Säcken CHF 16.00, also CHF 1.60 je Sack (eine Gemeinde unter vielen, die Gebühren sind verschieden). | Gemeinde Horgen, Gemeinde Maur |
 | Lebensmittelverluste und -abfälle verursachen 8 bis 10 % der weltweiten Treibhausgase. | UNEP 2024 |
 | Weltweit hungerten 2024 rund 673 Millionen Menschen, etwa jeder zwölfte Mensch. | FAO 2025 |
 | In Afrika hungerte 2024 mehr als jeder fünfte Mensch, rund 307 Millionen. | FAO 2025 |
@@ -238,6 +241,7 @@ Tipps ohne Zahlen (frei verwendbar): Brot vom Vortag wird zu Fotzelschnitten; Kr
 - «Heute retten»: was in den nächsten drei Tagen abläuft.
 - Wischen: verwertet oder entsorgt, mit «Rückgängig».
 - Bilanz in Franken, Auszüge als PDF wie ein Kontoauszug, Journal.
+- Klimabilanz: CO₂e, Wasser und Fläche von dem, was du gerettet hast, als Schätzung mit Quelle; keine Energiewerte. Nie «klimaneutral» oder «netto null».
 - Nachkaufen: ein Satz wird zur Liste, auch diktiert.
 - Wissen: Haltbarkeit A–Z, «Kurz erklärt», Rezepte mit «Da» und «Fehlt».
 - Kein Konto, offline nutzbar, Daten exportieren und löschen.
