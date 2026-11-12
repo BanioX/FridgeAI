@@ -217,6 +217,41 @@ export const messages = {
   },
   inventory: {
     tabsLabel: 'Lagerorte',
+    /** «Nach Ablauf» or «Nach Art» (ADR-0067). */
+    view: {
+      label: 'Sortieren',
+      expiry: 'Nach Ablauf',
+      kind: 'Nach Art',
+      tilesLabel: 'Arten',
+      count: (count: number) => (count === 1 ? '1 Artikel' : `${String(count)} Artikel`),
+      now: (count: number) => `${String(count)} jetzt`,
+      soon: (count: number) => `${String(count)} bald`,
+      tile: (kind: string, count: number, now: number, soon: number) =>
+        [
+          kind,
+          count === 1 ? '1 Artikel' : `${String(count)} Artikel`,
+          ...(now > 0 ? [`${String(now)} jetzt fällig`] : []),
+          ...(soon > 0 ? [`${String(soon)} bald fällig`] : []),
+        ].join(', '),
+    },
+    kinds: {
+      fish: 'Fisch',
+      meat: 'Fleisch',
+      leftovers: 'Reste',
+      dairy: 'Milchprodukte',
+      vegetables: 'Gemüse',
+      fruit: 'Früchte',
+      bakery: 'Brot und Gebäck',
+      ready: 'Fertiges und Dips',
+      sweets: 'Süsses',
+      drinks: 'Getränke',
+      grains: 'Getreide und Teigwaren',
+      tins: 'Konserven und Saucen',
+      spices: 'Öl und Gewürze',
+      rations: 'Notration',
+      household: 'Haushalt',
+      other: 'Anderes',
+    },
     /** «Einräumen» after a receipt: where each new article goes. */
     putAway: {
       title: 'Einräumen',

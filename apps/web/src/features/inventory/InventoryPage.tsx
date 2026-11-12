@@ -5,6 +5,7 @@ import {
   startOfMonth,
   StorageLocationSchema,
   type Id,
+  type InventoryItemView,
   type StorageLocation,
 } from '@fridgeai/core';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -22,6 +23,9 @@ import { closedItemFrom } from './closed-item';
 import { factFor } from '../knowledge/food-facts';
 import { GROUPED_ROW_LINK, GroupedList, GroupedListItem } from '../../ui/GroupedList';
 import { InventoryItemRow } from './InventoryItemRow';
+import { useInventoryView } from './inventory-view';
+import { groupByKind } from './item-kinds';
+import { KindSection, KindTiles, ViewSwitch } from './KindView';
 import { locationOrder } from './item-meta';
 import { SelectableRow } from './SelectableRow';
 import type { DropTarget, SettleAction } from './drop-target';
@@ -237,6 +241,7 @@ export function InventoryPage() {
   const editor = useEditSelected();
   const members = useMembers();
   const [editing, setEditing] = useState(false);
+  const [view, setView] = useInventoryView();
   const navigate = useNavigate();
 
   const items = useLiveQuery(
@@ -332,6 +337,69 @@ export function InventoryPage() {
         : t.select.parcel(count);
     },
     drop: dropOn,
+  });
+
+  const statusOf = (item: InventoryItemView) =>
+    expiryBadge(
+      expiryStatus(item.expiresOn, today, item.expiryKind, soonThresholdFor(item.location)),
+      item.expiresOn,
+      today,
+      item.location,
+    );
+
+  const row = (item: InventoryItemView) => {
+    const status = statusOf(item);
+    if (selection.active) {
+      const picked = selection.ids.has(item.id);
+      return (
+        <GroupedListItem key={item.id} inset="check" className={picked ? 'bg-basil-50' : ''}>
+          <SelectableRow
+            name={item.name}
+            selected={picked}
+            onToggle={() => {
+              selection.toggle(item.id);
+            }}
+            describedBy={DRAG_HINT_ID}
+            dragProps={drag.rowProps(item.id)}
+          >
+            <InventoryItemRow item={item} status={status} />
+          </SelectableRow>
+        </GroupedListItem>
+      );
+    }
+    return (
+      <GroupedListItem key={item.id}>
+        <div
+          {...drag.rowProps(item.id)}
+          // iOS: a long press must not start Safari's own drag of the link or the picture.
+          className="[-webkit-touch-callout:none] select-none [&_a]:[-webkit-user-drag:none] [&_img]:pointer-events-none [&_img]:[-webkit-user-drag:none]"
+        >
+          <SwipeAction {...swipe.sides(item)}>
+            {({ sliced }) => (
+              <Link
+                to={`/inventory/${item.id}`}
+                aria-describedby={SWIPE_HINT_ID}
+                className={GROUPED_ROW_LINK}
+              >
+                <InventoryItemRow chevron sliced={sliced} item={item} status={status} />
+              </Link>
+            )}
+          </SwipeAction>
+        </div>
+      </GroupedListItem>
+    );
+  };
+
+  // «Nach Art»: one block per kind, in the order of what spoils first (ADR-0067).
+  const groups = view === 'kind' ? groupByKind(visible) : [];
+  const summaries = groups.map(({ kind, items: list }) => {
+    const tones = list.map((item) => statusOf(item).tone);
+    return {
+      kind,
+      count: list.length,
+      now: tones.filter((tone) => tone === 'today' || tone === 'danger').length,
+      soon: tones.filter((tone) => tone === 'soon').length,
+    };
   });
 
   return (
@@ -440,6 +508,7 @@ export function InventoryPage() {
           </div>
         ) : (
           <div className="space-y-2">
+            {selection.active ? null : <ViewSwitch view={view} onChange={setView} />}
             {selection.active ? (
               <div className="flex flex-wrap items-center justify-between gap-x-3">
                 <button
@@ -479,64 +548,18 @@ export function InventoryPage() {
                 {t.select.dragHint}
               </p>
             ) : null}
-            <GroupedList>
-              {visible.map((item) => {
-                const status = expiryBadge(
-                  expiryStatus(
-                    item.expiresOn,
-                    today,
-                    item.expiryKind,
-                    soonThresholdFor(item.location),
-                  ),
-                  item.expiresOn,
-                  today,
-                  item.location,
-                );
-                if (selection.active) {
-                  const picked = selection.ids.has(item.id);
-                  return (
-                    <GroupedListItem
-                      key={item.id}
-                      inset="check"
-                      className={picked ? 'bg-basil-50' : ''}
-                    >
-                      <SelectableRow
-                        name={item.name}
-                        selected={picked}
-                        onToggle={() => {
-                          selection.toggle(item.id);
-                        }}
-                        describedBy={DRAG_HINT_ID}
-                        dragProps={drag.rowProps(item.id)}
-                      >
-                        <InventoryItemRow item={item} status={status} />
-                      </SelectableRow>
-                    </GroupedListItem>
-                  );
-                }
-                return (
-                  <GroupedListItem key={item.id}>
-                    <div
-                      {...drag.rowProps(item.id)}
-                      // iOS: a long press must not start Safari's own drag of the link or the picture.
-                      className="[-webkit-touch-callout:none] select-none [&_a]:[-webkit-user-drag:none] [&_img]:pointer-events-none [&_img]:[-webkit-user-drag:none]"
-                    >
-                      <SwipeAction {...swipe.sides(item)}>
-                        {({ sliced }) => (
-                          <Link
-                            to={`/inventory/${item.id}`}
-                            aria-describedby={SWIPE_HINT_ID}
-                            className={GROUPED_ROW_LINK}
-                          >
-                            <InventoryItemRow chevron sliced={sliced} item={item} status={status} />
-                          </Link>
-                        )}
-                      </SwipeAction>
-                    </div>
-                  </GroupedListItem>
-                );
-              })}
-            </GroupedList>
+            {view === 'kind' ? (
+              <div className="space-y-4">
+                {selection.active ? null : <KindTiles kinds={summaries} />}
+                {groups.map(({ kind, items: list }) => (
+                  <KindSection key={kind} kind={kind} count={list.length}>
+                    {list.map(row)}
+                  </KindSection>
+                ))}
+              </div>
+            ) : (
+              <GroupedList>{visible.map(row)}</GroupedList>
+            )}
           </div>
         )}
       </div>
