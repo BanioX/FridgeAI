@@ -184,6 +184,18 @@ const AfterOpeningDaysSchema = z.int().min(0).max(3650);
 const commandBase = { commandId: IdSchema, householdId: IdSchema };
 const queryBase = { householdId: IdSchema };
 
+/** Weight, CO2e, water and land of a set of outcomes (ADR-0057). */
+const FootprintTotalsSchema = z.object({
+  count: z.int().min(0),
+  grams: z.int().min(0),
+  co2eGrams: z.int().min(0),
+  waterLitres: z.int().min(0),
+  /** m², one decimal. */
+  landM2: z.number().min(0),
+  /** Share of the weight resting on an estimate, 0–1. */
+  estimatedShare: z.number().min(0).max(1),
+});
+
 const RecipeSourceSchema = z.enum(['own', 'curated']);
 
 /** What the person types for an own recipe: lines as pasted, cleaned and parsed by the use case. */
@@ -1092,6 +1104,29 @@ export const CONTRACT_V1 = {
           changePercent: z.int(),
         })
         .nullable(),
+    }),
+  }),
+  'stats.footprint': query({
+    name: 'stats.footprint',
+    summary: {
+      de: 'Klimabilanz: Gewicht, CO₂e, Wasser und Fläche von dem, was gerettet und entsorgt wurde, mit den wichtigsten Kategorien und der Kehricht-Schätzung (nur CHF).',
+      en: 'Climate balance: weight, CO2e, water and land of what was rescued and wasted, with the top categories and the waste fee estimate (CHF only).',
+    },
+    scopes: ['stats:read'],
+    input: z.object({ ...queryBase, from: LocalDateSchema, to: LocalDateSchema }),
+    output: z.object({
+      rescued: FootprintTotalsSchema,
+      wasted: FootprintTotalsSchema,
+      /** Categories with the most CO2e among the rescued food, at most three. */
+      topCategories: z.array(
+        z.object({
+          categoryId: z.string(),
+          grams: z.int().min(0),
+          co2eGrams: z.int().min(0),
+        }),
+      ),
+      /** Bags à 35 litres and the fee for the rescued weight; null unless the currency is CHF. */
+      kehricht: z.object({ bags: z.number().min(0), feeRappen: RappenSchema.min(0) }).nullable(),
     }),
   }),
   'stats.achievements': query({
