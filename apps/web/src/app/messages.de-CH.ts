@@ -94,6 +94,14 @@ export const messages = {
           urgent === 0 ? '' : `, ${String(urgent)} bald fällig`
         }`,
     },
+    /** A calm monthly reminder: everything lies on this device only (local-first). */
+    backup: {
+      title: 'Sicherung',
+      never: 'Deine Daten liegen nur auf diesem Gerät, und es gibt noch keine Sicherung.',
+      since: (days: number) =>
+        `Deine Daten liegen nur auf diesem Gerät. Die letzte Sicherung ist ${String(days)} Tage her.`,
+      action: 'Jetzt sichern',
+    },
     valueLabel: 'liegen gerade in deinem Kühlschrank',
     estimated: 'teilweise geschätzt',
     expiringTitle: 'Heute retten',
@@ -984,6 +992,9 @@ export const messages = {
       'Alles bleibt auf diesem Gerät. Mit einem Export nimmst du deine Daten auf ein neues Gerät mit. Ein Konto zum Teilen mit Mitbewohner:innen kommt später.',
     exportJson: 'Alles exportieren (JSON)',
     exported: (file: string) => `${file} ist gespeichert.`,
+    /** Visible backups: when this device last exported (Rettich keeps everything local). */
+    lastBackup: (date: string) => `Letzte Sicherung: ${date}.`,
+    noBackup: 'Noch keine Sicherung von diesem Gerät.',
     importJson: 'Daten importieren (JSON)',
     importFile: 'Exportdatei wählen',
     importQuestion: (file: string, items: number) =>
