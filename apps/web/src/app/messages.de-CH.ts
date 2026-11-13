@@ -1114,6 +1114,11 @@ export const messages = {
     useUpText: 'Das lässt sich nicht gut einfrieren. Koch es vor der Abreise oder verschenk es.',
   },
   /** «Wo ist was?» (ADR-0056): named storage spots with an optional photo. */
+  /** A photo over the whole screen (ADR-0082). */
+  photoViewer: {
+    open: (name: string) => `Foto «${name}» gross anzeigen`,
+    close: 'Schliessen',
+  },
   spots: {
     intro:
       'Halte fest, wo etwas liegt, auf Wunsch mit einem Foto. Alles bleibt auf diesem Gerät. Bis es Konten gibt, teilst du Plätze über dasselbe Gerät oder über Export und Import. Suchen kannst du nach Artikel, Platz oder Person.',

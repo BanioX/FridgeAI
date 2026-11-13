@@ -12,6 +12,7 @@ import { formatQuantity } from '../../ui/quantity-text';
 import { PhotoPicker } from './PhotoPicker';
 import { useSpots } from './use-spots';
 import { FoodIcon } from '../../ui/FoodIcon';
+import { ZoomablePhoto } from '../../ui/PhotoViewer';
 
 const t = messages.spots;
 
@@ -90,11 +91,7 @@ export function SpotDetailPage() {
           <p>{t.photoMissing}</p>
         </div>
       ) : (
-        <img
-          src={spot.photo}
-          alt={spot.name}
-          className="max-h-[60dvh] w-full rounded-2xl border border-line bg-surface-muted object-contain"
-        />
+        <ZoomablePhoto src={spot.photo} title={spot.name} className="aspect-[4/3] max-h-[60dvh]" />
       )}
 
       <section aria-labelledby="spot-now" className="space-y-2">
