@@ -31,7 +31,10 @@ test('exports the data, deletes everything after asking and imports the export a
   };
   expect(data.format).toBe('fridgeai-export');
   expect(data.items).toHaveLength(1);
-  await expect(page.getByRole('status')).toHaveText(`${json.suggestedFilename()} ist gespeichert.`);
+  // «Deine Daten» has more than one status line (the app lock has its own).
+  await expect(page.getByRole('status').filter({ hasText: 'ist gespeichert' })).toHaveText(
+    `${json.suggestedFilename()} ist gespeichert.`,
+  );
   await expect(page.getByText(/^Letzte Sicherung: \d{2}\.\d{2}\.\d{4}\.$/)).toBeVisible();
 
   await expect(page.getByRole('button', { name: /CSV/ })).toHaveCount(0);
@@ -54,7 +57,9 @@ test('exports the data, deletes everything after asking and imports the export a
     mimeType: 'application/json',
     buffer: Buffer.from('{"format":"other"}'),
   });
-  await expect(page.getByRole('status')).toHaveText(/^Diese Datei ist kein Rettich-Export\./);
+  await expect(page.getByRole('status').filter({ hasText: 'kein Rettich-Export' })).toHaveText(
+    /^Diese Datei ist kein Rettich-Export\./,
+  );
   await picker.setInputFiles({
     name: json.suggestedFilename(),
     mimeType: 'application/json',
