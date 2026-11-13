@@ -6,6 +6,7 @@ import {
   HistoryIcon,
   Leaf,
   MapPin,
+  Plane,
   ShieldCheck,
   ShoppingBasket,
   Smartphone,
@@ -103,6 +104,12 @@ export function MorePage() {
             icon: MapPin,
             title: messages.pages.spots,
             detail: t.spotsDetail,
+          },
+          {
+            to: '/more/vacation',
+            icon: Plane,
+            title: t.vacationLabel,
+            detail: t.vacationDetail,
           },
           { to: '/more/data', icon: ShieldCheck, title: messages.pages.data, detail: t.dataDetail },
         ]}

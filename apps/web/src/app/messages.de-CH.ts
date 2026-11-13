@@ -893,6 +893,10 @@ export const messages = {
         text: 'Beim Erfassen kannst du das Datum auf der Packung fotografieren. Rettich liest es auf dem Gerät und speichert das Foto nicht.',
       },
       {
+        title: 'Ferien-Check',
+        text: 'Vor den Ferien zeigt dir Rettich unter «Mehr», was bis zu deiner Rückkehr abläuft. Was sich einfrieren lässt, legst du mit einem Tipp in den Tiefkühler.',
+      },
+      {
         title: 'Sicherung',
         text: 'Alles bleibt auf diesem Gerät. Darum lohnt sich ab und zu ein Export unter «Mehr» bei «Mitnehmen und löschen». So gehen deine Daten nicht verloren, wenn das Gerät ausfällt.',
       },
@@ -1064,6 +1068,26 @@ export const messages = {
     climateDetail: 'CO₂e, Wasser und Fläche von dem, was du gerettet hast',
     peopleDetail: 'Wer im Haushalt ist und wem was gehört',
     spotsDetail: 'Plätze mit Foto, damit alle alles finden',
+    vacationLabel: 'Ferien-Check',
+    vacationDetail: 'Was bis zu deiner Rückkehr abläuft',
+  },
+  /** «Ferien-Check» (ADR-0069): what runs out while the person is away, freeze or use up. */
+  vacation: {
+    title: 'Ferien-Check',
+    intro:
+      'Sag, wann du weggehst und wann du zurück bist. Rettich zeigt dir, was bis dahin abläuft.',
+    leave: 'Weg ab',
+    back: 'Zurück am',
+    badOrder: 'Das Datum «Zurück am» liegt vor «Weg ab». Bitte prüf die beiden Daten.',
+    nothing: 'Bis du zurück bist, läuft nichts ab.',
+    noStock: 'Es liegt nichts im Kühlschrank oder im Vorrat. Es gibt nichts zu prüfen.',
+    freezeTitle: (count: number) => `Einfrieren (${String(count)})`,
+    freezeText: 'Das hält sich im Tiefkühler, bis du zurück bist.',
+    freezeAll: 'Alle einfrieren',
+    freeze: 'Einfrieren',
+    freezeOne: (name: string) => `${name} einfrieren`,
+    useUpTitle: (count: number) => `Vorher aufbrauchen (${String(count)})`,
+    useUpText: 'Das lässt sich nicht gut einfrieren. Koch es vor der Abreise oder verschenk es.',
   },
   /** «Wo ist was?» (ADR-0056): named storage spots with an optional photo. */
   spots: {
