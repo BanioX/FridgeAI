@@ -105,6 +105,8 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
   const [outcome, setOutcome] = useState<Outcome>('eaten');
   const [portion, setPortion] = useState<string | null>(null);
   const [otherText, setOtherText] = useState('');
+  /** «Andere Menge» opens on request; the four portions cover most cases (ADR-0079). */
+  const [otherOpen, setOtherOpen] = useState(false);
   const [reason, setReason] = useState<WasteReason | null>(null);
   /** «Ohne Rettich im Abfall gelandet?» (ADR-0039): only a «Ja» counts as rescued. */
   const [rescued, setRescued] = useState<'yes' | 'no'>('no');
@@ -460,6 +462,127 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
         </div>
       </div>
 
+      {/* The main action first (ADR-0079): what happened to it, before the details. */}
+      <section aria-labelledby="outcome-title" className="space-y-5">
+        <h2 id="outcome-title" className="font-display text-xl font-semibold">
+          {t.whatHappened}
+        </h2>
+        <ChoiceChips
+          legend={t.whatHappened}
+          hideLegend
+          segmented
+          options={outcomeOptions}
+          value={outcome}
+          onChange={setOutcome}
+        />
+        <ChoiceChips
+          legend={t.howMuch}
+          options={portionOptions}
+          value={otherText.trim() === '' ? chosen : null}
+          onChange={(value) => {
+            setPortion(value);
+            setOtherText('');
+          }}
+        />
+        {otherOpen || otherText !== '' ? (
+          <div className="space-y-1.5">
+            <label htmlFor="other-amount" className="block text-sm font-semibold">
+              {t.otherAmount(messages.units[item.unit])}
+            </label>
+            <input
+              id="other-amount"
+              autoFocus={otherOpen}
+              value={otherText}
+              onChange={(event) => {
+                setOtherText(event.target.value);
+              }}
+              inputMode="decimal"
+              autoComplete="off"
+              aria-invalid={otherInvalid}
+              aria-describedby="other-amount-error"
+              className={`min-h-12 w-40 rounded-xl border bg-surface px-4 text-lg tabular-nums outline-none focus:border-basil-600 ${
+                otherInvalid ? 'border-today' : 'border-line'
+              }`}
+            />
+            <p id="other-amount-error" className="text-sm text-today">
+              {otherInvalid ? t.otherInvalid : null}
+            </p>
+          </div>
+        ) : (
+          <button
+            type="button"
+            className="-mt-2 inline-flex min-h-11 items-center text-sm font-semibold text-basil-700"
+            onClick={() => {
+              setOtherOpen(true);
+            }}
+          >
+            {t.otherAmountOpen}
+          </button>
+        )}
+        {outcome === 'wasted' && shouldAskStillGood(item) ? (
+          <Card variant="tip">{messages.rescue.stillGood}</Card>
+        ) : null}
+        {outcome === 'wasted' ? (
+          <ChoiceChips legend={t.why} options={reasonOptions} value={reason} onChange={setReason} />
+        ) : null}
+        {rescuable ? (
+          <ChoiceChips
+            legend={t.rescueQuestion}
+            options={rescueOptions}
+            value={rescued}
+            onChange={setRescued}
+            segmented
+          />
+        ) : null}
+        <Button
+          fullWidth
+          variant={outcome === 'wasted' ? 'danger' : 'primary'}
+          disabled={busy || quantity === undefined || quantity === null}
+          onClick={() => {
+            void record();
+          }}
+        >
+          {t.confirm[outcome]}
+        </Button>
+      </section>
+
+      {/* Always in the page for screen readers, but it takes room only when it says something. */}
+      <div
+        className={
+          status === '' && frozenFrom === null && undoable === null
+            ? 'sr-only'
+            : 'flex min-h-12 flex-wrap items-center gap-x-3 gap-y-1'
+        }
+      >
+        <p role="status" className="font-semibold text-basil-800">
+          {status}
+        </p>
+        {frozenFrom === null ? null : (
+          <Button
+            variant="ghost"
+            icon={Undo2}
+            disabled={busy}
+            onClick={() => {
+              void unfreeze(frozenFrom);
+            }}
+          >
+            {t.undo}
+          </Button>
+        )}
+        {undoable === null ? null : (
+          <Button
+            variant="ghost"
+            icon={Undo2}
+            disabled={busy}
+            onClick={() => {
+              void undo(undoable);
+            }}
+          >
+            {t.undo}
+          </Button>
+        )}
+      </div>
+
       <button
         type="button"
         onClick={() => {
@@ -559,113 +682,6 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
       <OtherPacks item={item} />
 
       <ProductFacts item={item} />
-
-      <section aria-labelledby="outcome-title" className="space-y-5">
-        <h2 id="outcome-title" className="font-display text-xl font-semibold">
-          {t.whatHappened}
-        </h2>
-        <ChoiceChips
-          legend={t.whatHappened}
-          hideLegend
-          segmented
-          options={outcomeOptions}
-          value={outcome}
-          onChange={setOutcome}
-        />
-        <ChoiceChips
-          legend={t.howMuch}
-          options={portionOptions}
-          value={otherText.trim() === '' ? chosen : null}
-          onChange={(value) => {
-            setPortion(value);
-            setOtherText('');
-          }}
-        />
-        <div className="space-y-1.5">
-          <label htmlFor="other-amount" className="block text-sm font-semibold">
-            {t.otherAmount(messages.units[item.unit])}
-          </label>
-          <input
-            id="other-amount"
-            value={otherText}
-            onChange={(event) => {
-              setOtherText(event.target.value);
-            }}
-            inputMode="decimal"
-            autoComplete="off"
-            aria-invalid={otherInvalid}
-            aria-describedby="other-amount-error"
-            className={`min-h-12 w-40 rounded-xl border bg-surface px-4 text-lg tabular-nums outline-none focus:border-basil-600 ${
-              otherInvalid ? 'border-today' : 'border-line'
-            }`}
-          />
-          <p id="other-amount-error" className="text-sm text-today">
-            {otherInvalid ? t.otherInvalid : null}
-          </p>
-        </div>
-        {outcome === 'wasted' && shouldAskStillGood(item) ? (
-          <Card variant="tip">{messages.rescue.stillGood}</Card>
-        ) : null}
-        {outcome === 'wasted' ? (
-          <ChoiceChips legend={t.why} options={reasonOptions} value={reason} onChange={setReason} />
-        ) : null}
-        {rescuable ? (
-          <ChoiceChips
-            legend={t.rescueQuestion}
-            options={rescueOptions}
-            value={rescued}
-            onChange={setRescued}
-            segmented
-          />
-        ) : null}
-        <Button
-          fullWidth
-          variant={outcome === 'wasted' ? 'danger' : 'primary'}
-          disabled={busy || quantity === undefined || quantity === null}
-          onClick={() => {
-            void record();
-          }}
-        >
-          {t.confirm[outcome]}
-        </Button>
-      </section>
-
-      {/* Always in the page for screen readers, but it takes room only when it says something. */}
-      <div
-        className={
-          status === '' && frozenFrom === null && undoable === null
-            ? 'sr-only'
-            : 'flex min-h-12 flex-wrap items-center gap-x-3 gap-y-1'
-        }
-      >
-        <p role="status" className="font-semibold text-basil-800">
-          {status}
-        </p>
-        {frozenFrom === null ? null : (
-          <Button
-            variant="ghost"
-            icon={Undo2}
-            disabled={busy}
-            onClick={() => {
-              void unfreeze(frozenFrom);
-            }}
-          >
-            {t.undo}
-          </Button>
-        )}
-        {undoable === null ? null : (
-          <Button
-            variant="ghost"
-            icon={Undo2}
-            disabled={busy}
-            onClick={() => {
-              void undo(undoable);
-            }}
-          >
-            {t.undo}
-          </Button>
-        )}
-      </div>
 
       <section aria-labelledby="more-title" className="space-y-3">
         <h2 id="more-title" className="font-display text-xl font-semibold">

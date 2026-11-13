@@ -86,3 +86,4 @@ Jeder Entscheid mit Folgen steht hier als eigene Datei `NNNN-titel.md` (ADR-0001
 | [0076](0076-more-in-groups.md) | «Mehr» in drei Gruppen | angenommen | 2026-11-13 |
 | [0077](0077-three-search-hits.md) | Drei Suchtreffer zuerst | angenommen | 2026-11-13 |
 | [0078](0078-one-photo-way.md) | Ein Weg für Fotos | angenommen | 2026-11-13 |
+| [0079](0079-item-action-first.md) | Auf der Artikelseite zuerst «Verwertet» oder «Entsorgt» | angenommen | 2026-11-13 |

@@ -603,6 +603,7 @@ export const messages = {
     howMuch: 'Wie viel?',
     all: 'alles',
     otherAmount: (unit: string) => `Andere Menge (${unit})`,
+    otherAmountOpen: 'Andere Menge …',
     otherInvalid: 'Bitte eine Menge zwischen 0 und dem Rest angeben.',
     why: 'Warum? (freiwillig)',
     confirm: {

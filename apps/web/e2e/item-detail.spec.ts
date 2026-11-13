@@ -93,6 +93,7 @@ test('a free amount larger than what is left is refused', async ({ page }) => {
   await page.getByRole('button', { name: 'Speichern', exact: true }).click();
   await page.getByRole('link', { name: /Basmatireis/ }).click();
 
+  await page.getByRole('button', { name: 'Andere Menge …' }).click();
   await page.getByLabel(/Andere Menge/).fill('5000');
   await expect(page.getByText('Bitte eine Menge zwischen 0 und dem Rest angeben.')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Als verwertet speichern' })).toBeDisabled();

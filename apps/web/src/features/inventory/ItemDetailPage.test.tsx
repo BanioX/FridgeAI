@@ -26,6 +26,20 @@ async function renderDetail(item: Parameters<typeof seedDb>[1][number]) {
 describe('ItemDetailPage rescues', () => {
   afterEach(cleanup);
 
+  it('puts «Verwertet» and «Entsorgt» first, «Andere Menge» on request (ADR-0079)', async () => {
+    await renderDetail({ name: 'Joghurt', location: 'fridge', inDays: 3 });
+    await screen.findByRole('heading', { level: 1, name: 'Joghurt' });
+    const outcome = screen.getByRole('heading', {
+      level: 2,
+      name: messages.itemDetail.whatHappened,
+    });
+    const spot = screen.getByRole('button', { name: messages.spots.hold });
+    expect(outcome.compareDocumentPosition(spot) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(document.getElementById('other-amount')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: messages.itemDetail.otherAmountOpen }));
+    expect(document.activeElement?.id).toBe('other-amount');
+  });
+
   it('asks «Ist das noch gut?» before throwing away a best-before item', async () => {
     await renderDetail({ name: 'Joghurt', location: 'fridge', inDays: -1 });
     await screen.findByRole('heading', { level: 1, name: 'Joghurt' });
