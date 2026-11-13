@@ -1027,6 +1027,27 @@ export const CONTRACT_V1 = {
     input: z.object({ ...commandBase, itemId: IdSchema }),
     output: z.object({ removed: z.boolean() }),
   }),
+  'shopping.suggestions': query({
+    name: 'shopping.suggestions',
+    summary: {
+      de: 'Was bald wieder nötig ist: Produkte, die du in einem festen Rhythmus kaufst (ADR-0070).',
+      en: 'What is needed again soon: products bought at a steady rhythm.',
+    },
+    scopes: ['shopping_list:read'],
+    input: z.object({ ...queryBase }),
+    output: z.object({
+      /** Most overdue first, at most five. */
+      suggestions: z.array(
+        z.object({
+          productId: IdSchema,
+          name: z.string().min(1),
+          /** The usual gap between two purchases, in whole days. */
+          everyDays: z.int().min(2).max(60),
+          lastBought: LocalDateSchema,
+        }),
+      ),
+    }),
+  }),
   'recipes.suggest': query({
     name: 'recipes.suggest',
     summary: {

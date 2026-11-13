@@ -17,6 +17,7 @@ import { Card } from '../../ui/Card';
 import { describeDate } from '../../ui/date-text';
 import { formatQuantity } from '../../ui/quantity-text';
 import { GroupedList, GroupedListItem } from '../../ui/GroupedList';
+import { RestockSuggestions } from './RestockSuggestions';
 import { shareText, shoppingListText } from './share-list';
 
 const t = messages.shopping;
@@ -265,6 +266,8 @@ export function ShoppingPage() {
           {status}
         </p>
       </form>
+
+      <RestockSuggestions />
 
       {entries === undefined ? (
         <p className="sr-only">{messages.loading}</p>

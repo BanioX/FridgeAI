@@ -50,6 +50,7 @@ export * from './frequent-products';
 export * from './waste-habits';
 export * from './shopping/parse-shopping-text';
 export * from './shopping/shopping-tips';
+export * from './shopping/restock-rhythm';
 export * from './recipes/recipe';
 export * from './recipes/own-recipe';
 export * from './recipes/recipes.de-CH';

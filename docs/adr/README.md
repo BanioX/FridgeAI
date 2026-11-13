@@ -76,3 +76,4 @@ Jeder Entscheid mit Folgen steht hier als eigene Datei `NNNN-titel.md` (ADR-0001
 | [0066](0066-pack-and-content.md) | Packung und Inhalt | angenommen | 2026-11-12 |
 | [0067](0067-inventory-by-kind.md) | Vorrat nach Art | angenommen | 2026-11-12 |
 | [0068](0068-read-the-label.md) | Foto aufnehmen liest das Etikett | angenommen | 2026-11-12 |
+| [0070](0070-restock-rhythm.md) | Bald wieder nötig | angenommen | 2026-11-13 |
