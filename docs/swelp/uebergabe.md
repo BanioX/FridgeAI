@@ -1,6 +1,6 @@
 # Übergabe: wo die Arbeit steht
 
-Für die nächste Sitzung (Mensch oder KI). Claude führt diese Datei am Ende jeder längeren Sitzung nach. Sie ersetzt keine Register, sie zeigt nur den Faden. Stand: 12.11.2026. Version 0.17.0 ist die letzte veröffentlichte ([CHANGELOG](../../CHANGELOG.md)).
+Für die nächste Sitzung (Mensch oder KI). Claude führt diese Datei am Ende jeder längeren Sitzung nach. Sie ersetzt keine Register, sie zeigt nur den Faden. Stand: 13.11.2026. Version 0.18.0 ist die letzte veröffentlichte ([CHANGELOG](../../CHANGELOG.md)).
 
 ## Stand
 
