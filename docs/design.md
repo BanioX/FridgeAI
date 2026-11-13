@@ -74,6 +74,26 @@ Alle Text-/Hintergrund-Paare erfüllen WCAG AA (mindestens 4.5:1, Grafik 3:1), g
 - **Bernstein** heisst bald: «morgen», «in 2 Tagen».
 - **Alles andere ist Silber:** ferne Daten («in 12 Tagen», «bis März»), Initialen von Personen, Lagerort-Kacheln.
 
+### Dunkelmodus (ADR-0081)
+
+Rettich folgt der Einstellung des Geräts (`prefers-color-scheme`). Dieselben Tokens bekommen nachts andere Werte, die Komponenten bleiben gleich:
+
+| Token | Hell | Dunkel |
+| --- | --- | --- |
+| `oat` (Grund) | `#F3F4F6` | `#0B0C0E` |
+| `surface` | `#FFFFFF` | `#17191C` |
+| `surface-muted` | `#E9EBED` | `#25282C` |
+| `line` | `#DBDEE2` | `#30343A` |
+| `ink` | `#14161A` | `#EEF0F2` |
+| `ink-muted` | `#5B6168` | `#A6ACB3` |
+| `onyx` (dunkle Karte, ＋) | `#0D1012` | `#2A2E33` |
+
+- Grün und Rot als **Text** werden nachts heller (`basil-300`, `#FF8F82`); als **Fläche** mit weisser Schrift (Knöpfe, gewähltes Segment, «Nicht mehr verwenden») bleiben sie.
+- Hinweis-Flächen (`basil-50`, `soon-bg`, `today-bg`, Lagerort-Töne) haben dunkle Varianten.
+- Schatten werden nachts zu einer feinen hellen Kante.
+- Laden-Buchstaben und Nutri-Score behalten ihre festen Farben.
+- `e2e/dark-mode.spec.ts` prüft die Hauptseiten im Dunkelmodus mit axe, Kontrast inklusive.
+
 ## Schrift
 
 Systemschrift nach Apples Human Interface Guidelines (ADR-0021): SF Pro auf Apple-Geräten, Roboto auf Android, Segoe UI unter Windows. Es wird nichts geladen, die Grössen in `rem` folgen der Textgrösse des Systems.
@@ -136,5 +156,5 @@ Systemschrift nach Apples Human Interface Guidelines (ADR-0021): SF Pro auf Appl
 
 ## Später
 
-- Dunkelmodus: Tokens sind CSS-Variablen, dunkle Werte folgen in Schritt 12c.
+- Ein Schalter Hell/Dunkel/System unter «Mehr», falls jemand den Dunkelmodus unabhängig vom Gerät will.
 - PNG-Icons und Splash-Screens für die Installation: Schritt 12c.
