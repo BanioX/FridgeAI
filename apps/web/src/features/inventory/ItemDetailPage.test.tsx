@@ -26,6 +26,34 @@ async function renderDetail(item: Parameters<typeof seedDb>[1][number]) {
 describe('ItemDetailPage rescues', () => {
   afterEach(cleanup);
 
+  it('chooses grams on a wheel (ADR-0083)', async () => {
+    await renderDetail({ name: 'Basmatireis', location: 'pantry', quantity: 500, unit: 'g' });
+    await screen.findByRole('heading', { level: 1, name: 'Basmatireis' });
+    fireEvent.click(screen.getByRole('button', { name: messages.itemDetail.otherAmountOpen }));
+    const wheel = screen.getByRole('spinbutton', { name: messages.itemDetail.wheelLabel });
+    // It starts at about half and says it in words.
+    expect(wheel.getAttribute('aria-valuetext')).toBe('250 g');
+    fireEvent.keyDown(wheel, { key: 'ArrowDown' });
+    expect(wheel.getAttribute('aria-valuetext')).toBe('260 g');
+    fireEvent.keyDown(wheel, { key: 'End' });
+    expect(wheel.getAttribute('aria-valuetext')).toBe('500 g');
+    fireEvent.keyDown(wheel, { key: 'Home' });
+    expect(wheel.getAttribute('aria-valuetext')).toBe('10 g');
+    // No portion chip is chosen while the wheel says how much.
+    expect(screen.getByRole('radio', { name: 'alles' })).toHaveProperty('checked', false);
+  });
+
+  it('shows millilitres and litres on the wheel', async () => {
+    await renderDetail({ name: 'Vollmilch', location: 'fridge', quantity: 1500, unit: 'ml' });
+    await screen.findByRole('heading', { level: 1, name: 'Vollmilch' });
+    fireEvent.click(screen.getByRole('button', { name: messages.itemDetail.otherAmountOpen }));
+    const wheel = screen.getByRole('spinbutton', { name: messages.itemDetail.wheelLabel });
+    fireEvent.keyDown(wheel, { key: 'End' });
+    expect(wheel.getAttribute('aria-valuetext')).toBe('1.5 l');
+    fireEvent.keyDown(wheel, { key: 'Home' });
+    expect(wheel.getAttribute('aria-valuetext')).toBe('50 ml');
+  });
+
   it('puts «Verwertet» and «Entsorgt» first, «Andere Menge» on request (ADR-0079)', async () => {
     await renderDetail({ name: 'Joghurt', location: 'fridge', inDays: 3 });
     await screen.findByRole('heading', { level: 1, name: 'Joghurt' });

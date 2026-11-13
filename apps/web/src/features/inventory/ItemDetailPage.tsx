@@ -66,6 +66,8 @@ import { SpotSheet } from '../spots/SpotSheet';
 import { SpotThumb } from '../spots/SpotThumb';
 import { useSpots } from '../spots/use-spots';
 import { FoodIcon } from '../../ui/FoodIcon';
+import { AmountWheel } from '../../ui/AmountWheel';
+import { nearestIndex, wheelValues } from '../../ui/amount-wheel';
 
 const t = messages.itemDetail;
 const spotText = messages.spots;
@@ -154,6 +156,9 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
   }));
   const chosen = portion ?? String(choices.length - 1);
   const other = parseAmount(otherText);
+  /** Grams and millilitres choose «Andere Menge» on a wheel, starting at about half (ADR-0083). */
+  const wheel = item.unit === 'pcs' ? [] : wheelValues(item.quantity);
+  const wheelStart = wheel[nearestIndex(wheel, item.quantity / 2)] ?? item.quantity;
   const otherInvalid = otherText.trim() !== '' && (other === null || other > item.quantity);
   const quantity =
     otherText.trim() === '' ? choices[Number(chosen)]?.quantity : otherInvalid ? undefined : other;
@@ -483,7 +488,21 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
             setOtherText('');
           }}
         />
-        {otherOpen || otherText !== '' ? (
+        {(otherOpen || otherText !== '') && wheel.length > 0 ? (
+          // Grams and millilitres on a wheel (ADR-0083); pieces stay typed (½, 1¼ …).
+          <div className="space-y-1.5">
+            <p className="text-center text-sm font-semibold">{t.wheelLabel}</p>
+            <AmountWheel
+              values={wheel}
+              index={nearestIndex(wheel, other ?? wheelStart)}
+              unit={item.unit}
+              label={t.wheelLabel}
+              onChange={(position) => {
+                setOtherText(String(wheel[position] ?? wheelStart));
+              }}
+            />
+          </div>
+        ) : otherOpen || otherText !== '' ? (
           <div className="space-y-1.5">
             <label htmlFor="other-amount" className="block text-sm font-semibold">
               {t.otherAmount(messages.units[item.unit])}
@@ -513,6 +532,9 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
             className="-mt-2 inline-flex min-h-11 items-center text-sm font-semibold text-basil-700"
             onClick={() => {
               setOtherOpen(true);
+              if (wheel.length > 0) {
+                setOtherText(String(wheelStart));
+              }
             }}
           >
             {t.otherAmountOpen}
