@@ -21,6 +21,7 @@ import {
   writeLastBackup,
 } from './backup-state';
 import { AppLockSection } from './AppLockSection';
+import { FeedbackList } from './FeedbackList';
 import { exportFileName, saveFile } from './export-files';
 import { PasswordField } from './PasswordField';
 import { UnlockBackup } from './UnlockBackup';
@@ -292,6 +293,8 @@ export function HouseholdPage() {
       </section>
 
       <AppLockSection />
+
+      <FeedbackList />
 
       <section aria-labelledby="privacy-title" className="space-y-3">
         <h2

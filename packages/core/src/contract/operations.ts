@@ -5,6 +5,7 @@ import { RappenSchema } from '../money';
 import { DomainEventSchema } from './events';
 import { OwnRecipeSchema } from '../recipes/own-recipe';
 import { RecipeTagSchema } from '../recipes/recipe';
+import { FeedbackSchema } from '../model/feedback';
 import { HouseholdSchema, MemberSchema, RoleSchema, type Scope } from '../model/household';
 import {
   ReceiptLineKindSchema,
@@ -381,6 +382,8 @@ export const HouseholdExportSchema = z.object({
   ownRecipes: z.array(OwnRecipeSchema).default([]),
   /** Storage spots with photos (ADR-0056); exports from before them have none. */
   spots: z.array(StorageSpotSchema).default([]),
+  /** Answers to the one question (ADR-0089); exports from before it have none. */
+  feedback: z.array(FeedbackSchema).default([]),
   events: z.array(DomainEventSchema),
 });
 export type HouseholdExport = z.infer<typeof HouseholdExportSchema>;
@@ -401,6 +404,7 @@ const ImportableExportSchema = HouseholdExportSchema.superRefine((data, check) =
     'receiptLines',
     'ownRecipes',
     'spots',
+    'feedback',
     'events',
   ] as const;
   for (const table of tables) {
@@ -902,6 +906,39 @@ export const CONTRACT_V1 = {
       minStock: z.int().min(1).max(20).nullable(),
     }),
     output: z.object({ productId: IdSchema, minStock: z.int().min(1).max(20).nullable() }),
+  }),
+  'feedback.list': query({
+    name: 'feedback.list',
+    summary: {
+      de: 'Die gespeicherten Antworten auf die eine Frage, neueste zuerst, und seit wann Rettich läuft.',
+      en: 'Saved answers to the one question, newest first, and since when Rettich is in use.',
+    },
+    scopes: ['inventory:read'],
+    input: z.object({ ...queryBase }),
+    output: z.object({
+      firstUseOn: LocalDateSchema,
+      answers: z.array(z.object({ id: IdSchema, text: z.string(), at: IsoDateTimeSchema })),
+    }),
+  }),
+  'feedback.save': command({
+    name: 'feedback.save',
+    summary: {
+      de: 'Eine Antwort auf «Was hat dich gestört?» auf dem Gerät speichern.',
+      en: 'Save an answer to «what bothered you?» on the device.',
+    },
+    scopes: ['inventory:write'],
+    input: z.object({ ...commandBase, text: z.string().trim().min(1).max(500) }),
+    output: z.object({ feedbackId: IdSchema }),
+  }),
+  'feedback.delete': command({
+    name: 'feedback.delete',
+    summary: {
+      de: 'Eine gespeicherte Antwort löschen; ihr Text bleibt nirgends.',
+      en: 'Delete a saved answer; its text is kept nowhere.',
+    },
+    scopes: ['inventory:write'],
+    input: z.object({ ...commandBase, feedbackId: IdSchema }),
+    output: z.object({ deleted: z.boolean() }),
   }),
   'spots.list': query({
     name: 'spots.list',

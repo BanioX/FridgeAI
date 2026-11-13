@@ -12,6 +12,7 @@ export * from './catalog/categories';
 export * from './catalog/category';
 export * from './calendar';
 export * from './dates';
+export * from './feedback-ask';
 export * from './expiry';
 export * from './expiry-from-text';
 export * from './item-badges';

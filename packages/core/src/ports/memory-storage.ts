@@ -137,6 +137,7 @@ export function createMemoryStorage(
     receiptLines: recordStore(),
     ownRecipes: recordStore(),
     spots: recordStore(),
+    feedback: recordStore(),
     events,
     commands,
     productFacts: {
