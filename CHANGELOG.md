@@ -2,6 +2,24 @@
 
 Alle Änderungen an Rettich (bis 7.11.2026 FridgeAI), neueste zuerst. Wird mit `pnpm release` erzeugt (ADR-0017).
 
+## [0.20.0] – 2026-11-13
+
+### Neu
+
+- go through a receipt one card at a time («3 von 8») ([#321](https://github.com/BanioX/FridgeAI/pull/321))
+- protect the full backup with a password; add security.txt ([#320](https://github.com/BanioX/FridgeAI/pull/320))
+- optional app lock with Face ID, on the device only ([#319](https://github.com/BanioX/FridgeAI/pull/319))
+- page transitions like on the iPhone ([#318](https://github.com/BanioX/FridgeAI/pull/318))
+- the info mark in running text is a circled i, not «(i)» ([#313](https://github.com/BanioX/FridgeAI/pull/313))
+
+### Dokumentation
+
+- an emergency card for a broken update ([#314](https://github.com/BanioX/FridgeAI/pull/314))
+
+### Wartung
+
+- install only packages that are at least three days old ([#315](https://github.com/BanioX/FridgeAI/pull/315))
+
 ## [0.19.0] – 2026-11-13
 
 ### Neu
