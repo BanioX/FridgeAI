@@ -30,3 +30,13 @@ Die Händler bieten keine offene Preis-Schnittstelle. Ihre Websites automatisch 
 
 - Preise kommen mit Datum und Laden aus dem echten Einkauf, ohne Konto, Schlüssel oder Server. Die Genauigkeit für Coop und Migros hängt von echten Beispielen ab (Frage 7 im Plan).
 - Referenzpreise anderer Läden bleiben eine Option über Open Prices, nur mit Albans OK, weil dabei der Barcode das Gerät verlässt.
+
+## Ergänzung 13.11.2026: Lesefehler auf App-Screenshots
+
+Ein Screenshot einer Lidl-Plus-Quittung (aus der App geteilt, nur gut 200 Pixel breit) ergab 58 richtige Artikel, aber CHF 1.28 Differenz zur Summe. Die Texterkennung las das Minus vor «Lidl Plus Rabatt» oft als «„», «‚» oder «~» und machte aus «1.85» ein «1.985».
+
+- Ein solches Zeichen direkt vor einem Betrag gilt als Minus (`normalizeReceiptLine`), sonst nirgends: «Kaffee „Crema“» bleibt, wie es ist.
+- Ein Betrag mit drei Stellen nach dem Punkt vor einem MWST-Code («1.988 A») wird nicht mehr verworfen. Rettich prüft die Lesarten mit je einer Ziffer weniger und nimmt die, mit der die Quittung auf den Rappen aufgeht. Gibt es mehrere solche Zeilen oder passt keine Lesart, bleibt die erste, und die Summenprüfung zeigt die Stelle.
+- Dasselbe gilt für den Kilopreis unter gewogener Ware («0,504 kg x 12.980 CHF/kg»).
+
+Die echte Quittung bleibt ausserhalb des Repos; der Test nutzt erfundene Artikel mit denselben Lesefehlern.
