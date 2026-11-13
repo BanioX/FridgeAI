@@ -41,6 +41,7 @@ describe('contract v1', () => {
       'shopping.addItem',
       'shopping.check',
       'shopping.remove',
+      'shopping.suggestions',
       'recipes.suggest',
       'recipes.list',
       'recipes.withItems',

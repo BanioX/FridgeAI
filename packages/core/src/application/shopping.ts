@@ -3,6 +3,7 @@ import { CONTRACT_V1, type OperationOutput } from '../contract/operations';
 import type { Id } from '../ids';
 import type { CategoryId } from '../model/primitives';
 import { ShoppingListItemSchema, type ShoppingListItem } from '../model/inventory';
+import { restockSuggestions } from '../shopping/restock-rhythm';
 import { CommandError, createCommandKit, type AppContext, type UseCase } from './command';
 
 type AtHome = NonNullable<OperationOutput<'shopping.addItem'>['atHome']>;
@@ -179,8 +180,31 @@ export function createShoppingUseCases(ctx: AppContext) {
     });
   };
 
+  const suggestions: UseCase<'shopping.suggestions'> = async (raw) => {
+    const input = CONTRACT_V1['shopping.suggestions'].input.parse(raw);
+    const [items, products, rows] = await Promise.all([
+      storage.items.ofHousehold(input.householdId),
+      storage.products.ofHousehold(input.householdId),
+      rowsOf(input.householdId),
+    ]);
+    const bought = items.filter((item) => item.deletedAt === undefined);
+    return {
+      suggestions: restockSuggestions({
+        today: clock.today(),
+        products: products.filter((product) => product.deletedAt === undefined),
+        purchases: bought,
+        inStockProductIds: bought
+          .filter((item) => item.status === 'active')
+          .map((item) => item.productId),
+        // Ticked entries are in the basket: no second suggestion for them.
+        listEntries: rows,
+      }),
+    };
+  };
+
   return {
     'shopping.list': list,
+    'shopping.suggestions': suggestions,
     'shopping.addItem': addItem,
     'shopping.check': check,
     'shopping.remove': remove,

@@ -721,6 +721,17 @@ export const messages = {
   },
   /** «Wissen» (ADR-0041): what keeps how long, and how it stays good longer. */
   /** «Verarbeiten», «Selbst gemacht», «Reste» and «Gekocht» (ADR-0052). */
+  /** «Bald wieder nötig» (ADR-0070): what Nachkaufen suggests from the buying rhythm. */
+  restock: {
+    title: 'Bald wieder nötig',
+    help: 'Das kaufst du in einem festen Rhythmus und es ist gerade nicht mehr da.',
+    /** «etwa alle 5 Tage · zuletzt am 8.11.» */
+    rhythm: (everyDays: number, lastBought: string) =>
+      `etwa alle ${everyDays} Tage · zuletzt am ${lastBought}`,
+    add: 'Auf die Liste',
+    addLabel: (name: string) => `${name} auf die Liste setzen`,
+    failed: 'Das hat nicht geklappt. Versuch es noch einmal.',
+  },
   process: {
     title: 'Verarbeiten',
     /** ADR-0061: recipes for the items chosen in select mode. */
