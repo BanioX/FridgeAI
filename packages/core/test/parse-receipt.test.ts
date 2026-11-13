@@ -102,11 +102,15 @@ describe('parseReceiptText', () => {
     expect(receipt.sumCheck).toBe('ok');
   });
 
-  it('flags a misread amount instead of trusting it', () => {
-    const misread = COOP.replace('1.95    1.95', '1.95    7.95');
-    const receipt = parseReceiptText(misread);
-    expect(receipt.sumCheck).toBe('mismatch');
-    expect(receipt.computedTotalRappen - (receipt.totalRappen ?? 0)).toBe(600);
+  it('corrects a look-alike digit and flags any other misread amount', () => {
+    // «7.95» for «1.95»: only the milk turning back into 1.95 makes the receipt add up.
+    const lookalike = parseReceiptText(COOP.replace('1.95    1.95', '1.95    7.95'));
+    expect(lookalike.lines[0]?.priceRappen).toBe(195);
+    expect(lookalike.sumCheck).toBe('ok');
+    // «4.95» is no look-alike of «1.95»: the review shows the difference.
+    const misread = parseReceiptText(COOP.replace('1.95    1.95', '1.95    4.95'));
+    expect(misread.sumCheck).toBe('mismatch');
+    expect(misread.computedTotalRappen - (misread.totalRappen ?? 0)).toBe(300);
   });
 
   it('copes with Aldi, Lidl and Denner, unknown shops and receipts without a total', () => {
@@ -248,9 +252,10 @@ describe('parseReceiptText with real layouts', () => {
     ]);
   });
 
-  it('flags a misread amount on a Coop PDF', () => {
+  it('flags a misread amount on a Coop PDF, PDF text is never guessed at', () => {
     const receipt = parseReceiptText(
       COOP_PDF.replace('3.95                     3.95', '3.95  8.95'),
+      { fromPdf: true },
     );
     expect(receipt.sumCheck).toBe('mismatch');
     expect(receipt.computedTotalRappen - (receipt.totalRappen ?? 0)).toBe(500);
@@ -317,6 +322,93 @@ describe('parseReceiptText on photos', () => {
       // «1.988»: of «1.88» and «1.98» only the second makes the receipt add up.
       ['item', 'Mix-it Joghurt', '1 pcs', undefined, 198, -3, true],
     ]);
+  });
+
+  it('reads a total, prices and a VAT group that OCR got wrong on a Lidl Plus screenshot', () => {
+    // Invented articles, with the slips a small app screenshot really produced (13.11.2026).
+    const receipt = parseReceiptText(
+      [
+        'Leise',
+        'www.lidl.ch',
+        'Apfel Gala 2.99 A',
+        'Lidl Plus Rabatt -0.13',
+        'Quark Nature 9.99 A',
+        'Lidl Plus Rabatt -0.04',
+        'Joghurt Mocca 9.99 A',
+        'Lidl Plus Rabatt 0.04',
+        'Duschgel Sport 2.95 8',
+        'Lidl Plus Rabatt -0,.13',
+        'Dein Lidl Preis 75.58',
+        'Karte 7.58',
+        'Total-EFT CHF: 7.58',
+        'A 2.6 % MwSt von 4.76 0.12',
+        'B 8.1 % MwSt von 2.82 0.21',
+        'Einkauf getätigt in',
+        'Musterstadt (Fil.Nr. 0001)',
+      ].join('\n'),
+    );
+    // «75.58» has a digit too many: «Karte» and «Total-EFT» repeat the total as 7.58.
+    expect(receipt.totalRappen).toBe(758);
+    expect(receipt.sumCheck).toBe('ok');
+    expect(rows(receipt)).toEqual([
+      ['item', 'Apfel Gala', '1 pcs', undefined, 299, -13, true],
+      // «9.99» twice for «0.99»: the only two look-alikes that make the receipt add up.
+      ['item', 'Quark Nature', '1 pcs', undefined, 99, -4, true],
+      ['item', 'Joghurt Mocca', '1 pcs', undefined, 99, -4, true],
+      // VAT group «B» read as «8»: still not food.
+      ['item', 'Duschgel Sport', '1 pcs', undefined, 295, -13, false],
+    ]);
+    // The branch comes from the app, not from the logo that OCR read as «Leise».
+    expect(receipt.storeName).toBe('Musterstadt');
+    expect(
+      parseReceiptText('Leise\nwww.lidl.ch\nBrot 2.49 A\nDein Lidl Preis 2.49').storeName,
+    ).toBe(undefined);
+  });
+
+  it('reads weighed goods, a rounding and a point read as a colon on a screenshot', () => {
+    const text = [
+      'Lidl',
+      // «0.744 kg» and «0.89» both read with a 9 in front: only that pair agrees.
+      'Äpfel lose 9.89 A',
+      '9.744 kg x 1.19 CHF/kg',
+      'Popkorn süss 1:25 A',
+      'Zwischensumme 2.14',
+      'Rundung -8,.04',
+      'Dein Lidl Preis 2.10',
+    ].join('\n');
+    const receipt = parseReceiptText(text);
+    expect(
+      receipt.lines.map((line) => [line.kind, line.name, line.quantity, line.priceRappen]),
+    ).toEqual([
+      ['item', 'Äpfel lose', 744, 89],
+      ['item', 'Popkorn süss', 1, 125],
+      // A rounding is under 10 Rappen and never an article.
+      ['discount', 'Rundung', 1, -4],
+    ]);
+    expect(receipt.sumCheck).toBe('ok');
+    // The same text from a PDF is taken as printed: the review shows the difference.
+    const pdf = parseReceiptText(text, { fromPdf: true });
+    expect(pdf.lines.map((line) => line.priceRappen)).toEqual([989, 125, -804]);
+    expect(pdf.sumCheck).toBe('mismatch');
+    // A rounding up is part of the sum, not an article.
+    const up = parseReceiptText(
+      'Lidl\nBrot 2.48 A\nZwischensumme 2.48\nRundung 0.02\nDein Lidl Preis 2.50',
+    );
+    expect(up.lines.map((line) => [line.kind, line.priceRappen])).toEqual([
+      ['item', 248],
+      ['discount', 2],
+    ]);
+    expect(up.sumCheck).toBe('ok');
+  });
+
+  it('leaves a look-alike to the review when it is not the only way to add up', () => {
+    // Either «9.99» could be 0.99: no guess, the sum check shows the difference.
+    const receipt = parseReceiptText('Lidl\nQuark 9.99 A\nJoghurt 9.99 A\nDein Lidl Preis 10.98');
+    expect(receipt.lines.map((line) => line.priceRappen)).toEqual([999, 999]);
+    expect(receipt.sumCheck).toBe('mismatch');
+    // A total that disagrees with its repeat by more than one slip stays as printed.
+    const far = parseReceiptText('Lidl\nBrot 2.49 A\nDein Lidl Preis 2.49\nKarte 3.50');
+    expect(far.totalRappen).toBe(249);
   });
 
   it('keeps the first reading of a digit too many when no reading fits the total', () => {

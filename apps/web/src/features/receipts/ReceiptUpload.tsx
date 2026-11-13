@@ -80,7 +80,7 @@ export function ReceiptUpload() {
         source === 'pdf'
           ? await readPdfText(await file.arrayBuffer())
           : (known ?? (await readImageText(file)));
-      const receipt = parseReceiptText(text);
+      const receipt = parseReceiptText(text, { fromPdf: source === 'pdf' });
       if (text.trim() === '' || !receipt.lines.some((line) => line.kind === 'item')) {
         return { text: text.trim() === '' && source === 'pdf' ? t.noText : t.noLines };
       }
