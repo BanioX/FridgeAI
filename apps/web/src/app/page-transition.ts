@@ -3,10 +3,20 @@ import type { To } from 'react-router';
 /** How a navigation moves, iOS style (ADR-0088): deeper pages push in, tabs cross-fade. */
 export type TransitionKind = 'forward' | 'back' | 'tab' | 'none';
 
+/** A swipe from the edge already moved the page out; the next step back only fades in (ADR-0091). */
+let swipedBack = false;
+
+export function markSwipeBack(): void {
+  swipedBack = true;
+}
+
 /** The roots of the tab bar (AppShell); `/` is Start. */
 const TAB_ROOTS: readonly string[] = ['/', '/inventory', '/add', '/knowledge', '/more'];
 
 const trim = (path: string) => (path.length > 1 ? path.replace(/\/+$/, '') : path);
+
+/** Start, Vorrat, Erfassen, Wissen and Mehr: pages without a page behind them. */
+export const isTabRoot = (path: string) => TAB_ROOTS.includes(trim(path));
 
 const isWithin = (path: string, parent: string) =>
   parent === '/' ? path !== '/' : path.startsWith(`${parent}/`);
@@ -73,7 +83,8 @@ export function withPageTransitions<R extends NavigatingRouter>(
   let index = indexOf(win.history.state) ?? 0;
   win.addEventListener('popstate', (event) => {
     const next = indexOf(event.state) ?? index;
-    html.dataset.transition = next < index ? 'back' : 'forward';
+    html.dataset.transition = swipedBack ? 'swipe' : next < index ? 'back' : 'forward';
+    swipedBack = false;
   });
 
   const router = createRouter();
