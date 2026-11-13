@@ -5,10 +5,12 @@ import {
   rappen,
   sumRappen,
   type Id,
+  type LocalDate,
   type ParsedReceipt,
   type ParsedReceiptLine,
   type Rappen,
   type Retailer,
+  type StorageLocation,
 } from '@fridgeai/core';
 import { ChevronDown } from 'lucide-react';
 import { useEffect, useState, type ReactNode } from 'react';
@@ -26,6 +28,12 @@ const t = messages.receiptUpload;
 /** The order of the shop tabs: the big Swiss shops first, «Laden» for any other. */
 const SHOPS: readonly Retailer[] = ['coop', 'migros', 'denner', 'aldi', 'lidl', 'other'];
 
+/** What one line gets besides the default: a place and, when the person picked one, a date. */
+export interface LineOverride {
+  location?: StorageLocation;
+  expiresOn?: LocalDate;
+}
+
 export interface Review {
   receipt: ParsedReceipt;
   hash: string;
@@ -35,6 +43,8 @@ export interface Review {
   chosen: ReadonlySet<number>;
   /** Earlier prices of the same products, by name on the receipt (ADR-0029). */
   memory: ReadonlyMap<string, PriceMemory>;
+  /** Location and expiry chosen in «Einzeln durchgehen», by line; the list shows the same (ADR-0028). */
+  overrides?: ReadonlyMap<number, LineOverride>;
 }
 
 export const paid = (line: ParsedReceiptLine) => rappen(line.priceRappen + line.discountRappen);
@@ -53,7 +63,7 @@ const isPacked = (line: ParsedReceiptLine) =>
   isFood(line) && line.unit !== 'g' && matchCategoryByName(line.name)?.group !== 'produce';
 
 /** A corrected price replaces what was read: paid as typed, no discount left to explain it. */
-function withPrice(receipt: ParsedReceipt, index: number, price: Rappen): ParsedReceipt {
+export function withPrice(receipt: ParsedReceipt, index: number, price: Rappen): ParsedReceipt {
   const lines = receipt.lines.map((line, position) => {
     if (position !== index) {
       return line;
@@ -86,7 +96,7 @@ function withPrice(receipt: ParsedReceipt, index: number, price: Rappen): Parsed
   };
 }
 
-function amountText(line: ParsedReceiptLine): string {
+export function amountText(line: ParsedReceiptLine): string {
   const shown = displayQuantity(line.quantity, line.unit);
   return `${formatAmount(shown.amount)} ${messages.inputUnits[shown.unit]}`;
 }

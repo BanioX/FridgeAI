@@ -83,6 +83,7 @@ export function createReceiptHandlers(ctx: HandlerContext, addItem: Handler<'inv
             name: line.productName ?? line.name,
             ...(line.gtin === undefined ? {} : { gtin: line.gtin }),
             location: line.location,
+            ...(line.expiresOn === undefined ? {} : { expiresOn: line.expiresOn }),
             quantity: line.quantity,
             unit: line.unit,
             priceRappen: rappen(paid),

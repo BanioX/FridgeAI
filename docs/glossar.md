@@ -63,6 +63,7 @@ Damit Mensch und Maschine dasselbe meinen: Wort in der App (de-CH), Name im Code
 | **Töpfe** (ADR-0055) | `SettlePots`, `useSettleSelected`, `SettleAction` | vier Felder unter den Lagerort-Tabs im Auswahlmodus: Verwertet (grün), Entsorgt (rot), Verarbeiten, Nachkaufen; antippen oder die Auswahl hineinziehen | – |
 | **Laden-Buchstabe** | `ShopBadge`, `shopMark` (PDF) | ein Buchstabe pro Laden im Stil seines Schilds (Coop, Migros, Denner, Lidl, Aldi), immer neben dem Namen; nie die geschützten Marken selbst | – |
 | **Alle übernehmen** | `ReceiptReview`, `batchTotals` | mehrere Quittungen auf einer Seite prüfen und mit einem Knopf in den Vorrat legen | – |
+| **Einzeln durchgehen** | `ReceiptCards`, `receipt-cards.ts` | die Lebensmittelzeilen einer oder mehrerer Quittungen als Karten («3 von 8»): Produkt, Datum, Ort, Preis; ergänzt die Liste, derselbe Zustand und derselbe Import (ADR-0028) | – |
 | **Einkaufsliste aus einem Satz** (K14) | `parseShoppingText` | Ein frei getippter oder per Tastatur-Mikrofon diktierter Satz wird zu einem Listeneintrag pro Produkt, mit Menge und Einheit, wenn genannt; läuft nur auf dem Gerät | – |
 | **Nachkaufen** | `shopping.*`, `ShoppingListItem` | Einkaufsliste | – |
 | **Haushalt** | `Household` | WG, Paar, Familie; hat eine Währung (ADR-0019) | – |

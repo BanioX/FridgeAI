@@ -211,18 +211,22 @@ export function MatchRow({
   matching,
   index,
   name,
+  flush = false,
 }: {
   matching: ReceiptMatching;
   index: number;
   name: string;
+  /** Without the indent of the list (the card in «Einzeln durchgehen» has its own padding). */
+  flush?: boolean;
 }) {
   const found = matching.matches.get(index);
   const decision = matching.decisions.get(index);
   const note = matching.scanNotes.get(index);
+  const pad = (list: string) => (flush ? '' : list);
 
   if (matching.scanning === index) {
     return (
-      <div className="space-y-2 pr-4 pb-4 pl-14">
+      <div className={`space-y-2 ${pad('pr-4 pb-4 pl-14')}`}>
         <BarcodeScanner
           onCode={(raw) => {
             void matching.scanned(index, raw);
@@ -251,7 +255,7 @@ export function MatchRow({
           : t.maybe
         : SOURCE_LABEL[match.source];
     return (
-      <div className="space-y-2 pr-4 pb-3 pl-14">
+      <div className={`space-y-2 ${pad('pr-4 pb-3 pl-14')}`}>
         <div className="flex items-center gap-3">
           {image === undefined ? null : (
             <img
@@ -307,7 +311,7 @@ export function MatchRow({
     return null;
   }
   return (
-    <div className="flex flex-wrap items-center gap-2 pr-4 pb-3 pl-14">
+    <div className={`flex flex-wrap items-center gap-2 ${pad('pr-4 pb-3 pl-14')}`}>
       <span className="mr-auto text-sm text-ink-muted">
         {note ?? (decision === 'no' ? t.rejected : t.none)}
       </span>
