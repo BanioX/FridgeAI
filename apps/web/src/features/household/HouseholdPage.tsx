@@ -12,6 +12,7 @@ import {
   readLastBackup,
   writeLastBackup,
 } from './backup-state';
+import { AppLockSection } from './AppLockSection';
 import { exportFileName, saveFile } from './export-files';
 
 const t = messages.household;
@@ -206,6 +207,8 @@ export function HouseholdPage() {
           {status}
         </p>
       </section>
+
+      <AppLockSection />
 
       <section aria-labelledby="privacy-title" className="space-y-3">
         <h2

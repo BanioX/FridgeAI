@@ -23,6 +23,7 @@ Was der Code ausserhalb seiner selbst bewirkt: ans Netz senden, auf dem Gerät s
 | SE-14 | localStorage | `fridgeai:swipe-tip-seen` | Tipp «Wisch einen Artikel nach links» schon gesehen | bis zum Löschen der Website-Daten |
 | SE-26 | localStorage | `fridgeai:last-backup` | Tag des letzten Exports (nach einem Import: Exportdatum der Datei; nach «Alle Daten löschen» entfernt) auf diesem Gerät, für «Letzte Sicherung» und den Monats-Hinweis auf Start | bis zum Löschen der Website-Daten |
 | SE-27 | localStorage | `fridgeai:inventory-view` | Ansicht im Vorrat: «Nach Ablauf» oder «Nach Art» (ADR-0067) | bis zum Löschen der Website-Daten |
+| SE-28 | localStorage | `fridgeai:app-lock` | Kennung des Zugangsschlüssels der App-Sperre (nicht geheim) und «Sperren nach»; bewusst nicht in der Datenbank und nicht im Export (ADR-0086) | bis zum Ausschalten oder Löschen der Website-Daten |
 
 ## Geräte-Funktionen
 
@@ -34,3 +35,4 @@ Was der Code ausserhalb seiner selbst bewirkt: ans Netz senden, auf dem Gerät s
 | SE-23 | Teilen (`navigator.share`) | PDF-Bericht teilen; Einkaufsliste als Text teilen («Liste teilen», sonst Zwischenablage) | nur nach einem Tipp |
 | SE-24 | Dauerhafter Speicher (`navigator.storage.persist`) | Browser soll die Daten nicht bei Platzmangel löschen | beim Start |
 | SE-25 | Kamera-App / Fotoauswahl (`capture`) für Plätze | Foto vom Schrank oder Fach («Wo ist was?») | nur nach einem Tipp. Das verkleinerte Foto bleibt auf dem Gerät und gehört zum Export, ADR-0056 |
+| SE-29 | Gerät entsperren (WebAuthn, `navigator.credentials`) | App-Sperre: Face ID, Touch ID oder Code des Geräts bestätigen; kein Server, nichts verlässt das Gerät, ADR-0086 | nur nach einem Tipp, und beim Öffnen, wenn die Sperre an ist |
