@@ -1,4 +1,4 @@
-// Fails when a dependency's licence could limit commercial use of FridgeAI (ADR-0015).
+// Fails when a dependency's licence could limit commercial use of Rettich (ADR-0015).
 // Runtime code (shipped to users) must be permissive; tooling may use weak copyleft
 // (e.g. MPL-2.0 in build tools) but never strong copyleft such as GPL or AGPL.
 import { execSync } from 'node:child_process';

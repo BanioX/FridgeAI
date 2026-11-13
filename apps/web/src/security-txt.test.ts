@@ -8,7 +8,7 @@ const field = (name: string) => new RegExp(`^${name}: (.+)$`, 'm').exec(file)?.[
 
 describe('security.txt (RFC 9116)', () => {
   it('names a contact', () => {
-    expect(field('Contact')).toMatch(/^https:\/\/github\.com\/BanioX\/FridgeAI\/security\//);
+    expect(field('Contact')).toMatch(/^https:\/\/github\.com\/BanioX\/Rettich\/security\//);
   });
 
   it('expires in the future (renew it before that day)', () => {

@@ -1,8 +1,8 @@
 # Rettich 🥬
 
-[![CI](https://github.com/BanioX/FridgeAI/actions/workflows/ci.yml/badge.svg)](https://github.com/BanioX/FridgeAI/actions/workflows/ci.yml)
+[![CI](https://github.com/BanioX/Rettich/actions/workflows/ci.yml/badge.svg)](https://github.com/BanioX/Rettich/actions/workflows/ci.yml)
 
-Bis 7.11.2026 hiess die App «FridgeAI». Repo, Paketnamen und Web-Adresse heissen technisch weiter so ([ADR-0032](docs/adr/0032-name-rettich.md)).
+Bis 7.11.2026 hiess die App «FridgeAI». Das Repo heisst seit 14.11.2026 `BanioX/Rettich`; Paketnamen, Datenbank und Web-Adresse heissen technisch weiter so ([ADR-0032](docs/adr/0032-name-rettich.md)).
 
 **Wirf kein Geld in den Abfall.** Rettich, wie «rett' ich».
 
@@ -10,7 +10,7 @@ Bis 7.11.2026 hiess die App «FridgeAI». Repo, Paketnamen und Web-Adresse heiss
 
 Local-first PWA für Schweizer Haushalte (WGs, Paare, Familien). Rettich zeigt dir, was mit deinen Lebensmitteln passiert: was du verwertest, was du entsorgst und was es kostet ([ADR-0046](docs/adr/0046-awareness-verwertet-entsorgt.md)). Alles läuft offline auf dem Gerät: Quittungen, Barcodes und Nährwerttabellen liest Rettich selbst, ohne Cloud-KI und ohne Konto.
 
-**Product Owner:** Alban Hyseni · **Stand:** Version 0.11.0 ([Releases](https://github.com/BanioX/FridgeAI/releases), [Änderungen](CHANGELOG.md)), im Pilot ([`docs/pilot.md`](docs/pilot.md)); Teilen im Haushalt folgt · **Lizenz:** proprietär, alle Rechte vorbehalten
+**Product Owner:** Alban Hyseni · **Stand:** Version 0.20.0 ([Releases](https://github.com/BanioX/Rettich/releases), [Änderungen](CHANGELOG.md)), im Pilot ([`docs/pilot.md`](docs/pilot.md)); Teilen im Haushalt folgt · **Lizenz:** proprietär, alle Rechte vorbehalten
 
 ---
 
