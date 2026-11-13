@@ -43,7 +43,8 @@ const showOptions = SHOWS.map((value) => ({ value, label: t.show[value] }));
 const matches = (show: Show, entry: Entry) =>
   show === 'all' || (show === 'wasted') === (entry.outcome === 'wasted');
 
-const TONES = { eaten: 'text-basil-800', shared_out: 'text-basil-800', wasted: 'text-today' };
+/** A result in the journal: Verwertet in Onyx like the ring, Entsorgt in the one red (ADR-0075). */
+const TONES = { eaten: 'text-ink', shared_out: 'text-ink', wasted: 'text-danger' };
 
 /** «Verwertet · 150 g · CHF 3.00» and «vergessen · 07.11.2026». */
 function details(entry: Entry, money: Money): [string, string] {

@@ -9,15 +9,13 @@ import { useMembers } from './use-members';
  */
 export function OwnerMark({ ownerId }: { ownerId: string }) {
   const members = useMembers();
-  const index = members?.findIndex((member) => member.id === ownerId) ?? -1;
-  const member = members?.[index];
+  const member = members?.find((candidate) => candidate.id === ownerId);
   if (member === undefined) {
     return null;
   }
   return (
     <OwnerBadge
       size="sm"
-      index={index}
       initials={member.initials}
       label={messages.owner.badgeLabel(member.displayName)}
     />

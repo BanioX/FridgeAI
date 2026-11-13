@@ -58,13 +58,21 @@ Alle Text-/Hintergrund-Paare erfüllen WCAG AA (mindestens 4.5:1, Grafik 3:1), g
 | `ink-muted` | `#5B6168` | Nebentext (5.7:1 auf `oat`) |
 | `onyx` | `#0D1012` | Die dunkle Karte, der ＋-Knopf |
 | `soon` | Text `#8A4B0F` auf `#FFF1DF`, Akzent `#E39A3B` | läuft in 1–3 Tagen ab |
-| `today` | Text `#A63A22` auf `#FDEBE6`, Akzent `#E0603F` | läuft heute ab / MHD abgelaufen |
+| `today` | Text `#B3261E` auf `#FDEBE6`, Akzent `#E0603F` | läuft heute ab / MHD abgelaufen (dasselbe Rot wie `danger`, ADR-0075) |
 | `danger` | Weiss auf `#B3261E` | Verbrauchsdatum abgelaufen: «Nicht mehr essen» |
 | `ice` | Text `#2A6B8C` auf `#E6F3F8` | Tiefkühler |
 | `wheat` | Text `#8A5F14` auf `#F8F0DC` | Vorratsschrank |
 | `olive` | Text `#4F5D27` auf `#ECEEE0` | Notvorrat (6.1:1) |
 
-**Lagerorte haben je eine Akzentfarbe:** Kühlschrank = Smaragd, Tiefkühler = Eis, Vorratsschrank = Weizen, Notvorrat = Oliv. Die PDF-Auszüge nutzen dieselben Werte (Smaragd, `basil-50`, Linie).
+**Lagerorte haben je eine Akzentfarbe:** Kühlschrank = Smaragd, Tiefkühler = Eis, Vorratsschrank = Weizen, Notvorrat = Oliv. Sie steht nur im Symbol (Symbol-Kachel einer Zeile, Ziele von «Verschieben nach»), nie als Fläche einer Karte; die Lagerort-Kacheln auf Start sind weiss. Die PDF-Auszüge nutzen dieselben Werte (Smaragd, `basil-50`, Linie).
+
+**Eine Bedeutung pro Farbe** (ADR-0075):
+
+- **Smaragd** heisst tun und gewählt: Knöpfe, gewähltes Segment, aktiver Tab, Wischen nach links «Verwertet».
+- **Onyx** heisst Ergebnis: «Verwertet» in den Bilanz-Kreisen und im Journal, der Haltbarkeits-Ring.
+- **Rot** (`#B3261E`, ein einziges) heisst entsorgt oder jetzt: «Entsorgt» überall (auch gewählt und als Knopf), «heute», «Nicht mehr verwenden».
+- **Bernstein** heisst bald: «morgen», «in 2 Tagen».
+- **Alles andere ist Silber:** ferne Daten («in 12 Tagen», «bis März»), Initialen von Personen, Lagerort-Kacheln.
 
 ## Schrift
 

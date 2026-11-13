@@ -20,8 +20,7 @@ export function ItemOwner({ item }: { item: InventoryItemView }) {
   if (members === undefined || members.length < 2) {
     return null;
   }
-  const index = members.findIndex((member) => member.id === item.owner);
-  const owner = members[index];
+  const owner = members.find((member) => member.id === item.owner);
 
   async function change(next: Owner) {
     setFailed(false);
@@ -46,7 +45,7 @@ export function ItemOwner({ item }: { item: InventoryItemView }) {
             t.everyone
           ) : (
             <>
-              <OwnerBadge initials={owner.initials} index={index} />
+              <OwnerBadge initials={owner.initials} />
               {owner.displayName}
             </>
           )}
