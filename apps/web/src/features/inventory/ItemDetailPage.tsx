@@ -72,6 +72,7 @@ const spotText = messages.spots;
 const outcomeOptions = (['eaten', 'wasted'] as const).map((value) => ({
   value,
   label: t.outcomes[value],
+  danger: value === 'wasted',
 }));
 const kindOptions = [
   { value: 'cook' as const, label: t.kind.cook },
@@ -507,11 +508,7 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
           <StatusChip tone={badge.tone}>{badge.label}</StatusChip>
         </div>
         <div className="mt-4 flex items-center gap-3 border-t border-line pt-4">
-          <ScoreRing
-            score={score}
-            level={level}
-            label={t.scoreLabel(score, t.perishability[level])}
-          />
+          <ScoreRing score={score} label={t.scoreLabel(score, t.perishability[level])} />
           <div>
             <p className="font-semibold">
               {t.score(score)} · {t.perishability[level]}
@@ -623,6 +620,7 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
         ) : null}
         <Button
           fullWidth
+          variant={outcome === 'wasted' ? 'danger' : 'primary'}
           disabled={busy || quantity === undefined || quantity === null}
           onClick={() => {
             void record();

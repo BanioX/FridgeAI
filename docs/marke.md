@@ -95,14 +95,15 @@ Drei Töne tragen die Marke: **Smaragd, Silber, Onyx** (Alban, 7.11.2026). Verte
 | Name | Schrift auf Fläche | Bedeutung |
 | --- | --- | --- |
 | Bald | `#8A4B0F` auf `#FFF1DF`, Akzent `#E39A3B` | läuft in 1–3 Tagen ab |
-| Heute | `#A63A22` auf `#FDEBE6`, Akzent `#E0603F` | läuft heute ab |
+| Heute | `#B3261E` auf `#FDEBE6`, Akzent `#E0603F` | läuft heute ab |
 | Entsorgt | Weiss auf `#B3261E` | entsorgt, «Nicht mehr essen» |
-| Kühlschrank | Smaragd | Lagerort |
-| Tiefkühler | `#2A6B8C` auf `#E6F3F8` | Lagerort |
-| Vorratsschrank | `#8A5F14` auf `#F8F0DC` | Lagerort |
-| Notvorrat | `#4F5D27` auf `#ECEEE0` | Lagerort |
+| Kühlschrank | Smaragd | Lagerort, nur im Symbol |
+| Tiefkühler | `#2A6B8C` auf `#E6F3F8` | Lagerort, nur im Symbol |
+| Vorratsschrank | `#8A5F14` auf `#F8F0DC` | Lagerort, nur im Symbol |
+| Notvorrat | `#4F5D27` auf `#ECEEE0` | Lagerort, nur im Symbol |
 
 - **Bilanz-Kreise:** «Verwertet» in Onyx, «Entsorgt» in Rot `#B3261E`.
+- **Eine Bedeutung pro Farbe** (ADR-0075): Smaragd heisst tun und gewählt, Onyx heisst Ergebnis («Verwertet» in Kreis und Journal), Rot heisst entsorgt oder jetzt (ein einziges Rot), Bernstein heisst bald, alles andere ist Silber (ferne Daten, Initialen, Lagerort-Kacheln).
 - Rot ist nie Markenfarbe und nie grosse Fläche, ausser um «Entsorgt» zu zeigen.
 - Keine Neontöne, keine Verläufe, kein reines Schwarz `#000`.
 - Farbe trägt nie allein Bedeutung: Es steht immer ein Wort oder Symbol dabei.

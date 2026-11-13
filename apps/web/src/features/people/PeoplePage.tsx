@@ -125,7 +125,7 @@ export function PeoplePage() {
       ) : (
         <section aria-label={t.listLabel}>
           <GroupedList>
-            {members.map((member, index) => {
+            {members.map((member) => {
               const isEditing = editing === member.id;
               const removable = member.role !== 'owner' && !member.isSelf;
               return (
@@ -207,7 +207,7 @@ export function PeoplePage() {
                       }}
                       className={`${GROUPED_ROW_LINK} relative flex min-h-14 w-full items-center gap-3 py-2 pr-3 pl-4 text-left`}
                     >
-                      <OwnerBadge initials={member.initials} index={index} />
+                      <OwnerBadge initials={member.initials} />
                       <span className="min-w-0 flex-1 truncate font-semibold">
                         {member.displayName}
                         {member.isSelf ? (

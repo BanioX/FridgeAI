@@ -82,3 +82,4 @@ Jeder Entscheid mit Folgen steht hier als eigene Datei `NNNN-titel.md` (ADR-0001
 | [0072](0072-batch-add.md) | Mehrere auf einmal | angenommen | 2026-11-13 |
 | [0073](0073-attention.md) | Im Blick | angenommen | 2026-11-13 |
 | [0074](0074-calm-start.md) | Ruhiger Start | angenommen | 2026-11-13 |
+| [0075](0075-one-meaning-per-colour.md) | Eine Bedeutung pro Farbe | angenommen | 2026-11-13 |

@@ -2,7 +2,8 @@ import { useId } from 'react';
 
 interface ChoiceChipsProps<TValue extends string> {
   legend: string;
-  options: readonly { value: TValue; label: string }[];
+  /** `danger`: chosen, the option is red instead of Smaragd («Entsorgt», ADR-0075). */
+  options: readonly { value: TValue; label: string; danger?: boolean }[];
   /** `null`: nothing chosen yet. */
   value: TValue | null;
   onChange: (value: TValue) => void;
@@ -15,6 +16,7 @@ interface ChoiceChipsProps<TValue extends string> {
 const FOCUS =
   'cursor-pointer font-semibold transition-colors has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-basil-600';
 const CHOSEN = 'bg-basil-700 text-white shadow-card';
+const CHOSEN_DANGER = 'bg-danger text-white shadow-card';
 
 /*
  * Chips: capsules that wrap (portions, reasons).
@@ -28,12 +30,14 @@ const LOOKS = {
     group: 'flex flex-wrap gap-2',
     option: `flex min-h-11 items-center justify-center rounded-full border px-4 text-sm whitespace-nowrap ${FOCUS}`,
     chosen: `border-basil-700 ${CHOSEN}`,
+    chosenDanger: `border-danger ${CHOSEN_DANGER}`,
     idle: 'border-line bg-surface text-ink hover:bg-surface-muted',
   },
   segments: {
     group: 'grid auto-cols-fr grid-flow-col gap-0.5 rounded-xl bg-surface-muted p-0.5',
     option: `flex min-h-11 min-w-0 items-center justify-center rounded-[0.625rem] px-1 text-center text-[0.8125rem] leading-tight hyphens-calm ${FOCUS}`,
     chosen: CHOSEN,
+    chosenDanger: CHOSEN_DANGER,
     idle: 'text-ink hover:bg-surface',
   },
 } as const;
@@ -61,7 +65,9 @@ export function ChoiceChips<TValue extends string>({
           return (
             <label
               key={option.value}
-              className={`${look.option} ${checked ? look.chosen : look.idle}`}
+              className={`${look.option} ${
+                checked ? (option.danger === true ? look.chosenDanger : look.chosen) : look.idle
+              }`}
             >
               <input
                 type="radio"

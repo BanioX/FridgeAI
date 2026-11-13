@@ -44,7 +44,8 @@
   --color-soon: #8a4b0f;
   --color-soon-bg: #fff1df;
   --color-apricot: #e39a3b; /* outline of the «Geöffnet» badge */
-  --color-today: #a63a22;
+  /* One red (ADR-0075): «heute», «Entsorgt» and «Nicht mehr verwenden» share it. */
+  --color-today: #b3261e;
   --color-today-bg: #fdebe6;
   --color-danger: #b3261e;
 

@@ -33,11 +33,7 @@ function Entry({ entry }: { entry: GuideEntry }) {
           <span className="block font-semibold">{entry.name}</span>
           <span className="block text-sm text-ink-muted">{summary}</span>
         </span>
-        <ScoreRing
-          score={entry.score}
-          level={entry.level}
-          label={t.scoreLabel(entry.score, level)}
-        />
+        <ScoreRing score={entry.score} label={t.scoreLabel(entry.score, level)} />
         <ChevronDown
           size={18}
           aria-hidden="true"

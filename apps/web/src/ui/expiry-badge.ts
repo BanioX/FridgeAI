@@ -22,8 +22,9 @@ function toUtcDate(date: LocalDate): Date {
 }
 
 /**
- * Tone and label for an item's expiry chip (docs/design.md). Colour always comes with text.
- * Fresh food shows days; freezer and Notvorrat show a calm «bis März» / «bis 2051» instead.
+ * Tone and label for an item's expiry chip (docs/design.md). Colour always comes with text, and
+ * only what is due has a colour (ADR-0075): red for today and past, amber for soon, everything
+ * else neutral. Fresh food shows days; freezer and Notvorrat show a calm «bis März» / «bis 2051».
  */
 export function expiryBadge(
   status: ExpiryStatus,
@@ -48,18 +49,18 @@ export function expiryBadge(
   }
   const date = toUtcDate(expiresOn);
   if (location === 'reserve') {
-    return { tone: 'olive', label: t.until(String(date.getUTCFullYear())) };
+    return { tone: 'neutral', label: t.until(String(date.getUTCFullYear())) };
   }
   if (location === 'freezer') {
     const sameYear = expiresOn.slice(0, 4) === today.slice(0, 4);
     return {
-      tone: 'ice',
+      tone: 'neutral',
       label: t.until(sameYear ? monthOnly.format(date) : monthYear.format(date)),
     };
   }
   const days = daysBetween(today, expiresOn);
   return {
-    tone: location === 'pantry' ? 'wheat' : 'fresh',
+    tone: 'neutral',
     label: days <= 30 ? t.inDays(days) : t.until(monthYear.format(date)),
   };
 }
