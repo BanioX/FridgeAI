@@ -78,5 +78,6 @@ Jeder Entscheid mit Folgen steht hier als eigene Datei `NNNN-titel.md` (ADR-0001
 | [0068](0068-read-the-label.md) | Foto aufnehmen liest das Etikett | angenommen | 2026-11-12 |
 | [0069](0069-vacation-check.md) | Ferien-Check | angenommen | 2026-11-13 |
 | [0070](0070-restock-rhythm.md) | Bald wieder nötig | angenommen | 2026-11-13 |
+| [0071](0071-shopping-by-kind.md) | Nachkaufen nach Art | angenommen | 2026-11-13 |
 | [0072](0072-batch-add.md) | Mehrere auf einmal | angenommen | 2026-11-13 |
 | [0073](0073-attention.md) | Im Blick | angenommen | 2026-11-13 |

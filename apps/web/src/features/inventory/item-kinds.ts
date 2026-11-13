@@ -102,8 +102,14 @@ export interface KindGroup<T> {
   items: T[];
 }
 
-/** The items by kind in the order of `KINDS`; inside a kind the given order stays (soonest first). */
-export function groupByKind<T extends Sortable>(items: readonly T[]): KindGroup<T>[] {
+/**
+ * The items by kind in the order of `KINDS` (or of `order`, which lists every kind once); inside a
+ * kind the given order stays (soonest first).
+ */
+export function groupByKind<T extends Sortable>(
+  items: readonly T[],
+  order: readonly Kind[] = KINDS,
+): KindGroup<T>[] {
   const byKind = new Map<Kind, T[]>();
   for (const item of items) {
     const kind = kindOf(item);
@@ -114,7 +120,7 @@ export function groupByKind<T extends Sortable>(items: readonly T[]): KindGroup<
       list.push(item);
     }
   }
-  return KINDS.flatMap((kind) => {
+  return order.flatMap((kind) => {
     const list = byKind.get(kind);
     return list === undefined ? [] : [{ kind, items: list }];
   });

@@ -1,6 +1,6 @@
 import { CATEGORIES } from '@fridgeai/core';
 import { describe, expect, it } from 'vitest';
-import { groupByKind, KINDS, kindOf } from './item-kinds';
+import { groupByKind, KINDS, kindOf, type Kind } from './item-kinds';
 
 const item = (categoryId: string, origin?: 'made' | 'leftover') => ({
   categoryId,
@@ -79,6 +79,15 @@ describe('groupByKind', () => {
       ['vegetables', ['Rüebli']],
       ['fruit', ['Äpfel', 'Birnen']],
     ]);
+  });
+
+  it('follows a given order of the kinds instead', () => {
+    const items = [
+      { name: 'Lachs', ...item('fish-fresh') },
+      { name: 'Äpfel', ...item('produce-apples') },
+    ];
+    const order: Kind[] = ['fruit', ...KINDS.filter((kind) => kind !== 'fruit')];
+    expect(groupByKind(items, order).map((group) => group.kind)).toEqual(['fruit', 'fish']);
   });
 
   it('returns nothing for an empty list', () => {

@@ -143,4 +143,31 @@ describe('ShoppingPage', () => {
     expect(await screen.findByText(t.added('Brot'))).toBeDefined();
     expect(screen.getAllByText(messages.minStock.note)).toHaveLength(1);
   });
+
+  it('shows the open entries in blocks by kind in shop order, and checking still works', async () => {
+    renderPage(testDb());
+    await addToList('Vollmilch, Rüebli, Äpfel');
+    await screen.findByRole('checkbox', { name: /Äpfel/ });
+    const headings = (await screen.findAllByRole('heading', { level: 2 })).map(
+      (heading) => heading.textContent,
+    );
+    const kinds = messages.inventory.kinds;
+    const found = [kinds.fruit, kinds.vegetables, kinds.dairy].map((label) =>
+      headings.findIndex((text) => text.includes(label)),
+    );
+    expect(found.every((index) => index >= 0)).toBe(true);
+    expect([...found].sort((a, b) => a - b)).toEqual(found);
+    await userEvent.click(screen.getByRole('checkbox', { name: /Rüebli/ }));
+    expect(await screen.findByText(t.basket(1))).toBeDefined();
+  });
+
+  it('shows the plain list without headings when there is one kind only', async () => {
+    renderPage(testDb());
+    await addToList('Äpfel, Birnen');
+    await screen.findByRole('checkbox', { name: /Birnen/ });
+    expect(
+      screen.queryByRole('heading', { name: new RegExp(messages.inventory.kinds.fruit) }),
+    ).toBeNull();
+    expect(screen.getByRole('heading', { name: t.open })).toBeDefined();
+  });
 });
