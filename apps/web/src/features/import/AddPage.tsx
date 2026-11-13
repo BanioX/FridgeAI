@@ -1,74 +1,20 @@
 import { useLiveQuery } from 'dexie-react-hooks';
-import {
-  Camera,
-  ChevronRight,
-  ListPlus,
-  PencilLine,
-  Receipt,
-  ScanBarcode,
-  Soup,
-  type LucideIcon,
-} from 'lucide-react';
-import { Link, useNavigate } from 'react-router';
+import { Camera, ListPlus, PencilLine, Receipt, ScanBarcode, Soup } from 'lucide-react';
+import { useNavigate } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
 import { CameraInput } from '../../ui/CameraInput';
 import { Card } from '../../ui/Card';
+import { MenuList } from '../../ui/MenuList';
 import { QuickAdd } from '../inventory/QuickAdd';
 import { handOverPhoto } from '../photo/photo-handover';
 
 const t = messages.addHub;
 
-const FOCUS =
-  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-basil-600';
-
-const TILE = `flex min-h-36 flex-col justify-between gap-3 rounded-2xl bg-surface p-4 shadow-card transition-colors hover:bg-surface-muted ${FOCUS}`;
-
-function TileBody({
-  icon: Icon,
-  title,
-  detail,
-}: {
-  icon: LucideIcon;
-  title: string;
-  detail: string;
-}) {
-  return (
-    <>
-      <span className="flex size-11 items-center justify-center rounded-xl bg-surface-muted text-basil-700">
-        <Icon size={24} aria-hidden="true" />
-      </span>
-      <span>
-        <span className="block font-semibold">{title}</span>
-        <span className="block text-sm text-ink-muted">{detail}</span>
-      </span>
-    </>
-  );
-}
-
-/** A smaller way in: a white tile with its picture on top (Barcode, Von Hand). */
-function Tile({
-  to,
-  icon: Icon,
-  title,
-  detail,
-}: {
-  to: string;
-  icon: LucideIcon;
-  title: string;
-  detail: string;
-}) {
-  return (
-    <Link to={to} className={TILE}>
-      <TileBody icon={Icon} title={title} detail={detail} />
-    </Link>
-  );
-}
-
 /**
- * «Erfassen» behind the ＋ tab (ADR-0031). Alban, 7.11.2026: simple and filling the space. The
- * receipt is the main way (everything at once), barcode and typing are the two smaller ones; the
- * household's usual products follow as one-tap chips. «Mit eigener KI» is gone (ADR-0012).
+ * «Erfassen» behind the ＋ tab (ADR-0031). One way for every photo (ADR-0078): the green tile
+ * opens the camera, and Rettich sees whether it is a receipt or a pack (ADR-0068). The other ways
+ * follow as one grouped list, then the household's usual products as one-tap chips.
  */
 export function AddPage() {
   const { householdId, inventory } = useAppData();
@@ -81,52 +27,43 @@ export function AddPage() {
     <div className="space-y-5 pb-8">
       <h1 className="large-title">{messages.pages.add}</h1>
 
-      <Link
-        to="/add/receipt"
-        className={`flex min-h-44 flex-col justify-between gap-4 rounded-2xl bg-basil-700 p-5 text-white shadow-float transition-colors hover:bg-basil-800 ${FOCUS}`}
+      <CameraInput
+        className="flex min-h-44 flex-col justify-between gap-4 rounded-2xl bg-basil-700 p-5 text-white shadow-float transition-colors hover:bg-basil-800"
+        onPhotos={([file]) => {
+          if (file !== undefined) {
+            handOverPhoto(file);
+            void navigate('/add/photo');
+          }
+        }}
       >
-        <span className="flex items-center justify-between">
-          <span className="flex size-12 items-center justify-center rounded-xl bg-white/15">
-            <Receipt size={28} aria-hidden="true" />
-          </span>
-          <ChevronRight size={22} aria-hidden="true" className="text-white/80" />
+        <span className="flex size-12 items-center justify-center rounded-xl bg-white/15">
+          <Camera size={28} aria-hidden="true" />
         </span>
         <span>
-          <span className="block text-2xl font-semibold tracking-tight">
-            {messages.pages.receipt}
-          </span>
-          <span className="block text-white/85">{t.receipt}</span>
+          <span className="block text-2xl font-semibold tracking-tight">{t.photoTitle}</span>
+          <span className="block text-white/85">{t.photo}</span>
         </span>
-      </Link>
+      </CameraInput>
 
-      <div className="grid grid-cols-2 gap-3">
-        {/* A pack or a receipt: Rettich reads the photo and sees which it is (ADR-0068). */}
-        <CameraInput
-          className={TILE}
-          onPhotos={([file]) => {
-            if (file !== undefined) {
-              handOverPhoto(file);
-              void navigate('/add/photo');
-            }
-          }}
-        >
-          <TileBody icon={Camera} title={messages.photo.take} detail={messages.photo.hubDetail} />
-        </CameraInput>
-        <Tile
-          to="/inventory/new?scan=1"
-          icon={ScanBarcode}
-          title={messages.scanner.open}
-          detail={t.barcode}
-        />
-        <Tile to="/inventory/new" icon={PencilLine} title={t.manualTitle} detail={t.manual} />
-        <Tile to="/add/batch" icon={ListPlus} title={t.batchTitle} detail={t.batch} />
-        <Tile
-          to="/add/process?kind=leftover"
-          icon={Soup}
-          title={t.leftoversTitle}
-          detail={t.leftovers}
-        />
-      </div>
+      <MenuList
+        entries={[
+          { to: '/add/receipt', icon: Receipt, title: t.uploadTitle, detail: t.upload },
+          {
+            to: '/inventory/new?scan=1',
+            icon: ScanBarcode,
+            title: messages.scanner.open,
+            detail: t.barcode,
+          },
+          { to: '/inventory/new', icon: PencilLine, title: t.manualTitle, detail: t.manual },
+          { to: '/add/batch', icon: ListPlus, title: t.batchTitle, detail: t.batch },
+          {
+            to: '/add/process?kind=leftover',
+            icon: Soup,
+            title: t.leftoversTitle,
+            detail: t.leftovers,
+          },
+        ]}
+      />
 
       {empty === true ? (
         <Card variant="tip" className="text-sm">

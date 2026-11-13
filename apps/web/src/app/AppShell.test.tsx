@@ -64,8 +64,9 @@ describe('AppShell', () => {
     await renderAt('/add');
     const main = within(await screen.findByRole('main'));
     expect(await main.findByRole('heading', { level: 1, name: messages.pages.add })).toBeDefined();
+    expect(main.getByLabelText(new RegExp(`^${messages.addHub.photoTitle}`))).toBeDefined();
     for (const title of [
-      messages.pages.receipt,
+      messages.addHub.uploadTitle,
       messages.scanner.open,
       messages.addHub.manualTitle,
     ]) {

@@ -1534,7 +1534,11 @@ export const messages = {
   addHub: {
     batchTitle: 'Mehrere auf einmal',
     batch: 'Ein Satz, mehrere Artikel',
-    receipt: 'Alle Einkäufe auf einmal: PDF, Screenshot oder Foto der Quittung',
+    /** The one way for photos (ADR-0078): Rettich sees whether it is a receipt or a pack. */
+    photoTitle: 'Quittung oder Packung fotografieren',
+    photo: 'Rettich erkennt, was es ist, und liest es auf deinem Gerät',
+    uploadTitle: 'PDF oder Screenshot',
+    upload: 'Quittungen aus der App des Ladens, auch mehrere auf einmal',
     barcode: 'Packung vor die Kamera halten',
     leftoversTitle: 'Reste erfassen',
     leftovers: 'Ein Name genügt, 3 Tage haltbar',
@@ -1553,7 +1557,6 @@ export const messages = {
     choose: 'Aus Fotos wählen',
     reading: 'Rettich liest das Foto …',
     preview: 'Dein Foto',
-    hubDetail: 'Packung oder Quittung',
     found: {
       title: 'Aus dem Foto',
       date: (date: string) => `Haltbar bis ${date}`,
