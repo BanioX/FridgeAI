@@ -604,6 +604,8 @@ export const messages = {
     all: 'alles',
     otherAmount: (unit: string) => `Andere Menge (${unit})`,
     otherAmountOpen: 'Andere Menge …',
+    /** The amount wheel for grams and millilitres (ADR-0083). */
+    wheelLabel: 'Wie viel genau?',
     otherInvalid: 'Bitte eine Menge zwischen 0 und dem Rest angeben.',
     why: 'Warum? (freiwillig)',
     confirm: {

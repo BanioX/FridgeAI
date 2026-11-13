@@ -87,14 +87,29 @@ test('a wrong tap can be undone, in part and in full', async ({ page }) => {
   await expect(page.getByText('300 g · Kühlschrank')).toBeVisible();
 });
 
-test('a free amount larger than what is left is refused', async ({ page }) => {
+test('grams go on a wheel; a typed number of pieces larger than what is left is refused', async ({
+  page,
+}) => {
   await page.goto('/inventory/new');
-  await page.getByLabel('Was ist es?').fill('Basmatireis');
+  await page.getByLabel('Was ist es?').fill('Gruyère');
   await page.getByRole('button', { name: 'Speichern', exact: true }).click();
-  await page.getByRole('link', { name: /Basmatireis/ }).click();
-
+  await page.getByRole('link', { name: /Gruyère/ }).click();
   await page.getByRole('button', { name: 'Andere Menge …' }).click();
-  await page.getByLabel(/Andere Menge/).fill('5000');
+  // Grams on a wheel (ADR-0083): it cannot go past what is left.
+  const wheel = page.getByRole('spinbutton', { name: 'Wie viel genau?' });
+  await expect(wheel).toBeVisible();
+  await wheel.press('End');
+  await expect(wheel).toHaveAttribute('aria-valuetext', '300 g');
+  await wheel.press('ArrowUp');
+  await expect(wheel).toHaveAttribute('aria-valuetext', '290 g');
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+
+  await page.goto('/inventory/new');
+  await page.getByLabel('Was ist es?').fill('Freilandeier');
+  await page.getByRole('button', { name: 'Speichern', exact: true }).click();
+  await page.getByRole('link', { name: /Freilandeier/ }).click();
+  await page.getByRole('button', { name: 'Andere Menge …' }).click();
+  await page.getByLabel(/Andere Menge/).fill('50');
   await expect(page.getByText('Bitte eine Menge zwischen 0 und dem Rest angeben.')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Als verwertet speichern' })).toBeDisabled();
 });
