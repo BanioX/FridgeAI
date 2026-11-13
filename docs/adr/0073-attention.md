@@ -32,3 +32,7 @@ Alban: «Einen Hinweis mit (i), Overlay: diesem Produkt besondere Beachtung sche
 - Die Schwellen sind Konstanten und lassen sich nach dem Pilot ohne Umbau anpassen.
 - Die Liste liest dafür den Vorrat und die Abfrage `products.wasteHabits` ein zweites Mal; bei der Grösse eines Haushalts ist das vernachlässigbar.
 - Nach dem Datum gibt es keinen Tipp: Einfrieren hilft dann nicht mehr (Review der Vorschau, 13.11.2026: das (i) war bei fast jedem Artikel zu sehen).
+
+## Ergänzung 13.11.2026: das Zeichen im Text
+
+Alban, 13.11.2026: «das Info i nicht in Klammern, sondern als eigenes Kreiszeichen». Wo ein Text das Zeichen nennt (Wissen → «Kurz erklärt» → «Im Blick»), steht im Textkatalog `{i}`, und `TextWithMarks` zeichnet daraus dasselbe i im Kreis wie in den Zeilen, so hoch wie die Buchstaben. Screenreader lesen «Info-Zeichen». Ein Test hält fest, dass kein Text der App «(i)» schreibt.

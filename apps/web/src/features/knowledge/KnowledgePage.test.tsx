@@ -53,6 +53,21 @@ describe('KnowledgePage «Rettich im Alltag»', () => {
     expect(within(section).getByText(entry.text)).toBeTruthy();
   });
 
+  it('shows the info mark of «Im Blick» as the circled sign, not as «(i)» (Alban, 13.11.2026)', async () => {
+    const section = await openGroup();
+    const summary = within(section).getByText('Im Blick').closest('summary');
+    if (summary === null) throw new Error('no summary');
+    await userEvent.setup().click(summary);
+    const details = summary.closest('details');
+    if (details === null) throw new Error('no details');
+    expect(within(details).getAllByRole('img', { name: messages.attention.mark })).toHaveLength(2);
+    expect(details.textContent).not.toMatch(/\(i\)|\{i\}/);
+  });
+
+  it('writes no info mark as «(i)» in any text of the app', () => {
+    expect(JSON.stringify(messages)).not.toContain('(i)');
+  });
+
   it('says in the privacy note that date photos are read on the device and not stored', () => {
     expect(messages.household.privacyPoints.join(' ')).toMatch(/Datumsangaben.*nie gespeichert/);
   });
