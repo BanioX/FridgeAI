@@ -11,6 +11,7 @@ import { useMembers } from '../people/use-members';
 import { searchStock } from './spots-search';
 import { SpotThumb } from './SpotThumb';
 import { useSpots } from './use-spots';
+import { FoodIcon } from '../../ui/FoodIcon';
 
 const t = messages.spots;
 
@@ -108,12 +109,7 @@ export function SpotsPage() {
                     className={`${GROUPED_ROW_LINK} flex min-h-15 items-center gap-3 py-2.5 pr-3 pl-4`}
                   >
                     {item.spot === null ? (
-                      <span
-                        aria-hidden="true"
-                        className="grid size-10 shrink-0 place-items-center text-2xl leading-none"
-                      >
-                        {item.emoji}
-                      </span>
+                      <FoodIcon categoryId={item.categoryId} />
                     ) : (
                       <SpotThumb photo={spotPhoto.get(item.spot.id)} />
                     )}

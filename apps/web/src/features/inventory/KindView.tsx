@@ -2,7 +2,8 @@ import { CalendarClock, LayoutGrid } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { messages } from '../../app/messages.de-CH';
 import type { InventoryView } from './inventory-view';
-import { KIND_EMOJI, type Kind } from './item-kinds';
+import { KIND_ICONS, type Kind } from './item-kinds';
+import { IconTile } from '../../ui/FoodIcon';
 
 const t = messages.inventory.view;
 const headingId = (kind: Kind) => `kind-${kind}`;
@@ -97,12 +98,7 @@ export function KindTiles({ kinds }: { kinds: readonly KindSummary[] }) {
               className="flex h-full w-full flex-col items-start gap-2 rounded-2xl bg-surface p-2.5 text-left shadow-card transition-colors hover:bg-surface-muted active:bg-surface-muted"
             >
               <span className="flex w-full items-start justify-between gap-1">
-                <span
-                  aria-hidden="true"
-                  className="grid size-9 place-items-center rounded-xl bg-oat text-xl leading-none"
-                >
-                  {KIND_EMOJI[kind]}
-                </span>
+                <IconTile icon={KIND_ICONS[kind]} />
                 <span className="text-[1.375rem] leading-none font-bold tabular-nums">{count}</span>
               </span>
               <span className="text-[0.8125rem] leading-tight font-semibold hyphens-calm">
@@ -146,12 +142,7 @@ export function KindSection({
         tabIndex={-1}
         className="flex scroll-mt-[calc(env(safe-area-inset-top)+1rem)] items-center gap-3 border-b border-line px-4 py-3 outline-none"
       >
-        <span
-          aria-hidden="true"
-          className="grid size-9 place-items-center rounded-xl bg-oat text-xl leading-none"
-        >
-          {KIND_EMOJI[kind]}
-        </span>
+        <IconTile icon={KIND_ICONS[kind]} />
         <span className="min-w-0 flex-1 text-[1.0625rem] font-semibold hyphens-calm">{label}</span>
         <span className="text-[0.9375rem] text-ink-muted tabular-nums">
           <span aria-hidden="true">{count}</span>

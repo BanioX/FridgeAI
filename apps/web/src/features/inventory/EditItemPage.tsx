@@ -24,6 +24,7 @@ import { DatePhotoButton } from './DatePhotoButton';
 import { cameFromDetail } from './edit-state';
 import { locationOrder } from './item-meta';
 import { useInventoryItem } from './use-item';
+import { FoodIcon } from '../../ui/FoodIcon';
 
 const t = messages.editItem;
 const kindOptions = DateKindSchema.options.map((value) => ({ value, label: t.dateKinds[value] }));
@@ -187,9 +188,7 @@ function EditItemForm({ item }: { item: InventoryItemView }) {
             {t.category}
           </label>
           <div className="flex items-center gap-3">
-            <span aria-hidden="true" className="text-3xl">
-              {category.emoji}
-            </span>
+            <FoodIcon categoryId={category.id} />
             <select
               id={`${id}-category`}
               value={category.id}

@@ -17,33 +17,58 @@ import { ShopBadge } from '../../ui/ShopBadge';
  * Development-only reference of the design system (route /styleguide, see routes.tsx).
  * The strings below are sample data, not product copy, and never ship in production builds.
  */
-const sampleItems: { emoji: string; name: string; meta: string; tone: Tone; label: string }[] = [
-  {
-    emoji: '🍗',
-    name: 'Pouletbrust',
-    meta: '300 g · Kühlschrank',
-    tone: 'danger',
-    label: 'Nicht mehr verwenden',
-  },
-  { emoji: '🥛', name: 'Vollmilch', meta: '1 l · Kühlschrank', tone: 'today', label: 'heute' },
-  { emoji: '🥬', name: 'Blattspinat', meta: '250 g · Kühlschrank', tone: 'soon', label: 'morgen' },
-  {
-    emoji: '🧀',
-    name: 'Mozzarella',
-    meta: '1 Stk. · Kühlschrank · gehört Lena',
-    tone: 'soon',
-    label: 'in 3 Tagen',
-  },
-  { emoji: '🍞', name: 'Ruchbrot', meta: '500 g · Vorrat', tone: 'fresh', label: 'in 5 Tagen' },
-  { emoji: '🫛', name: 'Erbsen', meta: '750 g · Tiefkühler', tone: 'ice', label: 'bis März' },
-  {
-    emoji: '🏕️',
-    name: 'Risotto gefriergetrocknet',
-    meta: '120 g · Notvorrat',
-    tone: 'olive',
-    label: 'bis 2051',
-  },
-];
+const sampleItems: { categoryId: string; name: string; meta: string; tone: Tone; label: string }[] =
+  [
+    {
+      categoryId: 'meat-poultry',
+      name: 'Pouletbrust',
+      meta: '300 g · Kühlschrank',
+      tone: 'danger',
+      label: 'Nicht mehr verwenden',
+    },
+    {
+      categoryId: 'dairy-milk',
+      name: 'Vollmilch',
+      meta: '1 l · Kühlschrank',
+      tone: 'today',
+      label: 'heute',
+    },
+    {
+      categoryId: 'produce-salad',
+      name: 'Blattspinat',
+      meta: '250 g · Kühlschrank',
+      tone: 'soon',
+      label: 'morgen',
+    },
+    {
+      categoryId: 'dairy-cheese-soft',
+      name: 'Mozzarella',
+      meta: '1 Stk. · Kühlschrank · gehört Lena',
+      tone: 'soon',
+      label: 'in 3 Tagen',
+    },
+    {
+      categoryId: 'bakery-bread',
+      name: 'Ruchbrot',
+      meta: '500 g · Vorrat',
+      tone: 'fresh',
+      label: 'in 5 Tagen',
+    },
+    {
+      categoryId: 'frozen-vegetables',
+      name: 'Erbsen',
+      meta: '750 g · Tiefkühler',
+      tone: 'ice',
+      label: 'bis März',
+    },
+    {
+      categoryId: 'reserve-freeze-dried',
+      name: 'Risotto gefriergetrocknet',
+      meta: '120 g · Notvorrat',
+      tone: 'olive',
+      label: 'bis 2051',
+    },
+  ];
 
 // Full class names so Tailwind can detect them (no string concatenation).
 const basilScale = [
@@ -109,7 +134,7 @@ export function StyleguidePage() {
           {sampleItems.map((item) => (
             <GroupedListItem key={item.name}>
               <ItemRow
-                emoji={item.emoji}
+                categoryId={item.categoryId}
                 name={item.name}
                 meta={item.meta}
                 status={{ tone: item.tone, label: item.label }}

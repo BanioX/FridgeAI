@@ -4,10 +4,12 @@ import type { Retailer } from '@fridgeai/core';
 import { ShopBadge } from './ShopBadge';
 import { StatusChip } from './StatusChip';
 import type { Tone } from './tones';
+import { FoodIcon } from './FoodIcon';
 
 interface ItemRowProps {
-  emoji: string;
-  /** Pack picture (data URL); replaces the emoji when there is one. */
+  /** Picks the food picture (ADR-0080). */
+  categoryId: string;
+  /** Pack picture (data URL); replaces the food picture when there is one. */
   image?: string | undefined;
   name: string;
   meta: string;
@@ -30,11 +32,11 @@ interface ItemRowProps {
 const LONG_CHIP = 19;
 
 /**
- * One inventory item as a row of a grouped list: pack picture or food emoji, name, meta line and
+ * One inventory item as a row of a grouped list: pack picture or food picture, name, meta line and
  * the expiry chip, whose text carries the status (colour only supports it).
  */
 export function ItemRow({
-  emoji,
+  categoryId,
   image,
   name,
   meta,
@@ -48,12 +50,7 @@ export function ItemRow({
 }: ItemRowProps) {
   const picture =
     image === undefined ? (
-      <span
-        aria-hidden="true"
-        className="grid size-10 shrink-0 place-items-center text-2xl leading-none"
-      >
-        {emoji}
-      </span>
+      <FoodIcon categoryId={categoryId} />
     ) : (
       <img
         src={image}

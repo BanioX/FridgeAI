@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
 import { formatQuantity } from '../../ui/quantity-text';
+import { FoodIcon } from '../../ui/FoodIcon';
 
 const t = messages.quickAdd;
 
@@ -94,7 +95,7 @@ export function QuickAdd() {
               className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-line bg-surface px-3 text-sm font-semibold whitespace-nowrap transition-colors hover:bg-surface-muted disabled:opacity-50"
             >
               <Plus size={16} aria-hidden="true" className="text-basil-700" />
-              <span aria-hidden="true">{product.emoji}</span>
+              <FoodIcon categoryId={product.categoryId} size="xs" />
               {product.name}{' '}
               <span className="font-normal text-ink-muted">
                 {formatQuantity(product.quantity, product.unit)}

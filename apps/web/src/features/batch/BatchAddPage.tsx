@@ -9,6 +9,7 @@ import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { formatQuantity } from '../../ui/quantity-text';
 import { batchRows } from './batch-rows';
+import { FoodIcon } from '../../ui/FoodIcon';
 
 const t = messages.batchAdd;
 
@@ -113,9 +114,7 @@ export function BatchAddPage() {
             <ul className="divide-y divide-line rounded-2xl bg-surface shadow-card">
               {rows.map((row) => (
                 <li key={row.key} className="flex items-center gap-3 px-4 py-3">
-                  <span aria-hidden="true" className="text-2xl">
-                    {row.emoji}
-                  </span>
+                  <FoodIcon categoryId={row.categoryId} />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate font-semibold">
                       {row.name}

@@ -18,7 +18,6 @@ export interface BatchRow {
   key: string;
   name: string;
   categoryId: string;
-  emoji: string;
   location: StorageLocation;
   /** In the base unit of the contract (g, ml, pieces). */
   quantity: number;
@@ -51,7 +50,6 @@ export function batchRows(text: string, today: LocalDate): BatchRow[] {
       key: `${line.name.toLocaleLowerCase('de-CH')}|${String(base.quantity)}|${base.unit}`,
       name: line.name,
       categoryId: category.id,
-      emoji: category.emoji,
       location,
       quantity: base.quantity,
       unit: base.unit,

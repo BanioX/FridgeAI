@@ -9,6 +9,7 @@ import { ScoreRing } from '../../ui/ScoreRing';
 import { CookToday, OwnRecipes } from '../recipes/RecipeIdeas';
 import { factFor } from './food-facts';
 import { describeDays, shelfGuide, type GuideEntry } from './shelf-guide';
+import { FoodIcon } from '../../ui/FoodIcon';
 
 const t = messages.knowledge;
 const r = messages.recipes;
@@ -26,9 +27,7 @@ function Entry({ entry }: { entry: GuideEntry }) {
   return (
     <details className="group">
       <summary className="flex min-h-16 cursor-pointer list-none items-center gap-3 px-4 py-3 has-focus-visible:outline-2 has-focus-visible:outline-basil-600 [&::-webkit-details-marker]:hidden">
-        <span aria-hidden="true" className="w-10 shrink-0 text-center text-3xl">
-          {entry.emoji}
-        </span>
+        <FoodIcon categoryId={entry.id} />
         <span className="min-w-0 flex-1">
           <span className="block font-semibold">{entry.name}</span>
           <span className="block text-sm text-ink-muted">{summary}</span>
