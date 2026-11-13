@@ -40,3 +40,21 @@ Ein Screenshot einer Lidl-Plus-Quittung (aus der App geteilt, nur gut 200 Pixel 
 - Dasselbe gilt für den Kilopreis unter gewogener Ware («0,504 kg x 12.980 CHF/kg»).
 
 Die echte Quittung bleibt ausserhalb des Repos; der Test nutzt erfundene Artikel mit denselben Lesefehlern.
+
+## Ergänzung 14.11.2026: Total und verwechselte Ziffern
+
+Zwei weitere Lidl-Plus-Screenshots, beide nur gut 300 Pixel breit. Der erste ergab 41 richtige Artikel, aber CHF 18.00 Differenz. Die Texterkennung las das Total mit einer Ziffer zu viel («Dein Lidl Preis 1099.80» statt 109.80), zweimal «9.99» statt 0.99, und den MWST-Code «B» als «8».
+
+- **Total:** Zeilen unter dem Total wiederholen es («Karte 109.80», «Total-EFT CHF: 109.80»). Weicht das gedruckte Total von so einer Wiederholung nur um eine Ziffer ab (eine mehr, eine weniger, eine andere) und passt die Wiederholung besser zur Summe der Zeilen, gilt die Wiederholung. Bargeld («Bar 120.00») zählt nicht, weil es mehr sein kann.
+- **Verwechselte Ziffern:** Geht die Quittung danach nicht auf, probiert Rettich an höchstens zwei Preisen eine typische Verwechslung (0 und 9, 0 und 8, 3 und 8, 5 und 6, 1 und 7). Er korrigiert nur, wenn genau eine solche Kombination die Quittung auf den Rappen aufgehen lässt; sonst zeigt die Summenprüfung die Differenz. Zeilen mit Menge («4 x 0.79») bleiben, wie sie sind, weil die Menge ihren Preis schon prüft.
+- **Nur bei Fotos:** Text aus einem PDF hat keine Lesefehler. Dort rät Rettich nie (`parseReceiptText(text, { fromPdf: true })`), eine Differenz bleibt sichtbar.
+- **MWST-Code:** Fehlt der Code «8» in der MWST-Tabelle, aber «B» steht dort, gilt «8» als «B».
+- **Gewogene Ware:** Passen Gewicht × Kilopreis und Betrag nicht zusammen («9.578 kg x 1.19» unter «Bananen 9.69»), probiert Rettich verwechselte Ziffern in Gewicht und Betrag. Passt genau ein Paar (0.578 kg, 0.69), gilt es.
+- **Rundung:** Eine «Rundung» ist nie ein Artikel und immer unter 10 Rappen, ob plus oder minus. Aus «-9.03» wird -0.03, wenn genau eine verwechselte Ziffer dorthin führt.
+- **Doppelpunkt:** «Popkorn 1:25 A» ist ein Betrag. Ohne diese Regel fiel der ganze Artikel weg. Uhrzeiten enden nie auf einen MWST-Code und bleiben, wie sie sind.
+
+- **Filiale:** Steht «Einkauf getätigt in» auf dem Screenshot, ist die Zeile darunter die Filiale (ohne «(Fil.Nr. …)»). Oben auf einer Lidl-Quittung steht nur das Logo, das die Texterkennung als Wort liest; daraus nimmt Rettich keine Filiale mehr.
+
+Der zweite Screenshot (58 Artikel) brachte gewogene Ware, eine Rundung und einen Doppelpunkt (die drei Punkte darüber) und zeigt die Grenze: Zwei Fehler, die sich gegenseitig verdecken (9.69 statt 0.69, 0.25 statt 1.25), lassen mehrere Erklärungen zu. Rettich rät dort nicht. Die Summenprüfung zeigt CHF 8.00 Differenz, und die Person korrigiert die zwei Zeilen im Durchgehen.
+
+Die echten Quittungen bleiben ausserhalb des Repos; die Tests nutzen erfundene Artikel mit denselben Lesefehlern.

@@ -51,6 +51,7 @@ const KEYWORDS = {
   other:
     /\b(mwst|mehrwertsteuer|tva|superpunkte|cumulus|sie sparen|gespart|ersparnis|preisvorteil)\b/,
   deposit: /\b(pfand|depot|consigne|mehrweg)\b/,
+  rounding: /^(rundung|rundungsdifferenz|rappenrundung)\b/,
   bag: /\b(tragtaschen?|tragetaschen?|einkaufstaschen?|papiertaschen?|papiertragtaschen?|papiersack|plastiksack|tragsack|tuete)\b/,
   wideDiscount: /\b(einkauf|gutschein|alles|gesamt|treuerabatt|mitarbeiterrabatt|bonus)/,
   discount: /\b(rabatt|aktion|reduktion|reduziert|coupon|gutschein)\b/,
@@ -66,6 +67,17 @@ const DECOR = /^(?:x|×|à|@|chf|kg|\/kg|chf\/kg)$/i;
 const DETAIL =
   /^(\d{1,3}(?:\.\d{1,3})?) ?(kg)? ?[x×à] ?(\d{1,4}\.\d{2,3})(?: ?(?:chf)? ?\/? ?kg)?$/i;
 const SEPARATOR = /^[-=_*~.:¦| ]+$/;
+/** Rows after the total that repeat it: the card payment («Karte 109.80», «TWINT 52.30»). */
+const CARD =
+  /^(karte|kartenzahlung|debitkarte|kreditkarte|twint|mastercard|visa|maestro|postfinance)\b/;
+/** Digits that OCR mixes up on small receipt print, both ways round. */
+const LOOKALIKES: readonly (readonly [string, string])[] = [
+  ['0', '9'],
+  ['0', '8'],
+  ['3', '8'],
+  ['5', '6'],
+  ['1', '7'],
+];
 const STORE_SKIP = /genossenschaft|hotline|www|artikel|lohnt sich|quittung|^chf$/i;
 
 function plain(text: string): string {
@@ -114,6 +126,8 @@ export function normalizeReceiptLine(raw: string): string {
       // A minus read as a quote or tilde right before an amount: «Lidl Plus Rabatt „0,24».
       .replace(/(^|\s)[„‚“”"~¬](?=\d{1,4}[.,] ?\d{2}(?!\d))/g, '$1-')
       .replace(/(\d)(?:,\.|\.,)(\d)/g, '$1.$2')
+      // The point read as a colon before a VAT group: «Popkorn 1:25 A». Times never end in «A».
+      .replace(/(\d):(\d{2})(?= [A-D]$)/, '$1.$2')
       .replace(/(\d) ?([.,]) ?(\d{2,3})(?![\d])/g, '$1$2$3')
       .replace(
         /(?<![\p{L}])[\dOolI|]*\d[\dOolI|]*[.,][\dOo]{2,3}-?(?![\p{L}])|(?<![\p{L}])[OolI|][.,]\d{2}-?(?![\p{L}])/gu,
@@ -289,8 +303,20 @@ function detectRetailer(rows: readonly string[]): Retailer {
   return 'other';
 }
 
-/** The branch on top of the receipt: «Schwerzenbach Chimli», «M Aarau Bahnhof». */
-function detectStore(rows: readonly string[]): string | undefined {
+/**
+ * The branch: below «Einkauf getätigt in» (Lidl Plus app), else on top of the receipt
+ * («Schwerzenbach Chimli», «M Aarau Bahnhof»). On top of a Lidl receipt there is only the logo,
+ * which OCR reads as a word.
+ */
+function detectStore(rows: readonly string[], retailer: Retailer): string | undefined {
+  const marker = rows.findIndex((row) => plain(row) === 'einkauf getaetigt in');
+  const named = marker === -1 ? '' : (rows[marker + 1] ?? '').replace(/\s*\(.*$/, '').trim();
+  if (named !== '') {
+    return named.slice(0, 80);
+  }
+  if (retailer === 'lidl') {
+    return undefined;
+  }
   return rows
     .slice(0, 3)
     .find(
@@ -349,7 +375,7 @@ function oneDigitApart(a: number, b: number): boolean {
 }
 
 /** Lidl prints «4 x 0.79» or «0.984 kg x 1.99 CHF/kg» below the item; it must match its amount. */
-function applyDetail(item: ParsedReceiptLine | null, detail: RegExpExecArray) {
+function applyDetail(item: ParsedReceiptLine | null, detail: RegExpExecArray, guess: boolean) {
   const [, amount = '', kg, price] = detail;
   if (item === null) {
     return;
@@ -363,6 +389,8 @@ function applyDetail(item: ParsedReceiptLine | null, detail: RegExpExecArray) {
     );
     if (unitPrice !== undefined) {
       Object.assign(item, { quantity: grams, unit: 'g', unitPriceRappen: unitPrice });
+    } else if (read !== null && guess) {
+      applyWeighedLookalike(item, grams, read);
     }
     return;
   }
@@ -386,6 +414,38 @@ function applyDetail(item: ParsedReceiptLine | null, detail: RegExpExecArray) {
 }
 
 /**
+ * «9.578 kg x 1.19» under «Bananen 9.69»: weight and amount disagree. If exactly one pair of
+ * readings with look-alike digits agrees (0.578 kg, 0.69), both are taken.
+ */
+function applyWeighedLookalike(item: ParsedReceiptLine, grams: number, perKilo: Rappen) {
+  const fits = [grams, ...lookalikeReadings(grams)].flatMap((weight) =>
+    [item.priceRappen, ...lookalikeReadings(item.priceRappen)].flatMap((amount) =>
+      (weight !== grams || amount !== item.priceRappen) && near(perKg(weight, perKilo), amount)
+        ? [{ weight, amount }]
+        : [],
+    ),
+  );
+  const [only, ...others] = fits;
+  if (only !== undefined && others.length === 0) {
+    Object.assign(item, {
+      quantity: only.weight,
+      unit: 'g',
+      unitPriceRappen: perKilo,
+      priceRappen: rappen(only.amount),
+    });
+  }
+}
+
+/** A rounding is always under 10 Rappen: «-9.03» is «-0.03» with a look-alike digit. */
+function plausibleRounding(amount: Rappen, guess: boolean): Rappen {
+  if (Math.abs(amount) < 10 || !guess) {
+    return amount;
+  }
+  const [only, ...others] = lookalikeReadings(amount).filter((reading) => Math.abs(reading) < 10);
+  return only !== undefined && others.length === 0 ? rappen(only) : amount;
+}
+
+/**
  * One amount read with a digit too many: of its readings, take the one that makes the lines add up
  * to the printed total. With several such lines, or none that fits, the first reading stays and the
  * sum check shows the slip.
@@ -406,13 +466,140 @@ function resolveWithTotal(
   }
 }
 
+/** Whether two amounts are one OCR slip apart: one digit more, one less or one different. */
+function oneSlipApart(a: Rappen, b: Rappen): boolean {
+  const [short = '', long = ''] = [String(a), String(b)].sort((x, y) => x.length - y.length);
+  if (short === long) {
+    return false;
+  }
+  if (long.length === short.length) {
+    let differences = 0;
+    for (let index = 0; index < long.length; index += 1) {
+      differences += long[index] === short[index] ? 0 : 1;
+    }
+    return differences === 1;
+  }
+  for (let index = 0; long.length === short.length + 1 && index < long.length; index += 1) {
+    if (long.slice(0, index) + long.slice(index + 1) === short) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/** Amounts that repeat the total further down: «Total-EFT CHF: 109.80», «Karte 109.80». */
+function repeatsOfTotal(rows: readonly string[]): Rappen[] {
+  return rows.flatMap((row) => {
+    const numbers = readNumbers(row);
+    const words = plain(numbers.name);
+    return numbers.price !== null &&
+      numbers.price > 0 &&
+      (KEYWORDS.total.test(words) || CARD.test(words))
+      ? [numbers.price]
+      : [];
+  });
+}
+
+/**
+ * The printed total, unless OCR slipped on it: a repeat further down that is one slip away and
+ * closer to the sum of the lines wins («Dein Lidl Preis 1099.80» above «Karte 109.80»).
+ */
+function chooseTotal(
+  printed: Rappen | null,
+  repeats: readonly Rappen[],
+  computed: Rappen,
+): Rappen | null {
+  if (printed === null || repeats.includes(printed)) {
+    return printed;
+  }
+  const distance = (amount: Rappen) => Math.abs(amount - computed);
+  return (
+    repeats.find(
+      (repeat) => oneSlipApart(repeat, printed) && distance(repeat) < distance(printed),
+    ) ?? printed
+  );
+}
+
+/** The same number with one digit swapped for a look-alike: «0.99» for a misread «9.99». */
+function lookalikeReadings(value: number): number[] {
+  const digits = String(Math.abs(value));
+  const sign = value < 0 ? -1 : 1;
+  const found: number[] = [];
+  for (let index = 0; index < digits.length; index += 1) {
+    const digit = digits[index];
+    for (const [one, other] of LOOKALIKES) {
+      const swapped = digit === one ? other : digit === other ? one : undefined;
+      const reading =
+        swapped === undefined
+          ? 0
+          : Number(digits.slice(0, index) + swapped + digits.slice(index + 1));
+      if (reading > 0) {
+        found.push(sign * reading);
+      }
+    }
+  }
+  return found;
+}
+
+/**
+ * When the lines still miss the total: one or two prices with a look-alike digit are corrected, but
+ * only if exactly one such correction makes the receipt add up. Lines with a quantity stay as they
+ * are, «4 x 0.79» already checks their price.
+ */
+function resolveLookalikes(
+  lines: readonly ParsedReceiptLine[],
+  total: Rappen | null,
+  computed: Rappen,
+) {
+  if (total === null || computed === total) {
+    return;
+  }
+  const gap = total - computed;
+  const options = lines.flatMap((line) =>
+    line.kind === 'item' && line.unitPriceRappen === undefined
+      ? lookalikeReadings(line.priceRappen).map((amount) => ({
+          line,
+          amount: rappen(amount),
+          change: amount - line.priceRappen,
+        }))
+      : [],
+  );
+  const fits: (typeof options)[] = [];
+  options.forEach((first, index) => {
+    if (first.change === gap) {
+      fits.push([first]);
+    }
+    for (const second of options.slice(index + 1)) {
+      if (second.line !== first.line && first.change + second.change === gap) {
+        fits.push([first, second]);
+      }
+    }
+  });
+  const [only, ...others] = fits;
+  if (only !== undefined && others.length === 0) {
+    for (const { line, amount } of only) {
+      line.priceRappen = amount;
+    }
+  }
+}
+
+/** Lidl's VAT group «B» read as «8». */
+function rateOf(rates: ReadonlyMap<string, number>, code: string | undefined) {
+  return code === undefined
+    ? undefined
+    : (rates.get(code) ?? (code === '8' ? rates.get('B') : undefined));
+}
+
 /**
  * Reads a receipt from OCR or PDF text (ADR-0027). Knows the layouts of Coop («Menge Preis Aktion
  * Total»), Migros («Gespart») and Lidl (quantity and «Lidl Plus Rabatt» below the item) and falls
  * back to «name … amount». Checks the lines against the printed total to the Rappen; the VAT table
- * below the total tells food (reduced rate) from everything else.
+ * below the total tells food (reduced rate) from everything else. Text from a PDF has no reading
+ * slips, so only a photo gets its look-alike digits corrected.
  */
-export function parseReceiptText(text: string): ParsedReceipt {
+export function parseReceiptText(text: string, options: { fromPdf?: boolean } = {}): ParsedReceipt {
+  /** Photos get their look-alike digits corrected; PDF text has no reading slips. */
+  const guess = options.fromPdf !== true;
   const rows = text
     .split(/\r?\n/)
     .map(normalizeReceiptLine)
@@ -422,7 +609,8 @@ export function parseReceiptText(text: string): ParsedReceipt {
     return numbers.price !== null && KEYWORDS.total.test(plain(numbers.name));
   });
   const body = totalIndex === -1 ? rows : rows.slice(0, totalIndex);
-  const totalRappen = totalIndex === -1 ? null : readNumbers(rows[totalIndex] ?? '').price;
+  const printedTotal = totalIndex === -1 ? null : readNumbers(rows[totalIndex] ?? '').price;
+  const repeats = totalIndex === -1 ? [] : repeatsOfTotal(rows.slice(totalIndex + 1));
   const vatRates = readVatRates(totalIndex === -1 ? [] : rows.slice(totalIndex + 1));
   const lines: ParsedReceiptLine[] = [];
   /** Lines whose amount had a digit too many, with their other possible readings. */
@@ -434,7 +622,7 @@ export function parseReceiptText(text: string): ParsedReceipt {
   for (const row of body) {
     const detail = DETAIL.exec(row);
     if (detail !== null) {
-      applyDetail(lastItem, detail);
+      applyDetail(lastItem, detail, guess);
       continue;
     }
     const numbers = readNumbers(row);
@@ -450,6 +638,20 @@ export function parseReceiptText(text: string): ParsedReceipt {
       continue;
     }
     if (KEYWORDS.payment.test(words) || KEYWORDS.other.test(words)) {
+      continue;
+    }
+    if (KEYWORDS.rounding.test(words)) {
+      // Rounding to 5 Rappen: part of the sum, never an article, plus or minus.
+      lines.push({
+        rawText: row,
+        kind: 'discount',
+        name: numbers.name,
+        quantity: 1,
+        unit: 'pcs',
+        priceRappen: plausibleRounding(numbers.price, guess),
+        discountRappen: rappen(0),
+      });
+      lastItem = null;
       continue;
     }
     const name = numbers.name === '' ? pendingName : numbers.name;
@@ -482,7 +684,7 @@ export function parseReceiptText(text: string): ParsedReceipt {
       : KEYWORDS.bag.test(words)
         ? 'bag'
         : 'item';
-    const rate = numbers.vatCode === undefined ? undefined : vatRates.get(numbers.vatCode);
+    const rate = rateOf(vatRates, numbers.vatCode);
     const line: ParsedReceiptLine = {
       rawText: row,
       kind,
@@ -503,11 +705,16 @@ export function parseReceiptText(text: string): ParsedReceipt {
 
   const sumOf = () =>
     sumRappen(lines.map((line) => rappen(line.priceRappen + line.discountRappen)));
+  const totalRappen = chooseTotal(printedTotal, repeats, sumOf());
   resolveWithTotal(unsure, totalRappen, sumOf());
+  if (guess) {
+    resolveLookalikes(lines, totalRappen, sumOf());
+  }
   const computedTotalRappen = sumOf();
-  const storeName = detectStore(rows);
+  const retailer = detectRetailer(rows);
+  const storeName = detectStore(rows, retailer);
   return {
-    retailer: detectRetailer(rows),
+    retailer,
     ...(storeName === undefined ? {} : { storeName }),
     ...detectDate(rows.join('\n')),
     lines,
