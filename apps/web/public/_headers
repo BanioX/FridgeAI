@@ -5,7 +5,7 @@
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: camera=(self), microphone=(), geolocation=(), payment=()
+  Permissions-Policy: camera=(self), microphone=(), geolocation=(), payment=(), publickey-credentials-create=(self), publickey-credentials-get=(self)
   Cross-Origin-Opener-Policy: same-origin
   # Never in search engines (ADR-0049); also on preview links.
   X-Robots-Tag: noindex, nofollow

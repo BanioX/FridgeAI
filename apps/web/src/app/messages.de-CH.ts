@@ -1299,6 +1299,31 @@ export const messages = {
     failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
     ownerHint: 'Die Person, die Rettich auf diesem Gerät nutzt, bleibt immer im Haushalt.',
   },
+  /** App lock with Face ID, Touch ID or the device code (ADR-0086). */
+  appLock: {
+    title: 'App-Sperre',
+    text: 'Mit der Sperre öffnet sich Rettich erst nach Face ID, Touch ID oder deinem Code. Das schützt dich, wenn jemand dein entsperrtes Handy in der Hand hält.',
+    privacy:
+      'Face ID bleibt auf deinem iPhone, Rettich sieht dein Gesicht nie. Die Daten selbst bleiben unverschlüsselt in Rettich auf diesem Gerät.',
+    switchLabel: 'App-Sperre verwenden',
+    after: 'Sperren nach',
+    afterNow: 'Sofort',
+    after1m: '1 Minute',
+    after5m: '5 Minuten',
+    unavailable:
+      'Auf diesem Gerät nicht möglich: Dein Browser bietet keine Entsperrung mit Face ID, Touch ID oder Code an.',
+    turnOffHint: 'Zum Ausschalten bestätigst du zuerst mit Face ID oder deinem Code.',
+    switchedOn: 'Die App-Sperre ist an.',
+    switchedOff: 'Die App-Sperre ist aus.',
+    lockedTitle: 'Rettich ist gesperrt',
+    unlock: 'Entsperren',
+    unlockHint: 'Mit Face ID, Touch ID oder deinem Code',
+    resetup: 'Sperre neu einrichten',
+    problem: {
+      cancelled: 'Abgebrochen. Du kannst es gleich nochmals versuchen.',
+      failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
+    },
+  },
   household: {
     data: 'Mitnehmen und löschen',
     dataText:

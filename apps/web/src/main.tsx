@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router';
 import { AppDataProvider } from './app/AppData';
+import { AppLockGate, AppLockProvider } from './app/lock/AppLock';
 import { createAppRouter } from './app/routes';
 import './index.css';
 
@@ -12,8 +13,12 @@ if (!container) {
 
 createRoot(container).render(
   <StrictMode>
-    <AppDataProvider>
-      <RouterProvider router={createAppRouter()} />
-    </AppDataProvider>
+    <AppLockProvider>
+      <AppLockGate>
+        <AppDataProvider>
+          <RouterProvider router={createAppRouter()} />
+        </AppDataProvider>
+      </AppLockGate>
+    </AppLockProvider>
   </StrictMode>,
 );

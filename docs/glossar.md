@@ -6,6 +6,7 @@ Damit Mensch und Maschine dasselbe meinen: Wort in der App (de-CH), Name im Code
 
 | App (de-CH) | Code | Bedeutung | Andere Regionen |
 | --- | --- | --- | --- |
+| **App-Sperre** (13.11.2026) | `AppLockProvider`, `DeviceUnlock`, `fridgeai:app-lock` | Freiwillige Sperre: Rettich öffnet erst nach Face ID, Touch ID oder Gerätecode (WebAuthn, Plattform-Authenticator). Nur auf dem Gerät, ohne Server; Einstellung im localStorage, nicht im Export; verschlüsselt die Daten nicht (ADR-0086) | en: app lock |
 | **Geschätzte Nährwerte** (12.11.2026) | `freshNutrition`, `nutrition.source: 'blv'`, `nutritionFood` | Durchschnittswerte der Schweizer Nährwertdatenbank (BLV) für unverarbeitete Frischware ohne Barcode («Thunfischsteak», «Äpfel»); berechnet, nie gespeichert, als «geschätzt» beschriftet; eigene Werte gewinnen (ADR-0064) | – |
 | **Datum fotografieren** (12.11.2026) | `DatePhotoButton`, `parseExpiryFromText`, `expirySource: 'label_ocr'` | Knopf beim Erfassen: ein Foto des aufgedruckten Datums wird auf dem Gerät gelesen und füllt «Haltbar bis»; das Bild wird nicht gespeichert (ADR-0062) | – |
 | **Mindestbestand** («Immer da haben», 12.11.2026) | `minStock`, `products.setMinStock`, `source: 'min_stock'` | Wie viele aktive Packungen eines Produkts mindestens da sein sollen (1 bis 20); fällt der Vorrat durch «Verwertet» oder «Entsorgt» darunter, kommt das Produkt von selbst auf «Nachkaufen» (ADR-0059) | – |
