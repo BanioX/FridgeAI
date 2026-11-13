@@ -1,4 +1,4 @@
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Info } from 'lucide-react';
 import type { ReactNode } from 'react';
 import type { Retailer } from '@fridgeai/core';
 import { ShopBadge } from './ShopBadge';
@@ -22,6 +22,8 @@ interface ItemRowProps {
   badges?: ReactNode;
   /** Who it belongs to (initials circle) beside the name; none = everyone's. */
   owner?: ReactNode;
+  /** «Im Blick» (ADR-0073): a small silver (i) after the name; the text is for screen readers. */
+  attention?: string | undefined;
 }
 
 /** From this many characters on the expiry chip stands under the name, not beside it. */
@@ -42,6 +44,7 @@ export function ItemRow({
   shop,
   badges,
   owner,
+  attention,
 }: ItemRowProps) {
   const picture =
     image === undefined ? (
@@ -96,6 +99,12 @@ export function ItemRow({
         <div className={stacked ? 'w-full min-w-0' : 'min-w-0 flex-1 max-[359px]:w-full'}>
           <p className="flex items-center gap-1.5 font-semibold">
             <span className="truncate">{name}</span>
+            {attention === undefined ? null : (
+              <>
+                <Info size={14} aria-hidden="true" className="shrink-0 text-ink-muted/60" />
+                <span className="sr-only"> {attention}</span>
+              </>
+            )}
             {owner}
           </p>
           <p className="flex items-center gap-1.5 text-sm text-ink-muted">

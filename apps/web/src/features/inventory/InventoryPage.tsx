@@ -23,6 +23,7 @@ import { closedItemFrom } from './closed-item';
 import { factFor } from '../knowledge/food-facts';
 import { GROUPED_ROW_LINK, GroupedList, GroupedListItem } from '../../ui/GroupedList';
 import { InventoryItemRow } from './InventoryItemRow';
+import { useAttention } from './use-attention';
 import { useInventoryView } from './inventory-view';
 import { groupByKind } from './item-kinds';
 import { KindSection, KindTiles, ViewSwitch } from './KindView';
@@ -235,6 +236,7 @@ export function InventoryPage() {
   const selected: StorageLocation = parsed.success ? parsed.data : 'fridge';
 
   const swipe = useSwipeOutcome();
+  const attentionOf = useAttention();
   const selection = useSelection(selected);
   const mover = useMoveSelected();
   const settler = useSettleSelected();
@@ -362,7 +364,11 @@ export function InventoryPage() {
             describedBy={DRAG_HINT_ID}
             dragProps={drag.rowProps(item.id)}
           >
-            <InventoryItemRow item={item} status={status} />
+            <InventoryItemRow
+              item={item}
+              status={status}
+              attention={attentionOf(item).reasons.length > 0}
+            />
           </SelectableRow>
         </GroupedListItem>
       );
@@ -381,7 +387,13 @@ export function InventoryPage() {
                 aria-describedby={SWIPE_HINT_ID}
                 className={GROUPED_ROW_LINK}
               >
-                <InventoryItemRow chevron sliced={sliced} item={item} status={status} />
+                <InventoryItemRow
+                  chevron
+                  sliced={sliced}
+                  item={item}
+                  status={status}
+                  attention={attentionOf(item).reasons.length > 0}
+                />
               </Link>
             )}
           </SwipeAction>

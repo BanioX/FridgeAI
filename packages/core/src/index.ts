@@ -48,6 +48,7 @@ export * from './metrics';
 export * from './achievements';
 export * from './frequent-products';
 export * from './waste-habits';
+export * from './attention';
 export * from './shopping/parse-shopping-text';
 export * from './shopping/shopping-tips';
 export * from './shopping/restock-rhythm';

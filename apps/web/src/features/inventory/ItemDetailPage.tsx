@@ -23,6 +23,7 @@ import {
   ArrowLeft,
   ChefHat,
   ChevronRight,
+  Info,
   MapPin,
   PackageOpen,
   Pencil,
@@ -47,7 +48,9 @@ import { describeDate } from '../../ui/date-text';
 import { expiryBadge } from '../../ui/expiry-badge';
 import { parseAmount } from './add-item';
 import type { ClosedItem } from './closed-item';
+import { AttentionSheet } from './AttentionSheet';
 import { FROM_DETAIL } from './edit-state';
+import { useAttention } from './use-attention';
 import { useFreezeHint } from './FreezeHint';
 import { itemMeta } from './item-meta';
 import { formatPieces, formatQuantity } from '../../ui/quantity-text';
@@ -114,6 +117,8 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
   const [busy, setBusy] = useState(false);
   const freezeHint = useFreezeHint();
   const [choosingSpot, setChoosingSpot] = useState(false);
+  const [showingAttention, setShowingAttention] = useState(false);
+  const attentionOf = useAttention();
   const spots = useSpots();
 
   if (item === undefined) {
@@ -159,6 +164,7 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
   // Haltbarkeit 1 to 10 (ADR-0038): an open pack scores by its days after opening.
   const score = shelfScore(category, { opened: item.openedOn !== undefined });
   const pack = currentPack(item);
+  const attention = attentionOf(item);
   const level = perishabilityOf(score);
   // «Gerettet» only when it really was on the brink, never for thrown away food (ADR-0039).
   const rescuable = outcome !== 'wasted' && canBeRescued(item, today);
@@ -373,6 +379,14 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
           }}
         />
       ) : null}
+      {showingAttention ? (
+        <AttentionSheet
+          attention={attention}
+          onClose={() => {
+            setShowingAttention(false);
+          }}
+        />
+      ) : null}
       {back}
 
       <div className="flex items-center gap-4">
@@ -389,7 +403,22 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
         )}
         <div className="min-w-0 flex-1">
           {/* A long single word («Schokoladenmousse») must break, not widen the page (like L-23). */}
-          <h1 className="large-title break-words hyphens-calm">{item.name}</h1>
+          <div className="flex items-start gap-1">
+            <h1 className="large-title min-w-0 break-words hyphens-calm">{item.name}</h1>
+            {attention.reasons.length === 0 ? null : (
+              <button
+                type="button"
+                aria-label={messages.attention.open}
+                aria-haspopup="dialog"
+                onClick={() => {
+                  setShowingAttention(true);
+                }}
+                className="-my-2 inline-flex size-11 shrink-0 items-center justify-center rounded-full text-ink-muted hover:bg-surface-muted"
+              >
+                <Info size={20} aria-hidden="true" />
+              </button>
+            )}
+          </div>
           {item.brand === undefined && item.packSize === undefined ? null : (
             <p className="text-sm text-ink-muted">
               {[item.brand, item.packSize].filter((part) => part !== undefined).join(' · ')}
