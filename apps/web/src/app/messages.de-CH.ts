@@ -381,6 +381,8 @@ export const messages = {
     close: 'Schliessen',
     /** Hidden text of the small marker in the lists. */
     marker: 'Im Blick',
+    /** The circled i inside running text (`{i}`, `TextWithMarks`), for screen readers. */
+    mark: 'Info-Zeichen',
     reasons: {
       use_by: 'Verbrauchsdatum: danach nicht mehr verwenden.',
       perishable: 'Verdirbt schnell, offen hält es nur kurz.',
@@ -940,7 +942,7 @@ export const messages = {
       },
       {
         title: 'Im Blick',
-        text: 'Wenige Artikel tragen ein kleines (i): Sie sind teuer, laufen mit Verbrauchsdatum heute oder morgen ab, sind heikel und schon offen oder landeten bei dir öfter im Abfall. Auf der Artikelseite sagt dir das (i) warum, mit einem Tipp.',
+        text: 'Wenige Artikel tragen ein kleines {i}: Sie sind teuer, laufen mit Verbrauchsdatum heute oder morgen ab, sind heikel und schon offen oder landeten bei dir öfter im Abfall. Auf der Artikelseite sagt dir das {i} warum, mit einem Tipp.',
       },
       {
         title: 'Sicherung',

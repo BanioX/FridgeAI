@@ -10,6 +10,7 @@ import { CookToday, OwnRecipes } from '../recipes/RecipeIdeas';
 import { factFor } from './food-facts';
 import { describeDays, shelfGuide, type GuideEntry } from './shelf-guide';
 import { FoodIcon } from '../../ui/FoodIcon';
+import { TextWithMarks } from '../../ui/TextWithMarks';
 
 const t = messages.knowledge;
 const r = messages.recipes;
@@ -122,7 +123,9 @@ export function KnowledgePage() {
                     className="shrink-0 text-ink-muted transition-transform group-open:rotate-180"
                   />
                 </summary>
-                <p className="px-4 pb-4 text-ink-muted">{item.text}</p>
+                <p className="px-4 pb-4 text-ink-muted">
+                  <TextWithMarks text={item.text} />
+                </p>
               </details>
             </GroupedListItem>
           ))}
@@ -145,7 +148,9 @@ export function KnowledgePage() {
                     className="shrink-0 text-ink-muted transition-transform group-open:rotate-180"
                   />
                 </summary>
-                <p className="px-4 pb-4 text-ink-muted">{item.text}</p>
+                <p className="px-4 pb-4 text-ink-muted">
+                  <TextWithMarks text={item.text} />
+                </p>
               </details>
             </GroupedListItem>
           ))}
