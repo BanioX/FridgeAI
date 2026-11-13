@@ -2,7 +2,6 @@ import {
   categoryById,
   expiryStatus,
   FOOTPRINT_ATTRIBUTION,
-  fallbackCategory,
   formatSwissDate,
   rappen,
   type FootprintSummary,
@@ -25,7 +24,7 @@ import {
   card,
   chip,
   columns,
-  emoji,
+  foodPicture,
   ground,
   measure,
   PAGE,
@@ -69,7 +68,6 @@ const LOCATION_COLOR: Record<'fridge' | 'freezer' | 'pantry' | 'reserve', Rgb> =
 
 type Amount = (value: number, options?: { currency?: boolean }) => string;
 const kg = (grams: number) => `${(grams / 1000).toFixed(1)} kg`;
-const emojiOf = (categoryId: string) => (categoryById(categoryId) ?? fallbackCategory()).emoji;
 
 interface Context {
   doc: jsPDF;
@@ -83,7 +81,7 @@ interface Context {
 /**
  * The detailed report («Gesamtauszug») as an A4 PDF on the device (ADR-0030), in the design
  * language of the app: silver ground, white cards with a soft shadow, the large title, lists
- * like «Vorrat» with the food emoji and the same status chips. «Was auffällt», the months, what to
+ * like «Vorrat» with the food pictures and the same status chips. «Was auffällt», the months, what to
  * eat now, what is wasted and why, where the value and the money are, then everything in stock.
  * The short reports are receipts (`receipt-pdf.ts`); this one has none. jsPDF loads only now.
  */
@@ -339,7 +337,7 @@ function climate(ctx: Context, y: number): number {
     value: entry.co2eGrams,
     display: pdfSafe(text(co2e(entry.co2eGrams))),
     color: C.smaragd,
-    icon: emojiOf(entry.categoryId),
+    icon: entry.categoryId,
   }));
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
@@ -449,6 +447,7 @@ function climate(ctx: Context, y: number): number {
 }
 
 interface ListRow {
+  /** The category whose food picture opens the row. */
   icon: string;
   name: string;
   detail: string;
@@ -467,7 +466,7 @@ interface ListRow {
 const ROW = 13.5;
 
 /**
- * Rows like the app's item list: emoji, name, a grey detail line, the status chip and the value
+ * Rows like the app's item list: food picture, name, a grey detail line, the status chip and the value
  * on the right, hairlines inset under the text. Long lists continue on the next page.
  */
 function list({ doc, pictures }: Context, rows: readonly ListRow[], y: number): number {
@@ -481,11 +480,11 @@ function list({ doc, pictures }: Context, rows: readonly ListRow[], y: number): 
     chunk.forEach((row, position) => {
       const top = at + position * ROW;
       const middle = top + ROW / 2;
-      if (pictures.emoji === undefined) {
+      if (pictures.food === undefined) {
         doc.setFillColor(...C.oat);
         doc.circle(box.x + 9, middle, 3.4, 'F');
       } else {
-        emoji(doc, pictures, row.icon, { x: box.x + 9, y: middle }, 7);
+        foodPicture(doc, pictures, row.icon, { x: box.x + 9, y: middle }, 7);
       }
       const right = box.x + box.width - 6;
       const valueWidth =
@@ -585,7 +584,7 @@ function itemRow(report: Report, item: ReportItem, value?: string): ListRow {
   );
   const origin = item.origin === undefined ? undefined : messages.badges[item.origin];
   return {
-    icon: emojiOf(item.categoryId),
+    icon: item.categoryId,
     name: item.name,
     detail: [
       formatQuantity(item.quantity, item.unit),
@@ -623,7 +622,7 @@ function urgent(ctx: Context, y: number): number {
   );
 }
 
-/** Two cards: what lands in the bin (with the food emoji) and why. */
+/** Two cards: what lands in the bin (with the food picture) and why. */
 function waste(ctx: Context, y: number): number {
   const { doc, report, amount, pictures } = ctx;
   const byCategory: BarRow[] = report.impact.topWasted.slice(0, 5).map((entry) => ({
@@ -631,7 +630,7 @@ function waste(ctx: Context, y: number): number {
     value: entry.valueRappen,
     display: amount(entry.valueRappen),
     color: C.today,
-    icon: emojiOf(entry.categoryId),
+    icon: entry.categoryId,
   }));
   const reasons: BarRow[] = report.impact.reasons.slice(0, 5).map((entry) => ({
     label: messages.wasteReasons[entry.reason],

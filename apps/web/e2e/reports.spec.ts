@@ -44,6 +44,8 @@ test('creates a PDF report on the device, opens it in the app and shares it', as
   expect(pdf.subarray(0, 5).toString('latin1')).toBe('%PDF-');
   expect(pdf.toString('latin1')).toContain('Rettich');
   expect(pdf.length).toBeGreaterThan(2000);
+  // The food pictures of the app, drawn as opaque JPEGs (ADR-0080), not emojis.
+  expect(pdf.toString('latin1')).toContain('/DCTDecode');
   // Back like in a banking app: to the report choice.
   await page.getByRole('button', { name: 'Auszüge' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Auszüge' })).toBeVisible();
