@@ -84,3 +84,4 @@ Jeder Entscheid mit Folgen steht hier als eigene Datei `NNNN-titel.md` (ADR-0001
 | [0074](0074-calm-start.md) | Ruhiger Start | angenommen | 2026-11-13 |
 | [0075](0075-one-meaning-per-colour.md) | Eine Bedeutung pro Farbe | angenommen | 2026-11-13 |
 | [0076](0076-more-in-groups.md) | «Mehr» in drei Gruppen | angenommen | 2026-11-13 |
+| [0077](0077-three-search-hits.md) | Drei Suchtreffer zuerst | angenommen | 2026-11-13 |

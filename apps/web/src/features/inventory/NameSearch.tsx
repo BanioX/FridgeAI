@@ -16,6 +16,8 @@ const PAUSE_BEFORE_SEARCH_MS = 600;
 /** After a failed search (offline, more than 10 searches a minute) the app waits before asking again. */
 const WAIT_AFTER_FAILURE_MS = 30_000;
 const MIN_LETTERS_ONLINE = 3;
+/** At first only this many hits, own products first; the rest behind «Weitere Treffer» (ADR-0077). */
+export const FIRST_HITS = 3;
 const UNAVAILABLE: SearchResult = { products: [], openDatabase: 'unavailable' };
 
 /** «coop g» follows «coop»: earlier hits stay visible until the new ones arrive. */
@@ -23,7 +25,8 @@ const related = (a: string, b: string) =>
   a.toLowerCase().startsWith(b.toLowerCase()) || b.toLowerCase().startsWith(a.toLowerCase());
 
 /**
- * Product search under «Was ist es?» (ADR-0024, ADR-0025):
+ * Product search under «Was ist es?» (ADR-0024, ADR-0025), at first three hits so the date and
+ * «Speichern» stay near (ADR-0077):
  * - «Bereits verwendet»: products this household already entered, live from two letters, on the
  *   device only;
  * - «Gefundene Produkte»: Open Food Facts (Switzerland) from three letters, once typing pauses.
@@ -40,6 +43,8 @@ export function NameSearch({
   const [results, setResults] = useState<Readonly<Record<string, SearchResult>>>({});
   const [latest, setLatest] = useState<string | null>(null);
   const [retries, setRetries] = useState(0);
+  /** The query whose hits are all open; typing on closes them again. */
+  const [openFor, setOpenFor] = useState<string | null>(null);
   const waitUntil = useRef(0);
   const known = results[words];
 
@@ -94,6 +99,10 @@ export function NameSearch({
   const shown = known ?? (latest !== null && related(latest, words) ? results[latest] : undefined);
   const more = online ? (shown?.products.filter((product) => product.source === 'off') ?? []) : [];
   const ownCount = used?.length ?? 0;
+  const all = openFor === words;
+  const firstUsed = all ? (used ?? []) : (used ?? []).slice(0, FIRST_HITS);
+  const firstMore = all ? more : more.slice(0, Math.max(0, FIRST_HITS - firstUsed.length));
+  const hidden = ownCount + more.length - firstUsed.length - firstMore.length;
 
   function retry() {
     waitUntil.current = 0;
@@ -103,11 +112,22 @@ export function NameSearch({
 
   return (
     <div className="space-y-3 pt-1">
-      {used !== undefined && used.length > 0 ? (
-        <FoundSection id="used-title" title={t.used} products={used} onPick={onPick} />
+      {firstUsed.length > 0 ? (
+        <FoundSection id="used-title" title={t.used} products={firstUsed} onPick={onPick} />
       ) : null}
-      {more.length > 0 ? (
-        <FoundSection id="more-title" title={t.more} products={more} onPick={onPick} />
+      {firstMore.length > 0 ? (
+        <FoundSection id="more-title" title={t.more} products={firstMore} onPick={onPick} />
+      ) : null}
+      {hidden > 0 ? (
+        <Button
+          variant="ghost"
+          className="-ml-3"
+          onClick={() => {
+            setOpenFor(words);
+          }}
+        >
+          {t.showMore(hidden)}
+        </Button>
       ) : null}
       {online ? (
         <div className="flex flex-wrap items-center gap-x-3">

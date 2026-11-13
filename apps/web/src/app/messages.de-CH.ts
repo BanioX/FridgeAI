@@ -516,6 +516,8 @@ export const messages = {
       'Die Produktsuche ist gerade nicht erreichbar (offline oder zu viele Suchen). Erfasse es von Hand oder versuch es gleich nochmals.',
     retry: 'Nochmals suchen',
     attribution: 'Daten: Open Food Facts (Schweiz).',
+    /** Behind the first three hits (ADR-0077). */
+    showMore: (count: number) => `Weitere Treffer (${String(count)})`,
   },
   quickAdd: {
     title: 'Schnell erfassen',
