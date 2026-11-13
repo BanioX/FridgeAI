@@ -2,6 +2,14 @@ import { formatSwissDate, HouseholdExportSchema, type HouseholdExport } from '@f
 import { Download, ShieldCheck, Trash2, Upload } from 'lucide-react';
 import { useRef, useState, type ChangeEvent } from 'react';
 import { useAppData } from '../../app/AppData';
+import {
+  decryptBackup,
+  encryptBackup,
+  MIN_PASSWORD_LENGTH,
+  readEnvelope,
+  WrongPasswordError,
+  type EncryptedBackup,
+} from '../../app/backup-crypto';
 import { messages } from '../../app/messages.de-CH';
 import { BackLink } from '../../ui/BackLink';
 import { Button } from '../../ui/Button';
@@ -14,6 +22,8 @@ import {
 } from './backup-state';
 import { AppLockSection } from './AppLockSection';
 import { exportFileName, saveFile } from './export-files';
+import { PasswordField } from './PasswordField';
+import { UnlockBackup } from './UnlockBackup';
 
 const t = messages.household;
 
@@ -28,6 +38,9 @@ export function HouseholdPage() {
   const [confirming, setConfirming] = useState(false);
   const [busy, setBusy] = useState(false);
   const [pending, setPending] = useState<{ name: string; data: HouseholdExport } | null>(null);
+  const [locked, setLocked] = useState<{ name: string; envelope: EncryptedBackup } | null>(null);
+  const [protect, setProtect] = useState(false);
+  const [password, setPassword] = useState('');
   const [lastBackup, setLastBackup] = useState(readLastBackup);
   const fileInput = useRef<HTMLInputElement>(null);
 
@@ -49,8 +62,10 @@ export function HouseholdPage() {
   const exportJson = () =>
     run(async () => {
       const data = await household['household.export']({ householdId });
-      const name = exportFileName(today, 'json');
-      saveFile(name, 'application/json', `${JSON.stringify(data, null, 2)}\n`);
+      const text = `${JSON.stringify(data, null, 2)}\n`;
+      const name = exportFileName(today, 'json', protect ? t.protectedSuffix : undefined);
+      saveFile(name, 'application/json', protect ? await encryptBackup(text, password) : text);
+      setPassword('');
       writeLastBackup(today);
       setLastBackup(today);
       return t.exported(name);
@@ -64,11 +79,23 @@ export function HouseholdPage() {
       if (file === undefined) {
         return null;
       }
+      setPending(null);
+      setLocked(null);
       let json: unknown;
       try {
         json = JSON.parse(await file.text());
       } catch {
         return t.importInvalid;
+      }
+      const envelope = readEnvelope(json);
+      if (envelope === 'invalid') {
+        return t.importInvalid;
+      }
+      if (envelope !== 'plain') {
+        // A protected backup: the password comes first, then the usual confirmation.
+        setConfirming(false);
+        setLocked({ name: file.name, envelope });
+        return null;
       }
       const parsed = HouseholdExportSchema.safeParse(json);
       if (!parsed.success) {
@@ -78,6 +105,32 @@ export function HouseholdPage() {
       setPending({ name: file.name, data: parsed.data });
       return null;
     });
+
+  /** `false` = the password does not fit (the sheet stays open); everything else ends the step. */
+  async function unlock(password: string): Promise<boolean> {
+    if (locked === null) {
+      return true;
+    }
+    try {
+      const parsed = HouseholdExportSchema.safeParse(
+        JSON.parse(await decryptBackup(locked.envelope, password)),
+      );
+      setLocked(null);
+      if (parsed.success) {
+        setPending({ name: locked.name, data: parsed.data });
+      } else {
+        setStatus(t.importInvalid);
+      }
+      return true;
+    } catch (error) {
+      if (error instanceof WrongPasswordError) {
+        return false;
+      }
+      setLocked(null);
+      setStatus(t.importInvalid);
+      return true;
+    }
+  }
 
   const importAll = (data: HouseholdExport) =>
     run(async () => {
@@ -115,11 +168,32 @@ export function HouseholdPage() {
           {t.data}
         </h2>
         <p className="text-ink-muted">{t.dataText}</p>
+        <label className="flex min-h-11 cursor-pointer items-center gap-3 font-semibold">
+          <input
+            type="checkbox"
+            checked={protect}
+            onChange={(event) => {
+              setProtect(event.target.checked);
+              setPassword('');
+            }}
+            className="size-6 shrink-0 accent-basil-700"
+          />
+          {t.protect}
+        </label>
+        {protect ? (
+          <PasswordField
+            label={t.password}
+            value={password}
+            onChange={setPassword}
+            autoComplete="new-password"
+            hint={`${t.passwordMin(MIN_PASSWORD_LENGTH)} ${t.protectHint}`}
+          />
+        ) : null}
         <Button
           variant="secondary"
           icon={Download}
           fullWidth
-          disabled={busy}
+          disabled={busy || (protect && password.normalize('NFC').length < MIN_PASSWORD_LENGTH)}
           onClick={() => void exportJson()}
         >
           {t.exportJson}
@@ -136,7 +210,16 @@ export function HouseholdPage() {
           tabIndex={-1}
           onChange={(event) => void chooseFile(event)}
         />
-        {pending === null ? (
+        {locked !== null ? (
+          <UnlockBackup
+            key={locked.name}
+            fileName={locked.name}
+            onUnlock={unlock}
+            onCancel={() => {
+              setLocked(null);
+            }}
+          />
+        ) : pending === null ? (
           <Button
             variant="secondary"
             icon={Upload}

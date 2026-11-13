@@ -11,7 +11,7 @@ Für den Fall, dass nach einem Update etwas nicht stimmt. Erst die App und die D
 
 ## 2. Daten sehen falsch aus oder fehlen
 
-1. **Zuerst sichern:** «Mehr» → «Mitnehmen und löschen» → «Alles exportieren (JSON)». So bleibt erhalten, was noch da ist.
+1. **Zuerst sichern:** «Mehr» → «Mitnehmen und löschen» → «Alles exportieren (JSON)». So bleibt erhalten, was noch da ist. Mit «Mit Passwort schützen» wird die Datei verschlüsselt; ohne das Passwort lässt sie sich nie mehr öffnen, es gibt keine Rettung (ADR-0087).
 2. **Nicht** «Alles löschen» tippen.
 3. Ein Rollback dreht **nur den Code** zurück, nicht die Daten: Die alte Version liest danach dieselbe Datenbank auf dem Gerät. Hat ein Update Daten verändert, hilft die letzte Sicherung: «Daten importieren (JSON)» ersetzt alles auf dem Gerät durch die Sicherung.
 4. Die Sicherung nicht weitergeben und nicht ins Repo legen: Sie enthält Einkäufe und Namen.

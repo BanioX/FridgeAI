@@ -94,4 +94,5 @@ Jeder Entscheid mit Folgen steht hier als eigene Datei `NNNN-titel.md` (ADR-0001
 | [0084](0084-rescue-ritual.md) | Retten als Ritual auf Start | angenommen | 2026-11-13 |
 | [0085](0085-package-cooldown.md) | Neue Pakete erst nach drei Tagen | angenommen | 2026-11-13 |
 | [0086](0086-app-lock.md) | Optionale App-Sperre mit Face ID, nur auf dem Gerät | angenommen | 2026-11-13 |
+| [0087](0087-encrypted-backup.md) | Sicherung mit Passwort verschlüsseln; security.txt | angenommen | 2026-11-13 |
 | [0088](0088-page-transitions.md) | Seitenübergänge wie auf dem iPhone | angenommen | 2026-11-13 |
