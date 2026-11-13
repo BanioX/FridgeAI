@@ -10,6 +10,7 @@ export type ContractVersion = typeof CONTRACT_VERSION;
 
 export * from './catalog/categories';
 export * from './catalog/category';
+export * from './calendar';
 export * from './dates';
 export * from './expiry';
 export * from './expiry-from-text';
@@ -66,3 +67,4 @@ export * from './reports/report';
 export * from './impact/footprints';
 export * from './impact/category-footprint';
 export * from './impact/footprint';
+export * from './week-review';

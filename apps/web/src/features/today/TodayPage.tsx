@@ -30,6 +30,7 @@ import { ClimateCard } from '../climate/ClimateCard';
 import { checkDue, readLastCheck } from '../check/check-state';
 import { backupDue, readLastBackup } from '../household/backup-state';
 import { ImpactCard } from './ImpactCard';
+import { WeekReview } from './WeekReview';
 import { LocationTiles } from './LocationTiles';
 import { locationCounts } from './location-counts';
 import { ImpactSince } from './ImpactSince';
@@ -223,6 +224,7 @@ export function TodayPage() {
 
       {all.length > 0 ? <LocationTiles counts={locationCounts(all, urgent)} /> : null}
 
+      <WeekReview />
       <ImpactCard from={startOfMonth(today)} to={today} />
       <ImpactSince />
       <ClimateCard />

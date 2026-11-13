@@ -28,6 +28,7 @@ Prüfung aller Funktionen aus ADR-0048 bis ADR-0066 und der Funktionen ohne eige
 | Rezepte, eigene Rezepte (0048) | – | – | über «Verarbeiten» | – | ja | – | ja | ja | nein (K12) | ja |
 | Verarbeiten, Reste (0052) | ja, «etwa» (K4) | ja, Badge (K4) | ja | ja, zählt einmal (K2) | ja | ja | ja | ja | ja | ja |
 | Abzeichen (0054) | ja | – | – | – | ja | nein (K7) | ja | ja | – | – |
+| Deine Woche, Kalender-Erinnerung (0090) | ja, Mo bis Mi | – | ja, «Im Kalender erinnern» | Link aus der Karte | dieselben Zahlen | – (Rückblick, kein Auszug) | – (nichts gespeichert) | – | – | – |
 | Töpfe (0055) | – | ja | – | ja | – | – | – | ja | – | – |
 | Plätze, «Wo ist was?» (0056) | ja | ja | ja | – | ja | ja | ja | ja | ja (Fachnamen) | – |
 | Klimabilanz (0057) | ja | – | – | – | ja | ja (K1) | ja | ja | – | – |

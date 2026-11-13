@@ -6,6 +6,8 @@ Damit Mensch und Maschine dasselbe meinen: Wort in der App (de-CH), Name im Code
 
 | App (de-CH) | Code | Bedeutung | Andere Regionen |
 | --- | --- | --- | --- |
+| **Deine Woche** (13.11.2026) | `WeekReview`, `previousWeek`, `fridgeai:week-review-seen` | Rückblick auf Start von Montag bis Mittwoch: Verwertet und Entsorgt der Kalenderwoche davor (ADR-0090) | – |
+| **Im Kalender erinnern** (13.11.2026) | `CalendarReminder`, `calendarReminderFile` | Kalenderdatei mit einem Termin am Abend vor dem Datum um 18 Uhr, auf dem Gerät erstellt (ADR-0090) | – |
 | **App-Sperre** (13.11.2026) | `AppLockProvider`, `DeviceUnlock`, `fridgeai:app-lock` | Freiwillige Sperre: Rettich öffnet erst nach Face ID, Touch ID oder Gerätecode (WebAuthn, Plattform-Authenticator). Nur auf dem Gerät, ohne Server; Einstellung im localStorage, nicht im Export; verschlüsselt die Daten nicht (ADR-0086) | en: app lock |
 | **Sicherung mit Passwort** («Mit Passwort schützen», 13.11.2026) | `encryptBackup`, `decryptBackup`, `rettich-encrypted`, Dateiname `…-geschuetzt.json` | Der Gesamt-Export, mit einem Passwort auf dem Gerät verschlüsselt (AES-GCM, Schlüssel per PBKDF2); ohne das Passwort nicht zu öffnen, nicht wiederherstellbar (ADR-0087) | – |
 | **Geschätzte Nährwerte** (12.11.2026) | `freshNutrition`, `nutrition.source: 'blv'`, `nutritionFood` | Durchschnittswerte der Schweizer Nährwertdatenbank (BLV) für unverarbeitete Frischware ohne Barcode («Thunfischsteak», «Äpfel»); berechnet, nie gespeichert, als «geschätzt» beschriftet; eigene Werte gewinnen (ADR-0064) | – |
