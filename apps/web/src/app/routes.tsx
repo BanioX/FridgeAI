@@ -153,6 +153,12 @@ export const routes: RouteObject[] = [
         }),
       },
       {
+        path: 'more/vacation',
+        lazy: async () => ({
+          Component: (await import('../features/vacation/VacationPage')).VacationPage,
+        }),
+      },
+      {
         path: 'more/spots',
         lazy: async () => ({
           Component: (await import('../features/spots/SpotsPage')).SpotsPage,
