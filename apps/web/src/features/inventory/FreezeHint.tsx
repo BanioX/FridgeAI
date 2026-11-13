@@ -3,6 +3,7 @@ import { Snowflake } from 'lucide-react';
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { messages } from '../../app/messages.de-CH';
 import { Button } from '../../ui/Button';
+import { createPortal } from 'react-dom';
 
 type Named = FreezeCandidate & { name: string };
 
@@ -77,7 +78,8 @@ export function useFreezeHint(): {
 function FreezeHintSheet({ pending }: { pending: Pending }) {
   const t = messages.freezeHint;
   const { suitable, unsuitable } = pending.advice;
-  return (
+  // On the body, so the tab bar does not cover the bottom of the sheet (ADR-0082).
+  return createPortal(
     <div className="fixed inset-0 z-40 flex items-end justify-center bg-onyx/40">
       <div
         role="alertdialog"
@@ -124,6 +126,7 @@ function FreezeHintSheet({ pending }: { pending: Pending }) {
           </Button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

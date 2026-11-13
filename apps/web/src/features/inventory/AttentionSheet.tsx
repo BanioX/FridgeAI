@@ -3,6 +3,7 @@ import { CalendarClock, Coins, Hourglass, Repeat, type LucideIcon } from 'lucide
 import { useEffect, useRef, type KeyboardEvent } from 'react';
 import { messages } from '../../app/messages.de-CH';
 import { useMoney } from '../../app/money';
+import { createPortal } from 'react-dom';
 
 const t = messages.attention;
 
@@ -70,7 +71,8 @@ export function AttentionSheet({
         ? t.tipFreeze
         : attention.tip.text;
 
-  return (
+  // On the body, so the tab bar does not cover the bottom of the sheet (ADR-0082).
+  return createPortal(
     <div className="fixed inset-0 z-40 flex items-end justify-center bg-onyx/40">
       <div
         ref={dialog}
@@ -106,6 +108,7 @@ export function AttentionSheet({
         </ul>
         {tip === undefined ? null : <p className="text-sm text-ink-muted">{tip}</p>}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

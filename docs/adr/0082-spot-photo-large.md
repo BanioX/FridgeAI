@@ -19,4 +19,4 @@ Ein Platz mit Foto (ADR-0056) zeigte sein Foto auf der Artikelseite und im Fenst
 ## Folgen
 
 - Das Foto ist ohne Geheimgeste erreichbar, auch mit Tastatur und Screenreader («Foto «Oben» gross anzeigen»).
-- Die übrigen Fenster (Einfrieren, Ändern, Töpfe, Packung, «Im Blick») liegen noch unter der Tab-Leiste; sie bekommen das Portal in einem eigenen Schritt.
+- Alle Fenster, die von unten kommen (Einfrieren, Ändern, Töpfe, Packung, «Im Blick»), liegen ebenfalls direkt im `body` und damit über der Tab-Leiste.
