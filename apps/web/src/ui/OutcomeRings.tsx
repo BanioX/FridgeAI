@@ -20,7 +20,8 @@ interface Ring {
 
 function OneRing({ label, share, value, detail, tone, to }: Ring) {
   const percent = Math.round(share * 100);
-  const stroke = tone === 'onyx' ? 'var(--color-onyx)' : 'var(--color-danger)';
+  // Onyx is the text colour: near black by day, light at night (ADR-0081).
+  const stroke = tone === 'onyx' ? 'var(--color-ink)' : 'var(--color-danger)';
   const ring = (
     <div
       role="img"
