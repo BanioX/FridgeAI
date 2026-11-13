@@ -1,8 +1,10 @@
 import { BookOpen, CircleEllipsis, House, Plus, Refrigerator, type LucideIcon } from 'lucide-react';
+import { useRef } from 'react';
 import { Link, Outlet, useLocation } from 'react-router';
 import { AchievementToast } from '../features/achievements/AchievementToast';
 import { useAppBadge } from './app-badge';
 import { messages } from './messages.de-CH';
+import { useEdgeSwipeBack } from './use-edge-swipe-back';
 
 interface NavItem {
   to: string;
@@ -40,6 +42,8 @@ function activeTab(path: string): string | undefined {
 export function AppShell() {
   const current = activeTab(useLocation().pathname);
   useAppBadge();
+  const page = useRef<HTMLElement>(null);
+  useEdgeSwipeBack(page);
   return (
     <div className="min-h-dvh">
       {/* No brand bar: as on iOS, the large title leads each page (ADR-0021). Content scrolls
@@ -49,7 +53,7 @@ export function AppShell() {
         className="sticky top-0 z-10 h-[env(safe-area-inset-top)] bg-oat/80 backdrop-blur [view-transition-name:status-strip]"
       />
 
-      <main className="mx-auto max-w-xl px-4 pt-5 pb-32">
+      <main ref={page} className="mx-auto max-w-xl px-4 pt-5 pb-32">
         <Outlet />
       </main>
 

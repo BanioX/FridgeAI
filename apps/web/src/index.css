@@ -277,6 +277,15 @@ html[data-transition='back']::view-transition-old(root) {
 html[data-transition='back']::view-transition-new(root) {
   animation-name: page-in-left;
 }
+/* After a swipe from the edge the old page is already gone; the page behind only slides in. */
+html[data-transition='swipe']::view-transition-old(root) {
+  animation: none;
+  opacity: 0;
+}
+html[data-transition='swipe']::view-transition-new(root) {
+  animation-name: page-in-left;
+  mix-blend-mode: normal;
+}
 html[data-transition='tab']::view-transition-old(root),
 html[data-transition='tab']::view-transition-new(root) {
   animation-duration: 160ms;
