@@ -6,7 +6,7 @@ import {
   ProductSchema,
   type Id,
 } from '@fridgeai/core';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -85,7 +85,10 @@ describe('RestockSuggestions on the shopping page (ADR-0070)', () => {
     await userEvent.click(screen.getByRole('button', { name: t.addLabel('Vollmilch') }));
 
     expect(await screen.findByRole('checkbox', { name: /Vollmilch/ })).toBeDefined();
-    expect(screen.queryByRole('heading', { name: t.title })).toBeNull();
+    // The list and the suggestions are two live queries: the card goes once its own query re-ran.
+    await waitFor(() => {
+      expect(screen.queryByRole('heading', { name: t.title })).toBeNull();
+    });
   });
 
   it('shows no card when nothing is due or the history is too short', async () => {
