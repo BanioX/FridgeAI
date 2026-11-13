@@ -1509,6 +1509,8 @@ export const messages = {
     },
   },
   addHub: {
+    batchTitle: 'Mehrere auf einmal',
+    batch: 'Ein Satz, mehrere Artikel',
     receipt: 'Alle Einkäufe auf einmal: PDF, Screenshot oder Foto der Quittung',
     barcode: 'Packung vor die Kamera halten',
     leftoversTitle: 'Reste erfassen',
@@ -1654,6 +1656,20 @@ export const messages = {
       'Produkt noch unbekannt: Gib den Namen ein. Beim nächsten Scan kennt Rettich es.',
     attribution: 'Daten: Open Food Facts (ODbL)',
     foundWithDate: (code: string, date: string) => `Barcode ${code} erkannt, haltbar bis ${date}.`,
+  },
+  batchAdd: {
+    title: 'Mehrere auf einmal',
+    what: 'Was hast du eingekauft?',
+    placeholder: '3 Äpfel, Salat, 500 g Rüebli, Milch',
+    hint: 'Schreib oder sprich einen Satz, das Mikrofon deiner Tastatur funktioniert auch. Rettich schätzt Ort und Datum, du prüfst die Liste unten.',
+    previewTitle: 'Das legt Rettich an',
+    empty: 'Sobald du schreibst, erscheint hier die Liste.',
+    remove: 'Entfernen',
+    removeNamed: (name: string) => `${name} entfernen`,
+    expires: (date: string) => `bis ca. ${date}`,
+    submit: (count: number) =>
+      count === 1 ? '1 Artikel in den Vorrat' : `${count} Artikel in den Vorrat`,
+    failed: 'Das hat nicht geklappt. Dein Text ist noch da, versuch es bitte nochmals.',
   },
   notFound: {
     title: 'Seite nicht gefunden',
