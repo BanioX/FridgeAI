@@ -2,6 +2,24 @@
 
 Alle Änderungen an Rettich (bis 7.11.2026 FridgeAI), neueste zuerst. Wird mit `pnpm release` erzeugt (ADR-0017).
 
+## [0.18.0] – 2026-11-13
+
+### Neu
+
+- Nachkaufen in blocks like a walk through the shop ([#297](https://github.com/BanioX/FridgeAI/pull/297))
+- a quiet (i) for articles that deserve attention ([#296](https://github.com/BanioX/FridgeAI/pull/296))
+- add several articles from one sentence ([#295](https://github.com/BanioX/FridgeAI/pull/295))
+- Ferien-Check shows what expires before you are back ([#294](https://github.com/BanioX/FridgeAI/pull/294))
+- suggest what is due again from the household's own rhythm ([#293](https://github.com/BanioX/FridgeAI/pull/293))
+- «Foto aufnehmen» reads a receipt or a pack label ([#292](https://github.com/BanioX/FridgeAI/pull/292))
+- read name words, amount, date and category from a pack label ([#291](https://github.com/BanioX/FridgeAI/pull/291))
+- barcode and receipt photo straight from Start ([#290](https://github.com/BanioX/FridgeAI/pull/290))
+- sort the Vorrat by kind with tiles and blocks ([#288](https://github.com/BanioX/FridgeAI/pull/288))
+
+### Behoben
+
+- gelato is ice cream, sandwich toast is bread ([#289](https://github.com/BanioX/FridgeAI/pull/289))
+
 ## [0.17.0] – 2026-11-12
 
 ### Neu
