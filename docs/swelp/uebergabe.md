@@ -1,6 +1,6 @@
 # Übergabe: wo die Arbeit steht
 
-Für die nächste Sitzung (Mensch oder KI). Claude führt diese Datei am Ende jeder längeren Sitzung nach. Sie ersetzt keine Register, sie zeigt nur den Faden. Stand: 13.11.2026. Version 0.18.0 ist die letzte veröffentlichte ([CHANGELOG](../../CHANGELOG.md)).
+Für die nächste Sitzung (Mensch oder KI). Claude führt diese Datei am Ende jeder längeren Sitzung nach. Sie ersetzt keine Register, sie zeigt nur den Faden. Stand: 13.11.2026. Version 0.19.0 ist die letzte veröffentlichte ([CHANGELOG](../../CHANGELOG.md)).
 
 ## Stand
 
@@ -25,3 +25,4 @@ Steht nicht in diesem Repo. Ideen, Reihenfolge und offene Fragen an Alban liegen
 - E2E nie parallel auf demselben Port; Vorschaubilder mit `pnpm preview:shots`.
 - Ein PR, ein Thema; Matrix in `flaechen.md` im selben PR nachführen (L-29).
 - Katalog wöchentlich auffrischen (`pnpm catalog:refresh`, ADR-0045).
+- Ein roter Vorschau-Build bei Cloudflare mit «An unknown error has occurred» nach erfolgreichem Bauen: einmal «Retry build», dann erst den Code verdächtigen (L-34).
