@@ -48,8 +48,11 @@ const KEYWORDS = {
   // Before the total only; payment and VAT lines after it are never read as items.
   payment:
     /\b(bezahlt|zahlung|kartenzahlung|mastercard|visa|maestro|twint|postfinance|rueckgeld)\b/,
+  // «Cumulus Bon» is a real voucher and counts; other Cumulus lines are points, never money.
   other:
-    /\b(mwst|mehrwertsteuer|tva|superpunkte|cumulus|sie sparen|gespart|ersparnis|preisvorteil)\b/,
+    /\b(mwst|mehrwertsteuer|tva|superpunkte|cumulus(?! bons?\b)|sie sparen|gespart|ersparnis|preisvorteil)\b/,
+  /** Bonus points with a number that looks like an amount: «+3xPkt.Ges.Sort. 291.81». */
+  points: /^\d+ ?x ?pkt\b|\bpunkte\b/,
   deposit: /\b(pfand|depot|consigne|mehrweg)\b/,
   rounding: /^(rundung|rundungsdifferenz|rappenrundung)\b/,
   bag: /\b(tragtaschen?|tragetaschen?|einkaufstaschen?|papiertaschen?|papiertragtaschen?|papiersack|plastiksack|tragsack|tuete)\b/,
@@ -583,6 +586,35 @@ function resolveLookalikes(
   }
 }
 
+/**
+ * «Rabatt Bonne Maman -2.10» at the end of a Coop receipt belongs to the articles of that name: it
+ * is shared out by their prices, so each keeps its real price. Without such articles it stays a
+ * discount for the whole receipt.
+ */
+function spreadNamedDiscount(
+  lines: readonly ParsedReceiptLine[],
+  words: string,
+  amount: Rappen,
+): boolean {
+  const target = words.replace(/^(rabatt|aktion|reduktion)\s+/, '');
+  if (target === words || target.length < 3) {
+    return false;
+  }
+  const items = lines.filter((line) => line.kind === 'item' && plain(line.name).startsWith(target));
+  const total = items.reduce((sum, line) => sum + line.priceRappen, 0);
+  if (items.length === 0 || total <= 0) {
+    return false;
+  }
+  let left: number = amount;
+  items.forEach((line, index) => {
+    const share =
+      index === items.length - 1 ? left : Math.round((amount * line.priceRappen) / total);
+    left -= share;
+    line.discountRappen = rappen(line.discountRappen + share);
+  });
+  return true;
+}
+
 /** Lidl's VAT group «B» read as «8». */
 function rateOf(rates: ReadonlyMap<string, number>, code: string | undefined) {
   return code === undefined
@@ -637,7 +669,7 @@ export function parseReceiptText(text: string, options: { fromPdf?: boolean } = 
       lastItem = null;
       continue;
     }
-    if (KEYWORDS.payment.test(words) || KEYWORDS.other.test(words)) {
+    if (KEYWORDS.payment.test(words) || KEYWORDS.other.test(words) || KEYWORDS.points.test(words)) {
       continue;
     }
     if (KEYWORDS.rounding.test(words)) {
@@ -665,6 +697,9 @@ export function parseReceiptText(text: string, options: { fromPdf?: boolean } = 
       if (lastItem !== null && !afterSubtotal && !KEYWORDS.wideDiscount.test(words)) {
         const discount = plausibleDiscount(price, lastItem);
         lastItem.discountRappen = rappen(lastItem.discountRappen + discount);
+        continue;
+      }
+      if (!afterSubtotal && spreadNamedDiscount(lines, words, price)) {
         continue;
       }
       const zero = rappen(0);
