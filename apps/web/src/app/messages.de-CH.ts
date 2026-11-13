@@ -1066,6 +1066,8 @@ export const messages = {
     empty: 'Noch kein Abzeichen. Das erste kommt mit deiner ersten Rettung.',
   },
   more: {
+    /** The three groups of «Mehr» (ADR-0076). */
+    groups: { daily: 'Im Alltag', balance: 'Bilanz', household: 'Haushalt' },
     install: 'Rettich als App',
     installIos:
       'In Safari unten auf «Teilen» tippen, dann «Zum Home-Bildschirm». Danach startet Rettich wie eine App, auch offline.',
