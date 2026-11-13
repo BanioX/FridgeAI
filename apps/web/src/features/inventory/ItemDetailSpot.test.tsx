@@ -83,4 +83,44 @@ describe('ItemDetailPage «Platz» (ADR-0056)', () => {
     expect(await within(sheet).findByText('Gemüsefach')).toBeDefined();
     expect(within(sheet).queryByText('Oberer Schrank links')).toBeNull();
   });
+
+  it('shows the photo of the current spot large in the sheet, full screen on a tap', async () => {
+    const db = await renderDetail('Joghurt', 'fridge');
+    const [household] = await db.households.toArray();
+    const [member] = await db.members.toArray();
+    const [item] = await db.items.toArray();
+    if (household === undefined || member === undefined || item === undefined) {
+      throw new Error('No household');
+    }
+    const handlers = createInventoryHandlers({
+      db,
+      clock: browserClock,
+      ids: browserIds,
+      actor: member.id,
+    });
+    const { spotId } = await handlers['spots.create']({
+      commandId: browserIds.next(),
+      householdId: household.id,
+      name: 'Oben',
+      location: 'fridge',
+      photo: 'data:image/jpeg;base64,AAAA',
+    });
+    await handlers['products.setSpot']({
+      commandId: browserIds.next(),
+      householdId: household.id,
+      productId: item.productId,
+      spotId,
+    });
+    fireEvent.click(await screen.findByRole('button', { name: /Oben/ }));
+    const sheet = await screen.findByRole('dialog', { name: t.sheetTitle });
+    fireEvent.click(
+      await within(sheet).findByRole('button', { name: messages.photoViewer.open('Oben') }),
+    );
+    const viewer = screen.getByRole('dialog', { name: 'Oben' });
+    expect(viewer.querySelector('img')?.getAttribute('src')).toBe('data:image/jpeg;base64,AAAA');
+    // Escape closes the photo first; the sheet stays open.
+    fireEvent.keyDown(viewer, { key: 'Escape' });
+    expect(screen.queryByRole('dialog', { name: 'Oben' })).toBeNull();
+    expect(screen.getByRole('dialog', { name: t.sheetTitle })).toBeDefined();
+  });
 });

@@ -65,7 +65,13 @@ test('keeps where the sugar lies: spot with photo, in the row, searchable, with 
   // The spot's own page shows the large photo and what lies there now.
   await page.getByRole('link', { name: /Oberer Schrank links.*1 Artikel/ }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Oberer Schrank links' })).toBeVisible();
-  await expect(page.getByRole('img', { name: 'Oberer Schrank links' })).toBeVisible();
+  // A tap shows the photo over the whole screen (ADR-0082); «Schliessen» brings the page back.
+  await page.getByRole('button', { name: 'Foto «Oberer Schrank links» gross anzeigen' }).click();
+  const viewer = page.getByRole('dialog', { name: 'Oberer Schrank links' });
+  await expect(viewer.getByRole('img', { name: 'Oberer Schrank links' })).toBeVisible();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await viewer.getByRole('button', { name: 'Schliessen' }).click();
+  await expect(viewer).toHaveCount(0);
   await expect(page.getByRole('link', { name: /Kristallzucker/ })).toBeVisible();
 
   const width = await page.evaluate(() => document.documentElement.scrollWidth);

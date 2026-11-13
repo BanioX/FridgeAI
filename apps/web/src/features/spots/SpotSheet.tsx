@@ -1,9 +1,11 @@
 import type { InventoryItemView } from '@fridgeai/core';
 import { Check, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
 import { Button } from '../../ui/Button';
+import { ZoomablePhoto } from '../../ui/PhotoViewer';
 import { shelfSuggestions } from './fridge-shelves';
 import { PhotoPicker } from './PhotoPicker';
 import { SpotThumb } from './SpotThumb';
@@ -44,6 +46,7 @@ export function SpotSheet({
   }, [onDone]);
 
   const here = (spots ?? []).filter((spot) => spot.location === item.location);
+  const currentPhoto = (spots ?? []).find((spot) => spot.id === item.spot?.id)?.photo;
   // In the fridge: the usual compartments as one-tap spots, the one that suits this food first.
   const shelves =
     item.location === 'fridge' && spots !== undefined
@@ -108,7 +111,8 @@ export function SpotSheet({
       return t.saved(item.name, spotName);
     });
 
-  return (
+  // On the body, so the tab bar does not cover the bottom of the sheet.
+  return createPortal(
     <div className="fixed inset-0 z-40 flex items-end justify-center bg-onyx/40">
       <div
         role="dialog"
@@ -124,6 +128,15 @@ export function SpotSheet({
             {t.sheetFor(item.name, messages.locations[item.location])}
           </p>
         </div>
+
+        {/* The current spot's photo, large and in the middle: a tap shows it full screen (ADR-0082). */}
+        {!creating && currentPhoto !== undefined && item.spot !== null ? (
+          <ZoomablePhoto
+            src={currentPhoto}
+            title={item.spot.name}
+            className="mx-auto aspect-[4/3] max-h-[40dvh]"
+          />
+        ) : null}
 
         {creating ? (
           <form
@@ -285,6 +298,7 @@ export function SpotSheet({
           {failed ? t.failed : null}
         </p>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
