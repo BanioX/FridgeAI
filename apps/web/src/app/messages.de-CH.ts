@@ -1336,6 +1336,21 @@ export const messages = {
       failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
     },
   },
+  /** The one question after a week (ADR-0089). */
+  feedback: {
+    title: 'Eine Frage',
+    question: 'Was hat dich diese Woche an Rettich gestört?',
+    count: (length: number, max: number) => `${String(length)} von ${String(max)} Zeichen`,
+    save: 'Antwort speichern',
+    later: 'Später',
+    never: 'Nicht mehr fragen',
+    thanks:
+      'Danke. Deine Antwort bleibt auf diesem Gerät. Sie kommt nur mit, wenn du deine Daten exportierst.',
+    listTitle: 'Deine Rückmeldungen',
+    listText: 'Deine Antworten auf die Frage nach einer Woche. Sie kommen nur mit dem Export mit.',
+    remove: (date: string) => `Antwort vom ${date} löschen`,
+    removed: 'Antwort gelöscht.',
+  },
   household: {
     data: 'Mitnehmen und löschen',
     dataText:
@@ -1380,6 +1395,7 @@ export const messages = {
       'Fotos von Quittungen, Codes und Datumsangaben werden nur auf dem Gerät gelesen, nie gespeichert.',
       'Fotos von Plätzen («Wo ist was?») bleiben auf diesem Gerät und gehören zu deinem Export.',
       'Die Namen der Personen im Haushalt bleiben ebenfalls auf diesem Gerät.',
+      'Deine Antworten auf die Frage nach einer Woche bleiben auf diesem Gerät und kommen nur mit, wenn du exportierst.',
       'Kein Konto, kein Tracking, keine Werbung.',
     ],
   },

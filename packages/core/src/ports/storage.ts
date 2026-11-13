@@ -16,6 +16,7 @@ import type {
   ShoppingListItem,
   StorageSpot,
 } from '../model/inventory';
+import type { Feedback } from '../model/feedback';
 import type { Receipt, ReceiptLine } from '../model/receipt';
 import type { OwnRecipe } from '../recipes/own-recipe';
 import type { IsoDateTime } from '../model/primitives';
@@ -85,6 +86,8 @@ export interface Storage extends DeviceCaches {
   ownRecipes: RecordStore<OwnRecipe>;
   /** «Wo ist was?» (ADR-0056): named places with an optional photo. */
   spots: RecordStore<StorageSpot>;
+  /** Answers to the one question (ADR-0089). */
+  feedback: RecordStore<Feedback>;
   events: EventLog;
   commands: CommandLog;
   /**

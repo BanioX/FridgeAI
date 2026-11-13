@@ -27,6 +27,7 @@ export function createHouseholdUseCases(ctx: AppContext) {
         receiptLines,
         ownRecipes,
         spots,
+        feedback,
         events,
       ] = await Promise.all([
         storage.members.ofHousehold(id),
@@ -38,6 +39,7 @@ export function createHouseholdUseCases(ctx: AppContext) {
         storage.receiptLines.ofHousehold(id),
         storage.ownRecipes.ofHousehold(id),
         storage.spots.ofHousehold(id),
+        storage.feedback.ofHousehold(id),
         storage.events.ofHousehold(id),
       ]);
       return CONTRACT_V1['household.export'].output.parse({
@@ -54,6 +56,7 @@ export function createHouseholdUseCases(ctx: AppContext) {
         receiptLines,
         ownRecipes,
         spots,
+        feedback,
         events,
       });
     });

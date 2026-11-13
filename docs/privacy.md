@@ -27,6 +27,7 @@ Alles liegt im Speicher deines Browsers auf diesem Gerät (IndexedDB). Ohne dein
 | Produkte, die du schon erfasst hast, und «Schnell erfassen» | Damit der nächste Scan oder Tipp schneller geht |
 | Antworten von Open Food Facts und Packungsbilder | Damit derselbe Barcode auch offline erkannt wird (30 Tage) |
 | Der mitgelieferte Produktkatalog (rund 7'000 Schweizer Produkte, Datei der App, im Cache des Browsers) | Damit Quittungszeilen auf dem Gerät erkannt werden, auch offline. Er enthält keine Daten von dir |
+| Deine Antworten auf die Frage nach einer Woche: nur Text und Zeitpunkt; gelöscht ohne Text | Damit du und Alban im Pilot lernen, was stört; sie verlassen das Gerät nur mit deinem Export (ADR-0089) |
 | Verlauf der Änderungen (Ereignisse) | Rückgängig, Export, später der Abgleich zwischen Geräten |
 
 Zusätzlich merkt sich der Browser zwei Kleinigkeiten ohne Personenbezug:

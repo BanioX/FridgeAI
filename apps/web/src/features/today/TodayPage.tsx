@@ -29,6 +29,7 @@ import { RecentAchievements } from '../achievements/RecentAchievements';
 import { ClimateCard } from '../climate/ClimateCard';
 import { checkDue, readLastCheck } from '../check/check-state';
 import { backupDue, readLastBackup } from '../household/backup-state';
+import { FeedbackQuestion } from './FeedbackQuestion';
 import { ImpactCard } from './ImpactCard';
 import { WeekReview } from './WeekReview';
 import { LocationTiles } from './LocationTiles';
@@ -228,6 +229,7 @@ export function TodayPage() {
       <ImpactCard from={startOfMonth(today)} to={today} />
       <ImpactSince />
       <ClimateCard />
+      <FeedbackQuestion />
       <RecentAchievements />
       {drag.dragging ? <RitualTargets over={drag.over} /> : null}
       {drag.parcel}

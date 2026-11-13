@@ -50,6 +50,7 @@ export function dexieStorage(db: FridgeDb): Storage {
     receiptLines: recordStore(db.receiptLines),
     ownRecipes: recordStore(db.ownRecipes),
     spots: recordStore(db.spots),
+    feedback: recordStore(db.feedback),
     events: {
       append: async (event) => {
         await db.events.add(event);
