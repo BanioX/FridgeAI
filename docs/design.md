@@ -101,12 +101,12 @@ Systemschrift nach Apples Human Interface Guidelines (ADR-0021): SF Pro auf Appl
 - **App-Symbol** (`apps/web/public/icon.svg`): ein aufrechter weisser Rettich mit grünem Kraut auf Smaragd `#135e42`. Die PNG-Symbole entstehen mit `node scripts/icons.ts`.
   - **Festgelegt** (Alban, 7.11.2026): «Das vorherige Design war Welten besser, bleib dabei.» Der gekippte Entwurf «Radish Pop» ist verworfen.
   - Nur auf Albans Auftrag neu entwerfen. PNGs neu zeichnen mit `node apps/web/scripts/icons.ts`.
-- **Lebensmittel:** Emoji pro Kategorie (🥛 🧀 🥬 🍎 🥩 🐟 🍞 🥚) für schnelles Wiedererkennen in Listen, ohne Bild-Assets. Kommt mit dem Kategorien-Katalog (Schritt 2b).
+- **Lebensmittel:** ein feines Liniensymbol pro Kategorie in einer silbernen Kachel (`FoodIcon`, ADR-0080): Lucide, wo es passt, sonst eigene Zeichnungen im selben 24-px-Raster und Strich (`food-icon-nodes.ts`). Keine Emojis in der App. Hat ein Produkt ein Packungsbild, ersetzt es das Symbol.
 
 ## Muster (werden mit den Features gebaut)
 
 - **Listen** (Vorrat, «Heute retten», Einkaufsliste): Apples «inset grouped» Liste. Alle Zeilen liegen in einer weissen, abgerundeten Gruppe, getrennt durch Haarlinien ab dem Text, nicht als einzelne Karten.
-- **Artikelzeile:** Packungsbild oder Emoji, Name, darunter Menge · Lagerort, rechts Status-Chip («heute», «morgen», «in 3 Tagen») und «›», wenn die Zeile eine Detailseite öffnet. Der Status steht im Chip als Text, die Farbe unterstützt nur.
+- **Artikelzeile:** Packungsbild oder Symbol, Name, darunter Menge · Lagerort, rechts Status-Chip («heute», «morgen», «in 3 Tagen») und «›», wenn die Zeile eine Detailseite öffnet. Der Status steht im Chip als Text, die Farbe unterstützt nur.
 - **Badges am Artikel** (ADR-0051): kleine Text-Pillen mit Lucide-Icon (12 px), 12 px semibold, Pill-Radius, ruhig: in Zeilen höchstens zwei unter der Meta-Zeile, auf der Artikelseite alle. Der Text ist der Name, die Farbe unterstützt nur.
 
   | Badge | Ton | Look |

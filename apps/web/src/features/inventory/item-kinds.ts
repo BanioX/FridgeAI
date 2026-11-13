@@ -1,4 +1,19 @@
 import { categoryById, type CategoryGroup, type InventoryItemView } from '@fridgeai/core';
+import {
+  Apple,
+  Backpack,
+  Beef,
+  Candy,
+  Carrot,
+  CookingPot,
+  CupSoda,
+  Cylinder,
+  Fish,
+  ShoppingBasket,
+  Soup,
+  type LucideIcon,
+} from 'lucide-react';
+import { Bread, Cheese, Pasta, PaperRoll, SaltShaker } from '../../ui/food-icon-nodes';
 
 /**
  * «Nach Art» in the Vorrat (ADR-0067): the kinds a person sorts a fridge by, in the order of what
@@ -62,24 +77,24 @@ const BY_CATEGORY: Partial<Record<string, Kind>> = {
   'pantry-other': 'other',
 };
 
-/** One picture per kind, for the tiles and the block headings. */
-export const KIND_EMOJI: Record<Kind, string> = {
-  fish: '🐟',
-  meat: '🥩',
-  leftovers: '🍱',
-  dairy: '🧀',
-  vegetables: '🥦',
-  fruit: '🍎',
-  bakery: '🍞',
-  ready: '🥗',
-  sweets: '🍫',
-  drinks: '🧃',
-  grains: '🍝',
-  tins: '🥫',
-  spices: '🧂',
-  rations: '🎒',
-  household: '🧻',
-  other: '🛒',
+/** One picture per kind, for the tiles and the block headings (ADR-0080). */
+export const KIND_ICONS: Record<Kind, LucideIcon> = {
+  fish: Fish,
+  meat: Beef,
+  leftovers: CookingPot,
+  dairy: Cheese,
+  vegetables: Carrot,
+  fruit: Apple,
+  bakery: Bread,
+  ready: Soup,
+  sweets: Candy,
+  drinks: CupSoda,
+  grains: Pasta,
+  tins: Cylinder,
+  spices: SaltShaker,
+  rations: Backpack,
+  household: PaperRoll,
+  other: ShoppingBasket,
 };
 
 type Sortable = Pick<InventoryItemView, 'categoryId' | 'origin'>;

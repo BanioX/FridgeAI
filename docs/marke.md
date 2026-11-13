@@ -147,7 +147,7 @@ Rettich folgt Apples Human Interface Guidelines ([ADR-0021](adr/0021-apple-desig
 - **Raster:** 4-px-Schritte, Seitenrand mindestens 16 px, Lesebreite rund 65 Zeichen.
 - **Ausrichtung:** In einer Fläche steht alles auf einer Achse, entweder mittig oder an einer gemeinsamen Kante. Text wird nie angeschnitten.
 - **Eine Hauptaktion pro Fläche,** Knopf in Smaragd mit weisser Schrift, Touch-Ziel mindestens 44 px.
-- **Symbole:** [Lucide](https://lucide.dev) (ISC), Linie 1.75, runde Enden, 22–24 px. Keine Emojis in Marken-Grafiken.
+- **Symbole:** [Lucide](https://lucide.dev) (ISC), Linie 1.75, runde Enden, 22–24 px, dazu eigene Lebensmittel-Symbole im selben Strich (ADR-0080). Keine Emojis, weder in der App noch in Marken-Grafiken.
 - **Bewegung:** 150–200 ms, ease-out, ohne Federn und ohne Effekthascherei. `prefers-reduced-motion` schaltet Bewegung ab. Die eine Geste, die Rettich ausmacht: wischen, nach links «Verwertet» (Smaragd), nach rechts «Entsorgt» (Rot).
 
 ## 6. Bildsprache

@@ -9,6 +9,7 @@ import { ChoiceChips } from '../../ui/ChoiceChips';
 import { co2e, food, formatNumber, land, text, water, type Quantity } from './climate-format';
 import { FootprintBars, type BarRow } from './FootprintBars';
 import { SINCE_START, useFootprint } from './use-footprint';
+import { FoodIcon } from '../../ui/FoodIcon';
 
 const t = messages.climate;
 
@@ -157,8 +158,8 @@ export function ClimatePage() {
                   {footprint.topCategories.map((entry) => {
                     const category = categoryById(entry.categoryId);
                     return (
-                      <li key={entry.categoryId} className="flex items-baseline gap-2">
-                        <span aria-hidden="true">{category?.emoji}</span>
+                      <li key={entry.categoryId} className="flex items-center gap-2">
+                        <FoodIcon categoryId={entry.categoryId} size="xs" />
                         <span>
                           {t.topEntry(
                             category?.name.de ?? entry.categoryId,

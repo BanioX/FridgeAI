@@ -24,6 +24,7 @@ import { SpotThumb } from '../spots/SpotThumb';
 import { useSpots } from '../spots/use-spots';
 import { groupBySpot, spotCue } from './check-order';
 import { checkQueue, tally, writeLastCheck, type CheckAnswer } from './check-state';
+import { FoodIcon } from '../../ui/FoodIcon';
 
 const t = messages.check;
 
@@ -262,9 +263,7 @@ function CheckCard({
       )}
       <Card className="flex items-center gap-4">
         {image === undefined ? (
-          <span aria-hidden="true" className="grid size-16 shrink-0 place-items-center text-5xl">
-            {item.emoji ?? ''}
-          </span>
+          <FoodIcon categoryId={item.categoryId} size="lg" />
         ) : (
           <img src={image} alt="" className="size-16 shrink-0 rounded-xl object-contain" />
         )}

@@ -11,7 +11,7 @@ describe('design-system primitives', () => {
   it('renders an item row with name, meta and a readable status label', () => {
     render(
       <ItemRow
-        emoji="🥛"
+        categoryId="dairy-milk"
         name="Vollmilch"
         meta="1 l · Kühlschrank"
         status={{ tone: 'today', label: 'heute' }}
@@ -23,10 +23,28 @@ describe('design-system primitives', () => {
     expect(screen.getByText('heute').className).toContain('text-today');
   });
 
+  it('shows an own line picture, never an emoji (ADR-0080)', () => {
+    const { container } = render(
+      <ItemRow
+        categoryId="dairy-cheese-hard"
+        name="Gruyère"
+        meta="200 g"
+        status={{ tone: 'neutral', label: 'in 9 Tagen' }}
+      />,
+    );
+    expect(container.querySelector('svg')).not.toBeNull();
+    expect(container.textContent).not.toMatch(/\p{Extended_Pictographic}/u);
+  });
+
   it('puts a long chip under the name, so the name is not cut off', () => {
     const row = (label: string) =>
       render(
-        <ItemRow emoji="🐟" name="Rauchlachs" meta="1 Stk." status={{ tone: 'danger', label }} />,
+        <ItemRow
+          categoryId="fish-smoked-salmon"
+          name="Rauchlachs"
+          meta="1 Stk."
+          status={{ tone: 'danger', label }}
+        />,
       );
     const short = row('in 3 Tagen');
     expect(short.getByText('in 3 Tagen').parentElement?.className).toContain('items-center');

@@ -14,7 +14,6 @@ describe('batchRows', () => {
     expect(rows.map((row) => row.name)).toEqual(['Äpfel', 'Salat', 'Rüebli', 'Milch']);
     for (const row of rows) {
       expect(row.categoryId).not.toBe('');
-      expect(row.emoji).not.toBe('');
       expect(row.expiresOn > today).toBe(true);
       expect(row.quantity).toBeGreaterThan(0);
     }

@@ -13,7 +13,6 @@ import {
 export interface GuideEntry {
   id: string;
   name: string;
-  emoji: string;
   score: number;
   level: Perishability;
   /** Unopened at its best place (fridge or pantry; the freezer only for frozen food). */
@@ -64,7 +63,6 @@ function entryOf(category: Category): GuideEntry {
   return {
     id: category.id,
     name: category.name.de,
-    emoji: category.emoji,
     score,
     level: perishabilityOf(score),
     keeps: kept,

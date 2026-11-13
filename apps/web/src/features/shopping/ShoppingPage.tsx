@@ -21,6 +21,7 @@ import { KindSection } from '../inventory/KindView';
 import { RestockSuggestions } from './RestockSuggestions';
 import { groupShopping } from './shopping-kinds';
 import { shareText, shoppingListText } from './share-list';
+import { FoodIcon } from '../../ui/FoodIcon';
 
 const t = messages.shopping;
 type Entry = OperationOutput<'shopping.list'>['items'][number];
@@ -168,9 +169,9 @@ export function ShoppingPage() {
       <div className="min-w-0 flex-1 py-2">
         <label htmlFor={`${id}-${entry.id}`} className="block cursor-pointer">
           <span className={`font-semibold ${entry.checked ? 'text-ink-muted line-through' : ''}`}>
-            {entry.emoji === undefined ? null : (
-              <span aria-hidden="true" className="mr-2">
-                {entry.emoji}
+            {entry.categoryId === undefined ? null : (
+              <span className="mr-2 inline-flex align-middle">
+                <FoodIcon categoryId={entry.categoryId} size="xs" />
               </span>
             )}
             {entry.name}

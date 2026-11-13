@@ -28,7 +28,7 @@ export function InventoryItemRow({
   const badges = itemBadges(item, today);
   return (
     <ItemRow
-      emoji={item.emoji ?? ''}
+      categoryId={item.categoryId}
       image={image}
       name={item.name}
       meta={itemMeta(item)}

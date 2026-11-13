@@ -65,6 +65,7 @@ import { useProductImage } from './use-product-image';
 import { SpotSheet } from '../spots/SpotSheet';
 import { SpotThumb } from '../spots/SpotThumb';
 import { useSpots } from '../spots/use-spots';
+import { FoodIcon } from '../../ui/FoodIcon';
 
 const t = messages.itemDetail;
 const spotText = messages.spots;
@@ -394,9 +395,7 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
 
       <div className="flex items-center gap-4">
         {image === undefined ? (
-          <span aria-hidden="true" className="text-5xl leading-none">
-            {item.emoji}
-          </span>
+          <FoodIcon categoryId={item.categoryId} size="lg" />
         ) : (
           <img
             src={image}
