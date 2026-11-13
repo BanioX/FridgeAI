@@ -4,6 +4,7 @@ import { TodayPage } from '../features/today/TodayPage';
 import { AppShell } from './AppShell';
 import { RouteError } from './RouteError';
 import { messages } from './messages.de-CH';
+import { withPageTransitions } from './page-transition';
 
 /** An old link `/recipes/<id>` opens the same recipe under «Wissen». */
 function RecipeRedirect() {
@@ -225,5 +226,5 @@ export const routes: RouteObject[] = [
 ];
 
 export function createAppRouter() {
-  return createBrowserRouter(routes);
+  return withPageTransitions(() => createBrowserRouter(routes));
 }

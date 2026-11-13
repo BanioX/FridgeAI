@@ -249,3 +249,64 @@
 @utility waste-drop {
   animation: waste-drop 900ms ease-in 200ms both;
 }
+
+/* Page transitions (ADR-0088): deeper pages push in from the right and go back to the right, tabs
+   cross-fade, as on iOS. `<html data-transition>` is set by app/page-transition.ts. The tab bar and
+   the status strip keep their place. «Bewegung reduzieren» turns all of it off. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 320ms;
+  animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+}
+html[data-transition='forward']::view-transition-old(root),
+html[data-transition='forward']::view-transition-new(root),
+html[data-transition='back']::view-transition-old(root),
+html[data-transition='back']::view-transition-new(root) {
+  mix-blend-mode: normal;
+}
+html[data-transition='forward']::view-transition-old(root) {
+  animation-name: page-out-left;
+}
+html[data-transition='forward']::view-transition-new(root) {
+  animation-name: page-in-right;
+}
+html[data-transition='back']::view-transition-old(root) {
+  z-index: 1;
+  animation-name: page-out-right;
+}
+html[data-transition='back']::view-transition-new(root) {
+  animation-name: page-in-left;
+}
+html[data-transition='tab']::view-transition-old(root),
+html[data-transition='tab']::view-transition-new(root) {
+  animation-duration: 160ms;
+}
+@keyframes page-in-right {
+  from {
+    transform: translateX(100%);
+  }
+}
+@keyframes page-out-left {
+  to {
+    transform: translateX(-30%);
+    filter: brightness(0.92);
+  }
+}
+@keyframes page-in-left {
+  from {
+    transform: translateX(-30%);
+    filter: brightness(0.92);
+  }
+}
+@keyframes page-out-right {
+  to {
+    transform: translateX(100%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

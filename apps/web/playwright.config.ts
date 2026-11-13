@@ -9,6 +9,9 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:4173',
     trace: 'off',
+    // Taps during a page transition do not reach the page (ADR-0088), so the specs run with
+    // «Bewegung reduzieren»; e2e/page-transitions.spec.ts covers the motion itself.
+    reducedMotion: 'reduce',
   },
   projects: [
     {

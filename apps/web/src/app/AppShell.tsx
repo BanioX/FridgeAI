@@ -46,7 +46,7 @@ export function AppShell() {
           under a frosted strip behind the status bar. */}
       <div
         aria-hidden="true"
-        className="sticky top-0 z-10 h-[env(safe-area-inset-top)] bg-oat/80 backdrop-blur"
+        className="sticky top-0 z-10 h-[env(safe-area-inset-top)] bg-oat/80 backdrop-blur [view-transition-name:status-strip]"
       />
 
       <main className="mx-auto max-w-xl px-4 pt-5 pb-32">
@@ -57,7 +57,7 @@ export function AppShell() {
 
       <nav
         aria-label={messages.navLabel}
-        className="fixed inset-x-0 bottom-0 z-10 border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur"
+        className="fixed inset-x-0 bottom-0 z-10 border-t border-line bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur [view-transition-name:tab-bar]"
       >
         <ul className="mx-auto flex max-w-xl">
           {navItems.map(({ to, label, icon: Icon, primary = false }) => {
