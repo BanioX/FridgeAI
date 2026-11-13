@@ -6,6 +6,7 @@ Für die nächste Sitzung (Mensch oder KI). Claude führt diese Datei am Ende je
 
 - Was gebaut ist, steht im [Plan](../plan.md) und im [README](../../README.md); auf welchen Flächen eine Funktion erscheinen muss, in [`flaechen.md`](../flaechen.md).
 - Bekannte Schulden: [`schulden.md`](../schulden.md). Lektionen: [`lernbuch.md`](./lernbuch.md).
+- Wenn ein Update etwas kaputt macht: [`notfall.md`](../notfall.md) (zurückrollen, Daten sichern, was nie ohne Rücksprache).
 - Rettich ist ein Kontext des SWELPER (ADR-0044): Der Kontext liegt in `.swelper.json`, `.claude/` ist erzeugt und wird nur über `swelper sync` geändert.
 
 ## Was als Nächstes kommt

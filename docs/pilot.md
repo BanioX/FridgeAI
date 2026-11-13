@@ -38,6 +38,7 @@ Genauso geht es beim Handywechsel und später beim Umzug auf eine eigene Adresse
 
 - Direkt an Alban: Screenshot plus ein Satz, was du erwartet hast. Alban gibt es an Claude weiter.
 - Wichtig sind vor allem: «Das habe ich nicht gefunden», «Das war mir zu umständlich» und «Das hat nicht gestimmt».
+- Geht nach einem Update gar nichts mehr: zuerst [`notfall.md`](notfall.md), Rettich nicht vom Home-Bildschirm löschen.
 
 ## Bekannte Grenzen
 
