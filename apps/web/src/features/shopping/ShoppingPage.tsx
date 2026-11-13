@@ -17,7 +17,9 @@ import { Card } from '../../ui/Card';
 import { describeDate } from '../../ui/date-text';
 import { formatQuantity } from '../../ui/quantity-text';
 import { GroupedList, GroupedListItem } from '../../ui/GroupedList';
+import { KindSection } from '../inventory/KindView';
 import { RestockSuggestions } from './RestockSuggestions';
+import { groupShopping } from './shopping-kinds';
 import { shareText, shoppingListText } from './share-list';
 
 const t = messages.shopping;
@@ -148,6 +150,8 @@ export function ShoppingPage() {
 
   const open = entries?.filter((entry) => !entry.checked) ?? [];
   const basket = entries?.filter((entry) => entry.checked) ?? [];
+  // Blocks by kind from two kinds on (ADR-0071); one block is just the plain list.
+  const openGroups = groupShopping(open);
 
   const row = (entry: Entry) => (
     <GroupedListItem key={entry.id} inset="check" className="flex items-center gap-3 px-4 py-1">
@@ -280,7 +284,17 @@ export function ShoppingPage() {
               <h2 id={`${id}-open`} className="font-display text-xl font-semibold">
                 {t.open}
               </h2>
-              <GroupedList>{open.map(row)}</GroupedList>
+              {openGroups.length < 2 ? (
+                <GroupedList>{open.map(row)}</GroupedList>
+              ) : (
+                <div className="space-y-4">
+                  {openGroups.map(({ kind, items }) => (
+                    <KindSection key={kind} kind={kind} count={items.length}>
+                      {items.map(row)}
+                    </KindSection>
+                  ))}
+                </div>
+              )}
               <Button
                 variant="secondary"
                 icon={Share}

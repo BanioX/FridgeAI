@@ -41,6 +41,7 @@ Prüfung aller Funktionen aus ADR-0048 bis ADR-0066 und der Funktionen ohne eige
 | Im Blick (0073) | ja (Heute retten) | ja | ja | – | – | – | – (berechnet) | ja | – | – |
 | Mehrere auf einmal (0072) | – | ja (Einräumen) | ja | – | – | – | – | – | – | – |
 | Ferien-Check (0069) | – | – | – | ja (Einfrieren) | – | – | – (nichts gespeichert) | ja | – | – |
+| Nachkaufen nach Art (0071) | – | – | – | – | – | – | – | – | – | – |
 | Bald wieder nötig (0070) | – | – | – | – | – | – | – (berechnet, nicht gespeichert) | – | – | – |
 | Foto aufnehmen (0068) | ja | – | ja (Erfassen) | – | – | – | – (Foto nicht gespeichert) | ja | ja (Katalog) | – |
 | Vorrat nach Art (0067) | – | ja | – | – | – | – | – (Anzeige, auf dem Gerät gemerkt) | – | – | – |
