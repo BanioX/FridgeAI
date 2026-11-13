@@ -137,8 +137,25 @@ export function AppLockProvider({
   return <AppLockContext.Provider value={value}>{children}</AppLockContext.Provider>;
 }
 
-/** Shows the lock view instead of the app while locked: the content is not in the page at all. */
+/**
+ * Shows the lock view while locked. Before the first unlock the app is not rendered at all. A lock
+ * later, after time in the background, hides the app (`hidden`, `inert`: not shown, not read out,
+ * not reachable) but keeps it mounted, so a half-done receipt review is still there afterwards.
+ */
 export function AppLockGate({ children }: { children: ReactNode }) {
   const { locked } = useAppLock();
-  return locked ? <LockView /> : children;
+  const [opened, setOpened] = useState(!locked);
+  if (!locked && !opened) {
+    setOpened(true);
+  }
+  return (
+    <>
+      {locked ? <LockView /> : null}
+      {opened || !locked ? (
+        <div hidden={locked} inert={locked}>
+          {children}
+        </div>
+      ) : null}
+    </>
+  );
 }

@@ -48,6 +48,12 @@ function away(ms: number) {
 
 const toggle = () => screen.findByRole('switch', { name: t.switchLabel });
 
+/** The app content is on screen: present and not inside the hidden part of a later lock. */
+function contentShown(): boolean {
+  const content = screen.queryByText('App content');
+  return content !== null && content.closest('[hidden]') === null;
+}
+
 async function switchOn() {
   await userEvent.click(await toggle());
   await screen.findByText(t.switchedOn);
@@ -114,7 +120,7 @@ describe('app lock', () => {
     expect(screen.getByText('App content')).toBeTruthy();
     away(60_000);
     expect(screen.getByRole('heading', { name: t.lockedTitle })).toBeTruthy();
-    expect(screen.queryByText('App content')).toBeNull();
+    expect(contentShown()).toBe(false);
   });
 
   it('«Sofort» locks on every return, «5 Minuten» waits longer', async () => {
@@ -126,7 +132,7 @@ describe('app lock', () => {
     expect(screen.getByText('App content')).toBeTruthy();
     await userEvent.click(screen.getByRole('radio', { name: t.afterNow, hidden: true }));
     away(0);
-    expect(screen.queryByText('App content')).toBeNull();
+    expect(contentShown()).toBe(false);
   });
 
   it('unlocks after the device confirms, and stays locked after a cancel', async () => {
@@ -138,7 +144,7 @@ describe('app lock', () => {
     device.failWith = 'cancelled';
     await userEvent.click(screen.getByRole('button', { name: t.unlock }));
     expect((await screen.findByRole('status')).textContent).toBe(t.problem.cancelled);
-    expect(screen.queryByText('App content')).toBeNull();
+    expect(contentShown()).toBe(false);
 
     device.failWith = null;
     await userEvent.click(screen.getByRole('button', { name: t.unlock }));
@@ -173,5 +179,33 @@ describe('app lock', () => {
     await waitFor(() => {
       expect(screen.getByRole('switch').ariaChecked).toBe('false');
     });
+  });
+
+  it('keeps work in progress through a lock in the background', async () => {
+    window.localStorage.setItem(
+      'fridgeai:app-lock',
+      JSON.stringify({ credentialId: 'abc', after: '1m' }),
+    );
+    render(
+      <AppLockProvider unlock={device} now={() => clock}>
+        <AppLockGate>
+          <label>
+            Notiz
+            <input />
+          </label>
+        </AppLockGate>
+      </AppLockProvider>,
+    );
+    const unlock = () =>
+      userEvent.click(screen.getByRole('button', { name: new RegExp(t.unlock) }));
+    await unlock();
+    await userEvent.type(await screen.findByRole('textbox', { name: 'Notiz' }), 'halb fertig');
+    away(60_000);
+    expect(screen.queryByRole('textbox', { name: 'Notiz' })).toBeNull();
+    await unlock();
+    expect(await screen.findByRole('textbox', { name: 'Notiz' })).toHaveProperty(
+      'value',
+      'halb fertig',
+    );
   });
 });
