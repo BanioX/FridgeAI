@@ -21,6 +21,7 @@ import { Card } from '../../ui/Card';
 import { expiryBadge } from '../../ui/expiry-badge';
 import { GROUPED_ROW_LINK, GroupedList, GroupedListItem } from '../../ui/GroupedList';
 import { InventoryItemRow } from '../inventory/InventoryItemRow';
+import { useAttention } from '../inventory/use-attention';
 import { SWIPE_HINT_ID, useSwipeOutcome } from '../inventory/swipe-outcome';
 import { SwipeAction } from '../../ui/SwipeAction';
 import { RecentAchievements } from '../achievements/RecentAchievements';
@@ -42,6 +43,7 @@ export function TodayPage() {
   const { householdId, inventory, today } = useAppData();
   const money = useMoney();
   const swipe = useSwipeOutcome();
+  const attentionOf = useAttention();
   // Read once per visit; a finished check writes it before coming back here.
   const [lastCheck] = useState(readLastCheck);
   const [lastBackup] = useState(readLastBackup);
@@ -155,6 +157,7 @@ export function TodayPage() {
                             chevron
                             sliced={sliced}
                             item={item}
+                            attention={attentionOf(item).reasons.length > 0}
                             status={expiryBadge(item.status, item.expiresOn, today, item.location)}
                           />
                         </Link>

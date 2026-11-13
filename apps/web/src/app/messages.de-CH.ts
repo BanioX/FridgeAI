@@ -374,6 +374,22 @@ export const messages = {
       cancel: 'Abbrechen',
     },
   },
+  /** «Im Blick» (ADR-0073): a quiet (i) for the few articles that deserve a closer look. */
+  attention: {
+    title: 'Im Blick',
+    /** The (i) on the item page. */
+    open: 'Warum im Blick',
+    close: 'Schliessen',
+    /** Hidden text of the small marker in the lists. */
+    marker: 'Im Blick',
+    reasons: {
+      use_by: 'Verbrauchsdatum: danach nicht mehr verwenden.',
+      perishable: 'Verdirbt schnell, offen hält es nur kurz.',
+      pricey: (price: string) => `Teuer: ${price}, eines der teuersten in deinem Vorrat.`,
+      often_wasted: (times: number) => `Das hast du schon ${String(times)}-mal entsorgt.`,
+    },
+    tipFreeze: 'Heute einfrieren hält es länger.',
+  },
   /** Small rescues before something is thrown away. */
   rescue: {
     /** Only for best-before dates; use-by food stays «Nicht mehr verwenden». */
@@ -895,6 +911,10 @@ export const messages = {
       {
         title: 'Ferien-Check',
         text: 'Vor den Ferien zeigt dir Rettich unter «Mehr», was bis zu deiner Rückkehr abläuft. Was sich einfrieren lässt, legst du mit einem Tipp in den Tiefkühler.',
+      },
+      {
+        title: 'Im Blick',
+        text: 'Wenige Artikel tragen ein kleines (i): Sie sind teuer, laufen mit Verbrauchsdatum heute oder morgen ab, sind heikel und schon offen oder landeten bei dir öfter im Abfall. Auf der Artikelseite sagt dir das (i) warum, mit einem Tipp.',
       },
       {
         title: 'Sicherung',

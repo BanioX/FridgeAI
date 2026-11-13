@@ -14,11 +14,14 @@ export function InventoryItemRow({
   status,
   chevron = false,
   sliced = false,
+  attention = false,
 }: {
   item: InventoryItemView;
   status: { tone: Tone; label: string };
   chevron?: boolean;
   sliced?: boolean;
+  /** «Im Blick» (ADR-0073): show the quiet (i) after the name. */
+  attention?: boolean;
 }) {
   const image = useProductImage(item.gtin);
   const { today } = useAppData();
@@ -32,6 +35,7 @@ export function InventoryItemRow({
       status={status}
       badges={badges.length === 0 ? undefined : <ItemBadges badges={badges} max={2} />}
       owner={item.owner === 'shared' ? undefined : <OwnerMark ownerId={item.owner} />}
+      attention={attention ? messages.attention.marker : undefined}
       chevron={chevron}
       sliced={sliced}
       shop={
