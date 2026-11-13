@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto';
-import { IsoDateTimeSchema, type Id, type OperationInput } from '@fridgeai/core';
+import { IsoDateTimeSchema, toLocalDate, type Id, type OperationInput } from '@fridgeai/core';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { ensureLocalHousehold } from './bootstrap';
 import type { FridgeDb } from './db';
@@ -112,6 +112,22 @@ describe('receipts.import (ADR-0028)', () => {
     expect(events.map((event) => event.payload)).toEqual([
       { receiptId: result.receiptId, retailer: 'coop', lineCount: 4, totalRappen: 1525 },
     ]);
+  });
+
+  it('puts a date chosen in «Einzeln durchgehen» on the item, and estimates it otherwise', async () => {
+    const base = receipt();
+    const result = await inventory['receipts.import']({
+      ...base,
+      lines: base.lines.map((line) =>
+        line.name === 'Joghurt Mocca' ? { ...line, expiresOn: toLocalDate('2026-12-24') } : line,
+      ),
+    });
+    expect(result.itemIds).toHaveLength(2);
+    const { items } = await inventory['inventory.list']({ householdId });
+    expect(items.find((item) => item.name === 'Joghurt Mocca')?.expiresOn).toBe('2026-12-24');
+    const chicken = items.find((item) => item.name === 'Coop Pouletbrust');
+    expect(chicken?.expiresOn).toBeDefined();
+    expect(chicken?.expiresOn).not.toBe('2026-12-24');
   });
 
   it('never imports the same receipt twice and repeats a command harmlessly', async () => {

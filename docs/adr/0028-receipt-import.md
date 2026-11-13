@@ -34,3 +34,14 @@ Der Bon-Leser (ADR-0027) liefert Zeilen mit Name, Menge, Preis und Rabatt. Für 
 - Das Preisgedächtnis pro Produkt (zuletzt bezahlt, üblicher Preis, günstigster Laden) kann direkt aus `receiptLines` rechnen.
 - Später teilt die Kostenteilung (Schritt 9) dieselben Zeilen auf die Mitbewohner:innen auf.
 - Der Upload in der Oberfläche (PDF zuerst, dann Fotos) folgt im nächsten PR.
+
+## Ergänzung 13.11.2026: Einzeln durchgehen
+
+Ticket #42. Die Liste bleibt der schnelle Weg. Daneben steht ein zweiter Knopf, «Einzeln durchgehen», der die Lebensmittelzeilen als Karten zeigt («3 von 8»):
+
+- **Eine Karte pro Lebensmittelzeile** aller einbezogenen Quittungen, Quittung für Quittung. Die Karte zeigt Name, Menge, Laden und den Treffer von Open Food Facts (derselbe «Ja/Nein»-Block wie in der Liste), dazu Ort, Datum und Preis.
+- **Derselbe Zustand wie die Liste.** Die Karten ändern den `Review` der Quittung: «Übernehmen» und «Nicht in den Vorrat» setzen oder lösen das Häkchen, ein neuer Preis läuft durch `withPrice`, Ort und Datum stehen neu in `Review.overrides`. Die Liste zeigt jede Wahl sofort.
+- **Ort** wie bisher vorbelegt (`matchCategoryByName(name) ?? fallbackCategory()`, dessen `defaultLocation`). **Datum** ist der Vorschlag aus der Haltbarkeit der Kategorie am gewählten Ort (`suggestedExpiry`, dieselbe Rechnung wie im Formular «Artikel hinzufügen»). Wechselt der Ort, gilt wieder der Vorschlag für den neuen Ort.
+- **Schnittstelle:** `ReceiptImportLineSchema` hat neu das optionale Feld `expiresOn`. Es wird nur gesendet, wenn die Person ein Datum gewählt oder getippt hat und geht unverändert an `inventory.addItem`. Ohne das Feld rechnet der Import wie bisher.
+- **Ein Importweg.** Am Ende zeigt die letzte Karte «6 übernommen, 2 weggelassen» und denselben Knopf wie die Liste (`takeAll`). Die `commandId` pro Quittung bleibt fest, ein Wiederholen importiert nichts doppelt.
+- **Offen:** Wischen zum Weiterschalten fehlt bewusst, die Knöpfe genügen. Eine Karte für eine Zeile, die in der Liste schon abgewählt war, legt sie mit «Übernehmen» wieder in den Vorrat.

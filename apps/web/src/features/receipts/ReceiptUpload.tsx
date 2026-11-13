@@ -1,11 +1,5 @@
-import {
-  fallbackCategory,
-  IsoDateTimeSchema,
-  matchCategoryByName,
-  parseReceiptText,
-  type ParsedReceipt,
-} from '@fridgeai/core';
-import { Camera, FileText } from 'lucide-react';
+import { IsoDateTimeSchema, parseReceiptText, type ParsedReceipt } from '@fridgeai/core';
+import { Camera, FileText, ListChecks } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useAppData } from '../../app/AppData';
@@ -18,6 +12,8 @@ import { readPdfText } from './read-pdf';
 import { CameraInput } from '../../ui/CameraInput';
 import { handOverReceiptPhotos, takeReceiptPhotos } from './receipt-handover';
 import { batchTotals, orderBySumCheck, seenInBatch } from './receipt-batch';
+import { ReceiptCards } from './ReceiptCards';
+import { buildCards, chosenExpiry, locationOf } from './receipt-cards';
 import type { ReceiptMatching } from './ReceiptMatch';
 import { isFood, ReceiptReview, type Review } from './ReceiptReview';
 
@@ -59,7 +55,7 @@ function purchasedAt(receipt: ParsedReceipt) {
  * after the other, and then shown on one page, one section per receipt, with one button for all.
  */
 export function ReceiptUpload() {
-  const { householdId, ids, inventory } = useAppData();
+  const { householdId, ids, inventory, today } = useAppData();
   const navigate = useNavigate();
   const [status, setStatus] = useState('');
   const [busy, setBusy] = useState(false);
@@ -67,6 +63,10 @@ export function ReceiptUpload() {
   const [leftOut, setLeftOut] = useState<readonly LeftOut[]>([]);
   /** The matching of each receipt, read when its products are taken over. */
   const matchings = useRef(new Map<string, ReceiptMatching>());
+  /** «Einzeln durchgehen» is open. */
+  const [walking, setWalking] = useState(false);
+  /** The cards show the matching of the list below them; they re-render when it changes. */
+  const [, refreshCards] = useState(0);
 
   /** One file: its review, or the reason it cannot be shown. */
   async function read(file: File, known?: string): Promise<{ review: Review } | { text: string }> {
@@ -230,8 +230,10 @@ export function ReceiptUpload() {
               isFood: isFood(line),
               ...(current.chosen.has(index)
                 ? {
-                    location: (matchCategoryByName(line.name) ?? fallbackCategory())
-                      .defaultLocation,
+                    location: locationOf(current, index),
+                    ...(chosenExpiry(current, index) === undefined
+                      ? {}
+                      : { expiresOn: chosenExpiry(current, index) }),
                   }
                 : {}),
               ...(found === undefined ? {} : { gtin: found.gtin, productName: found.name }),
@@ -322,6 +324,29 @@ export function ReceiptUpload() {
     </Button>
   );
 
+  const walkable = buildCards(sections).length > 0;
+  const walkButtonNode = walkable ? (
+    <Button
+      id="receipt-walk"
+      variant="secondary"
+      fullWidth
+      icon={ListChecks}
+      disabled={busy}
+      onClick={() => {
+        setWalking(true);
+      }}
+    >
+      {t.cards.start}
+    </Button>
+  ) : null;
+
+  const takeBlock = (
+    <div className="space-y-2">
+      {takeButton}
+      {walkButtonNode}
+    </div>
+  );
+
   return (
     <Card>
       <p className="text-ink-muted">{t.intro}</p>
@@ -368,7 +393,7 @@ export function ReceiptUpload() {
 
       {sections.length === 0 ? null : (
         <div className="mt-4 space-y-4">
-          {several ? takeButton : null}
+          {several ? takeBlock : null}
           {sections.map((section) => (
             <ReceiptReview
               key={section.key}
@@ -382,15 +407,50 @@ export function ReceiptUpload() {
               onExcludedChange={(excluded) => {
                 change(section.key, { excluded });
               }}
-              {...(several ? {} : { afterSum: takeButton })}
+              {...(several ? {} : { afterSum: takeBlock })}
               onMatching={(matching) => {
+                const before = matchings.current.get(section.key);
                 matchings.current.set(section.key, matching);
+                // The open cards read this matching: tell them when an answer or a hit came in.
+                if (
+                  walking &&
+                  before !== undefined &&
+                  (before.decisions !== matching.decisions ||
+                    before.matches !== matching.matches ||
+                    before.asked !== matching.asked ||
+                    before.scanNotes !== matching.scanNotes ||
+                    before.scanning !== matching.scanning)
+                ) {
+                  refreshCards((count) => count + 1);
+                }
               }}
             />
           ))}
           {takeButton}
         </div>
       )}
+      {walking ? (
+        <ReceiptCards
+          sections={sections}
+          matchingOf={(key) => matchings.current.get(key)}
+          today={today}
+          onReview={(key, review) => {
+            change(key, { review });
+          }}
+          onClose={() => {
+            setWalking(false);
+            document.getElementById('receipt-walk')?.focus();
+          }}
+          onTake={() => {
+            setWalking(false);
+            void takeAll();
+          }}
+          takeLabel={
+            several ? t.takeAll(totals.articles, totals.receipts) : t.take(totals.articles)
+          }
+          takeDisabled={busy || totals.articles === 0}
+        />
+      ) : null}
     </Card>
   );
 }

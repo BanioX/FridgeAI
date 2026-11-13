@@ -69,6 +69,8 @@ const ReceiptImportLineSchema = z.object({
   discountRappen: RappenSchema.max(0),
   isFood: z.boolean(),
   location: StorageLocationSchema.optional(),
+  /** Chosen in «Einzeln durchgehen»; without it the category's shelf life decides. */
+  expiresOn: LocalDateSchema.optional(),
   /** Confirmed product from the open database or the household (receipts.matchLine). */
   gtin: GtinSchema.optional(),
   /** Name of that product for the inventory; the receipt line keeps the printed name. */

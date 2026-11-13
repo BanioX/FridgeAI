@@ -106,6 +106,31 @@ test('explains a PDF without text and one without articles', async ({ page }) =>
   await expect(page.getByText(/kein lesbarer Text/)).toBeVisible();
 });
 
+test('goes through the food lines one card at a time and takes what is kept', async ({ page }) => {
+  await page.goto('/add/receipt');
+  await page.getByLabel('PDF oder Foto wählen').setInputFiles({
+    name: 'bon.pdf',
+    mimeType: 'application/pdf',
+    buffer: COOP,
+  });
+  await page.getByRole('button', { name: 'Einzeln durchgehen' }).click();
+  const cards = page.getByRole('dialog', { name: 'Einzeln durchgehen' });
+  await expect(cards.getByText('1 von 2')).toBeVisible();
+  await expect(cards.getByRole('heading', { level: 3, name: 'Semmeli 80G' })).toBeFocused();
+  // Bread is left out; the chicken moves to the freezer.
+  await cards.getByRole('button', { name: 'Nicht in den Vorrat' }).click();
+  await expect(cards.getByText('2 von 2')).toBeVisible();
+  await cards.locator('label', { hasText: 'Tiefkühler' }).click();
+  await cards.getByRole('button', { name: 'Übernehmen', exact: true }).click();
+  await expect(cards.getByText('1 übernommen, 1 weggelassen')).toBeVisible();
+  await cards.getByRole('button', { name: '1 Artikel übernehmen' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Einräumen' })).toBeVisible();
+  await expect(page.getByText('Semmeli 80G')).toHaveCount(0);
+  await expect(
+    page.getByRole('region', { name: 'Tiefkühler' }).getByText('Coop Pouletbrust'),
+  ).toBeVisible();
+});
+
 test('reads a receipt screenshot on the device', async ({ page }) => {
   test.setTimeout(90_000);
   await page.goto('/add/receipt');

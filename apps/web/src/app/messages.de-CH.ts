@@ -1679,6 +1679,24 @@ export const messages = {
     choose: 'PDF oder Foto wählen',
     /** Straight to the camera (Alban, 12.11.2026: «separat Foto aufnehmen»). */
     takePhoto: 'Foto aufnehmen',
+    /** «Einzeln durchgehen»: the food lines one card at a time (ticket #42, ADR-0028). */
+    cards: {
+      start: 'Einzeln durchgehen',
+      title: 'Einzeln durchgehen',
+      close: 'Schliessen',
+      progress: (position: number, total: number) => `${String(position)} von ${String(total)}`,
+      amount: 'Menge',
+      place: 'Wohin kommt es?',
+      price: 'Preis',
+      expiry: 'Haltbar bis',
+      leftOutNote: 'Du hast es weggelassen. «Übernehmen» legt es wieder in den Vorrat.',
+      take: 'Übernehmen',
+      skip: 'Nicht in den Vorrat',
+      back: 'Zurück',
+      summaryTitle: 'Alles durchgesehen',
+      summary: (taken: number, left: number) =>
+        `${String(taken)} übernommen, ${String(left)} weggelassen`,
+    },
     /** Several files chosen at once (Alban, 8.11.2026): read first, then one page for all. */
     readingOf: (index: number, total: number) =>
       `Quittung ${String(index)} von ${String(total)} wird gelesen …`,
