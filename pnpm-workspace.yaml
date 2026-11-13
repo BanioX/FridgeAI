@@ -1,3 +1,7 @@
 packages:
   - apps/*
   - packages/*
+
+# Install only versions published at least three days ago (ADR-0085): a poisoned release is
+# usually found and pulled within hours, and every merge on main reaches the phones at once.
+minimumReleaseAge: 4320

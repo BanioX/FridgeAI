@@ -6,6 +6,9 @@ updates:
       interval: weekly
       day: monday
     open-pull-requests-limit: 5
+    # Same three days as pnpm's minimumReleaseAge (ADR-0085).
+    cooldown:
+      default-days: 3
     groups:
       # Always together: the self-hosted .wasm must match barcode-detector's zxing-wasm (ADR-0014).
       barcode:
@@ -22,3 +25,5 @@ updates:
     schedule:
       interval: weekly
       day: monday
+    cooldown:
+      default-days: 3
