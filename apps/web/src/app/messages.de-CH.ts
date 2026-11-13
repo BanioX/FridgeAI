@@ -114,12 +114,11 @@ export const messages = {
     /** A calm monthly reminder: everything lies on this device only (local-first). */
     backup: {
       title: 'Sicherung',
-      never: 'Deine Daten liegen nur auf diesem Gerät, und es gibt noch keine Sicherung.',
-      since: (days: number) =>
-        `Deine Daten liegen nur auf diesem Gerät. Die letzte Sicherung ist ${String(days)} Tage her.`,
-      action: 'Jetzt sichern',
+      never: 'Nur auf diesem Gerät, noch ohne Sicherung',
+      since: (days: number) => `Nur auf diesem Gerät, gesichert vor ${String(days)} Tagen`,
     },
-    valueLabel: 'liegen gerade in deinem Kühlschrank',
+    /** The value on Start, one line beside the figure (audit «Ruhe», 13.11.2026). */
+    valueShort: 'Im Kühlschrank',
     estimated: 'teilweise geschätzt',
     expiringTitle: 'Heute retten',
     expiringEmpty: 'Nichts läuft in den nächsten 3 Tagen ab.',
@@ -193,8 +192,8 @@ export const messages = {
     loadDemo: 'Beispieldaten laden',
   },
   check: {
-    cardText: 'Ist alles noch da? Einmal pro Woche, in etwa 30 Sekunden.',
-    cardStart: 'Check starten',
+    /** The row on Start when the weekly check is due. */
+    rowDetail: 'Ist alles noch da? Etwa 30 Sekunden',
     intro: 'Ein Tipp pro Artikel. Was weg ist, zählt Rettich mit.',
     progress: (step: number, total: number) => `${String(step)} von ${String(total)}`,
     question: 'Ist das noch da?',

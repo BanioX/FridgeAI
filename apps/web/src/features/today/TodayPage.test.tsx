@@ -8,6 +8,8 @@ import { seedDb } from '../../app/test-seed';
 import { testDb } from '../../data/test-helpers';
 import { TodayPage } from './TodayPage';
 
+const checkRow = new RegExp(`^${messages.pages.check}`);
+
 function renderPage(db = testDb()) {
   render(
     <AppDataProvider db={db}>
@@ -69,6 +71,32 @@ describe('TodayPage', () => {
     ).toBeDefined();
     expect(within(tiles).getByRole('link', { name: 'Notvorrat: 1 Artikel' })).toBeDefined();
     expect(screen.queryByText(messages.today.intro.title)).toBeNull();
+
+    // Calm Start (audit, 13.11.2026): what to rescue comes before the tiles, and the fact of the
+    // day stays on «Wissen» and after a rescue.
+    expect(list.compareDocumentPosition(tiles) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.queryByText(messages.knowledge.didYouKnow)).toBeNull();
+  });
+
+  it('offers the backup as a quiet row with the link to «Deine Daten»', async () => {
+    const db = testDb();
+    await seedDb(
+      db,
+      Array.from({ length: 12 }, (_, index) => ({
+        name: `Artikel ${String(index + 1)}`,
+        location: 'pantry' as const,
+        inDays: 100,
+      })),
+    );
+    const longAgo = new Date();
+    longAgo.setDate(longAgo.getDate() - 40);
+    window.localStorage.setItem('fridgeai:last-backup', longAgo.toISOString().slice(0, 10));
+    renderPage(db);
+    const row = await screen.findByRole('link', {
+      name: new RegExp(`^${messages.today.backup.title}`),
+    });
+    expect(row.textContent).toContain('vor 40 Tagen');
+    expect(row.getAttribute('href')).toBe('/more/data');
   });
 
   it('shows «Nicht mehr verwenden» for use-by items past their date', async () => {
@@ -136,19 +164,19 @@ describe('TodayPage', () => {
     window.localStorage.setItem(key, dayOf(-1));
     renderPage(db);
     expect(await screen.findByText(/^CHF\s/)).toBeDefined();
-    expect(screen.queryByRole('link', { name: messages.check.cardStart })).toBeNull();
+    expect(screen.queryByRole('link', { name: checkRow })).toBeNull();
     cleanup();
 
     // Checked a week ago: due again.
     window.localStorage.setItem(key, dayOf(-7));
     renderPage(db);
-    expect(await screen.findByRole('link', { name: messages.check.cardStart })).toBeDefined();
+    expect(await screen.findByRole('link', { name: checkRow })).toBeDefined();
     cleanup();
 
     // Never checked: due.
     window.localStorage.clear();
     renderPage(db);
-    expect(await screen.findByRole('link', { name: messages.check.cardStart })).toBeDefined();
+    expect(await screen.findByRole('link', { name: checkRow })).toBeDefined();
   });
 
   it('offers one-tap freezing for freezable fridge items due today or tomorrow, with undo', async () => {

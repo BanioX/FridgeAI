@@ -13,7 +13,7 @@ test('weekly fridge check: half, thrown away, back, still there', async ({ page 
   await addToFridge(page, 'Vollmilch');
 
   await page.goto('/');
-  await page.getByRole('link', { name: 'Check starten' }).click();
+  await page.getByRole('link', { name: /^Kühlschrank-Check/ }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Kühlschrank-Check' })).toBeVisible();
   await expect(page.getByText('1 von 2')).toBeVisible();
   const check = await new AxeBuilder({ page }).analyze();
@@ -38,7 +38,7 @@ test('weekly fridge check: half, thrown away, back, still there', async ({ page 
 
   // Half of 300 g cheese is left, the milk is untouched, and the card waits a week.
   await page.getByRole('link', { name: 'Zum Start' }).click();
-  await expect(page.getByRole('link', { name: 'Check starten' })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: /^Kühlschrank-Check/ })).toHaveCount(0);
   await page.goto('/inventory?location=fridge');
   await expect(page.getByRole('link', { name: /Grana Padano/ })).toContainText('150 g');
   await expect(page.getByRole('link', { name: /Vollmilch/ })).toBeVisible();
