@@ -252,6 +252,59 @@ describe('parseReceiptText with real layouts', () => {
     ]);
   });
 
+  it('counts a Cumulus voucher but never bonus points on a Migros PDF', () => {
+    const receipt = parseReceiptText(
+      [
+        'MIGROS',
+        'Artikelbezeichnung Menge Preis Gespart Total #',
+        'Quark Nature 2 0.60 1.20 1',
+        'Kochbuch 1 19.90 19.90 1',
+        'Zwischentotal 21.10',
+        'Cumulus Bons',
+        'CUMULUS BON 5.- 5.00- 9',
+        'Cumulus Bonuspunkte',
+        '+3xPkt.Ges.Sort. 63.30',
+        'Total CHF 16.10',
+      ].join('\n'),
+      { fromPdf: true },
+    );
+    expect(
+      receipt.lines.map((line) => [line.kind, line.priceRappen + line.discountRappen]),
+    ).toEqual([
+      ['item', 120],
+      ['item', 1990],
+      ['discount', -500],
+    ]);
+    expect(receipt.sumCheck).toBe('ok');
+  });
+
+  it('shares a discount named after articles between them (Coop)', () => {
+    const receipt = parseReceiptText(
+      [
+        'Coop',
+        'Konfitüre Kirsche 335G 1.0 4.95 4.95 0 A',
+        'Konfitüre Himbeere 335g 1.0 5.50 5.50 0 A',
+        'Papiertasche 1.0 0.40 0.40 1 # A',
+        'Rabatt Konfitüre -2.10',
+        'Total CHF 8.75',
+      ].join('\n'),
+      { fromPdf: true },
+    );
+    expect(receipt.lines.map((line) => [line.kind, line.priceRappen, line.discountRappen])).toEqual(
+      [
+        ['item', 495, -99],
+        ['item', 550, -111],
+        ['bag', 40, 0],
+      ],
+    );
+    expect(receipt.sumCheck).toBe('ok');
+    // Without articles of that name it stays a discount for the whole receipt.
+    const other = parseReceiptText(
+      'Coop\nBrot 1.0 2.40 2.40 0 A\nPapiertasche 1.0 0.40 0.40 1 # A\nRabatt Konfitüre -0.50\nTotal CHF 2.30',
+    );
+    expect(other.lines.map((line) => line.kind)).toEqual(['item', 'bag', 'discount']);
+  });
+
   it('flags a misread amount on a Coop PDF, PDF text is never guessed at', () => {
     const receipt = parseReceiptText(
       COOP_PDF.replace('3.95                     3.95', '3.95  8.95'),

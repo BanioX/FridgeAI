@@ -58,3 +58,11 @@ Zwei weitere Lidl-Plus-Screenshots, beide nur gut 300 Pixel breit. Der erste erg
 Der zweite Screenshot (58 Artikel) brachte gewogene Ware, eine Rundung und einen Doppelpunkt (die drei Punkte darüber) und zeigt die Grenze: Zwei Fehler, die sich gegenseitig verdecken (9.69 statt 0.69, 0.25 statt 1.25), lassen mehrere Erklärungen zu. Rettich rät dort nicht. Die Summenprüfung zeigt CHF 8.00 Differenz, und die Person korrigiert die zwei Zeilen im Durchgehen.
 
 Die echten Quittungen bleiben ausserhalb des Repos; die Tests nutzen erfundene Artikel mit denselben Lesefehlern.
+
+## Ergänzung 14.11.2026: Migros- und Coop-PDFs
+
+Vier PDF-Quittungen von Alban: drei gingen auf, eine Migros-Quittung lag CHF 296.81 daneben.
+
+- **Cumulus-Bon:** «CUMULUS BON 5.- 5.00-» ist ein echter Abzug und zählt. Bisher galt jede Zeile mit «Cumulus» als Werbung und fiel weg.
+- **Bonuspunkte:** «+3xPkt.Ges.Sort. 291.81» sind Punkte, keine Franken, und nie ein Artikel.
+- **Rabatt mit Namen:** «Rabatt Bonne Maman -2.10» am Ende einer Coop-Quittung gehört zu den Artikeln, deren Name so beginnt. Rettich verteilt ihn nach ihren Preisen, damit das Preisgedächtnis den bezahlten Preis kennt. Gibt es keinen solchen Artikel, bleibt es ein Abzug für die ganze Quittung.
