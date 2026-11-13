@@ -6,9 +6,9 @@ import type { Tone } from '../../ui/tones';
 /**
  * A small drawing kit for the PDF report (ADR-0030) in the app's own design language
  * (docs/design.md): silver ground, white cards without borders and with a soft shadow, Smaragd
- * for what matters, the same status chips as the app and the food emoji of the app, and the
+ * for what matters, the same status chips as the app and the food pictures of the app, and the
  * receipt paper of the cover. Vector
- * only, except the pictures the device draws (logo, emoji). Everything lines up on one axis and
+ * only, except the pictures the device draws (logo, food pictures). Everything lines up on one axis and
  * no text is ever clipped («Immer sauber ausgerichtet»): long labels are shortened with «…».
  */
 export type Rgb = readonly [number, number, number];
@@ -48,8 +48,8 @@ export const TONE_COLOR: Record<Tone, { text: Rgb; fill: Rgb }> = {
 export interface PdfPictures {
   /** The app icon as PNG data URL. */
   logo?: string;
-  /** A food emoji as PNG data URL, drawn by the device like in the app. */
-  emoji?: (emoji: string) => string | undefined;
+  /** The food picture of a category as JPEG data URL, the same as in the app (ADR-0080). */
+  food?: (categoryId: string) => string | undefined;
 }
 
 export interface TextStyle {
@@ -153,24 +153,27 @@ export function roundedPicture(
   doc.restoreGraphicsState();
 }
 
-/** A food emoji centred on `x`/`middle`, or nothing if the device cannot draw it. */
-export function emoji(
+/**
+ * The food picture of a category centred on `x`/`middle`, or nothing if the device cannot draw
+ * it. An opaque JPEG: no transparency, so no soft mask that some viewers draw grey.
+ */
+export function foodPicture(
   doc: jsPDF,
   pictures: PdfPictures,
-  value: string,
+  categoryId: string,
   center: { x: number; y: number },
   size: number,
 ): void {
-  const dataUrl = pictures.emoji?.(value);
+  const dataUrl = pictures.food?.(categoryId);
   if (dataUrl !== undefined) {
     doc.addImage(
       dataUrl,
-      'PNG',
+      'JPEG',
       center.x - size / 2,
       center.y - size / 2,
       size,
       size,
-      `emoji-${value}`,
+      `food-${categoryId}`,
     );
   }
 }
@@ -284,12 +287,12 @@ export interface BarRow {
   value: number;
   display: string;
   color: Rgb;
-  /** A food emoji in front of the label. */
+  /** The category whose food picture stands in front of the label. */
   icon?: string;
 }
 
 /**
- * Horizontal bars in a card: emoji and label on the left, the bar on a silver track, the value
+ * Horizontal bars in a card: food picture and label on the left, the bar on a silver track, the value
  * on the right. Returns the height used.
  */
 export function bars(
@@ -300,7 +303,7 @@ export function bars(
   options: { labelWidth: number; valueWidth: number },
 ): number {
   const rowHeight = 9;
-  const iconWidth = rows.some((row) => row.icon !== undefined) && pictures.emoji ? 7 : 0;
+  const iconWidth = rows.some((row) => row.icon !== undefined) && pictures.food ? 7 : 0;
   const labelX = box.x + iconWidth;
   const trackX = labelX + options.labelWidth + 2;
   const trackWidth = box.width - iconWidth - options.labelWidth - options.valueWidth - 4;
@@ -308,7 +311,7 @@ export function bars(
   rows.forEach((row, index) => {
     const middle = box.y + index * rowHeight + rowHeight / 2;
     if (iconWidth > 0 && row.icon !== undefined) {
-      emoji(doc, pictures, row.icon, { x: box.x + 2.6, y: middle }, 5.2);
+      foodPicture(doc, pictures, row.icon, { x: box.x + 2.6, y: middle }, 5.2);
     }
     write(
       doc,

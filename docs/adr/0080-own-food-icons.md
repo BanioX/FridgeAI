@@ -18,4 +18,4 @@ Lebensmittel trugen ein Emoji pro Kategorie. Emojis sehen auf jedem Gerät ander
 ## Folgen
 
 - Listen wirken ruhig und auf jedem Gerät gleich.
-- Die PDF-Auszüge zeichnen noch die Emojis des Geräts; sie bekommen dieselben Symbole in einem eigenen Schritt.
+- Die PDF-Auszüge zeigen dieselben Symbole: Das Gerät zeichnet jedes einmal auf seiner silbernen Kachel als undurchsichtiges JPEG (`pdf-assets.ts`), ohne Transparenz und damit ohne graue Kästen in manchen Betrachtern.
