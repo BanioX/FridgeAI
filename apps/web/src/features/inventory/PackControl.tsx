@@ -5,6 +5,7 @@ import { messages } from '../../app/messages.de-CH';
 import { Button } from '../../ui/Button';
 import { PackRing } from '../../ui/PackRing';
 import { formatPieces } from '../../ui/quantity-text';
+import { createPortal } from 'react-dom';
 
 /** How long a press must last to open the menu instead of taking one piece. */
 const HOLD_MS = 450;
@@ -145,72 +146,75 @@ export function PackControl({
         ) : null}
       </div>
       <p className="text-xs text-ink-muted">{t.packHint}</p>
-      {menu ? (
-        <div
-          className="fixed inset-0 z-40 flex items-end justify-center bg-onyx/40"
-          onClick={(event) => {
-            if (event.target === event.currentTarget) {
-              setMenu(false);
-            }
-          }}
-        >
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="pack-menu-title"
-            className="w-full max-w-xl space-y-3 rounded-t-3xl bg-surface p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-float"
-          >
-            <h2 id="pack-menu-title" className="font-display text-xl font-semibold">
-              {t.packLabel(left, start)}
-            </h2>
-            <Button
-              fullWidth
-              autoFocus
-              icon={Check}
-              onClick={() => {
-                choose(() => {
-                  onTake('eaten');
-                });
+      {menu
+        ? createPortal(
+            <div
+              className="fixed inset-0 z-40 flex items-end justify-center bg-onyx/40"
+              onClick={(event) => {
+                if (event.target === event.currentTarget) {
+                  setMenu(false);
+                }
               }}
             >
-              {t.packEaten}
-            </Button>
-            <Button
-              variant="secondary"
-              fullWidth
-              icon={Trash2}
-              onClick={() => {
-                choose(() => {
-                  onTake('wasted');
-                });
-              }}
-            >
-              {t.packWasted}
-            </Button>
-            {note?.undoable === true ? (
-              <Button
-                variant="secondary"
-                fullWidth
-                icon={Undo2}
-                onClick={() => {
-                  choose(onUndo);
-                }}
+              <div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="pack-menu-title"
+                className="w-full max-w-xl space-y-3 rounded-t-3xl bg-surface p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-float"
               >
-                {t.packUndo}
-              </Button>
-            ) : null}
-            <Button
-              variant="ghost"
-              fullWidth
-              onClick={() => {
-                setMenu(false);
-              }}
-            >
-              {t.packCancel}
-            </Button>
-          </div>
-        </div>
-      ) : null}
+                <h2 id="pack-menu-title" className="font-display text-xl font-semibold">
+                  {t.packLabel(left, start)}
+                </h2>
+                <Button
+                  fullWidth
+                  autoFocus
+                  icon={Check}
+                  onClick={() => {
+                    choose(() => {
+                      onTake('eaten');
+                    });
+                  }}
+                >
+                  {t.packEaten}
+                </Button>
+                <Button
+                  variant="secondary"
+                  fullWidth
+                  icon={Trash2}
+                  onClick={() => {
+                    choose(() => {
+                      onTake('wasted');
+                    });
+                  }}
+                >
+                  {t.packWasted}
+                </Button>
+                {note?.undoable === true ? (
+                  <Button
+                    variant="secondary"
+                    fullWidth
+                    icon={Undo2}
+                    onClick={() => {
+                      choose(onUndo);
+                    }}
+                  >
+                    {t.packUndo}
+                  </Button>
+                ) : null}
+                <Button
+                  variant="ghost"
+                  fullWidth
+                  onClick={() => {
+                    setMenu(false);
+                  }}
+                >
+                  {t.packCancel}
+                </Button>
+              </div>
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   );
 }

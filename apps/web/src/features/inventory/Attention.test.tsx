@@ -77,6 +77,8 @@ describe('«Im Blick» on the item page', () => {
     const button = await screen.findByRole('button', { name: messages.attention.open });
     fireEvent.click(button);
     const dialog = screen.getByRole('dialog', { name: messages.attention.title });
+    // On the body, above the tab bar (ADR-0082).
+    expect(dialog.parentElement?.parentElement).toBe(document.body);
     expect(within(dialog).getByText(messages.attention.reasons.use_by)).toBeDefined();
     expect(within(dialog).getByText(messages.attention.tipFreeze)).toBeDefined();
     fireEvent.keyDown(dialog, { key: 'Escape' });

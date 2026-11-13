@@ -13,6 +13,7 @@ import { DateField } from '../../ui/DateField';
 import { OwnerChoice } from '../people/OwnerChoice';
 import { useSpots } from '../spots/use-spots';
 import { sharedLocation, type BulkChanges } from './bulk-edit';
+import { createPortal } from 'react-dom';
 
 /** The chip value for «Kein fester Platz»; spot ids never look like this. */
 const NO_SPOT = 'none';
@@ -97,7 +98,8 @@ export function BulkEditSheet({
 
   const canApply = expiresOn !== null || owner !== null || spot !== null;
 
-  return (
+  // On the body, so the tab bar does not cover the bottom of the sheet (ADR-0082).
+  return createPortal(
     <div className="fixed inset-0 z-40 flex items-end justify-center bg-onyx/40">
       <div
         ref={dialog}
@@ -177,6 +179,7 @@ export function BulkEditSheet({
           </Button>
         </section>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

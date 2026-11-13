@@ -6,6 +6,7 @@ import { messages } from '../../app/messages.de-CH';
 import { Button } from '../../ui/Button';
 import { ChoiceChips } from '../../ui/ChoiceChips';
 import { outcomeText, planOutcome, rebuyText } from './settle';
+import { createPortal } from 'react-dom';
 
 /** The toast stays this long, like the swipe toast; a hint needs a moment longer to read. */
 const TOAST_MS = 5000;
@@ -263,7 +264,8 @@ function RescueSheet({ asking }: { asking: Asking }) {
     };
   }, [answer]);
 
-  return (
+  // On the body, so the tab bar does not cover the bottom of the sheet (ADR-0082).
+  return createPortal(
     <div className="fixed inset-0 z-40 flex items-end justify-center bg-onyx/40">
       <div
         role="alertdialog"
@@ -311,6 +313,7 @@ function RescueSheet({ asking }: { asking: Asking }) {
           </Button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
