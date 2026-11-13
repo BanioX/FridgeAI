@@ -36,6 +36,8 @@ export default defineConfig({
         // Skip unused font subsets.
         globPatterns: ['**/*.{js,mjs,css,html,svg,woff2,webmanifest,wasm}'],
         globIgnores: ['**/*vietnamese*', '**/tesseract-core*'],
+        // /.well-known/security.txt is a real file (RFC 9116): never answer it with index.html.
+        navigateFallbackDenylist: [/^\/\.well-known\//],
         // The photo reader (about 4 MB) is cached on first use, not at install (ADR-0028).
         runtimeCaching: [
           {

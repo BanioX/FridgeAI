@@ -14,7 +14,7 @@ Eine neue Funktion ist erst fertig, wenn sie auf **jeder Fläche** steht, auf de
 | 4 | Journal | `features/history` | Steht es im Verlauf, und stimmt die Zählung mit der Bilanz? |
 | 5 | Bilanz, Klima, Abzeichen | `features/more`, `features/climate`, Abzeichen | Fliesst es in die Zahlen ein? |
 | 6 | Auszüge (PDF) | `features/reports`, `reports.build` | Steht es in der Quittung und im Gesamtauszug? |
-| 7 | Export und Import | `household.export`, `household.import` | Ist es in der Sicherung und kommt es zurück (Test mit Hin und Zurück)? |
+| 7 | Export und Import | `household.export`, `household.import` | Ist es in der Sicherung und kommt es zurück (Test mit Hin und Zurück)? Die Sicherung mit Passwort (`app/backup-crypto`) verpackt nur die fertige Datei, neue Felder brauchen dort nichts. |
 | 8 | Wissen | `features/knowledge`, «Kurz erklärt» | Wird es kurz erklärt? |
 | 9 | Suche | Namenssuche, «Wo ist was?» | Findet man es? |
 | 10 | Abzeichen | `achievements-catalogue.ts` | Lohnt es sich, dafür eines zu vergeben? |

@@ -1,8 +1,8 @@
 import type { LocalDate } from '@fridgeai/core';
 
-/** «rettich-2026-11-06.json»: the date tells exports apart. */
-export const exportFileName = (today: LocalDate, extension: 'json') =>
-  `rettich-${today}.${extension}`;
+/** «rettich-2026-11-06.json»: the date tells exports apart; a suffix marks protected ones. */
+export const exportFileName = (today: LocalDate, extension: 'json', suffix?: string) =>
+  `rettich-${today}${suffix === undefined ? '' : `-${suffix}`}.${extension}`;
 
 /** Hands a file to the browser's download (no server involved). */
 export function saveFile(name: string, type: string, content: string): void {

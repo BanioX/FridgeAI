@@ -1333,7 +1333,20 @@ export const messages = {
     /** Visible backups: when this device last exported (Rettich keeps everything local). */
     lastBackup: (date: string) => `Letzte Sicherung: ${date}.`,
     noBackup: 'Noch keine Sicherung von diesem Gerät.',
+    protect: 'Mit Passwort schützen',
+    protectHint:
+      'Ohne dieses Passwort lässt sich die Sicherung nicht mehr öffnen. Rettich kann es nicht zurückholen.',
+    password: 'Passwort',
+    passwordMin: (min: number) => `Mindestens ${String(min)} Zeichen.`,
+    passwordShow: 'Passwort anzeigen',
+    passwordHide: 'Passwort verbergen',
+    /** File name suffix of a protected backup: «rettich-2026-11-13-geschuetzt.json». */
+    protectedSuffix: 'geschuetzt',
     importJson: 'Daten importieren (JSON)',
+    importLocked: (file: string) =>
+      `${file} ist mit einem Passwort geschützt. Gib das Passwort ein, mit dem du die Sicherung gespeichert hast.`,
+    importUnlock: 'Öffnen',
+    wrongPassword: 'Das Passwort passt nicht zu dieser Sicherung.',
     importFile: 'Exportdatei wählen',
     importQuestion: (file: string, items: number) =>
       `${file} übernehmen? Darin sind ${items} Artikel. Was jetzt auf diesem Gerät gespeichert ist, wird ersetzt.`,

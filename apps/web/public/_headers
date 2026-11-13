@@ -10,6 +10,11 @@
   # Never in search engines (ADR-0049); also on preview links.
   X-Robots-Tag: noindex, nofollow
 
+# RFC 9116: plain text, short cache so a changed contact or date arrives quickly.
+/.well-known/security.txt
+  Content-Type: text/plain; charset=utf-8
+  Cache-Control: public, max-age=3600
+
 # Hashed build output never changes under the same name.
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
