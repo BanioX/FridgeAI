@@ -91,3 +91,4 @@ Jeder Entscheid mit Folgen steht hier als eigene Datei `NNNN-titel.md` (ADR-0001
 | [0081](0081-dark-mode.md) | Dunkelmodus nach Einstellung des Geräts | angenommen | 2026-11-13 |
 | [0082](0082-spot-photo-large.md) | Das Foto eines Platzes gross zeigen | angenommen | 2026-11-13 |
 | [0083](0083-amount-wheel.md) | Mengen in Gramm und Milliliter auf einem Rad | angenommen | 2026-11-13 |
+| [0084](0084-rescue-ritual.md) | Retten als Ritual auf Start | angenommen | 2026-11-13 |

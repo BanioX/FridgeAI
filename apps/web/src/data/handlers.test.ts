@@ -401,6 +401,19 @@ describe('inventory.history', () => {
     to: localDate('2026-11-30'),
   });
 
+  it('marks a rescue, so the journal can say «Gerettet» (ADR-0084)', async () => {
+    const { itemId } = await add({ expiresOn: '2026-11-06' });
+    await handlers['inventory.recordOutcome']({
+      commandId: ids.next(),
+      householdId,
+      itemId,
+      outcome: 'eaten',
+      rescued: true,
+    });
+    const [entry] = (await handlers['inventory.history'](november())).outcomes;
+    expect(entry).toMatchObject({ outcome: 'eaten', rescued: true });
+  });
+
   it('lists what was eaten and wasted, newest first, with the share of the price', async () => {
     const { itemId } = await add({
       name: 'Grana Padano',

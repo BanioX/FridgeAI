@@ -1,4 +1,5 @@
 import {
+  canBeRescued,
   shouldAskStillGood,
   type Id,
   type InventoryItemView,
@@ -12,6 +13,7 @@ import { describeDate } from '../../ui/date-text';
 import { formatQuantity } from '../../ui/quantity-text';
 import type { SwipeSide } from '../../ui/SwipeAction';
 import { swipePortion } from './swipe-portion';
+import { RescueMoment, type Moment } from '../today/RescueMoment';
 
 /** The toast stays this long; a new swipe replaces it earlier. */
 const TOAST_MS = 5000;
@@ -67,15 +69,26 @@ interface Toast {
  * toast. `sides(item)` goes straight into `SwipeAction`; `tip` is the one-line hint above a list
  * until a visit after the first swipe.
  */
-export function useSwipeOutcome(): {
+export function useSwipeOutcome({
+  ritual = false,
+}: {
+  /**
+   * On Start (ADR-0084): a row that can be rescued says «Gerettet» and counts as rescued, and a
+   * rescue or a loss gets its moment instead of the toast. The Vorrat stays quick and plain.
+   */
+  ritual?: boolean;
+} = {}): {
   sides: (item: InventoryItemView) => { end: SwipeSide; start: SwipeSide };
   /** K4: one tap into the freezer, with «Rückgängig» in the toast. */
   freeze: (item: InventoryItemView) => void;
+  /** The same as a swipe, e.g. after dragging the row into the basket or the bin on Start. */
+  settle: (item: InventoryItemView, outcome: SwipeOutcome) => void;
   tip: ReactNode;
   toast: ReactNode;
 } {
-  const { householdId, ids, inventory } = useAppData();
+  const { householdId, ids, inventory, today } = useAppData();
   const [toast, setToast] = useState<Toast | null>(null);
+  const [moment, setMoment] = useState<(Moment & { eventId: Id }) | null>(null);
   // Read once per visit: the tip stays until the page is opened again, so the list does not jump
   // up under the finger right after the first swipe.
   const [seen] = useState(readSeen);
@@ -98,7 +111,7 @@ export function useSwipeOutcome(): {
   }, [toast]);
 
   const record = useCallback(
-    (item: InventoryItemView, outcome: SwipeOutcome) => {
+    (item: InventoryItemView, outcome: SwipeOutcome, rescue = false) => {
       const portion = swipePortion(item);
       void (async () => {
         try {
@@ -108,8 +121,22 @@ export function useSwipeOutcome(): {
             itemId: item.id,
             outcome,
             quantity: portion.quantity,
+            ...(rescue ? { rescued: true } : {}),
           });
           writeSeen();
+          if (ritual && (result.rescued || outcome === 'wasted')) {
+            setToast(null);
+            setMoment({
+              key: Date.now(),
+              kind: result.rescued ? 'rescued' : 'wasted',
+              name: item.name,
+              categoryId: item.categoryId,
+              location: item.location,
+              valueRappen: result.valueRappen,
+              eventId: result.eventId,
+            });
+            return;
+          }
           const text =
             portion.kind === 'piece'
               ? messages.swipe.pieces(portion.quantity, item.name, outcome)
@@ -140,7 +167,7 @@ export function useSwipeOutcome(): {
         }
       })();
     },
-    [householdId, ids, inventory],
+    [householdId, ids, inventory, ritual],
   );
 
   const freeze = useCallback(
@@ -166,15 +193,24 @@ export function useSwipeOutcome(): {
     [householdId, ids, inventory],
   );
 
+  const settle = useCallback(
+    (item: InventoryItemView, outcome: SwipeOutcome) => {
+      record(item, outcome, outcome === 'eaten' && ritual && canBeRescued(item, today));
+    },
+    [record, ritual, today],
+  );
+
   const sides = useCallback(
     (item: InventoryItemView) => {
       const detail = messages.swipe[swipePortion(item).kind];
+      // «Heute retten» on Start: using food that would be lost is a rescue, no extra question.
+      const rescue = ritual && canBeRescued(item, today);
       return {
         end: {
-          label: messages.swipe.outcomes.eaten,
+          label: rescue ? messages.ritual.rescueLabel : messages.swipe.outcomes.eaten,
           detail,
           onCommit: () => {
-            record(item, 'eaten');
+            record(item, 'eaten', rescue);
           },
         },
         start: {
@@ -186,7 +222,7 @@ export function useSwipeOutcome(): {
         },
       };
     },
-    [record],
+    [record, ritual, today],
   );
 
   const undo = async (action: NonNullable<Toast['undo']>) => {
@@ -212,7 +248,9 @@ export function useSwipeOutcome(): {
         });
       }
       setToast(null);
+      setMoment(null);
     } catch {
+      setMoment(null);
       setToast({ key: Date.now(), text: messages.inventory.undoFailed, undo: null });
     } finally {
       setBusy(false);
@@ -220,9 +258,13 @@ export function useSwipeOutcome(): {
   };
 
   const undoAction = toast?.undo ?? null;
+  const closeMoment = useCallback(() => {
+    setMoment(null);
+  }, []);
   return {
     sides,
     freeze,
+    settle,
     tip: (
       <>
         <p id={SWIPE_HINT_ID} className="sr-only">
@@ -233,36 +275,47 @@ export function useSwipeOutcome(): {
     ),
     // The live region stays mounted and only its content changes, so screen readers announce it.
     toast: (
-      <div className="pointer-events-none fixed inset-x-0 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-20 mx-auto max-w-xl px-4">
-        <div
-          role="status"
-          className="pointer-events-auto flex items-center justify-between gap-2 rounded-2xl bg-onyx py-2 pr-2 pl-4 text-white shadow-card empty:hidden"
-        >
-          {toast === null ? null : (
-            <>
-              <div>
-                <p className="font-semibold">{toast.text}</p>
-                {toast.hint === undefined ? null : (
-                  <p className="text-sm text-white/80">{toast.hint}</p>
+      <>
+        {moment === null ? null : (
+          <RescueMoment
+            moment={moment}
+            onUndo={() => {
+              void undo({ kind: 'outcome', eventId: moment.eventId });
+            }}
+            onClose={closeMoment}
+          />
+        )}
+        <div className="pointer-events-none fixed inset-x-0 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-20 mx-auto max-w-xl px-4">
+          <div
+            role="status"
+            className="pointer-events-auto flex items-center justify-between gap-2 rounded-2xl bg-onyx py-2 pr-2 pl-4 text-white shadow-card empty:hidden"
+          >
+            {toast === null ? null : (
+              <>
+                <div>
+                  <p className="font-semibold">{toast.text}</p>
+                  {toast.hint === undefined ? null : (
+                    <p className="text-sm text-white/80">{toast.hint}</p>
+                  )}
+                </div>
+                {undoAction === null ? null : (
+                  <button
+                    type="button"
+                    disabled={busy}
+                    className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl px-3 font-semibold text-white transition-colors hover:bg-white/10 disabled:opacity-50"
+                    onClick={() => {
+                      void undo(undoAction);
+                    }}
+                  >
+                    <Undo2 size={20} aria-hidden="true" />
+                    {messages.inventory.undo}
+                  </button>
                 )}
-              </div>
-              {undoAction === null ? null : (
-                <button
-                  type="button"
-                  disabled={busy}
-                  className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-xl px-3 font-semibold text-white transition-colors hover:bg-white/10 disabled:opacity-50"
-                  onClick={() => {
-                    void undo(undoAction);
-                  }}
-                >
-                  <Undo2 size={20} aria-hidden="true" />
-                  {messages.inventory.undo}
-                </button>
-              )}
-            </>
-          )}
+              </>
+            )}
+          </div>
         </div>
-      </div>
+      </>
     ),
   };
 }
