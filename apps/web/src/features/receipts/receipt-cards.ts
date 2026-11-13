@@ -3,10 +3,11 @@ import {
   matchCategoryByName,
   type LocalDate,
   type ParsedReceiptLine,
+  type Rappen,
   type StorageLocation,
 } from '@fridgeai/core';
 import { suggestedExpiry } from '../inventory/add-item';
-import { isFood, type LineOverride, type Review } from './ReceiptReview';
+import { isFood, paid, type LineOverride, type Review } from './ReceiptReview';
 
 /** One receipt of the review page, as far as the cards need it. */
 export interface CardSection {
@@ -114,4 +115,41 @@ export function summarize(
   const byKey = new Map(sections.map((section) => [section.key, section.review]));
   const taken = cards.filter((card) => byKey.get(card.sectionKey)?.chosen.has(card.index)).length;
   return { taken, left: cards.length - taken };
+}
+
+/** One row of the overview after the last card; `position` leads back to its card. */
+export interface SummaryRow {
+  position: number;
+  name: string;
+  taken: boolean;
+  location: StorageLocation;
+  expiresOn: LocalDate;
+  paidRappen: Rappen;
+}
+
+/** What goes where and until when, the kept lines first, in the order of the cards. */
+export function summaryRows(
+  sections: readonly CardSection[],
+  cards: readonly Card[],
+  today: LocalDate,
+): SummaryRow[] {
+  const byKey = new Map(sections.map((section) => [section.key, section.review]));
+  const rows = cards.flatMap((card, position) => {
+    const review = byKey.get(card.sectionKey);
+    const line = review?.receipt.lines[card.index];
+    if (review === undefined || line === undefined) {
+      return [];
+    }
+    return [
+      {
+        position,
+        name: line.name,
+        taken: review.chosen.has(card.index),
+        location: locationOf(review, card.index),
+        expiresOn: expiryOf(review, card.index, today),
+        paidRappen: paid(line),
+      },
+    ];
+  });
+  return [...rows.filter((row) => row.taken), ...rows.filter((row) => !row.taken)];
 }
