@@ -81,6 +81,7 @@ describe('ItemDetailPage «Immer da haben» (ADR-0059)', () => {
       expect((await db.products.toArray())[0]?.minStock).toBe(2);
     });
     // One of two pieces: one pack is left, fewer than the minimum of two.
+    fireEvent.click(screen.getByRole('button', { name: messages.itemDetail.otherAmountOpen }));
     fireEvent.change(document.getElementById('other-amount') ?? document.body, {
       target: { value: '1' },
     });
