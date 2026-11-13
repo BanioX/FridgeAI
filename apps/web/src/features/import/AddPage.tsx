@@ -2,6 +2,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import {
   Camera,
   ChevronRight,
+  ListPlus,
   PencilLine,
   Receipt,
   ScanBarcode,
@@ -118,6 +119,7 @@ export function AddPage() {
           detail={t.barcode}
         />
         <Tile to="/inventory/new" icon={PencilLine} title={t.manualTitle} detail={t.manual} />
+        <Tile to="/add/batch" icon={ListPlus} title={t.batchTitle} detail={t.batch} />
         <Tile
           to="/add/process?kind=leftover"
           icon={Soup}

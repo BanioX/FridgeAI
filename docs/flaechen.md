@@ -38,6 +38,7 @@ Prüfung aller Funktionen aus ADR-0048 bis ADR-0066 und der Funktionen ohne eige
 | Lagerort-Kacheln | ja | ja | – | – | – | Notvorrat-Quittung nein (K7) | – | – | – | – |
 | Sicherung | ja | – | – | – | ja | – | ja, auch nach Import (K3) | ja | – | – |
 | Einräumen | – | ja | ja | – | – | – | – | ja | – | – |
+| Mehrere auf einmal (0072) | – | ja (Einräumen) | ja | – | – | – | – | – | – | – |
 | Ferien-Check (0069) | – | – | – | ja (Einfrieren) | – | – | – (nichts gespeichert) | ja | – | – |
 | Bald wieder nötig (0070) | – | – | – | – | – | – | – (berechnet, nicht gespeichert) | – | – | – |
 | Foto aufnehmen (0068) | ja | – | ja (Erfassen) | – | – | – | – (Foto nicht gespeichert) | ja | ja (Katalog) | – |

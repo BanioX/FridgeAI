@@ -63,6 +63,12 @@ export const routes: RouteObject[] = [
         }),
       },
       {
+        path: 'add/batch',
+        lazy: async () => ({
+          Component: (await import('../features/batch/BatchAddPage')).BatchAddPage,
+        }),
+      },
+      {
         path: 'add/photo',
         lazy: async () => ({
           Component: (await import('../features/photo/PhotoPage')).PhotoPage,
