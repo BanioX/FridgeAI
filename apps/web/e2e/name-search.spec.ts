@@ -65,6 +65,32 @@ test('finds «Coop Gipfeli» by name and fills in the form like a scan', async (
   await expect(page.getByRole('region', { name: 'Bereits verwendet' })).toHaveCount(0);
 });
 
+test('shows three hits first, the rest behind «Weitere Treffer»', async ({ page }) => {
+  await page.route(SEARCH, (route) =>
+    route.fulfill({
+      json: {
+        count: 5,
+        // Valid EAN-13 codes: hits with a broken check digit are dropped.
+        products: [
+          ['7610000000103', 'Vollmilch'],
+          ['7610000000110', 'Milchdrink'],
+          ['7610000000127', 'Milchreis'],
+          ['7610000000134', 'Milchschokolade'],
+          ['7610000000141', 'Milchbrötli'],
+        ].map(([code, name]) => ({ code, product_name_de: name })),
+      },
+    }),
+  );
+  await page.goto('/inventory/new');
+  await page.getByLabel('Was ist es?').fill('Milch');
+  const more = page.getByRole('region', { name: 'Gefundene Produkte' });
+  await expect(more.getByRole('button')).toHaveCount(3);
+  // The date and «Speichern» stay near the name (ADR-0077).
+  await page.getByRole('button', { name: 'Weitere Treffer (2)' }).click();
+  await expect(more.getByRole('button')).toHaveCount(5);
+  await expect(page.getByRole('button', { name: /^Weitere Treffer/ })).toHaveCount(0);
+});
+
 test('says so when the search is unavailable and keeps manual entry open', async ({ page }) => {
   const searches: string[] = [];
   await page.route(SEARCH, (route) => {
