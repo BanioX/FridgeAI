@@ -1,6 +1,6 @@
 # Übergabe: wo die Arbeit steht
 
-Für die nächste Sitzung (Mensch oder KI). Claude führt diese Datei am Ende jeder längeren Sitzung nach. Sie ersetzt keine Register, sie zeigt nur den Faden. Stand: 13.11.2026. Version 0.19.0 ist die letzte veröffentlichte ([CHANGELOG](../../CHANGELOG.md)).
+Für die nächste Sitzung (Mensch oder KI). Claude führt diese Datei am Ende jeder längeren Sitzung nach. Sie ersetzt keine Register, sie zeigt nur den Faden. Stand: 13.11.2026. Version 0.20.0 ist die letzte veröffentlichte ([CHANGELOG](../../CHANGELOG.md)).
 
 ## Stand
 
@@ -17,7 +17,6 @@ Steht nicht in diesem Repo. Ideen, Reihenfolge und offene Fragen an Alban liegen
 
 | Branch | Was | Nächster Schritt |
 | --- | --- | --- |
-| `feat/receipt-steps` (kein PR) | vier Schritte pro Artikel beim Quittungs-Abgleich, auf altem `main` | auf `main` neu bauen |
 | TD-08 | Lidl-Quittung: «+3xPkt.Ges.Sort.» und «19.90 BUCH PREIS» werden als Artikel gelesen | braucht die Zeilenliste als Test |
 
 ## Arbeitsweise, die sich bewährt hat
@@ -27,3 +26,5 @@ Steht nicht in diesem Repo. Ideen, Reihenfolge und offene Fragen an Alban liegen
 - Ein PR, ein Thema; Matrix in `flaechen.md` im selben PR nachführen (L-29).
 - Katalog wöchentlich auffrischen (`pnpm catalog:refresh`, ADR-0045).
 - Ein roter Vorschau-Build bei Cloudflare mit «An unknown error has occurred» nach erfolgreichem Bauen: einmal «Retry build», dann erst den Code verdächtigen (L-34).
+- E2E läuft mit «Bewegung reduzieren»; Taps während eines Seitenübergangs kommen nicht an (L-35, ADR-0088). Wer die Bewegung testet, wartet, bis `document.getAnimations()` leer ist.
+- Agenten der Rolle `implementer` arbeiten in einem eigenen Worktree; Arbeit in einem vorbereiteten Worktree lehnt der Wächter ab. Ihre Commits danach auf einen Branch mit gutem Namen schieben.
