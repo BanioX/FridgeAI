@@ -2,6 +2,27 @@
 
 Alle Änderungen an Rettich (bis 7.11.2026 FridgeAI), neueste zuerst. Wird mit `pnpm release` erzeugt (ADR-0017).
 
+## [0.19.0] – 2026-11-13
+
+### Neu
+
+- rescuing is a ritual on Start ([#311](https://github.com/BanioX/FridgeAI/pull/311))
+- choose grams and millilitres on a wheel ([#310](https://github.com/BanioX/FridgeAI/pull/310))
+- show a spot's photo large, full screen on a tap ([#308](https://github.com/BanioX/FridgeAI/pull/308))
+- the PDF reports show the app's food pictures ([#307](https://github.com/BanioX/FridgeAI/pull/307))
+- dark mode that follows the device ([#306](https://github.com/BanioX/FridgeAI/pull/306))
+- own fine food pictures instead of emojis ([#305](https://github.com/BanioX/FridgeAI/pull/305))
+- the item page starts with «Verwertet» or «Entsorgt» ([#304](https://github.com/BanioX/FridgeAI/pull/304))
+- one way for photos under «Erfassen» ([#303](https://github.com/BanioX/FridgeAI/pull/303))
+- three search hits first, the rest on request ([#302](https://github.com/BanioX/FridgeAI/pull/302))
+- «Mehr» in three groups, Nachkaufen first ([#301](https://github.com/BanioX/FridgeAI/pull/301))
+- one meaning per colour ([#300](https://github.com/BanioX/FridgeAI/pull/300))
+- calm Start with «Heute retten» first ([#299](https://github.com/BanioX/FridgeAI/pull/299))
+
+### Behoben
+
+- every bottom sheet sits above the tab bar ([#309](https://github.com/BanioX/FridgeAI/pull/309))
+
 ## [0.18.0] – 2026-11-13
 
 ### Neu

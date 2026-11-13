@@ -45,5 +45,6 @@ Schick mir nach dem ersten Build die `main`-Adresse, dann nenne ich die Links ab
 ## Wenn etwas nicht klappt
 
 - **Build rot:** im Projekt unter **Deployments** bzw. **Builds** das Log öffnen und mir einen Screenshot schicken.
+- **Build rot mit «An unknown error has occurred»** im letzten Schritt (`wrangler preview` oder `wrangler deploy`), obwohl «Success: Build command completed» davor steht: Das ist eine Störung bei Cloudflare, nicht im Code. Einmal **Retry build** tippen (L-34).
 - **Korrektur-PR «name conflict» von Cloudflare:** Projektname ist nicht `fridgeai`. Den PR nicht mergen, sondern mir Bescheid geben.
 - **Kein Kommentar im PR:** Prüfen, ob Schritt 5 (Vorschau-Builds) eingeschaltet ist.
