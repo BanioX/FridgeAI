@@ -1696,6 +1696,10 @@ export const messages = {
       summaryTitle: 'Alles durchgesehen',
       summary: (taken: number, left: number) =>
         `${String(taken)} übernommen, ${String(left)} weggelassen`,
+      summaryHint: 'Tipp auf einen Artikel, um ihn zu ändern.',
+      summaryList: 'Übersicht',
+      until: (date: string) => `bis ${date}`,
+      leftOut: 'Nicht in den Vorrat',
     },
     /** Several files chosen at once (Alban, 8.11.2026): read first, then one page for all. */
     readingOf: (index: number, total: number) =>

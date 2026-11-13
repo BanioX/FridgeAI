@@ -135,4 +135,23 @@ describe('ReceiptCards', () => {
     await user.click(within(dialog).getByRole('button', { name: '1 Artikel übernehmen' }));
     expect(onTake).toHaveBeenCalledTimes(1);
   });
+
+  it('lists what goes where at the end, and a tap leads back to that card', async () => {
+    const user = userEvent.setup();
+    await open();
+    await user.click(screen.getByRole('button', { name: t.skip }));
+    await user.click(screen.getByRole('radio', { name: 'Tiefkühler' }));
+    await user.click(screen.getByRole('button', { name: t.take }));
+    const list = screen.getByRole('list', { name: t.summaryList });
+    const [chicken, bread] = within(list).getAllByRole('button');
+    // Kept lines first, with place and date; the left-out line after them.
+    expect(chicken?.textContent).toMatch(
+      /Pouletbrust.*Tiefkühler · bis \d{2}\.\d{2}\.\d{4}.*8\.30/,
+    );
+    expect(bread?.textContent).toMatch(new RegExp(`Semmeli 80G.*${t.leftOut}`));
+    if (bread === undefined) throw new Error('no row');
+    await user.click(bread);
+    expect(screen.getByText(t.progress(1, 2))).toBeTruthy();
+    expect(screen.getByRole('heading', { level: 3, name: 'Semmeli 80G' })).toBeTruthy();
+  });
 });

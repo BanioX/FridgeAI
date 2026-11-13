@@ -1,8 +1,9 @@
-import { shelfLifeAt, type LocalDate } from '@fridgeai/core';
-import { X } from 'lucide-react';
+import { formatSwissDate, shelfLifeAt, type LocalDate } from '@fridgeai/core';
+import { ChevronRight, X } from 'lucide-react';
 import { useEffect, useRef, useState, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
 import { messages } from '../../app/messages.de-CH';
+import { useMoney } from '../../app/money';
 import { Button } from '../../ui/Button';
 import { ChoiceChips } from '../../ui/ChoiceChips';
 import { DateField } from '../../ui/DateField';
@@ -16,6 +17,8 @@ import {
   locationOf,
   PLACES,
   summarize,
+  summaryRows,
+  type SummaryRow,
   withDecision,
   withExpiry,
   withLocation,
@@ -124,6 +127,12 @@ export function ReceiptCards({
                 {t.summaryTitle}
               </h3>
               <p className="text-lg">{t.summary(counts.taken, counts.left)}</p>
+              <SummaryList
+                rows={summaryRows(sections, cards, today)}
+                onOpen={(row) => {
+                  setPosition(row.position);
+                }}
+              />
             </section>
           ) : (
             <CardBody
@@ -285,5 +294,57 @@ function CardBody({
         />
       </div>
     </>
+  );
+}
+
+/** The overview after the last card: one tap goes back to a line's card to change it. */
+function SummaryList({
+  rows,
+  onOpen,
+}: {
+  rows: readonly SummaryRow[];
+  onOpen: (row: SummaryRow) => void;
+}) {
+  const money = useMoney();
+  if (rows.length === 0) {
+    return null;
+  }
+  return (
+    <div className="space-y-2 pt-2">
+      <p className="text-sm text-ink-muted">{t.summaryHint}</p>
+      <ul aria-label={t.summaryList} className="divide-y divide-line rounded-xl border border-line">
+        {rows.map((row) => {
+          const detail = row.taken
+            ? `${messages.locations[row.location]} · ${t.until(formatSwissDate(row.expiresOn))}`
+            : t.leftOut;
+          return (
+            <li key={row.position}>
+              <button
+                type="button"
+                onClick={() => {
+                  onOpen(row);
+                }}
+                className="flex min-h-14 w-full items-center gap-3 px-4 py-2 text-left"
+              >
+                <span className="min-w-0 flex-1">
+                  <span
+                    className={`block truncate font-semibold ${row.taken ? '' : 'text-ink-muted line-through'}`}
+                  >
+                    {row.name}
+                  </span>
+                  <span className="block truncate text-sm text-ink-muted">{detail}</span>
+                </span>
+                {row.taken ? (
+                  <span className="shrink-0 text-sm tabular-nums">
+                    {money.format(row.paidRappen, { currency: false })}
+                  </span>
+                ) : null}
+                <ChevronRight size={18} aria-hidden="true" className="shrink-0 text-ink-muted" />
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 }
