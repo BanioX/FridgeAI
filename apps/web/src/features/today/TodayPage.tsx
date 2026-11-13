@@ -1,4 +1,5 @@
 import {
+  type InventoryItemView,
   type LocalDate,
   toLocalDate,
   daysBetween,
@@ -11,7 +12,7 @@ import {
 } from '@fridgeai/core';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { ClipboardCheck, HardDriveDownload, Snowflake } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { useMoney } from '../../app/money';
@@ -34,6 +35,8 @@ import { locationCounts } from './location-counts';
 import { ImpactSince } from './ImpactSince';
 import { StartIntro } from './StartIntro';
 import { URGENT_LIMIT, urgentItems } from './urgent-items';
+import { useDragToLocation } from '../inventory/use-drag-to-location';
+import { RitualTargets } from './RitualTargets';
 
 const MORE_LINK =
   'inline-flex min-h-11 items-center font-semibold text-basil-800 underline-offset-4 hover:underline';
@@ -41,7 +44,8 @@ const MORE_LINK =
 export function TodayPage() {
   const { householdId, inventory, today } = useAppData();
   const money = useMoney();
-  const swipe = useSwipeOutcome();
+  // The ritual (ADR-0084) only here: in the Vorrat people sort quickly.
+  const swipe = useSwipeOutcome({ ritual: true });
   const attentionOf = useAttention();
   // Read once per visit; a finished check writes it before coming back here.
   const [lastCheck] = useState(readLastCheck);
@@ -54,6 +58,26 @@ export function TodayPage() {
     async () => (await inventory['inventory.listExpiring']({ householdId, withinDays: 30 })).items,
     [householdId],
   );
+
+  // Hold a row of «Heute retten» and drag it into the basket or the bin (ADR-0084).
+  const held = useRef<InventoryItemView | null>(null);
+  const drag = useDragToLocation({
+    enabled: true,
+    selecting: false,
+    from: 'fridge',
+    begin: (id) => {
+      held.current = expiring?.find((item) => item.id === id) ?? null;
+      return held.current?.name ?? '';
+    },
+    drop: (target) => {
+      const item = held.current;
+      if (item !== null && target.kind === 'action') {
+        if (target.action === 'eaten' || target.action === 'wasted') {
+          swipe.settle(item, target.action);
+        }
+      }
+    },
+  });
 
   if (all === undefined || expiring === undefined) {
     return <p className="sr-only">{messages.loading}</p>;
@@ -141,23 +165,34 @@ export function TodayPage() {
               <GroupedList>
                 {urgent.slice(0, URGENT_LIMIT).map((item) => (
                   <GroupedListItem key={item.id}>
-                    <SwipeAction {...swipe.sides(item)}>
-                      {({ sliced }) => (
-                        <Link
-                          to={`/inventory/${item.id}`}
-                          aria-describedby={SWIPE_HINT_ID}
-                          className={GROUPED_ROW_LINK}
-                        >
-                          <InventoryItemRow
-                            chevron
-                            sliced={sliced}
-                            item={item}
-                            attention={attentionOf(item).reasons.length > 0}
-                            status={expiryBadge(item.status, item.expiresOn, today, item.location)}
-                          />
-                        </Link>
-                      )}
-                    </SwipeAction>
+                    <div
+                      {...drag.rowProps(item.id)}
+                      // iOS: a long press must not start Safari's own drag of the link.
+                      className="[-webkit-touch-callout:none] select-none [&_a]:[-webkit-user-drag:none]"
+                    >
+                      <SwipeAction {...swipe.sides(item)}>
+                        {({ sliced }) => (
+                          <Link
+                            to={`/inventory/${item.id}`}
+                            aria-describedby={SWIPE_HINT_ID}
+                            className={GROUPED_ROW_LINK}
+                          >
+                            <InventoryItemRow
+                              chevron
+                              sliced={sliced}
+                              item={item}
+                              attention={attentionOf(item).reasons.length > 0}
+                              status={expiryBadge(
+                                item.status,
+                                item.expiresOn,
+                                today,
+                                item.location,
+                              )}
+                            />
+                          </Link>
+                        )}
+                      </SwipeAction>
+                    </div>
                     {shouldSuggestFreezing(item, today) ? (
                       <button
                         type="button"
@@ -192,6 +227,8 @@ export function TodayPage() {
       <ImpactSince />
       <ClimateCard />
       <RecentAchievements />
+      {drag.dragging ? <RitualTargets over={drag.over} /> : null}
+      {drag.parcel}
       {swipe.toast}
     </div>
   );

@@ -248,10 +248,14 @@ function HistoryRow({
             {showOwner && entry.owner !== 'shared' ? <OwnerMark ownerId={entry.owner} /> : null}
           </p>
           <p className="text-sm">
-            <span className={`font-semibold ${TONES[entry.outcome]}`}>
-              {entry.madeInto === undefined
-                ? messages.itemDetail.outcomes[entry.outcome]
-                : t.processed}
+            <span
+              className={`font-semibold ${entry.rescued === true ? 'text-basil-800' : TONES[entry.outcome]}`}
+            >
+              {entry.madeInto !== undefined
+                ? t.processed
+                : entry.rescued === true
+                  ? t.rescued
+                  : messages.itemDetail.outcomes[entry.outcome]}
             </span>
             <span className="text-ink-muted"> · {amount}</span>
           </p>

@@ -206,6 +206,7 @@ export function createInventoryQueries(ctx: AppContext) {
                 ...(outcome.madeInto === undefined || resultName === undefined
                   ? {}
                   : { madeInto: { itemId: outcome.madeInto, name: resultName } }),
+                ...(outcome.rescued === true ? { rescued: true as const } : {}),
                 countsInValue: countsInValue(outcome),
                 at: outcome.at,
               },

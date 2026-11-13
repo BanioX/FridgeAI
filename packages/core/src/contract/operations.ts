@@ -687,6 +687,8 @@ export const CONTRACT_V1 = {
           owner: OwnerSchema,
           /** The result this ingredient was processed into (ADR-0052); its value moved on. */
           madeInto: z.object({ itemId: IdSchema, name: z.string() }).optional(),
+          /** Counted as rescued (ADR-0039, ADR-0084): the journal says «Gerettet». */
+          rescued: z.literal(true).optional(),
           /** Whether the value counts in sums, like the Bilanz (`countsInValue`). */
           countsInValue: z.boolean(),
           at: IsoDateTimeSchema,

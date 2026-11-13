@@ -400,6 +400,28 @@ export const messages = {
     frozen: (name: string, date: string) => `${name} eingefroren. Haltbar bis ${date}.`,
     unfrozen: (name: string) => `${name} liegt wieder im Kühlschrank.`,
   },
+  /** The ritual on Start (ADR-0084): rescuing feels like a win, a loss is honest and kind. */
+  ritual: {
+    /** The strip behind a row on Start when the item can be rescued. */
+    rescueLabel: 'Gerettet',
+    /** The two places a held row can go on Start. */
+    basket: 'Gerettet',
+    bin: 'Entsorgt',
+    rescued: 'Gerettet',
+    rescuedLine: (name: string, value: string) => `${name} · ${value}`,
+    monthLine: (count: number, value: string) =>
+      count === 1
+        ? `Deine erste Rettung diesen Monat · ${value}`
+        : `Deine ${String(count)}. Rettung diesen Monat · ${value}`,
+    wasted: 'Entsorgt',
+    wastedLine: (name: string, value: string) => `${name} · ${value} im Abfall`,
+    freezeNext: 'Nächstes Mal früher einfrieren, dann hält es Monate.',
+    nudges: [
+      'Schade drum. Beim nächsten Mal bist du schneller.',
+      'Passiert. «Heute retten» zeigt dir früh, was dran ist.',
+      'Kopf hoch. Rettich merkt sich das und erinnert dich.',
+    ],
+  },
   /** Calm state badges on items (R2-1): a short text, colour only supports it. */
   badges: {
     made: 'Selbst gemacht',
@@ -1329,6 +1351,8 @@ export const messages = {
     changeLabel: (name: string) => `Eintrag ${name} ändern`,
     reason: 'Warum?',
     save: 'Speichern',
+    /** A rescue in the journal (ADR-0084): it was used before it would have been lost. */
+    rescued: 'Gerettet',
     changed: (name: string, outcome: string) => `Gespeichert: ${name} ist jetzt «${outcome}».`,
     confirm: 'Eintrag löschen',
     cancel: 'Abbrechen',
