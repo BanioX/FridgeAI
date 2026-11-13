@@ -14,12 +14,20 @@ const variantClasses: Record<CardVariant, string> = {
 interface CardProps {
   children: ReactNode;
   variant?: CardVariant;
+  /** `compact` for a card that holds one line, such as the value on Start. */
+  padding?: 'normal' | 'compact';
   className?: string;
 }
 
-export function Card({ children, variant = 'default', className = '' }: CardProps) {
+export function Card({
+  children,
+  variant = 'default',
+  padding = 'normal',
+  className = '',
+}: CardProps) {
+  const inner = padding === 'compact' ? 'px-4 py-3' : 'p-5';
   return (
-    <div className={`rounded-2xl border p-5 ${variantClasses[variant]} ${className}`}>
+    <div className={`rounded-2xl border ${inner} ${variantClasses[variant]} ${className}`}>
       {children}
     </div>
   );

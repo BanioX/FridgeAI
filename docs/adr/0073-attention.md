@@ -16,7 +16,7 @@ Alban: «Einen Hinweis mit (i), Overlay: diesem Produkt besondere Beachtung sche
    - **Heikel** (`perishable`): Die Kategorie ist heikel (Haltbarkeit 1 bis 4 nach ADR-0038, bei geöffneter Packung nach den Tagen nach dem Öffnen) und der Artikel ist geöffnet (das nahe Datum steht schon in der Zeile). Text: «Verdirbt schnell, offen hält es nur kurz.»
    - **Teuer** (`pricey`): Preis von mindestens 6.00 (600 in der kleinsten Einheit) und unter den drei teuersten aktiven Artikeln des Haushalts; gleiche Preise zählen alle mit. Text: «Teuer: CHF 12.90, eines der teuersten in deinem Vorrat.»
    - **Oft entsorgt** (`often_wasted`): Der Haushalt hat Artikel dieser Kategorie in den letzten 90 Tagen mindestens 2-mal entsorgt (bestehende Abfrage `products.wasteHabits`, ADR-0038). Text: «Das hast du schon 3-mal entsorgt.»
-3. **Schwellen als benannte Konstanten:** `ATTENTION_SOON_DAYS = 2`, `PRICEY_MIN_RAPPEN = 600`, `PRICEY_TOP_COUNT = 3`, `MAX_ATTENTION_REASONS = 2`; die Schwelle für «oft entsorgt» ist `WASTE_HABIT_MIN_TIMES` aus ADR-0038.
+3. **Schwellen als benannte Konstanten:** `ATTENTION_SOON_DAYS = 1`, `PRICEY_MIN_RAPPEN = 600`, `PRICEY_TOP_COUNT = 3`, `MAX_ATTENTION_REASONS = 2`; die Schwelle für «oft entsorgt» ist `WASTE_HABIT_MIN_TIMES` aus ADR-0038.
 4. **Tiefkühler und Notvorrat** bekommen nie «Verbrauchsdatum» oder «Heikel»: Dort hält das Lebensmittel lange, ein Datum ist kein Alarm. «Teuer» und «Oft entsorgt» gelten überall.
 5. **Tipp, eine Zeile:** Lässt sich die Kategorie einfrieren und liegt der Artikel nicht im Tiefkühler, steht «Heute einfrieren hält es länger.», sonst der erste Tipp der Kategorie, falls sie einen hat.
 6. **Wo es erscheint:**
