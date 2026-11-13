@@ -152,6 +152,13 @@ export const messages = {
     },
     /** «Bilanz November» (ADR-0047): what this month closed, like a statement. */
     impactTitle: (month: string) => `Bilanz ${month}`,
+    /** The look back on Monday to Wednesday (ADR-0090). */
+    weekTitle: 'Deine Woche',
+    weekPeriod: (from: string, to: string) => `${from} bis ${to}`,
+    weekNoWaste: 'Nichts entsorgt. So landet kein Geld im Abfall.',
+    weekTip: 'Was du entsorgt hast, steht im Journal. Dort siehst du, was sich wiederholt.',
+    weekJournal: 'Im Journal ansehen',
+    weekSeen: 'Gesehen',
     growth: {
       title: 'Dein Rettich',
       stages: {
@@ -648,6 +655,11 @@ export const messages = {
     /** K4: shown above the outcome when the date is today or tomorrow. */
     freezeTip: 'Heute oder morgen ist das Datum. Einfrieren rettet es.',
     thaw: 'Auftauen (in den Kühlschrank)',
+    /** A reminder in the phone's calendar on the evening before (ADR-0090). */
+    calendar: 'Im Kalender erinnern',
+    calendarHint: 'Am Abend vorher um 18 Uhr, als Termin in deinem Kalender.',
+    calendarTitle: (name: string) => `Rettich: ${name} läuft morgen ab`,
+    calendarText: (place: string, date: string) => `${place}. Haltbar bis ${date}.`,
     moved: (date: string) => `Verschoben. Neu haltbar bis ${date}.`,
     failed: 'Das hat nicht geklappt. Bitte versuch es nochmals.',
   },

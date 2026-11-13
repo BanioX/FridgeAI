@@ -49,6 +49,7 @@ import { expiryBadge } from '../../ui/expiry-badge';
 import { parseAmount } from './add-item';
 import type { ClosedItem } from './closed-item';
 import { AttentionSheet } from './AttentionSheet';
+import { CalendarReminder } from './CalendarReminder';
 import { FROM_DETAIL } from './edit-state';
 import { useAttention } from './use-attention';
 import { useFreezeHint } from './FreezeHint';
@@ -760,6 +761,7 @@ function ItemDetail({ itemId }: { itemId: string | undefined }) {
             {item.location === 'freezer' ? t.thaw : t.freeze}
           </Button>
         ) : null}
+        <CalendarReminder item={item} today={today} disabled={busy} />
         <Button
           variant="ghost"
           icon={Trash2}
