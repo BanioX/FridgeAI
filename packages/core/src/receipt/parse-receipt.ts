@@ -62,8 +62,9 @@ const CODE = /^(?:[0-9A-D#*]|S\d)$/;
 const PIECES = /^(\d{1,3})(?:\.0)?x?$/i;
 const WEIGHT_KG = /^(\d{1,3}\.\d{3})(?:kg)?$/;
 const DECOR = /^(?:x|×|à|@|chf|kg|\/kg|chf\/kg)$/i;
-/** A detail line under an item (Lidl): «4 x 0.79», «0.984 kg x 1.99 CHF/kg». */
-const DETAIL = /^(\d{1,3}(?:\.\d{1,3})?) ?(kg)? ?[x×à] ?(\d{1,4}\.\d{2})(?: ?(?:chf)? ?\/? ?kg)?$/i;
+/** A detail line under an item (Lidl): «4 x 0.79», «0.984 kg x 1.99 CHF/kg» («12.980» misread). */
+const DETAIL =
+  /^(\d{1,3}(?:\.\d{1,3})?) ?(kg)? ?[x×à] ?(\d{1,4}\.\d{2,3})(?: ?(?:chf)? ?\/? ?kg)?$/i;
 const SEPARATOR = /^[-=_*~.:¦| ]+$/;
 const STORE_SKIP = /genossenschaft|hotline|www|artikel|lohnt sich|quittung|^chf$/i;
 
@@ -81,26 +82,52 @@ const amountOf = (token: string | undefined): Rappen | null =>
   token !== undefined && AMOUNT.test(token) ? parseChf(token) : null;
 
 /**
+ * «1.985» for «1.85», «12.980» for «12.90»: on a photo OCR can add a digit after the point. These
+ * are the amounts it could have been, each with one of the three digits dropped.
+ */
+function withoutOneDigit(token: string | undefined): Rappen[] {
+  const match = /^(\d{1,4})\.(\d{3})$/.exec(token ?? '');
+  if (match === null) {
+    return [];
+  }
+  const [, whole = '', decimals = ''] = match;
+  const found: Rappen[] = [];
+  for (let skip = 0; skip < decimals.length; skip += 1) {
+    const amount = parseChf(`${whole}.${decimals.slice(0, skip)}${decimals.slice(skip + 1)}`);
+    if (amount !== null && !found.includes(amount)) {
+      found.push(amount);
+    }
+  }
+  return found;
+}
+
+/**
  * Cleans one OCR line: one kind of minus, single spaces, and typical OCR slips inside amounts
  * («l.95» → «1.95», «3,95» → «3.95», «1O.50» → «10.50», «3 .95» → «3.95», «0,.10» → «0.10»).
  */
 export function normalizeReceiptLine(raw: string): string {
-  return raw
-    .replace(/[−–—]/g, '-')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .replace(/(\d)(?:,\.|\.,)(\d)/g, '$1.$2')
-    .replace(/(\d) ?([.,]) ?(\d{2,3})(?![\d])/g, '$1$2$3')
-    .replace(
-      /(?<![\p{L}])[\dOolI|]*\d[\dOolI|]*[.,][\dOo]{2,3}-?(?![\p{L}])|(?<![\p{L}])[OolI|][.,]\d{2}-?(?![\p{L}])/gu,
-      (token) => token.replace(/[Oo]/g, '0').replace(/[lI|]/g, '1').replace(',', '.'),
-    );
+  return (
+    raw
+      .replace(/[−–—‐‑‒﹣－]/g, '-')
+      .replace(/\s+/g, ' ')
+      .trim()
+      // A minus read as a quote or tilde right before an amount: «Lidl Plus Rabatt „0,24».
+      .replace(/(^|\s)[„‚“”"~¬](?=\d{1,4}[.,] ?\d{2}(?!\d))/g, '$1-')
+      .replace(/(\d)(?:,\.|\.,)(\d)/g, '$1.$2')
+      .replace(/(\d) ?([.,]) ?(\d{2,3})(?![\d])/g, '$1$2$3')
+      .replace(
+        /(?<![\p{L}])[\dOolI|]*\d[\dOolI|]*[.,][\dOo]{2,3}-?(?![\p{L}])|(?<![\p{L}])[OolI|][.,]\d{2}-?(?![\p{L}])/gu,
+        (token) => token.replace(/[Oo]/g, '0').replace(/[lI|]/g, '1').replace(',', '.'),
+      )
+  );
 }
 
 interface LineNumbers {
   name: string;
   /** Regular line amount; `null` when the line carries no amount. */
   price: Rappen | null;
+  /** Other readings of a misread amount with one digit too many («1.985»), `price` the first. */
+  alternatives?: Rappen[];
   discount: Rappen;
   quantity?: number;
   unit?: 'pcs' | 'g';
@@ -177,6 +204,18 @@ function readNumbers(line: string): LineNumbers {
   }
   const total = amountOf(tokens[end - 1]);
   if (total === null) {
+    // «Emmi Joghurt 1.985 A»: an item amount with a VAT code behind it, one digit too many.
+    const [first, ...others] = end < tokens.length ? withoutOneDigit(tokens[end - 1]) : [];
+    if (first !== undefined) {
+      const vatCode = tokens[end]?.replace(/^S/, '');
+      return {
+        name: tokens.slice(0, end - 1).join(' '),
+        price: first,
+        alternatives: others,
+        discount: rappen(0),
+        ...(vatCode === undefined || vatCode === '#' ? {} : { vatCode }),
+      };
+    }
     return { name: line, price: null, discount: rappen(0) };
   }
   const vatCode = tokens[end]?.replace(/^S/, '');
@@ -312,15 +351,23 @@ function oneDigitApart(a: number, b: number): boolean {
 /** Lidl prints «4 x 0.79» or «0.984 kg x 1.99 CHF/kg» below the item; it must match its amount. */
 function applyDetail(item: ParsedReceiptLine | null, detail: RegExpExecArray) {
   const [, amount = '', kg, price] = detail;
-  const unitPrice = amountOf(price);
-  if (item === null || unitPrice === null) {
+  if (item === null) {
     return;
   }
   if (kg !== undefined || /\.\d{3}$/.test(amount)) {
     const grams = Math.round(Number(amount) * 1000);
-    if (near(perKg(grams, unitPrice), item.priceRappen)) {
+    const read = amountOf(price);
+    // The price per kilogram that explains the amount; a misread «12.980» may still be «12.90».
+    const unitPrice = (read === null ? withoutOneDigit(price) : [read]).find((perKilo) =>
+      near(perKg(grams, perKilo), item.priceRappen),
+    );
+    if (unitPrice !== undefined) {
       Object.assign(item, { quantity: grams, unit: 'g', unitPriceRappen: unitPrice });
     }
+    return;
+  }
+  const unitPrice = amountOf(price);
+  if (unitPrice === null) {
     return;
   }
   const count = Number(amount);
@@ -335,6 +382,27 @@ function applyDetail(item: ParsedReceiptLine | null, detail: RegExpExecArray) {
       unitPriceRappen: unitPrice,
       priceRappen: rappen(product),
     });
+  }
+}
+
+/**
+ * One amount read with a digit too many: of its readings, take the one that makes the lines add up
+ * to the printed total. With several such lines, or none that fits, the first reading stays and the
+ * sum check shows the slip.
+ */
+function resolveWithTotal(
+  unsure: ReadonlyMap<ParsedReceiptLine, readonly Rappen[]>,
+  total: Rappen | null,
+  computed: Rappen,
+) {
+  const [entry, ...more] = unsure;
+  if (entry === undefined || more.length > 0 || total === null || computed === total) {
+    return;
+  }
+  const [line, alternatives] = entry;
+  const fits = alternatives.find((amount) => computed + amount - line.priceRappen === total);
+  if (fits !== undefined) {
+    line.priceRappen = fits;
   }
 }
 
@@ -357,6 +425,8 @@ export function parseReceiptText(text: string): ParsedReceipt {
   const totalRappen = totalIndex === -1 ? null : readNumbers(rows[totalIndex] ?? '').price;
   const vatRates = readVatRates(totalIndex === -1 ? [] : rows.slice(totalIndex + 1));
   const lines: ParsedReceiptLine[] = [];
+  /** Lines whose amount had a digit too many, with their other possible readings. */
+  const unsure = new Map<ParsedReceiptLine, readonly Rappen[]>();
   let pendingName = '';
   let lastItem: ParsedReceiptLine | null = null;
   let afterSubtotal = false;
@@ -425,12 +495,16 @@ export function parseReceiptText(text: string): ParsedReceipt {
       ...(rate === undefined || kind !== 'item' ? {} : { isFood: rate < 5 }),
     };
     lines.push(line);
+    if (numbers.alternatives !== undefined) {
+      unsure.set(line, numbers.alternatives);
+    }
     lastItem = kind === 'item' ? line : null;
   }
 
-  const computedTotalRappen = sumRappen(
-    lines.map((line) => rappen(line.priceRappen + line.discountRappen)),
-  );
+  const sumOf = () =>
+    sumRappen(lines.map((line) => rappen(line.priceRappen + line.discountRappen)));
+  resolveWithTotal(unsure, totalRappen, sumOf());
+  const computedTotalRappen = sumOf();
   const storeName = detectStore(rows);
   return {
     retailer: detectRetailer(rows),

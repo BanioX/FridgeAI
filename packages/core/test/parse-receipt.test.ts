@@ -47,6 +47,14 @@ describe('normalizeReceiptLine', () => {
     expect(normalizeReceiptLine('Olivenöl Bio 1.5l')).toBe('Olivenöl Bio 1.5l');
     expect(normalizeReceiptLine('Lidl Plus Rabatt -0,.10')).toBe('Lidl Plus Rabatt -0.10');
   });
+
+  it('reads a minus that OCR saw as a quote or tilde, but only right before an amount', () => {
+    expect(normalizeReceiptLine('Lidl Plus Rabatt „0,24')).toBe('Lidl Plus Rabatt -0.24');
+    expect(normalizeReceiptLine('Lidl Plus Rabatt ‚0.22')).toBe('Lidl Plus Rabatt -0.22');
+    expect(normalizeReceiptLine('Lidl Plus Rabatt ~0,05')).toBe('Lidl Plus Rabatt -0.05');
+    expect(normalizeReceiptLine('Kaffee „Crema“ 4.50 A')).toBe('Kaffee „Crema“ 4.50 A');
+    expect(normalizeReceiptLine('Wasser "1.5l" 0.95 A')).toBe('Wasser "1.5l" 0.95 A');
+  });
 });
 
 describe('parseReceiptText', () => {
@@ -271,6 +279,52 @@ describe('parseReceiptText on photos', () => {
       ['After Shave', -13],
     ]);
     expect(receipt.sumCheck).toBe('ok');
+  });
+
+  it('reads a Lidl Plus app screenshot whose minus signs and digits OCR got wrong', () => {
+    // Invented articles, with the slips a downscaled app screenshot really produced (13.11.2026).
+    const receipt = parseReceiptText(
+      [
+        'Lidl Lohnt sich.',
+        'Joghurt Nature 1.58 A',
+        '2 x 0.79',
+        'Lidl Plus Rabatt „0,79',
+        'Lidl Plus Rabatt -0,.01',
+        'Bündnerfleisch 13.05 A',
+        '3 x 4.35',
+        'Lidl Plus Rabatt „0,24',
+        'Kirschen lose 6.50 A',
+        '0,504 kg x 12.980 CHF/kg',
+        'Lidl Plus Rabatt 0,15',
+        'Mix-it Joghurt 1.988 A',
+        'Lidl Plus Rabatt -0.03',
+        '------------',
+        'Dein Lidl Preis 21.89',
+        'Karte 21.89',
+        'A 2.6 % MwSt von 21.89 0.55',
+        'Eingelöste Coupons',
+        '-5 Fr.',
+        'Gratis',
+        '-24%',
+        '+589 Lidl Punkte',
+      ].join('\n'),
+    );
+    expect(receipt.sumCheck).toBe('ok');
+    expect(rows(receipt)).toEqual([
+      ['item', 'Joghurt Nature', '2 pcs', 79, 158, -80, true],
+      ['item', 'Bündnerfleisch', '3 pcs', 435, 1305, -24, true],
+      ['item', 'Kirschen lose', '504 g', 1290, 650, -15, true],
+      // «1.988»: of «1.88» and «1.98» only the second makes the receipt add up.
+      ['item', 'Mix-it Joghurt', '1 pcs', undefined, 198, -3, true],
+    ]);
+  });
+
+  it('keeps the first reading of a digit too many when no reading fits the total', () => {
+    const receipt = parseReceiptText('Lidl\nMix-it Joghurt 1.988 A\nDein Lidl Preis 5.00');
+    expect(receipt.lines.map((line) => [line.name, line.priceRappen])).toEqual([
+      ['Mix-it Joghurt', 188],
+    ]);
+    expect(receipt.sumCheck).toBe('mismatch');
   });
 
   it('keeps the name clean when quantity and price do not fit the amount', () => {
