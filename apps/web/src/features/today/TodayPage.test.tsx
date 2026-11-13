@@ -1,4 +1,5 @@
 import 'fake-indexeddb/auto';
+import { addDays, toLocalDate } from '@fridgeai/core';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -88,9 +89,8 @@ describe('TodayPage', () => {
         inDays: 100,
       })),
     );
-    const longAgo = new Date();
-    longAgo.setDate(longAgo.getDate() - 40);
-    window.localStorage.setItem('fridgeai:last-backup', longAgo.toISOString().slice(0, 10));
+    // The app counts in Swiss days; a UTC date is one day off just after midnight.
+    window.localStorage.setItem('fridgeai:last-backup', addDays(toLocalDate(new Date()), -40));
     renderPage(db);
     const row = await screen.findByRole('link', {
       name: new RegExp(`^${messages.today.backup.title}`),
@@ -152,13 +152,7 @@ describe('TodayPage', () => {
     const db = testDb();
     await seedDb(db, [{ name: 'Vollmilch', location: 'fridge', inDays: 20 }]);
     const key = 'fridgeai:last-fridge-check';
-    const dayOf = (offset: number) => {
-      const date = new Date();
-      date.setDate(date.getDate() + offset);
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      return `${String(date.getFullYear())}-${month}-${day}`;
-    };
+    const dayOf = (offset: number) => addDays(toLocalDate(new Date()), offset);
 
     // Checked yesterday: no card.
     window.localStorage.setItem(key, dayOf(-1));
