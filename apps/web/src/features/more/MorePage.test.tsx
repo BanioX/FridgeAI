@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto';
-import { render, screen, cleanup } from '@testing-library/react';
+import { cleanup, render, screen, within } from '@testing-library/react';
 import { addDays } from '@fridgeai/core';
 import { MemoryRouter } from 'react-router';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -39,6 +39,16 @@ describe('«Mehr»: Kühlschrank-Check', () => {
     writeLastCheck(addDays(browserClock.today(), -5));
     renderMore();
     expect((await row()).textContent).toContain('Zuletzt vor 5 Tagen');
+  });
+
+  it('puts Nachkaufen first, in three groups', async () => {
+    renderMore();
+    const daily = await screen.findByRole('region', { name: messages.more.groups.daily });
+    expect(within(daily).getAllByRole('link')[0]?.getAttribute('href')).toBe('/shopping');
+    const balance = screen.getByRole('region', { name: messages.more.groups.balance });
+    expect(within(balance).getByRole('link', { name: /^Journal/ })).toBeDefined();
+    const household = screen.getByRole('region', { name: messages.more.groups.household });
+    expect(within(household).getAllByRole('link')).toHaveLength(2);
   });
 
   it('words today and yesterday', () => {
