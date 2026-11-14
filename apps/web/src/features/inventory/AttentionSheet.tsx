@@ -73,7 +73,7 @@ export function AttentionSheet({
 
   // On the body, so the tab bar does not cover the bottom of the sheet (ADR-0082).
   return createPortal(
-    <div className="fixed inset-0 z-40 flex items-end justify-center bg-onyx/40">
+    <div className="sheet-backdrop">
       <div
         ref={dialog}
         role="dialog"
@@ -81,7 +81,7 @@ export function AttentionSheet({
         aria-labelledby="attention-title"
         tabIndex={-1}
         onKeyDown={onKeyDown}
-        className="max-h-[92dvh] w-full max-w-xl space-y-4 overflow-y-auto rounded-t-3xl bg-surface p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-float outline-none"
+        className="sheet-panel max-h-[92dvh] space-y-4 overflow-y-auto outline-none"
       >
         <div className="flex items-center justify-between gap-2">
           <h2 id="attention-title" className="font-display text-xl font-semibold">

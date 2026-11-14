@@ -150,6 +150,18 @@
 }
 
 /* Apple «Large Title»: the top of every main page (ADR-0021). */
+/*
+ * Sheets (ADR-0093): from the bottom on the phone, a dialog in the middle from 768 px (iPad,
+ * computer), as a form sheet on iPadOS. One place for all of them instead of six copies.
+ */
+@utility sheet-backdrop {
+  @apply fixed inset-0 z-40 flex items-end justify-center bg-onyx/40 md:items-center md:p-6;
+}
+
+@utility sheet-panel {
+  @apply w-full max-w-xl rounded-t-3xl bg-surface p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-float md:max-h-[calc(100dvh-3rem)] md:max-w-lg md:overflow-y-auto md:rounded-3xl md:pb-5;
+}
+
 @utility large-title {
   font-size: 2.125rem;
   line-height: 1.2;

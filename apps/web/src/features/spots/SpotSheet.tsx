@@ -113,12 +113,12 @@ export function SpotSheet({
 
   // On the body, so the tab bar does not cover the bottom of the sheet.
   return createPortal(
-    <div className="fixed inset-0 z-40 flex items-end justify-center bg-onyx/40">
+    <div className="sheet-backdrop">
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="spot-sheet-title"
-        className="max-h-[90dvh] w-full max-w-xl space-y-4 overflow-y-auto rounded-t-3xl bg-surface p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-float"
+        className="sheet-panel max-h-[90dvh] space-y-4 overflow-y-auto"
       >
         <div>
           <h2 id="spot-sheet-title" className="font-display text-xl font-semibold">
