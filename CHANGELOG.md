@@ -2,6 +2,29 @@
 
 Alle Änderungen an Rettich (bis 7.11.2026 FridgeAI), neueste zuerst. Wird mit `pnpm release` erzeugt (ADR-0017).
 
+## [0.21.0] – 2026-11-14
+
+### Neu
+
+- ask one question after a week, answers stay on the device ([#329](https://github.com/BanioX/Rettich/pull/329))
+- a weekly look back on Start and a calendar reminder per item ([#326](https://github.com/BanioX/Rettich/pull/326))
+- swipe back from the left edge in the installed app ([#325](https://github.com/BanioX/Rettich/pull/325))
+- an overview of what goes where after the last receipt card ([#324](https://github.com/BanioX/Rettich/pull/324))
+
+### Behoben
+
+- count Cumulus vouchers, skip bonus points, share named discounts ([#330](https://github.com/BanioX/Rettich/pull/330))
+- read OCR slips on Lidl screenshots: total, digits, weights, rounding ([#328](https://github.com/BanioX/Rettich/pull/328))
+- read Lidl Plus screenshots whose minus signs and digits OCR got wrong ([#323](https://github.com/BanioX/Rettich/pull/323))
+
+### Dokumentation
+
+- the repo is now BanioX/Rettich ([#331](https://github.com/BanioX/Rettich/pull/331))
+
+### Tests
+
+- count backup and fridge-check days in Swiss time ([#327](https://github.com/BanioX/Rettich/pull/327))
+
 ## [0.20.0] – 2026-11-13
 
 ### Neu
