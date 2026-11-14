@@ -8,7 +8,7 @@ import {
 import { useLiveQuery } from 'dexie-react-hooks';
 import { PackagePlus, Plus, Share, X } from 'lucide-react';
 import { useEffect, useId, useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useSearchParams } from 'react-router';
 import { useAppData } from '../../app/AppData';
 import { messages } from '../../app/messages.de-CH';
 import { BackLink } from '../../ui/BackLink';
@@ -19,6 +19,7 @@ import { formatQuantity } from '../../ui/quantity-text';
 import { GroupedList, GroupedListItem } from '../../ui/GroupedList';
 import { KindSection } from '../inventory/KindView';
 import { RestockSuggestions } from './RestockSuggestions';
+import { hasIncoming, incomingShoppingText } from './incoming-text';
 import { groupShopping } from './shopping-kinds';
 import { shareText, shoppingListText } from './share-list';
 import { FoodIcon } from '../../ui/FoodIcon';
@@ -44,8 +45,17 @@ function atHomeText(home: AtHome): string {
 export function ShoppingPage() {
   const { householdId, ids, shopping, inventory } = useAppData();
   const id = useId();
-  const [name, setName] = useState('');
-  const [status, setStatus] = useState('');
+  const [params, setParams] = useSearchParams();
+  // Text from a link or the share sheet fills the field; one tap adds it (ADR-0094).
+  const [incoming] = useState(() => incomingShoppingText(params));
+  const [name, setName] = useState(incoming ?? '');
+  const [status, setStatus] = useState(incoming === undefined ? '' : t.incoming);
+  useEffect(() => {
+    // Read once, then drop it from the address so a reload does not fill the field again.
+    if (hasIncoming(params)) {
+      setParams({}, { replace: true });
+    }
+  }, [params, setParams]);
   const [busy, setBusy] = useState(false);
   const entries = useLiveQuery(
     async () => (await shopping['shopping.list']({ householdId, includeChecked: true })).items,
