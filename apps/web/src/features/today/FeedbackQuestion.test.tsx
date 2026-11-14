@@ -1,5 +1,5 @@
 import 'fake-indexeddb/auto';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -65,7 +65,10 @@ describe('FeedbackQuestion', () => {
     expect(await screen.findByText('Das Datum tippen dauert')).toBeTruthy();
     await userEvent.click(screen.getByRole('button', { name: t.remove('09.11.2026') }));
     expect(await screen.findByText(t.removed)).toBeTruthy();
-    expect(screen.queryByText('Das Datum tippen dauert')).toBeNull();
+    // The message and the list are two live queries: wait for the list on its own (L-33).
+    await waitFor(() => {
+      expect(screen.queryByText('Das Datum tippen dauert')).toBeNull();
+    });
   });
 
   it('«Später» waits three days, «Nicht mehr fragen» stops', async () => {
