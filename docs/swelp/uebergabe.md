@@ -1,6 +1,6 @@
 # Übergabe: wo die Arbeit steht
 
-Für die nächste Sitzung (Mensch oder KI). Claude führt diese Datei am Ende jeder längeren Sitzung nach. Sie ersetzt keine Register, sie zeigt nur den Faden. Stand: 14.11.2026. Version 0.21.0 ist die letzte veröffentlichte ([CHANGELOG](../../CHANGELOG.md)).
+Für die nächste Sitzung (Mensch oder KI). Claude führt diese Datei am Ende jeder längeren Sitzung nach. Sie ersetzt keine Register, sie zeigt nur den Faden. Stand: 14.11.2026. Version 0.22.0 ist die letzte veröffentlichte ([CHANGELOG](../../CHANGELOG.md)).
 
 ## Stand
 
@@ -15,7 +15,7 @@ Steht nicht in diesem Repo. Ideen, Reihenfolge und offene Fragen an Alban liegen
 
 ## Offen im Code
 
-Nichts: Alle Branches dieser Sitzung sind gemergt (bis #331).
+Nichts: Alle Branches dieser Sitzung sind gemergt (bis #337).
 
 ## Arbeitsweise, die sich bewährt hat
 
@@ -26,4 +26,6 @@ Nichts: Alle Branches dieser Sitzung sind gemergt (bis #331).
 - Ein roter Vorschau-Build bei Cloudflare mit «An unknown error has occurred» nach erfolgreichem Bauen: einmal «Retry build», dann erst den Code verdächtigen (L-34).
 - E2E läuft mit «Bewegung reduzieren»; Taps während eines Seitenübergangs kommen nicht an (L-35, ADR-0088). Wer die Bewegung testet, wartet, bis `document.getAnimations()` leer ist.
 - Eine echte Quittung zuerst privat durch dieselbe Texterkennung wie in der App schicken (Node, `dist/ocr`), nie ins Repo; Tests nur mit erfundenen Artikeln und denselben Lesefehlern (L-36, L-37).
+- Markdown nie durch `prettier --write` schicken: `.md` steht in `.prettierignore`, Prettier richtet sonst ganze Tabellen neu aus und bläht den Diff auf.
+- Layout auf grossen Bildschirmen: eine Breakpoint-Regel pro Baustein (`lg:` Seitenleiste, `md:` Dialog), E2E prüft vier Grössen (`adaptive-layout.spec.ts`, `sheet-dialog.spec.ts`).
 - Agenten der Rolle `implementer` arbeiten in einem eigenen Worktree; Arbeit in einem vorbereiteten Worktree lehnt der Wächter ab. Ihre Commits danach auf einen Branch mit gutem Namen schieben.
