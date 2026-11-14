@@ -149,7 +149,7 @@ export function PackControl({
       {menu
         ? createPortal(
             <div
-              className="fixed inset-0 z-40 flex items-end justify-center bg-onyx/40"
+              className="sheet-backdrop"
               onClick={(event) => {
                 if (event.target === event.currentTarget) {
                   setMenu(false);
@@ -160,7 +160,7 @@ export function PackControl({
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="pack-menu-title"
-                className="w-full max-w-xl space-y-3 rounded-t-3xl bg-surface p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-float"
+                className="sheet-panel space-y-3"
               >
                 <h2 id="pack-menu-title" className="font-display text-xl font-semibold">
                   {t.packLabel(left, start)}

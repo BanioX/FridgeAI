@@ -100,3 +100,4 @@ Jeder Entscheid mit Folgen steht hier als eigene Datei `NNNN-titel.md` (ADR-0001
 | [0090](0090-week-review-and-calendar.md) | Wochenrückblick und Kalender-Erinnerung ohne Server | angenommen | 2026-11-13 |
 | [0091](0091-edge-swipe-back.md) | Zurückwischen vom linken Rand | angenommen | 2026-11-13 |
 | [0092](0092-sidebar-on-large-screens.md) | Seitenleiste auf grossen Bildschirmen | angenommen | 2026-11-14 |
+| [0093](0093-sheets-as-dialogs.md) | Sheets als Dialog auf grossen Bildschirmen | angenommen | 2026-11-14 |

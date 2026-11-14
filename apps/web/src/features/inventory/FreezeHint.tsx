@@ -80,13 +80,13 @@ function FreezeHintSheet({ pending }: { pending: Pending }) {
   const { suitable, unsuitable } = pending.advice;
   // On the body, so the tab bar does not cover the bottom of the sheet (ADR-0082).
   return createPortal(
-    <div className="fixed inset-0 z-40 flex items-end justify-center bg-onyx/40">
+    <div className="sheet-backdrop">
       <div
         role="alertdialog"
         aria-modal="true"
         aria-labelledby="freeze-hint-title"
         aria-describedby="freeze-hint-body"
-        className="w-full max-w-xl space-y-4 rounded-t-3xl bg-surface p-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] shadow-float"
+        className="sheet-panel space-y-4"
       >
         <h2 id="freeze-hint-title" className="font-display text-xl font-semibold">
           {t.title}
