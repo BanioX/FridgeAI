@@ -18,7 +18,7 @@ export function RitualTargets({ over }: { over: DropTarget | null }) {
   return createPortal(
     <div
       aria-hidden="true"
-      className="moment-in fixed inset-x-0 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-40 mx-auto grid max-w-xl grid-cols-2 gap-3 px-4"
+      className="moment-in fixed inset-x-0 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] lg:bottom-[calc(1.5rem+env(safe-area-inset-bottom))] lg:left-64 z-40 mx-auto grid max-w-xl grid-cols-2 gap-3 px-4"
     >
       <div
         data-drop-target={dropKey(BASKET)}

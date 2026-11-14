@@ -109,7 +109,7 @@ export function useEditSelected(): {
     busy,
     edit,
     toast: (
-      <div className="pointer-events-none fixed inset-x-0 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-50 mx-auto max-w-xl px-4">
+      <div className="pointer-events-none fixed inset-x-0 bottom-[calc(4.75rem+env(safe-area-inset-bottom))] lg:bottom-[calc(1.5rem+env(safe-area-inset-bottom))] lg:left-64 z-50 mx-auto max-w-xl px-4">
         <div
           role="status"
           className="pointer-events-auto rounded-2xl bg-onyx px-4 py-3 font-semibold text-white shadow-card empty:hidden"
