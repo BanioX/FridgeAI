@@ -7,7 +7,7 @@
 import { execSync } from 'node:child_process';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 
-const REPO = 'https://github.com/BanioX/FridgeAI';
+const REPO = 'https://github.com/BanioX/Rettich';
 const SECTIONS = [
   ['feat', 'Neu'],
   ['fix', 'Behoben'],

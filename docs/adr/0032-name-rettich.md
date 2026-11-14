@@ -46,3 +46,14 @@ Alban: «Ich mag das Wort Kübel nicht.» Er hat gewählt: «Abfall». Das Wort 
 - Der Claim heisst jetzt **«Wirf kein Geld in den Abfall.»**
 - Texte sagen «Abfall», zum Beispiel «Was im Abfall landet». Ein Test im Textkatalog prüft das.
 
+
+## Nachtrag (14.11.2026): Repo heisst `BanioX/Rettich`
+
+Alban hat das Repo am 14.11.2026 von `BanioX/FridgeAI` in `BanioX/Rettich` umbenannt. GitHub leitet alte Adressen weiter: Links im Changelog, in PRs und Klone mit der alten Adresse funktionieren weiter. Neue Links nennen `BanioX/Rettich` (README, `security.txt`, Release-Skript, Crawler-Kennung, SWELPER-Kontext).
+
+Technisch bleibt weiter `fridgeai`, weil ein Wechsel Daten kosten würde:
+
+- Pakete `@fridgeai/*` und der Paketname im Wurzelverzeichnis;
+- der Name der Datenbank auf dem Gerät und die Speicher-Schlüssel `fridgeai:*`: Ein neuer Name wäre für den Browser leerer Speicher;
+- das Cloudflare-Projekt `fridgeai` und damit die Web-Adresse;
+- das Exportformat `fridgeai-export`.

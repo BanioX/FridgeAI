@@ -26,7 +26,7 @@ describe('SWELPER: generated files stay generated', () => {
       context: { name: string; repo: string };
     };
     expect(settings.context.name).toBe('rettich');
-    expect(settings.context.repo).toBe('BanioX/FridgeAI');
+    expect(settings.context.repo).toBe('BanioX/Rettich');
     expect(existsSync(join(root, '.claude', 'swelper', 'context.json'))).toBe(false);
   });
 
