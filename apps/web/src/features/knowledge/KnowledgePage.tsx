@@ -107,55 +107,58 @@ export function KnowledgePage() {
         </p>
       </Card>
 
-      <section aria-labelledby={`${searchId}-explain`} className="space-y-3">
-        <h2 id={`${searchId}-explain`} className="font-display text-xl font-semibold">
-          {t.explainTitle}
-        </h2>
-        <GroupedList>
-          {t.explain.map((item) => (
-            <GroupedListItem key={item.title} inset="text">
-              <details className="group">
-                <summary className="flex min-h-12 cursor-pointer list-none items-center gap-3 px-4 py-3 font-semibold has-focus-visible:outline-2 has-focus-visible:outline-basil-600 [&::-webkit-details-marker]:hidden">
-                  <span className="flex-1">{item.title}</span>
-                  <ChevronDown
-                    size={18}
-                    aria-hidden="true"
-                    className="shrink-0 text-ink-muted transition-transform group-open:rotate-180"
-                  />
-                </summary>
-                <p className="px-4 pb-4 text-ink-muted">
-                  <TextWithMarks text={item.text} />
-                </p>
-              </details>
-            </GroupedListItem>
-          ))}
-        </GroupedList>
-      </section>
+      {/* From 1024 px the two short lists stand side by side (ADR-0092). */}
+      <div className="space-y-6 lg:grid lg:grid-cols-2 lg:items-start lg:gap-6 lg:space-y-0">
+        <section aria-labelledby={`${searchId}-explain`} className="space-y-3">
+          <h2 id={`${searchId}-explain`} className="font-display text-xl font-semibold">
+            {t.explainTitle}
+          </h2>
+          <GroupedList>
+            {t.explain.map((item) => (
+              <GroupedListItem key={item.title} inset="text">
+                <details className="group">
+                  <summary className="flex min-h-12 cursor-pointer list-none items-center gap-3 px-4 py-3 font-semibold has-focus-visible:outline-2 has-focus-visible:outline-basil-600 [&::-webkit-details-marker]:hidden">
+                    <span className="flex-1">{item.title}</span>
+                    <ChevronDown
+                      size={18}
+                      aria-hidden="true"
+                      className="shrink-0 text-ink-muted transition-transform group-open:rotate-180"
+                    />
+                  </summary>
+                  <p className="px-4 pb-4 text-ink-muted">
+                    <TextWithMarks text={item.text} />
+                  </p>
+                </details>
+              </GroupedListItem>
+            ))}
+          </GroupedList>
+        </section>
 
-      <section aria-labelledby={`${searchId}-everyday`} className="space-y-3">
-        <h2 id={`${searchId}-everyday`} className="font-display text-xl font-semibold">
-          {t.everydayTitle}
-        </h2>
-        <GroupedList>
-          {t.everyday.map((item) => (
-            <GroupedListItem key={item.title} inset="text">
-              <details className="group">
-                <summary className="flex min-h-12 cursor-pointer list-none items-center gap-3 px-4 py-3 font-semibold has-focus-visible:outline-2 has-focus-visible:outline-basil-600 [&::-webkit-details-marker]:hidden">
-                  <span className="flex-1">{item.title}</span>
-                  <ChevronDown
-                    size={18}
-                    aria-hidden="true"
-                    className="shrink-0 text-ink-muted transition-transform group-open:rotate-180"
-                  />
-                </summary>
-                <p className="px-4 pb-4 text-ink-muted">
-                  <TextWithMarks text={item.text} />
-                </p>
-              </details>
-            </GroupedListItem>
-          ))}
-        </GroupedList>
-      </section>
+        <section aria-labelledby={`${searchId}-everyday`} className="space-y-3">
+          <h2 id={`${searchId}-everyday`} className="font-display text-xl font-semibold">
+            {t.everydayTitle}
+          </h2>
+          <GroupedList>
+            {t.everyday.map((item) => (
+              <GroupedListItem key={item.title} inset="text">
+                <details className="group">
+                  <summary className="flex min-h-12 cursor-pointer list-none items-center gap-3 px-4 py-3 font-semibold has-focus-visible:outline-2 has-focus-visible:outline-basil-600 [&::-webkit-details-marker]:hidden">
+                    <span className="flex-1">{item.title}</span>
+                    <ChevronDown
+                      size={18}
+                      aria-hidden="true"
+                      className="shrink-0 text-ink-muted transition-transform group-open:rotate-180"
+                    />
+                  </summary>
+                  <p className="px-4 pb-4 text-ink-muted">
+                    <TextWithMarks text={item.text} />
+                  </p>
+                </details>
+              </GroupedListItem>
+            ))}
+          </GroupedList>
+        </section>
+      </div>
 
       <section aria-labelledby={`${searchId}-guide`} className="space-y-3">
         <h2 id={`${searchId}-guide`} className="font-display text-xl font-semibold">

@@ -1,6 +1,7 @@
 import type { Page } from '@playwright/test';
 import { AxeBuilder, expect, test } from './test';
 
+// Phone width, but driven by a mouse: the tip says «Zieh» (ADR-0092); a touch screen says «Wisch».
 test.use({ viewport: { width: 390, height: 844 } });
 
 async function addGlace(page: Page) {
@@ -57,7 +58,7 @@ test('swipes left for «Verwertet», right for «Entsorgt», undoes, and a short
   await addGlace(page);
   const row = page.getByRole('link', { name: /Glace/ });
   await expect(row).toContainText('6 Stk.');
-  await expect(page.getByText(/^Tipp: Wisch nach links/)).toBeVisible();
+  await expect(page.getByText(/^Tipp: Zieh einen Artikel nach links/)).toBeVisible();
 
   // Below the threshold and shorter than a flick (60 px): the row springs back, nothing is
   // recorded, the item page stays closed.
@@ -81,7 +82,7 @@ test('swipes left for «Verwertet», right for «Entsorgt», undoes, and a short
   await expect(page.getByRole('status')).toContainText('1 Glace entsorgt');
   await expect(page.getByRole('heading', { level: 1, name: 'Vorrat' })).toBeVisible();
   // The tip stays for this visit, so the list does not jump under the finger.
-  await expect(page.getByText(/^Tipp: Wisch nach links/)).toBeVisible();
+  await expect(page.getByText(/^Tipp: Zieh einen Artikel nach links/)).toBeVisible();
 
   await page.getByRole('status').getByRole('button', { name: 'Rückgängig' }).click();
   await expect(row).toContainText('5 Stk.');
@@ -94,7 +95,7 @@ test('swipes left for «Verwertet», right for «Entsorgt», undoes, and a short
   // Next visit: the tip has done its job.
   await page.goBack();
   await expect(row).toBeVisible();
-  await expect(page.getByText(/^Tipp: Wisch nach links/)).toBeHidden();
+  await expect(page.getByText(/^Tipp: Zieh einen Artikel nach links/)).toBeHidden();
 });
 
 test('a swipe on cheese slices takes a pack, not one slice (ADR-0066)', async ({ page }) => {
