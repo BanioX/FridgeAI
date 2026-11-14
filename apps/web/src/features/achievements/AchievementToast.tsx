@@ -42,7 +42,7 @@ export function AchievementToast() {
   }, [text]);
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-[calc(8.5rem+env(safe-area-inset-bottom))] z-20 mx-auto max-w-xl px-4">
+    <div className="pointer-events-none fixed inset-x-0 bottom-[calc(8.5rem+env(safe-area-inset-bottom))] lg:bottom-[calc(5.25rem+env(safe-area-inset-bottom))] lg:left-64 z-20 mx-auto max-w-xl px-4">
       <div
         role="status"
         className="pointer-events-auto rounded-2xl bg-onyx px-4 py-3 font-semibold text-white shadow-card empty:hidden"
