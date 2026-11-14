@@ -27,7 +27,7 @@ export function LocationTiles({ counts }: { counts: readonly LocationCount[] }) 
             <li key={location} className="flex">
               <Link
                 to={`/inventory?location=${location}`}
-                className={`relative flex aspect-square w-full min-w-0 flex-col justify-between rounded-2xl bg-surface p-2 text-ink-muted shadow-card transition-transform active:scale-95`}
+                className={`relative flex aspect-square w-full md:aspect-auto md:h-28 min-w-0 flex-col justify-between rounded-2xl bg-surface p-2 text-ink-muted shadow-card transition-transform active:scale-95`}
               >
                 <span className="sr-only">{t.label(label, items, urgent)}</span>
                 <span aria-hidden="true" className="flex items-start justify-between gap-1 p-0.5">

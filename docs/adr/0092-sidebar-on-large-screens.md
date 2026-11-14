@@ -20,3 +20,12 @@ Rettich ist für das iPhone gebaut: eine Spalte von höchstens 576 Pixeln, die T
 
 - Die E2E-Tests laufen in einem Fenster von 1280 Pixeln und sehen jetzt die Seitenleiste; alle bestehenden Tests blieben grün. `adaptive-layout.spec.ts` prüft iPhone, iPad hochkant, iPad quer und Computer: Lage der Navigation, Reihenfolge, kein seitliches Scrollen, Barrierefreiheit.
 - Sheets kommen weiter von unten. Auf grossen Bildschirmen werden sie in einem Folge-PR zu Dialogen in der Mitte.
+
+## Nachtrag (14.11.2026): Breite nutzen
+
+- Die vier Kacheln der Lagerorte auf Start sind ab 768 Pixeln 112 Pixel hoch statt quadratisch. Sonst wurden sie in der breiten Spalte gross und leer.
+- Unter «Wissen» stehen «Kurz erklärt» und «Rettich im Alltag» ab 1024 Pixeln nebeneinander. Die Haltbarkeit A–Z bleibt einspaltig: In zwei Spalten brach jede Zeile auf drei Zeilen um.
+- «Schnell erfassen» bricht ab 768 Pixeln in Zeilen um, statt seitlich zu scrollen und über den Rand der Spalte zu laufen.
+- «Mehr» bleibt eine Liste, wie die Einstellungen auf dem iPad.
+- Mit Maus oder Trackpad sagt der Tipp über den Listen «Zieh einen Artikel nach links …» statt «Wisch nach links …». Das Wischen geht auch mit der Maus, als Ziehen. Was gilt, entscheidet der Browser über `pointer: fine`.
+- Hover und sichtbarer Fokus gab es schon. Tastenkürzel mit einzelnen Tasten gibt es bewusst nicht: Sie stören Screenreader (WCAG 2.1.4), und die Kürzel mit Cmd gehören dem Browser.

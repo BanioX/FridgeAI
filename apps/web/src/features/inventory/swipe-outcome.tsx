@@ -270,7 +270,13 @@ export function useSwipeOutcome({
         <p id={SWIPE_HINT_ID} className="sr-only">
           {messages.swipe.hint}
         </p>
-        {seen ? null : <p className="text-sm text-ink-muted">{messages.swipe.tip}</p>}
+        {seen ? null : (
+          <p className="text-sm text-ink-muted">
+            {/* With a finger one swipes, with a mouse one drags the row (ADR-0092). */}
+            <span className="pointer-fine:hidden">{messages.swipe.tip}</span>
+            <span className="hidden pointer-fine:inline">{messages.swipe.tipPointer}</span>
+          </p>
+        )}
       </>
     ),
     // The live region stays mounted and only its content changes, so screen readers announce it.
