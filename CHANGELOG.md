@@ -2,6 +2,19 @@
 
 Alle Änderungen an Rettich (bis 7.11.2026 FridgeAI), neueste zuerst. Wird mit `pnpm release` erzeugt (ADR-0017).
 
+## [0.22.0] – 2026-11-14
+
+### Neu
+
+- a link and Android sharing fill the shopping list, shortcuts on the app icon ([#337](https://github.com/BanioX/Rettich/pull/337))
+- use the width and the mouse on iPad and computer ([#336](https://github.com/BanioX/Rettich/pull/336))
+- sheets become dialogs in the middle on iPad and computer ([#335](https://github.com/BanioX/Rettich/pull/335))
+- a sidebar on iPad landscape and computers, wider content ([#333](https://github.com/BanioX/Rettich/pull/333))
+
+### Tests
+
+- wait for the deleted feedback answer to leave the list ([#334](https://github.com/BanioX/Rettich/pull/334))
+
 ## [0.21.0] – 2026-11-14
 
 ### Neu
