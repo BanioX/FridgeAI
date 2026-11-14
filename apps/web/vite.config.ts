@@ -75,6 +75,20 @@ export default defineConfig({
             purpose: 'maskable',
           },
         ],
+        // Long press on the icon (Android) or right click in the dock or taskbar (computer). Only
+        // pages, never the camera itself: it starts after a tap (ADR-0094).
+        shortcuts: [
+          { name: 'Auf die Einkaufsliste', short_name: 'Einkauf', url: '/shopping' },
+          { name: 'Quittung erfassen', short_name: 'Quittung', url: '/add/receipt' },
+          { name: 'Etwas erfassen', short_name: 'Erfassen', url: '/add' },
+          { name: 'Kühlschrank-Check', short_name: 'Check', url: '/check' },
+        ],
+        // «Teilen» → Rettich on Android: shared text lands in the shopping list field (ADR-0094).
+        share_target: {
+          action: '/shopping',
+          method: 'GET',
+          params: { title: 'title', text: 'text', url: 'url' },
+        },
       },
     }),
   ],

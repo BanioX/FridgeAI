@@ -777,6 +777,8 @@ export const messages = {
     shareTitle: 'Nachkaufen',
     copied: 'Kopiert.',
     shareFailed: 'Das Teilen hat nicht geklappt.',
+    /** ADR-0094: text from a link or the share sheet waits in the field for one tap. */
+    incoming: 'Übernommen. Prüf den Text und tipp auf «Auf die Liste».',
   },
   /** «Wissen» (ADR-0041): what keeps how long, and how it stays good longer. */
   /** «Verarbeiten», «Selbst gemacht», «Reste» and «Gekocht» (ADR-0052). */
